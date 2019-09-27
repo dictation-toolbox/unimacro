@@ -1,0 +1,85 @@
+Implementation details
+
+ actions.ini
+ 
+In the inifile *actions.ini* the implementation for different programs is realized. When you call *edit actions* this file will open for inspection and editing.
+
+ gotoline n
+
+The basic action for jumping to a line is the link(/features/actions/metaactions.html, meta-action) *gotoline n*, called from the lines grammar with the wanted line number for *n*.
+
+In the default section you will find:
+
+:CODE:
+[default]
+(...)
+gotoline n = {Ctrl+ExtHome}{ExtDown n}{ExtUp}
+::
+
+So when there is no other way to jump to a line, you simply go to the top and then down the needed number of lines.
+
+Here are some applications which do it another way:
+
+:CODE:
+[emacs]
+gotoline n = EMACS goto-line; n{enter}
+
+[excel]
+gotoline n = {ctrl+g}; n:n{enter}
+
+[pythonwin]
+gotoline n = {ctrl+g}; n{enter}; {home}
+
+[textpad]
+gotoline n = {ctrl+g}; n{enter}
+
+[uedit32]
+gotoline n = {ctrl+g}; n{enter}
+
+[win32pad]
+gotoline n = {ctrl+g}; n{enter}
+::
+
+Note: the excel action is overridden by the function *metaaction_gotoline* in the link(/features/actions/actionclassesforapplications.html, excel actions class module).
+
+
+ line numbers modulo hundred
+ 
+When you set this option to true in the _lines.ini file (say *edit lines*):
+
+:CODE:
+[general]
+line numbers modulo hundred = T
+::
+
+You will be able to use this feature for Excel, win32pad and ultraedit right now. The clue is in the link(/features/actions/actionclassesforapplications.html, actions classes), which can provide, per application, the calling grammar with the current line number from the function *getCurrentLineNumber*. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.
+
+Note: for Emacs the line module hundred trick can be implemented by inserting the correct function, *mdl-goto-line-mod100* instead of *goto-line*.
+
+ simpleactions
+
+These are the actions like &lt;&lt;copy>>, &lt;&lt;cut>>, &lt;&lt;delete>>, &lt;&lt;duplicate>>, which can be investigated in the actions.ini file.
+
+
+ move copy actions
+
+These actions require some more tuning in some applications. Details will follow.
+
+ Paragraph actions
+ 
+These are tested in Word, and basically meant for this program.
+
+In the actions.ini file there are now  analogous to "selectdown": "selectparadown" and to "selectline" there is "selectpara":
+
+:CODE:
+selectpreviouspara = {ctrl+up}{shift+ctrl+up}
+selectpara = {ctrl+down}{ctrl+up}{shift+ctrl+down}
+selectparadown n = {shift+ctrl+down n}
+selectparaup n = {shift+ctrl+up n}
+
+::
+
+These new meta-actions are found in the file sample_ini/actions.ini (March 2016, QH)
+
+ 
+

@@ -1,0 +1,105 @@
+HC Radiant Tamplates
+-----------------
+Blank
+
+DJD
+normal ankle
+normal bone
+normal chest
+normal elbow
+
+CT
+
+CT abdomen and pelvis
+CT abdomen and pelvis diverticulitis
+CT abdomen and pelvis appendicitis
+CT abdomen and pelvis hepato- splenomegaly
+CT chest
+CT chest abdomen and pelvis
+CT chest pulmonary angiogram
+CT head
+CT KUB
+CT IVP
+
+MR
+
+MRI lumbar spine
+MRI cervical spine
+MRI shoulder
+MRI knee
+MRI brain
+MRI abdomen
+
+Nuclear Medicine
+
+nuclear Bruce
+nuclear adenosine
+nuclear bone scan
+nuclear MUGA
+nuclear HIDA
+nuclear uptake and scan
+
+XR
+
+Abdomen series
+ankle left
+ankle right
+ankle bilateral
+cervical spine
+chest portable
+chest unit
+chest
+elbow right
+elbow left
+elbow bilateral
+finger left
+finger right
+foot bilateral
+foot right
+foot left
+hand series right
+hand series left
+hand series bilateral
+hip right 
+hip left
+hip bilateral
+knee right
+knee left
+knee bilateral
+KUB
+lumbar spine
+pelvis
+sacrum and coccyx
+shoulder bilateral
+shoulder right
+shoulder left
+tibia and fibula right
+tibia and fibula left
+tibia and fibula bilateral
+toe series left
+toe series right
+wrist bilateral
+wrist right
+wrist left
+
+Ultrasound
+
+US abdomen
+US pelvis
+US renal
+US lower extremity right
+US lower extremity left
+US lower extremity bilateral
+US thyroid
+
+RF
+
+esophagram
+hysterosalpingogram
+
+Mammogram
+
+mammogram benign
+mammogram right additional
+mammogram left additional 
+mammogram bilateral additional

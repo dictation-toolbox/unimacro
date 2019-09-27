@@ -1,0 +1,67 @@
+NatLink
+	(c) Copyright 1997-1999 by Joel Gould.
+		Portions (c) Copyright 1997-1999 by Dragon Systems, Inc. All Rights Reserved.
+	Permission to use, copy, modify and distribute this software (except for the files noted below) 
+	and documentation for any purpose and without fee is hereby granted, provided that this copyright 
+	notice appear in all copies and that both the copyright notice and this permission notice appear 
+	in supporting documentation, and that the name Joel Gould not be used in advertising or publicity 
+	pertaining to distribution of the software without specific, written permission.
+	
+	The following files are NOT covered by the previous previous paragraph: NatlinkSource\speech.h and 
+	NatlinkSource\dspeech.h. These files may not be redistributed although they can be freely downloaded 
+	from http://www.synapseadaptive.com/joel/PythonMacroSystem.html and used on one machine.
+	
+	Joel Gould disclaim all warranties with regard to this software, including all implied warranties of 
+	merchantability and fitness, in no event shall Joel Gould be liable for any special, indirect or consequential 
+	damages or any damages whatsoever resulting from the loss of use, data or profits whether in an action of contract, 
+	negligence or tortious action, arising out of connection with the use or performance of this software.
+	Possession of this software does NOT grant the possessor any license to Dragon NaturallySpeaking or any 
+	other Dragon Systems product, except where license to Dragon NaturallySpeaking or any other Dragon Systems 
+	products is purchased or otherwise obtained separately.
+	This copyright only applies to NatLink, including source and object code and not to Dragon NaturallySpeaking 
+	or any other Dragon Systems product.
+	Software on this web site is not available from Dragon Systems, nor is Dragon Systems formally associated with this software in any way.
+
+-----------------------------------
+
+
+Configurenatlinkunimacrovocola:
+	Copyright (c) 2008 by Quintijn Hoogenboom. It may be redistributed in any way as long as this copyright notice remains.
+
+-----------------------------------
+
+Unimacro (c)  2002-2008 Quintijn Hoogenboom, Ben Staniford, Bart Jan van Os
+	
+		"unimacro" is free software; you can redistribute it and/or modify
+		it under the terms of the GNU General Public License, see:
+		http://www.gnu.org/licenses/gpl.txt
+
+		"unimacro" is distributed in the hope that it will be useful, but
+		WITHOUT ANY WARRANTY; See the GNU General Public License details.
+
+"unimacro" makes use of another SourceForge project "natlink",
+which has the copyright notice shown above.
+
+-----------------------------------
+
+windll.py/calldll.pyd
+Copyright 1996-2000 by Sam Rushing
+                        All Rights Reserved
+Permission to use, copy, modify, and distribute this software and
+its documentation for any purpose and without fee is hereby
+granted, provided that the above copyright notice appear in all
+copies and that both that copyright notice and this permission
+notice appear in supporting documentation, and that the name of Sam
+Rushing not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.
+
+SAM RUSHING DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
+NO EVENT SHALL SAM RUSHING BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+	
+---------------------------------------

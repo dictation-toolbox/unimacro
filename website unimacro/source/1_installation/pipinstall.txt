@@ -1,0 +1,26 @@
+Installing wxPython via pip:
+
+   (pip is the easiest way to install python modules)
+
+   (open a command prompt in admin mode, Start menu, type cmd, right click on cmd.exe and choose Run as administrator;
+
+   (first go to the Scripts directory of python2.7:
+
+C:\WINDOWS\system32>cd \python27\Scripts
+
+   (then get the version of pip, which should be python 2.7)
+C:\Python27\Scripts>pip --version
+pip 18.1 from c:\python27\lib\site-packages\pip (python 2.7)
+
+   (then install or upgrade wxPython)
+   (if it is the first time install, leave away --upgrade)
+
+C:\Python27\Scripts>pip install --upgrade wxPython
+Requirement already up-to-date: wxPython in c:\python27\lib\site-packages (4.0.3)
+Requirement already satisfied, skipping upgrade: PyPubSub in c:\python27\lib\site-packages (from wxPython) (4.0.0)
+Requirement already satisfied, skipping upgrade: six in c:\python27\lib\site-packages (from wxPython) (1.11.0)
+Requirement already satisfied, skipping upgrade: typing in c:\python27\lib\site-packages (from PyPubSub->wxPython) (3.6.6)
+
+  (this listing shows my wxPython is uptodate)
+
+C:\Python27\Scripts>

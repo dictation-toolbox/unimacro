@@ -1,0 +1,174 @@
+Numbers and spoken forms
+
+With the module *spokenforms.py* grammar lists of numbers can be converted to a list of spoken forms. These lists are used in the grammars. The configuring of the spoken forms lists is done with link(/features/inifiles.html, *ini files*), see this page for a description of the most important sections.
+
+The central class in this module is the class *SpokenForms*, which is instantiated automatically in all IniGrammar and DocstringGrammar grammars. The instance variable is then *self.spokenforms*.
+
+ Definition time
+
+When a grammar is initialized, lists of numbers, see below, are automatically converted into spoken forms.
+
+This is done either 
+-automatically, functionality in *natlinkutilsbj.py*, see function *fillGrammarLists* or
+-in the *initialize* function of the grammar class. Call like: 
+
+:CODE:
+    self.taskCounts = range(1, self.maxTaskNumber+1)
+    self.setNumbersList('taskcount', self.taskCounts)
+::
+
+where 'taskcount' is the name of the list in the grammar definition, and self.taskCounts the list of numbers that should be recognized.
+-note: in this second case you need to define lists that are not caught automatically in the automatic procedure, like:
+:CODE:
+    iniIgnoreGrammarLists = ['windowcount', 'iconcount', 'taskcount']
+::
+
+ Recognition time
+
+At recognition time the spoken forms can be converted back into numbers.
+
+:CODE:
+    countBack = self.getNumberFromSpoken(countOrApp, self.taskCounts) # returns a string or None
+::
+-Here countOrApp is the word that was recognized, for example '3'. 
+-The second parameter is optional. If you leave it away, among all known spoken forms will be searched.
+
+
+   Function and Class of the module spokenforms.py
+ 
+ Class
+-SpokenForms. As pointed out above this class is automatically called in all *IniGrammar* and *DocstringGrammar* grammars.
+
+ Functions
+
+ function getNumberList(specification)
+
+If the specification meets one of the global variables in the spokenforms module this list is returned, currently this is only:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:variable
+:COL:contents:
+:ROW:number1to99stripped
+:COL:&#091;1, 2, ..., 19 , 20, 30, 40, ..., 90&#93;
+::
+
+*Other specifications* must start with *n* or *number* and separate two numbers by a *-* or by *to*.
+
+Lists with larger values return only multiples of 10. Do not go beyond *100* with this trick (yet)
+
+Examples:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:specification
+:COL:returns:
+:ROW:n1-9
+:COL:&#091;1, 2, 3, ..., 9&#93;
+:ROW:number1-99
+:COL:&#091;1, 2, 3, ..., 99&#93;
+:ROW:number10to90
+:COL:&#091;10, 20, 30, ..., 90&#093;
+:ROW:n0to90
+:COL:&#091;0, 1, 2, 3, ..., 90&#093;
+
+::
+
+   class SpokenForms:
+   
+This class is tested as good as possible in *unimacro_test/unittestSpokenForms.py*. See there also for examples.
+ 
+Each instances takes a language as variable, like *enx* for English and *nld* for Dutch, called *xxx* below.
+
+A .ini file called *xxx_spokenforms.ini* is expected (if not present, taken from one of the possible sample directory's).
+
+
+Internally at first call (first instance) the dictionary's *n2s* and *s2n* are filled. Hopefully all instances have the same language, otherwise the system goes dada.
+
+ getMixedList(List)
+ 
+Input is a list of numbers (also strings representing number may be given)
+Output is a list of the spoken forms. If the spoken form is not found in n2s (from numbers.ini) the string representation of the number is taken (also the case when an empty numbers.ini file is used).
+
+ getNumberFromSpoken(word, originalList=None, asStr=None)
+In a recognition the words of the recognition can be converted back into the origating number ('two' into 2).
+
+When you pass the *originalList*, the result is checked with this list as well. Not needed in most cases.
+
+When you pass *asStr=1*, a string ('2') is returned, otherwise a int (like 2) is returned.
+
+ getNumbersFromSpoken(words, originalList=None, asStr=None)
+
+If the *words* is a list, a list of number recognitions is returned.
+Example: input is the recognition &#091;'example', 'one', 'and', 'thirteen'&#093;, then this function will return &#091;1, 13&#093;
+
+  Use in a grammar nearly automatic (example IniGrammar grammar):
+(See also grammars _tasks.py, _lines.py)
+
+ Definition
+Define the number lists as {n1-20} etc., example:
+
+:CODE:
+<wordspec> = word | {n2-20} words;
+::
+
+ At recognition time
+In the callback function retrieve the number (or numbers) with above functions, which however can be called through wrappers in the IniGrammar class:
+
+:CODE: 
+    def gotResults_wordspec(self,words,fullResults):
+        print "wordspec, got: ", words
+        countList = self.getNumbersFromSpoken(words)
+        if countList:
+            count = countList[0]
+        else:
+            count = 1  # no count words found in recognition
+        print 'count: %s'% count
+::
+
+alternatively you can code:
+
+:CODE: 
+    def gotResults_wordspec(self,words,fullResults):
+        print "wordspec, got: ", words
+        count = self.getNumberFromSpoken(words[0]) or 1
+        print 'count: %s'% count
+::
+
+
+  Use in a grammar, more specific :
+(See also grammars _tasks.py, this example is coded as a DocstringGrammar rule)
+ 
+:CODE:
+    def rule_taskswitch(self, words):
+        """#commands for switching tasks:    
+        (task)({taskcount}|{application}|Back)
+        """
+        #switch to a task by number, application or Back
+        count = words[1]
+        countBack = self.getNumberFromSpoken(count, self.taskCounts) # returns a string or None
+        
+        if countBack:
+            pass # a number is found
+        else:
+            pass # proceed with count, which can be one of the applications defined else or "Back"
+::
+
+At the top of the grammar the following line is inserted, which means the definition and activation of the mentioned lists is done in the grammar module itself:
+:CODE:
+    iniIgnoreGrammarLists = ['windowcount', 'iconcount', 'taskcount']
+::
+
+In the initialize function you define the lists yourself (in the function setNumbersList the connection with the numbers module is established)
+
+:CODE:
+    def initialize(self):
+        self.load(self.gramSpec)
+        self.switchOnOrOff() 
+        self.maxTaskNumber = 20
+        self.taskCounts = range(1, self.maxTaskNumber+1) 
+        self.setNumbersList('taskcount', self.taskCounts)
+::
+
+
+ Large numbers
+These are handled in special grammar rules, see link(/grammars/globalgrammars/number/index.html, _number.py)
+ 

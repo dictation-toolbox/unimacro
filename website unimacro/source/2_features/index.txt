@@ -1,0 +1,20 @@
+What can be done with Unimacro grammars
+
+With Unimacro grammars lots of things can be done without extensive programming yourself.  Many things can/have to be tuned through link("inifiles.html", "*configuration files*"), here called *inifiles*.
+
+ Some of the other features:
+
+-Use the power of link(www.autohotkey.com, *AutoHotkey*) for actions that are difficult to do within Unimacro
+-Going to and do actions with link(/grammars/globalgrammars/lines/index.html, *line numbers*) in IDE programs and for example Excel. For some applications you can choose to jump to a *line number module hundred*.
+-Putting all sorts of link(/grammars/globalgrammars/brackets/index.html, *brackets*) around selection or dictated text (nice start example too!)
+-link(numbers/index.html, *Numbers lists*) as spoken forms
+-Calling the link("/features/actions/shorthandcommands.html", "*Windows key*")
+-Printing (really pasting) link("/features/actions/unicodecharacters.html", *unicode characters*) like Greek alpha to your sreen
+-Logging all your link("/grammars/globalgrammars/oops/index.html", *utterances*)
+-Control the link(/grammars/control/index.html, *state of each grammar*) 
+-Configure link(/grammars/globalgrammars/lines/index.html, *actions*) (eg in grammar lines) and 
+link(/grammars/globalgrammars/folders/index.html, *lists*)  (eg in grammar folders)
+-link("/grammars/globalgrammars/repeat/searching.html", *Searching*) (to be developed further) and example of link(/features/unimacroandvocola/metaactions.html, *highlight*), implemented in Vocola.
+-link("translations/index.html", *Translate grammars*) to other language versions of NaturallySpeaking, or insert synonyms (currently Dutch and English are already available)
+-link("/features/grammarclasses/grammarx.html", *Displaying  messages*) in the NatSpeak recognition window (rewritten)
+-Present information about link("/grammars/globalgrammars/general/index.html", "*current user, active window and state of Unimacro, NatLink and Dragon*")

@@ -1,0 +1,144 @@
+Changes in natlinkutils.py
+
+
+ January, 2014:  a change with the python statement *import*
+ 
+ 
+The following statement is changed, which can cause problems  in NatLink grammar files:
+
+:CODE:
+from natlink import *
+::
+
+has been changed to:
+:CODE:
+import natlink
+::
+
+Therefore variables, functions or exceptions from natlink (the natlink.pyd file) could be (often were) called in a confusing way:
+
+:CODE:
+## previous:
+import natlinkutils
+# and use functions or exceptions from natlink as
+# if they were taken from natlinkutils:
+    natlinkutils.recognitionMimic(....)
+    try:
+        ...
+    except natlinkutils.BadWindow:
+        ...
+::
+
+or even names from natlink could be called unqualified, residing in the global namespace:
+
+:CODE:
+## previous:
+from natlinkutils import *
+
+# and use functions or exceptions from natlink as
+# if they were in the global namespace
+    recognitionMimic(....)
+    try:
+        ...
+    except BadWindow:
+        ...
+::
+
+ The preferred way to call these names:
+ 
+As the use of bold(from ... import *) is now considered bad programming practice, we advise the following way:
+
+:CODE:
+import natlinkutils
+import natlink
+    natlink.recognitionMimic(....)
+    try:
+        ...
+    except natlink.BadWindow:
+        ...
+::
+ 
+ Earlier changes:
+ 
+Only a few minor changes, as addition to Scott Weinstein's installation are made.
+
+-"moddle" has been changed to "middle"
+-in the function *activateSet* a *&#091;:&#93;* is added, in order to make copy of the list of activeRules.
+
+This file should come in the core folder of the NatLink system.
+
+ Change January 2012 (Quintijn)
+-at callback time now also *self.wordsByRule* is provided. This dictionary is identical to the output of the utility function *convertResults* (in natlinkutils).
+
+ Example (also see unittestNatlink.py, around line 2530):
+ 
+Consider the grammar (the list *{furniture}* containing "table" and "chair".
+
+:CODE:
+<run> exported = test [<optional>+] {colors}+ <extra>;
+                <optional>  = very | small | big;
+                <extra> = {furniture};
+::
+
+The recognition *test very big blue chair* will go through the rules:
+
+:TABLE:
+:HEADING:rule
+:COL:words
+:COL:prevRule
+:COL:nextRule
+:COL:prevWords
+:COL:nextWords
+:ROW:run
+:COL:&#091;test]
+:COL:None
+:COL:optional
+:COL:&#091;]
+:COL:&#091;"very", "big"]
+
+:ROW:optional
+:COL:&#091;"very", "big"]
+:COL:run
+:COL:run
+:COL:&#091;"test"]
+:COL:&#091;"blue"]
+
+:ROW:run
+:COL:&#091;"blue"]
+:COL:optional
+:COL:extra
+:COL:&#091;"very", "big"]
+:COL:&#091;"chair"]
+
+:ROW:extra
+:COL:&#091;"chair"]
+:COL:run
+:COL:None
+:COL:&#091;"blue"]
+:COL:&#091;]
+::
+
+ The additional helper variables are:
+ 
+:TABLE:
+:HEADING:variable
+:COL:contents
+:ROW:self.fullResults
+:COL:&#091;('test', 'run'), ('very', 'optional'), ('big', 'optional'), ('blue', 'run'), ('chair', 'extra')]
+:ROW:self.seqsAndRules
+:COL:&#091;(&#091;'test'], 'run'), (&#091;'very', 'big'], 'optional'), (&#091;'blue'], 'run'), (&#091;'chair'], 'extra')]
+:ROW:self.wordsByRule
+:COL:{'optional': &#091;'very', 'big'], 'run': &#091;'test', 'blue'], 'extra': &#091;'chair']}
+::
+
+ Changes March 2010 (Quintijn)
+-added *deactivateSet()* function in GrammarBase
+-added *exceptlist* optional variable to *activateAll* method of GrammarBase
+-added *callRuleResultsFunctions* in resultsCallback, so the calling of
+the rule result functions can be overloaded (for DocstringGrammar)
+-through this function the instance variables _self.prevRule_, _self.prevWords_, _self.nextRule_ and _self.nextWords_  are maintained, to facilitate looking forward and looking back one step in a recognition.
+-Preventing the detailed gotResults functions to execute:
+In a rare case it was needed to prevent the rule functions to execute. This is the case if *self.doOnlyGotResultsObject* is set to 1 or True. Only the gotResultsObject function is called in this case.
+
+ Subclasses
+For the more practical subclasses of GrammarBase see the link(/features/grammarclasses/index.html, Grammar classes) section.

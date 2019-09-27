@@ -1,0 +1,53 @@
+The first grammar subclass: grammarX
+
+This is, for Unimacro, the base class after Joel's GrammarBase.  
+
+-It registers and unregisters each grammar.  It also registers exclusive grammars.  
+-The on/off state of a grammar can be controlled.
+-Messages can be displayed in the recognition window.
+
+ DisplayMessage and exclusive grammars
+
+This mechanism makes it possible to send diagnostic messages into the recognition box.  If messages are too long, or contain specific characters, the message is sent to a NatSpeak *MsgBoxConfirm dialog* window instead.
+
+If a grammar is exclusive (more grammars are also possible now) and a recognition is rejected (like *&lt;???&gt;*  in non-exclusive mode) also a diagnostic message *&lt;grammarname: ???&gt;* is displayed.  If something should be displayed from a gotBegin function (where you do not have recognitionMimic), the message is pended, and displayed later.
+
+In order to let this work the grammar *_control* automatically follows the exclusive state of another grammar.  In the file *_control.py* there is also a *messageDictGrammar*, a dictation grammar that is only switched on at the moment of displaying a message.  
+
+The connection with *grammarX* goes through the global functions in natlinkutilsbj: RegisterMessageObject, UnRegisterMessageObject, RegisterControlObject, UnRegisterControlObject.
+
+See also in the grammar link("/grammars/control/index.html", "*_control*")
+
+ Instance variables
+The following instance variables are set:
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: variable
+:COL: explanation
+
+:ROW:self.language 
+:COL: 'enx', 'nld', ... in order to make language dependent things possible.
+
+:ROW:
+self.onOrOff
+:COL:the wanted state of a grammar0 == off state, 1 == on state.  On (1) at start (refined in IniGrammar)
+
+("exclusive" can also be a value, experimental, QH)
+
+:ROW:self.onOrOffState
+:COL: the actual state of a grammar
+
+:ROW:self.version
+:COL:the NatSpeak version: for example 7 if found in nssystem.ini. Older versions, if not found in this file assume to be 5. 
+
+
+:ROW: self.exclusive
+:COL: the exclusive state (1) or not (0)
+
+:ROW:self.inGotBegin
+:COL:(obsolete?) Signals if you are in gotBegin or not.
+
+::
+
+
+
+

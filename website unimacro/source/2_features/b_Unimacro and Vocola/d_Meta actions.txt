@@ -1,0 +1,121 @@
+Unimacro meta actions
+
+These *meta actions* are most useful in global command files. A meta action like *&lt;&lt;filesaveas&gt;&gt;* can be defined in one (global) command. The action can differ for different programs/Windows. These are resolved at runtime, when a command has been recognised. Configuration of these meta actions are done in a user configurable ini file: *actions.ini*. 
+
+Note this file is in the Unimacro release. Please consult the link(/installation/inifilestrategy.html, page on inifile strategy) if you make changes to the file *actions.ini*.
+
+ Calling meta actions in Vocola User Files:
+The meta actions should be called like *Unimacro(&lt;&lt;filesaveas&gt;&gt;)*.  As they have no spaces inside, quoting is not needed.
+
+ Defining/changing the meta actions
+ 
+You can use meta actions that are already there, but you can also invent your own. Just open the file *actions.ini* ( by calling the Unimacro command 
+*Edit actions*. 
+
+Type in the *&#091;default&#093;* section the *wantedname = default action*.
+
+For specific applications that behave different, you can specify in the section of that application again *wantedname* = *specifiec action*.
+
+For more information see link(/features/actions/metaactions.html, page on meta actions in Unimacro).
+
+ Which application?
+
+You can get the name of the foreground program with the command *give window info* of the grammar link(/grammars/globalgrammars/general/index.html, _general).
+
+:xx:
+ Example highlight text
+
+A local Vocola command could be, for some application:
+:CODE:
+highlight <_anything> = {ctrl+f} $1 {enter};
+::
+
+The keystrokes to start the search and to finish the search can be different in different applications. When you make a global Vocola command:
+
+:CODE:
+highlight <_anything> = Unimacro(<<startsearch>>) $1 Unimacro(<<searchgo>>);
+::
+
+You can then rely on default actions for *startsearch* and *searchgo*, or overrule them in *actions.ini*:
+
+ 
+:CODE:
+[default]
+startsearch = {ctrl+f}
+searchgo = {enter}
+
+[emacs]
+startsearch = {ctrl+s}
+
+[excel]
+searchgo = {enter}{esc}
+
+[notepad]
+searchgo = {enter}; {esc}
+
+[winword]
+searchgo = {enter}{esc}
+
+
+[wordpad]
+searchgo = {enter}{esc}
+
+[outlook]
+startsearch = {f4}
+searchgo = {enter}{esc}
+::
+
+:en:
+
+ Example filesaveas (in the file actions.ini):
+ 
+:CODE:
+[default]
+filesaveas = {f12}
+
+[emacs]
+filesaveas = {ctrl+x}{ctrl+w}
+
+[pythonwin]
+filesaveas = {alt+f}a
+::
+
+ Example save close (window|document):
+ 
+It is possible to use Vocola variables inside a Unimacro meta action. Defined are the meta actions &lt;filesave&gt;,  &lt;documentclose&gt; and &lt;windowclose&gt;.  A combined command for *save close document* and *save close window* is now:
+
+:CODE:
+save close (document | window) = Unimacro(<<filesave>>) W() Unimacro(<<$1close>>);
+::
+
+or ( making use of a complete Unimacro actions string):
+
+:CODE:
+save close (document | window) = Unimacro("<<filesave>>; W; <<$1close>>");
+::
+
+The file *actions.ini* Contains the following lines:
+
+(for most applications the keys to send for these meta actions are *default*, but there are some exceptions. In this case for *emacs*, *psp* (PaintShopPro) and *cmd* (the DOS command window).
+
+:CODE:
+[default]
+documentclose = {ctrl+f4}
+filesave = {ctrl+s}
+windowclose = {alt+f4}
+
+
+[emacs]
+documentclose = {ctrl+x}k; {enter}
+filesave = {ctrl+x}{ctrl+s}
+windowclose = {ctrl+x}{ctrl+c}
+
+[psp]
+filesave = SSK {ctrl+s}
+
+[cmd]
+windowclose = {alt+space}c
+
+::
+
+

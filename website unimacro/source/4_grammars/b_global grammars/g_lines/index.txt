@@ -1,0 +1,141 @@
+Going to and doing actions with lines
+
+With the grammar *lines* you can easily jump to lines, numbered or relative to the current line, and perform additional actions.
+
+-Lines can be selected, with or without line number
+-Lines (numbered or relative) can have an additional action, like *delete*
+-Lines can be moved or copied up or down or to another numbered line
+-Selected lines can have the same actions by the keyword *THAT*
+-New (december 2013): *jump to line numbers modulo hundred*
+-Add some paragraph (para) commands (March 2016)
+
+This grammar relies heavily on 
+link(/features/actions/index.html, *actions*), 
+because the keystrokes that perform the different actions are very different across different applications.  Implementations are now made or tried for Win32Pad, Excel, Emacs, Pythonwin, Komodo and UltraEdit.
+
+ The grammar (basic, without translations or synonyms):
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:line {number}
+:COL:Jump to the line. Relies on the grammar *number*, which is tested in English and Dutch
+
+:ROW:line {number} {action}
+:COL:Do an additional action, like *select*, *cut*, *copy*, *paste*, *paste over*, *duplicate* (see table below)
+
+:ROW:line {number} through {number} [{action}]
+:COL:select or do action on more (numbered) lines (you can change "through" to "to" with *edit lines* if you wish)'],
+:ROW:line {number} plus {count} [{action}]
+:COL:select or do action on more lines (first numbered)
+
+:ROW:{count} lines {action}
+:COL:Do action for more lines
+
+:ROW:next|previous line [{action}]
+:COL:goto or do action for next or previous line, so after or before the current line
+
+:ROW:next|previous {1-20} lines {action}
+:COL:Do action for more lines, after or before the current line
+
+:ROW:{line definition} copy|move up|down {count}
+:COL:copy or move the lines up or down
+
+:ROW:{line definition} copy|move to {number}
+:COL:copy or move the lines to the specified line number
+
+:ROW:THAT {action}
+:COL:instead of {line definition} also the keyword *THAT* can be taken
+::
+
+
+ Para actions, basically for Word:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:{count} paras {action}
+:COL:Do action for more paragraphs
+
+:ROW:next|previous  para {action}
+:COL:Goto or do action for next of previous para, so after or before the current para
+
+:ROW:next|previous {1-20} paras {action}
+:COL:Do action for more paras, after or before the current para
+
+:ROW:THAT {action}
+:COL:instead of {para definition} also the keyword *THAT* can be taken
+::
+
+
+ Actions
+
+Here is part of the list *simpleactions*, corresponding to *{action}* in above table:
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:spoken form
+:COL:action
+:COL:comments
+ 
+:ROW:copy
+:COL:&lt;&lt;copy&gt;&gt;
+:COL: the copy action is nearly always &#123;ctrl+c&#125;
+
+:ROW:copy to DragonPad
+:COL:HW copy that to DragonPad
+:COL: actions do not have to be keystrokes
+ 
+:ROW:cut
+:COL:&lt;&lt;cut&gt;&gt;
+:COL:
+
+:ROW:delete
+:COL:&lt;&lt;delete&gt;&gt;
+:COL:
+
+:ROW:duplicate
+:COL:&lt;&lt;duplicate&gt;&gt;
+:COL:
+
+:ROW:edit
+:COL:HW edit that
+:COL: link this grammar to the grammar *edit*
+
+:ROW:emacs
+:COL:HW edit that python code, 'link to the grammar *edit*, see more information about see 
+link(/features/cooperationwithvoicecoder/index.html,*connection with voicecoder *), including a little demo movie. A bit obsolete end 2013.
+:ROW:end
+:COL:&lt;&lt;endafterselection&gt;&gt;
+:COL: leave the cursor at the end of line
+
+:ROW:paste
+:COL:&lt;&lt;homeafterselection&gt;&gt;&lt;&lt;paste&gt;&gt;
+:COL: paste, but prevent overwriting the selection here
+
+:ROW:paste over
+:COL:&lt;&lt;paste&gt;&gt;
+:COL: paste over the selection
+
+:ROW:select
+:COL:
+:COL:if you go to one line, this action selects the line. When you want more lines, this action does nothing extra.
+
+:ROW:(un)comment
+:COL:{alt+3} and {alt+4}
+:COL: only for Pythonwin
+::
+
+ Line numbers modulo hundred
+ 
+Challenged by Mark Lillibridge, who implemented an option like this in Vocola and Emacs, a start is made to do this from Unimacro. This grammar must then have knowledge about the state of the application. This has been done for a limited number of applications: *win32pad*, *ultraedit* and *excel*. See:
+
+-link(/grammars/globalgrammars/lines/implementationdetails.html, implementation details) for this grammar and 
+-link(/features/actions/actionclassesforapplications.html, programming details) about the action classes modules.
+
+ Introspection
+
+With the commands *show lines* and *edit lines* you can inspect the grammar and change things.
+

@@ -1,0 +1,16 @@
+Configuration of latex grammar
+
+-Say _edit latex_ to edit the properties of this grammar. 
+
+ General options
+ 
+In the section &#091;general] you can set the following option:
+
+:TABLE firstcoldifferent=1, border=1:
+:ROW:initial on = 1
+:COL: meaning this grammar is switched on when NatSpeak (and NatLink including Unimacro) starts. Th-
+
+::
+
+ Contents
+In the other sections you can define your specialized command sets.

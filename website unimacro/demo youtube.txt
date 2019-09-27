@@ -1,0 +1,7 @@
+This was a demonstration of the Unimacro grammar chrome_browsing,
+
+Using the Click by Voice extension written by Mark Lillibridge.
+
+Also see http://qh.antenna.nl/unimacro/grammars/specificgrammars/chromebrowsing/index.html
+
+Quintijn Hoogenboom, July 21, 2017

@@ -1,0 +1,18 @@
+The python files in this folder are grammar files, but not active at this moment.
+
+Sample grammars (like _first_sample_docstring.py and natspeak_sample_docstring.py are also in this directory.
+
+You can make a grammar active by copying or moving the python file into the folder above: the unimacro folder.
+
+After toggling the microphone the grammar should be active. Sometimes this will not work. Restart Dragon in that case.
+
+Provided the unimacro folder is activated as userDirectory of natlink.
+
+Deactivating goes the other way around.
+
+Note for unimacro grammar files it is also possible to activate/deactivate my voice grammars, 
+see the explanation on the grammar _control.
+
+
+
+

@@ -1,0 +1,7 @@
+Keystrokes grammar 
+
+In the grammar link("/grammars/globalgrammars/keystrokes/index.html", "*keystrokes*") special attention is given to *context menu*.  In order to translate these words, a dummy rule has been made which contains the words *context menu*.  This rule is never recognised, but you can translate it.
+
+The translation (eg *snel menu* in Dutch) must be identical to the entry in the section *&#091;norepkey&#93;* which defines this action. Use the command *edit keystrokes* (Dutch *toon toetsen*) for editing this.
+
+When all goes well you can call your translation of *here context menu ...*. For *...* you can dictate your own keystrokes, this grammar is designed for *continuous keystrokes*.

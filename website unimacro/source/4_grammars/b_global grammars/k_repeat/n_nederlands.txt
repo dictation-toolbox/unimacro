@@ -1,0 +1,119 @@
+Herhalende beweging, met de cursor, muis of zoeken
+
+-Beweeg de cursor, in alle richtingen, een aantal stapjes of met variabele snelheid. Ook selecteren!
+-Beweeg de muis, dito
+-Herhaal de laatste zoekopdracht, vooruit of achteruit
+-Herhaal het laatste willekeurige commando (een gevoeliger actie dan de andere commands)
+
+Deze grammatica is gebaseerd op  _mouse.py van Joel Gould en  
+de versie van Jonathan Epstein van  _generic_movement.py.
+
+ De naam van deze grammatica is _herhaal_, dus zoek (na het commando _Toon alle grammaticaas_) naar deze naam, of probeer het commando _Toon herhaal_.
+
+ Beweeg de cursor
+
+Start het bewegen met:
+:CODE:
+BEWEEG | BLOK | SCROLL (<speed>|<direction>|<count>)+
+::
+
+Meer van deze opdrachten kunnen in een commando worden gegeven (het + teken na de haakjes)
+
+Als de cursor beweegt, zit je in de zogenaamde exclusieve modus: alleen commando's, die hieronder beschreven staan, worden herkend. Een icoon wordt getoond in de system tray, en de beweging kan worden gestopt met
+
+    stop [bewegen|blok] | OK | okee
+    
+De beweging kan verder worden beïnvloed door:
+
+    een andere snelheid
+    versnelling: sneller | langzamer | [heel] veel (sneller| langzamer)
+    een andere richting
+    een ander aantal
+    de richting omdraaien: terug | ga terug
+    
+
+En de beweging kan worden onderbroken en hervat met:
+
+    wacht
+    ga verder | ga door | verder
+    een andere richting, snelheid, aantal of de richting omdraaien
+
+Als je beweegt, kan in de selectiemodus worden overgegaan met het commando:
+
+    selecteer | blok (alweer optioneel gevolgd door andere commando's)
+    
+Probeer ook maar eens wat er gebeurt als je start met _SCROLL_ in plaats van _BEWEEG_.
+
+Ten slotte kun je tijdens de beweging ook nog springen:
+
+     begin [van] regel | einde [van] regel | begin [van] document | einde [van] document
+
+ Muizen:
+
+Deze commando's werken met hetzelfde principe als het bewegen van de cursor. Er moet echter nog meer uitgewerkt worden voor praktische doeleinden. Start met:
+ 
+:CODE:
+MUIS (BEWEEG | SLEEP) [<speed> | <direction> | <count>]+
+::
+met
+
+:CODE:
+speed = zelfde opties als bij het bewegen
+direction = omhoog | omlaag | link | rechts 
+            (zouden nog moet worden uitgebreid met noord, noordwest enz.)
+count = zelfde lijst als hierboven.
+::
+als de muis beweegt/sleept men weer in de zogenaamde exclusieve modus. Zie icoon in de system tray. De muis kan gestopt worden met:
+
+:CODE:
+stop [muizen|slepen] | OK
+klik
+dubbel klik  (lijkt op dit moment niet te werken)
+::
+
+Verder kan het gedrag gecontroleerd worden zoals bij het bewegen.
+    
+ Zoeken:   
+    
+Deze commando's werken pas nadat een eerste zoekopdracht is gedaan. Deze zoekopdracht wordt beschreven in de grammatica _algemeen_ (__general_), maar hieronder volgt de grammatica, zowel voor het starten van het zoeken als voor het "discreet" doorgaan.
+
+:TABLE firstcoldifferent=1, border=1:
+
+:ROW:commando
+:COL:opmerking
+
+:ROW:_zoek_ ( _naar_ | _voor_ | _na_ ) &lt;dgnletters}
+:COL: selecteer de tekst die gezocht wordt, of ga ervoor of erna staan met de cursor 
+
+:ROW:_zoek_ ( _insert_ | _extend_ ) &lt;dgnletters}
+:COL:insert more letters before or after the previous zoek text
+
+:ROW:_zoek nieuw_", "Opent dus zoek dialoog, onthoudt vervolgens NIET waar naar gezocht wordt
+
+:ROW:_zoek _ &#091; {count} &#091; _keer_ &#93;&#93;", "de count (aantal) is optioneel, en _keer_ ook.
+
+:ROW:_zoek terug_ &#091; {count} &#091; _keer_ &#93;&#93;", "In de meeste programma's werkt dit niet, en wordt vanaf het begin van het document gezocht.
+
+:ROW:_zoek ga terug_", "(experimenteel, werkt momenteel in Excel. Ga terug naar de plek waar het zoeken begon.)"]]
+::
+
+met
+
+:TABLE firstcoldifferent=1, border=1:
+
+:ROW:&lt;dgnletters}:
+:COL:een combination van letters/karakters (alfa, haakje-openen, komma enz.)
+::
+
+ De grammatica in __repeat_, om het zoeken "continu" te vervolgen:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:commando
+:COL:comment
+
+:ROW:_Zoek continu_ &#091; &lt;direction} | &lt;count} | &lt;speed}
+::
+
+
+met (optionele aanwijzingen (vanwege de &#091; en &#93;) als bij de andere commando's. Zie de complete grammatica voor details.
+

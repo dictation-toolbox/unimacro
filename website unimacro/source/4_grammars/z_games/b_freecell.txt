@@ -1,0 +1,64 @@
+Speel freecell met uw stem!
+
+Dit is mogelijk met deze grammatica "freecell.py" binnen het Unimacro/NatLink pakket dat gekoppeld is aan Dragon NaturallySpeaking.
+
+  De basis commando's zijn:
+  
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:zeg:
+:COL:resultaat
+
+:ROW:kaart 1-8
+:COL:verplaatst de muis naar een rij kaarten (dus 1, 2, 3, 4, 5, 6, 7 of 8)
+
+:ROW:naar stapel 1-4
+:COL:verplaats de onderste kaart van de betreffende rij naar een van de 4 stapels rechtsboven
+
+:ROW:naar 1-8
+:COL:verplaats kaarten van de betreffende rij naar een andere rij
+
+:ROW:naar vrij
+:COL:verplaats onderste kaart van de betreffende rij naar een vrije plaats, linksboven
+
+:ROW:1-8 naar stapel 1-4
+:COL:verplaats van rij naar een van de 4 stapels
+
+:ROW:1-8 naar 1-8
+:COL:verplaats van rij naar andere rij
+
+:ROW:1-8 naar vrij
+:COL:verplaats van rij naar vrije cel
+::
+
+
+  Aanvullende commando's:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:zeg:
+:COL:resultaat:
+
+:ROW:toon&nbsp;eerste&nbsp;kaart<br>toon&nbsp;tweede&nbsp;kaart...<br>toon&nbsp;volgende&nbsp;kaart", 'hou de rechtermuisknop ingedrukt op een bepaalde kaart. Doe dit commando na "kaart 1-8"'],
+
+:ROW:pauzes 0-8
+:COL:Na elk deel van een actie wordt even gepauzeerd. Deze pauzes kunnen met deze commando's worden ingesteld, 0=minimaal, 8= maximaal, standaard=2
+
+:ROW:ongedaan maken<br>terug<br>vorige
+:COL:Maakt de laatste actie ongedaan
+::
+
+                
+                
+  De hele grammatica:
+
+    <kaart> exported = kaart {knum};
+    <naar> exported = naar ((stapel {snum})|vrij|{knum});
+    <vrijnaar> exported = vrij {snum} naar ((stapel {snum})|{knum});
+    <numnaar> exported = {knum} naar ((stapel {snum})|vrij|{knum});
+    <wacht> exported = pauzes (0 |{knum});
+    <toon> exported = toon {numcard} kaart;
+    <undo> exported = (ongedaan maken)| terug | vorige;
+                
+  Programmeer opmerkingen:
+
+-de "toon"-commando's zijn niet vlekkeloos. 
+-deze grammatica is vooral een oefening in het bedienen van de muis

@@ -1,0 +1,61 @@
+Show Numbers Plus
+
+
+This grammar is meant to control the link(http://www.ergoarchitect.com/, *program ShowNumbersPlus!*) of Max Roth, Ergodirect.
+
+It is after installation in the DisabledGrammars directory, so if you want to use this grammar, first move it into the Unimacro directory.
+
+ShowNumbersPlus now works with separate tray/taskbar numbers, which remain on the screen.
+
+ The commands
+ 
+Here are the commands, which you can also get by calling *show show numbers plus*.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:(show|hide|dismiss) numbers &#091;continuous]
+:COL:show or hide in the foreground window 
+
+with *continuous* the numbers go on being showed after each utterance, see below
+
+:ROW:(show|hide|dismiss) (tray|taskbar) &#091;numbers]
+:COL:*tray* or *taskbar* are alternative words, *numbers* is optional.
+
+The word *tray* seems to be very convenient in practice.
+
+:ROW:{click} {number} &#091;continue|stop]
+:COL:click on a number (alternatives see below), optionally ask to continue displaying the numbers, or stop the continuous displaying of numbers.
+
+:ROW:(tray|taskbar) {number} &#091;{click}|{action}]
+:COL:click on taskbar item, optionally with some click specification or with an additional command.
+
+::
+
+ click and action
+ 
+These can be specified in the .ini configuration file. Simply say *edit show numbers plus* and make it to your taste.
+
+Defaults:
+
+-click: *click*, *left click* (same), *right click*, *double click*
+-action: *close* and *refresh*, see link(specify actions).
+
+ Continuous
+ 
+This feature makes it possible to continue for example in Windows Explorer views. When the window changes or when the microphone state changes, the continuous mode is switched off. Moreover if the microphone state changes the numbers are switched off.
+
+ Examples: 
+-If you say *tray seven right click* the shortcut menu pops up. If you want to close the window or the whole stack, you can move up one and press enter (eg with the keystrokes grammar, say "up okay").
+-If you say *tray two close* the window at taskbar position 2 pops up and the action for *close* is performed (most often *{alt+f4}*.
+
+
+ Aero Peek stacked taskbar windows
+When you have a stacked taskbar (which Max Roth advises to switch off BTW), when you click on a taskbar item list of alternatives pop-up. This happens especially in Windows 7 with the Aero Peek you'll been on.
+
+When this happens, the numbers are again activated (by the grammar, these are now the normal window numbers), and when you say *click zero*, *click one* etc., special keystrokes are performed to correctly handle your choice. This is because normal clicking doesn't work here, this is a very special window.
+
+These special keystrokes depend on the position of your taskbar, which is extracted from the link(/features/monitorfunctions/index.html, *monitorfunctions*).
+
+

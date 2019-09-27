@@ -1,0 +1,18 @@
+Program specific grammars
+
+The grammars described in this section are specific to one program.  
+
+The python file starts with the name of the application, like *firefox_browsing.py*.
+
+A lot of program specific things can be done outside these grammars:
+
+-Vocola commands (see documentation of Vocola outside this website)
+-adaptations in the grammar link("/grammars/globalgrammars/keystrokes/index.html", "*_keystrokes*"),
+-adaptations of link("/features/actions/index.html", "*actions*").
+
+At this moment specific grammars are only presented for
+-link("chromebrowsing/index.html", "Chrome Browsing") (with Click by Voice),
+-link("firefoxbrowsing/index.html", "Firefox browsing"),
+-link("excel/index.html", "Excel") (work in progress).
+
+

@@ -1,0 +1,61 @@
+ini files
+
+A lot of configuration is done through *configuration files*, here called *ini files*.
+
+A ini file can be edited in many programs e.g. notepad, textpad, win32pad (like notepad, but with line numbers), emacs etc. In many situations there is a Unimacro command with which the appropriate ini file is opened automatically (in program associated with the extension _.ini_).
+
+Inifiles have sections (between square brackets), and each section has key value combinations, separated by "=".  Whitespace around values is ignored (stripped).
+
+A sample:
+
+:CODE:
+[section]
+key = action
+second key = another action
+
+[section two]
+key = action of section two
+::
+
+ 
+  Actions
+
+These are defined in a file *actions.ini*.  A lot of grammars and commands use so-called meta actions, which can have different behaviours in different windows.
+
+See link("actions/index.html", "pages on actions"). The _actions.ini_ file can be opened by the command (from the grammar control) *edit actions*. All the active actions for a program/windowtitle can be shown by the command *show actions*.
+
+  Numbers and other Spoken Forms
+
+Starting with release 4.0 spoken forms for numbers are put in *xxx_spokenforms.ini*. *xxx* being the language code of your speech profile. See link(numbers, Numbers and Spoken Forms).
+
+Samples are (hopefully) to be found in the sample_ini directory of Unimacro. Call *edit spoken forms* for opening this file. Also see link(/features/numbers/index.html, Numbers and Spoken Forms) for more programming instructions and examples.
+
+-Alternative values may be separated by a *,*, *;* or a *|*.
+
+At the moment only some sections are really used, especially for numbers spoken forms:
+-*&#091;numbers]*: keys are numbers, values are the spoken forms.  At least the numbers *0* to *99* should be filled, and also *100*, *1000*. If in doubt, see the English example. Note in some functions only the first alternative will be taken if the lists are getting too long.
+-*&#091;prefixes]*: synonyms for *hundred* and *thousand*. Also a possible synonym for *dot* in file or url extensions.
+
+  Other spoken forms lists
+
+-*&#091;alphabet]*: keys are the letters, values the spoken forms. At startup possible alternatives will be taken, they have to be valid dictation words, for better recognition. Tf in doubt the alternatives with or without capitalization will be checked. If no valid alternatives are found for a spoken form, the spoken form will nevertheless be accepted. Used in eg the grammar _keystrokes.py.
+
+-*&#091;abbrevs]*: possibility to define abbreviations, which will be used when making spoken forms for file names or folder names (*_folders* grammar). Keys are the abbreviations, values are the spoken forms. If capitalized letters are taken, the *.* is added or removed depending on the NatSpeak/Dragon version. (up to NatSpeak 10, the *.* is compulsory, starting with Dragon 11 they are forbidden.)
+
+-*&#091;extensions]*: file extensions, without the *.* (dot). 
+
+-*&#091;punctuationreverse]*: This section is (July 2015) used for getting a list of non character symbols in spoken forms, which are here on the left side of the *=*. So the other way around as all the other lists. Used in the grammar _keystrokes.py.
+
+
+  Configuration of grammars
+ 
+All grammars that derive from the class IniGrammar can use the ini file mechanism.  Parameters can be set and inspected.
+
+
+For example: _edit folders_ gives the inifile for the grammar __folders_. The values can be edited and are automatically read into the grammar.  With _show folders_ information on the lists that are active in the grammar (plus the grammar definition) are showing on your screen (through a temporary .txt file)
+
+
+  Sample ini files
+
+In a folder *sample_ini* default ini files for different tasks (actions.ini, configuration files of grammars) are kept and copied for a user if needed.  See also link("/installation/inifilestrategy.html", "notes in the installation pages").
+

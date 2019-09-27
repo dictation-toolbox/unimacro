@@ -1,0 +1,35 @@
+How to start translations
+
+Note: for Italian the right language code is not present yet.  The language will be called *xxx*.  This is no reason for not going on. 
+
+Note: for Dutch the grammars are translated already. You can correct or alter things by calling the commands *toon alle grammaticaas*, *toon naam_van grammatica* of *bewerk naam_van_grammatica*.
+
+Assume the language you translate to is called *xxx*.
+
+First move away from your Unimacro folder all the grammars that you do not need except for *_control.py* (files that start with "_") .  Start NaturallySpeaking.
+
+-If you are lucky the configuration file (*xxx_inifiles/_control.ini*) opens automatically.  Otherwise open this file manually.
+-Change the name, in the section *&#091;grammar name&#93;*, *name = ...*.
+-Change the different grammar words in the section *&#091;grammar words&#93;*. (After the *=* sign of each word.)
+-Save the file, and do one or two miscellaneous utterances.
+
+Now try to say your translation of the command *Show all grammars*.  The special *All grammars* Windows should show up.  You can also try *Show control* or *Edit control*, of course in your translation.
+
+Check if the grammar rules look correct. 
+
+-In the *All grammars* view the grammar is not shown literally, (but all the grammar words and word lists are given). 
+-In the view you get with *Show grammar_name* you get the grammar exactly as it goes into the NatLink system. 
+-If you say *Edit grammar_name* you (again) get the configuration file (ini file) in which you can alter the translations.
+-If there are duplicate words, try to invent a synonym for one of these (sometimes a dummy one). 
+-Sometimes synonyms  break the grammar, sometimes not.
+-Each time you need one or two utterances before the new grammar is reloaded. If not, exit and restart NaturallySpeaking.  Examine the Messages window.
+-Occasionally this reloading seems to take a long time.  It is not clear why.  
+
+ Other grammars
+
+If this step was okay, you can control the showing and editing of  your grammars.  Now try one by one to place back the other grammar files.  After they are in the Unimacro folder, you have to toggle the microphone.  Each grammar should show up with its ini file.  You can edit the grammar name and the grammar words.  After two utterances you can then ask for showing or editing the grammar and hopefully use the grammar.
+
+Good luck, let me know of your experiences.
+
+
+

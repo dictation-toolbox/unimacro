@@ -1,0 +1,37 @@
+More Number grammar rules in _number extended.py
+
+These grammar rules serve as inspiration and code examples for use of the number grammar rules in more complex situations. See also for example the grammars *_lines.py* and *firefox browsing.py*.
+
+-If you want to use this grammar, please remove *_number simple.py* from the Unimacro directory and copy *_number extended.py* from the DisabledGrammars subdirectory into the Unimacro directory. Toggle the microphone or restart Dragon.
+
+ Name
+This grammar is named *number extended* (in Dutch *getal uitgebreid*).
+
+ More grammar rules:
+ 
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:grammar rule
+:COL:comment
+
+:ROW:(Number &lt;number>)+ 
+:COL:dictate more numbers in one phrase
+
+:ROW:Number &lt;integer> Trough &lt;integer>;
+:COL:dictate a start and end of a range of numbers
+:ROW:Pair &lt;number> And &lt;number>;
+:COL:dictate a numbers pair
+::
+
+ Examples:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:result
+
+:ROW:Number three Number four Number seventy
+:COL:More numbers can be dictated in one utterance, in Excel these will be put in subsequent cells: 3470
+
+:ROW:Pair twenty three point six And thirty point five
+:COL:Other tricks can be invented, like dictating a number pair: (23.6, 30.5)
+::
+

@@ -1,0 +1,52 @@
+Specify actions
+
+When you say *edit show numbers plus* (Dutch *bewerk sjoo numbers plus*), you get the configuration file in which you can specify additional actions. Current example:
+
+:CODE:
+[actions]
+close = <<windowclose>>
+refresh = <<taskrefresh>>
+::
+
+For the  first example you could have chosen:
+
+:CODE:
+close = {alt+f4}
+::
+
+But in some strange windows you need another keystroke combination to close it.
+
+ Unimacro meta actions
+ 
+The link(/features/actions/metaactions.html, Unimacro meta actions) mechanism makes this window specific behavior possible. 
+
+ refresh
+In the example of refresh (refreshing a window), use *&lt;&lt;taskrefresh>>*, all examples are in the actions.ini configuration file. 
+
+Default is:
+
+
+:CODE:
+[default]
+taskrefresh = {f5}
+::
+
+So with the  *{f5}* key you refresh an explorer or internet browser window.
+
+For Outlook this meta action is defined as (thus send/receive your email):
+
+:CODE:
+[outlook]
+taskrefresh = {f9}
+::
+
+For my special case of a *pythonw window* with *Unimacro* in the window title (titles converted to lowercase) I have:
+
+:CODE:
+[pythonw unimacro]
+taskrefresh = {alt+s}{enter}
+::
+
+With this action I rerun my program, which happens to be the most repeated action of this program.
+
+Feel free to experiment with your own applications!

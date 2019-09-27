@@ -1,0 +1,28 @@
+General information on the grammar bases: classes and subclasses.
+
+ Note: this is a more advanced topic, for people who want to delve into the NatLink/Unimacro system!
+
+
+Each [NatLink grammar] is a (python) instance of a (python) class that is a subclass of one of the "[grammar bases]".
+
+Joel Gould provides his "GrammarBase", as superclass for all grammars in the *NatLink* macro subsystem.
+
+In *[Unimacro]*, we provide four other subclasses, that provide increasing functionality.  These three classes are described in the next sections.
+
+-[GrammarX] provides some additional "basic" functionality.
+-[BrowsableGrammar] adds the possibility to browse through all the grammars, comparable with the command browser of NatSpeak version 7.
+-[IniGrammar] adds functionality to use ini files for additional user interaction.
+-[DocstringGrammar] adds possibility to define rules together with the callback functions, improving readability of the grammar files
+
+Most of the actual grammars in Unimacro are subclasses of the IniGrammar class.
+
+ Where can you find them?
+ 
+- the above-mentioned classes of Unimacro (GrammarX, BrowsableGrammar and IniGrammar, DocstringGrammar) are in the file "natlinkutilsbj.py"
+- most of the utility functions are in "natlinkutilsqh.py"
+- the base class GrammarBase is in link(/installation/technicaldetails/natlinkutils.html, *natlinkutils.py*), in the core directory of NatLink
+
+ Summary, the files described in this section are:
+ 
+-natlinkutilsbj.py holds the Unimacro classes
+-natlinkutilsqh.py holds a lot of utility functions

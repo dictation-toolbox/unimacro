@@ -1,0 +1,41 @@
+Remember folders, files and websites.
+
+Folders to be called can be defined in the [folders] section of your _folders.ini configuration file.
+
+But it can also be done via the *remember* action, in combination with the "this folder" or the "sub folder" commands.
+
+Whenever you are in an explorer or file dialog window, you can either:
+-click on a folder and say "this folder remember", or
+-say "sub folder subfoldername remember".
+
+You can also position the mouse above the wanted folder and say "here folder remember"
+
+For the second possibility you need to set the "automatic track folders" to true:
+
+:CODE:
+[general]
+automatic track folders = T
+::
+
+After this command, you get a dialog window, in which you can specify the wanted spoken name.
+
+Click on OK or press enter to confirm ("click OK" regrettably does not work in this dialog).
+
+The folder with your wanted name is put into the [folders] section of your config file.
+
+ Files:
+For files in a directory the same applies, but without the word "sub", and without extension: "file filename remember" or "this file remember" (or "here file remember").
+
+You need to set "automatic track files" and also you can specify the wanted file extensions:
+
+:CODE:
+[general]
+automatic track files = T
+track file extensions = .py; .doc; .xls; .txt; .ini; .jpg; .jpeg; .png; .docx; .xlsx
+::
+
+
+
+
+ Websites:
+And likewise for a website you are visiting: "this website remember".

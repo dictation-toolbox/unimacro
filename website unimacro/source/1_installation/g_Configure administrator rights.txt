@@ -1,0 +1,15 @@
+Configure with Administrator rights
+
+The Configure program must run in "elevated" mode, especially for the first time, when natlink.pyd is registered and some pythonpath variables are set (see below). When you run the config program though the buttons in the start menu (*start_configurenatlink.py* or start_natlinkconfigfunctions.py) you will be asked for starting this elevated mode.
+
+ Elevated mode is especially needed for:
+-The correct python version from the *PYD* subdirectory copied to *natlink.pyd*.
+-*Natlink.pyd* needs to be registered
+-Some settings have to be done in the *HKLM* (HKEY_LOCAL_MACHINE) section of the registry.
+-You might need extra rights to write to the file *nsapps.ini*, which is done the first time you enable NatLink.
+
+ Do NOT install on C:\Program Files
+ 
+Because the *Program Files directory* has often restricted rights for users (when outside "elevated mode"), installing NatLink in the Program Files directory can give problems. For example when Vocola wants to write its python grammar files in the "MacroSystem" subdirectory.
+
+So it seems better to install NatLink (including Vocola 2 and Unimacro) on *C:\NatLink* (or on another drive, like D:\NatLink).

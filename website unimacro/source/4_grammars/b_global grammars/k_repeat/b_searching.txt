@@ -1,0 +1,149 @@
+Searching:
+
+Triggered by a discussion on the voicecoder discussion list I started working on this again.  It is becoming quite a bit of code.  Split apart into several things:
+
+-commands for discrete search (noncontinuous) are defined in the grammar __general_.
+-commands for continuous searching are described in this grammar (__repeat_).
+-the core functions are in the link("/features/grammarclasses/inigrammar/functionsforsearching.html", "_IniGrammar class_")
+-extensive use is made of "link("/features/actions/index.html", "_actions_")
+.
+
+ The grammar in _general:
+
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING:command
+:COL:comment
+
+:ROW:_search_ ( _for_ | _before_ | _after_ ) (&lt;dgnletters&gt | &lt;dgnwords&gt;)
+:COL: select the text you search for, or a leave the cursor before or after the selected text
+
+:ROW:_search_ ( _insert_ | _extend_ ) (&lt;dgnletters&gt; | &lt;dgnwords&gt;)
+:COL:insert more letters before or after the previous search text
+
+:ROW:_search new_
+:COL:this opens the default search box, no knowledge of the search text is maintained
+
+:ROW:_search forward_ &#091; {count} &#091; _times_ &#93;&#93;
+:COL:the count is optional, as is _times_.
+
+:ROW:_search back_ &#091; {count} &#091; _times_ &#93;&#93;
+:COL:in most programs searching back will not work. Search is started from the beginning of the document.
+
+:ROW:_search go back_
+:COL:(experimental, works only in excel at the moment, go back to where you started.)
+::
+
+with
+
+:TABLE firstcoldifferent=1, border=1:
+
+:ROW:&lt;dgnletters&gt;
+:COL:any combination of letters/characters (alpha, open-paren, comma etc.)
+:ROW:&lt;dgnwords&gt;
+:COL:one dictation word (note this is more precise than &lt;dgndictation&gt; which is identical to &lt;_anything&gt; in Vocola)
+::
+
+ The grammar in _repeat:
+
+:TABLE firstcoldifferent=1, border=1:
+
+:ROW:command
+:ROW:_Search continue_ &#091; &lt;direction&gt; | &lt;count&gt; | &lt;speed&gt; &#93;+
+::
+
+
+
+with (optional directives (because of the &#091; and &#93;):
+
+:TABLE firstcoldifferent=1, border=1:
+
+:ROW:&lt;direction&gt;:
+:COL:_forward_ |  _back_ | _up_ | _down_
+:ROW:&lt;speed&gt;:
+:COL:_steady_ | _normal_ | _fast_ | _slow_ | _very fast_ | _very slow_
+:ROW:&lt;count&gt;:
+:COL:a number: 1, 2, ..., 20, 25, 30, 35, 40"]]
+::
+
+
+ And when you are in the continuous mode:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:&lt;direction&gt; or &lt;speed&gt; or &lt;count&gt;:
+:COL:as above
+
+:ROW:_reverse_ &#091; _direction_ &#93;  | &#091; _go_ &#93; _back_
+:COL:search in the other direction, or start from the top (if back search is not supported)
+
+:ROW:&lt;acceleration&gt;:
+:COL:_faster_ | _slower_ | _much faster_ | _much slower_
+
+:ROW:_hold on_ | _hold it_
+:COL:wait, resume with _go on_ | _continue_ or one of the other commands
+
+:ROW:_cancel_
+:COL: quit the continuous search mode and return, if possible, to the spot the search started from
+
+::
+
+
+ 
+
+
+ Actions
+ 
+These two grammars are meant to be used with the same grammar rules (commands) in several windows.  Therefore they make use of actions.  The actions used in the search mechanism are:
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:meta action
+:COL:comment
+
+:ROW:startsearch
+:COL:most often simply put the search box on the screen
+
+:ROW:search go
+:COL:often just _{enter}_
+
+:ROW:searchforward
+:COL:search on in forward (down) direction. 
+
+:ROW:searchback
+:COL:search on in opposite direction. Default empty. In that case the search is continued from the top.
+
+:ROW:searchgoback
+:COL:action to go to the place searching started.  Excel implemented differently.  Word not implemented yet.  Default not implemented, UltraEdit (uedit32) implemented.
+
+
+:ROW:searchfailed
+:COL:what to do if the search failed (can be established in some windows) (default ALERT = a ringing bell)
+
+:ROW:searchalwayscontinue
+:COL:T (True) if you can continue search without an initial search (eg by hand or by the search new command, which is NOT remembered) (values can be T (true) or F (false))
+
+:ROW:leftafterforwardsearch
+:COL:what to do after forward search, in order to finish in front of the text found.
+
+:ROW:leftafterbacksearch
+:COL:ditto::
+
+::
+
+
+In the file _actions.ini_ (which you can open by the command _Edit Actions_), you can inspect these actions for default or a program (eg winword, dragonpad, firefox (sucks yet),
+iexplore, emacs (a little bit), notepad).
+
+ Examples
+-in DragonPad (like in many windows) searching back does not work, so search is started from the beginning of the page when you call this.  When you are "round" DragonPad gives an extra dialog window, which is found as a failing search.  The search is cancelled at that moment.
+-in excel some steps go through internal excel routines, showing no dialog windows at all.  When you _cancel_ 
+the search, or give the command _search go back_, the cell you start at the search from is selected again. (Searching back does not work).
+-In Notepad searching back works, but if you want to go searching for it again this does not work.
+-In Firefox  continuous search seems to work well, and going up and down with the search also.
+-In Word the implementation is primitive, should also be done with internal commands, like in excel.
+
+More implementation details in link("/features/grammarclasses/inigrammar/functionsforsearching.html", "the section in IniGrammar class")
+.

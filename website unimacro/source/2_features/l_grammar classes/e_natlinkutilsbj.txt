@@ -1,0 +1,12 @@
+natlinkutilsbj
+
+In this file the class definitions of about three classes reside.
+
+-new function August 2011: GetGrammarObject(name):
+
+Returns the grammar instance (of some Unimacro grammar - already loaded -), where name is the name as pronounced, and defined as *name* in the section [grammar name] of the grammar. 
+
+Through this mechanism one grammar can call another, preferably earlier loaded, module.
+
+See example in _lines with *enable search commands*
+

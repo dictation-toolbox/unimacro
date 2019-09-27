@@ -1,0 +1,526 @@
+Unimacro Shorthand Commands
+
+All these commands are in capitals, and they can perform ordinary things, which can be done in advanced script commands of NaturallySpeaking as well, but also more specialised things.
+
+See link(/features/unimacroandvocola/unimacroshorthandcommands.html, "section on Vocola and Unimacro) when you want to use Unimacro Shorthand Commands in Vocola.
+ 
+Read the notes on link(/features/unimacroandvocola/index.html, Vocola and Unimacro) if you want to use these functions in a Vocola User File.
+ 
+Note: Also consult the file *Unimacro.vch*. This file contains more detailed information about quite a few of the functions below.
+
+ AutoHotkey support:
+ 
+When you have installed link(/features/autohotkey/index.html, AutoHotkey), you can call ahk scripts with this Unimacro Shorthand Command.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:Unimacro
+:COL:Vocola
+:COL:result
+
+:ROW:AHK script
+:COL:AHK(script)
+:COL:Do a autohotkey script file (name.ahk) or script text (just the text of the script)
+::
+
+ Bringup:
+ 
+See also link("/grammars/globalgrammars/tasks/index.html", "tasks grammar")
+
+Many applications are handled nicely with the *AppBringUp* command of NaturallySpeaking.
+
+But in some cases extra work or tuning has to be done.  
+
+Previous BringUps are remembered, so repeated bringups can be handled more quickly. 
+
+Configuration through the file *actions.ini* (called by *edit actions*). 
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:Unimacro
+:COL:Vocola
+:COL:result
+
+:ROW:BRINGUP app
+:COL:BRINGUP(app)
+:COL:Brings app in front (see also *tasks grammar*)
+
+:ROW:BRINGUP idle
+:COL:BRINGUP(idle)
+:COL: The IDE idle from Python
+:ROW:BRINGUP voicecoder
+:COL:BRINGUP(voicecoder)
+:COL:starts command prompt, mediator, emacs and voicecode. Switches to the correct user if needed.
+
+When called repeatedly only the necessary actions are done.
+::
+
+
+
+
+
+ Pressing the Windows modifier key.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command/examples
+:COL:Vocola
+:COL:result
+
+:ROW:WINKEY e
+:COL:WINKEY(e)
+:COL:Opens an Explorer window
+:ROW:WINKEY b
+:COL:WINKEY(b)
+:COL:Moves focus to the icon tray
+:ROW:WINKEY
+:COL:WINKEY0()
+:COL:Opens the Windows start menu
+::
+
+
+
+ Entering (really pasting) Unicode characters into your screen:
+
+First puts the given character on the clipboard and then tries to
+paste it into the current application via {ctrl+v}.  Attempts to
+not disturb the clipboard by saving it beforehand and restoring it
+afterwards.
+
+(see link("unicodecharacters.html","list of known  unicode characters"))
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:result
+
+:ROW:U Delta
+:COL:U(Delta)
+:COL:paste a Greek letter Delta (&Delta;) 
+
+:ROW:U 916
+:COL:U(916)
+:COL:same (decimal 916 is the Unicode number for the above letter)
+
+:ROW:U 040A
+:COL:U(040A)
+:COL:same, but specified in hexadecimal (0x040a == 916)
+::
+
+ Typing ASCII characters by their decimal character number:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:result
+B
+:ROW:A 66
+:COL:A(66)
+:COL:types "B"
+
+:ROW:A 10
+:COL:A(10)
+:COL:types a newline character ({ctrl+j})
+
+::
+
+
+ Here is the list of the simple things:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:Vocola
+:COL:explanation
+
+:ROW:HW
+:COL:HW()
+:COL:HeardWord or RecognitionMimic
+
+:ROW:SSK
+:COL:SSK()
+:COL:Shortcut name  for SendSystemKeys
+
+:ROW:S
+:COL:S()
+:COL:Shortcut name for SendKeys.
+
+Do this with a *{shift}* in front, in order to try workaround a bug in Dragon (idea from Frank Olaf Sem-Jacobsen)
+
+
+:ROW:W 
+:COL:W ()
+:COL:Wait some time (default 0.1 seconds) 
+
+:ROW:W time
+:COL:W1( time )
+:COL:Wait some  specified time (in seconds) 
+
+:ROW:SW
+:COL:SW()
+:COL:Wait a shorter time
+
+:ROW:LW
+:COL:LW()
+:COL:Wait a longer time
+
+:ROW:VW
+:COL:VW()
+:COL:Does a visible wait, so the user can see things happening
+::
+
+
+ But also:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:Vocola
+:COL:explanation
+
+:ROW:KW
+:COL:KW()
+:COL:kill window: answers 'no' to the question if a document must be saved
+:ROW:KW {ctrl+f4}
+:COL:KW1({ctrl+f4})
+:COL:kill window with other key, for example killing a document window inside Excel (close document command)
+
+:ROW:RW
+:COL:RW()
+:COL:remember window, can be used afterwards by
+
+:ROW:WTC
+:COL:WTC()
+:COL:wait for title change (in this way you do not have to specify the waiting time
+
+:ROW:WWT window title
+:COL:WWT("window title")
+:COL:wait for window title (with a title specified) (note the quotes for Vocola!)
+
+:ROW:RTW
+:COL:RTW()
+:COL:return to window (which was remembered by RW)
+
+:ROW:SEARCH
+:COL:not applicable
+:COL:start search for a text, which parameters direction and optional search text, also
+see link("/grammars/globalgrammars/repeat/searching.html", "the commands that use this search command")
+::
+
+(Note: for *KW* see also specification of link(/features/actions/actionsconfigurationfile.html, *top behaves like child*)
+
+ Some actions for a mouse: (a bit more documentation and below)
+ 
+:TABLE firstcoldifferent=1, border=1: 
+:HEADING:command 
+:COL:Vocola
+:COL:explanation
+
+:ROW:MP ...
+:COL:MP(...) 
+:COL: go to an absolute mouse position and click (parameters:
+-screenorwindow(0,1,2,3,4,5, see below) (3 and 4 added, November 2017)
+-x
+-y
+-clicking (see below)
+:ROW:RMP ...
+:COL:RMP(...) 
+:COL:relative mouse position, values x and y between -1 and 1.
+(parameters:
+-screenorwindow(0,1,3,4,5), see below) (3 and 4 added, November 2017)
+-x
+-y
+-clicking (see below)
+
+:ROW:PRMP
+:COL:PRMP() 
+:COL:print relative mouse positions (see below)
+
+:ROW:PMP 
+:COL:PMP()
+:COL:print absolute mouse positions' (see below)
+
+:ROW:PRMP 1 or PMP 1
+:COL:PALLMP()
+:COL:print all relative and absolut mouse positions (see below)
+
+:ROW:RM
+:COL:RM()
+:COL:remember mouse, for cancelling mouse actions
+
+:ROW:MDOWN 
+:COL:MDOWN()
+:COL:push down the mouse, after that you can freely drag by hand without pushing the button
+:ROW:CANCELMOUSE 
+:COL:CANCELMOUSE()
+:COL:cancel a mouse down button and return to remembered mouse position (with RM)
+:ROW:ENDMOUSE 
+:COL:ENDMOUSE()
+:COL:release the mouse button if it was pressed down before (by a MDOWN for example)
+
+
+ Screenorwindow values of the *MP* and *RMP* commands (first parameter in the call)
+
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING:screenorwindow
+:COL:explanation
+
+:ROW:0 
+:COL:complete screen
+:ROW:1 
+:COL:active window
+:ROW:2 
+:COL:relative to the current position (only for *MP*)
+:ROW:3 
+:COL:relative to the current monitor  (added November 2017)
+:ROW:4
+:COL:relative to the current monitor work area (excluding eg windows task bar of Dragon bar (added November 2017)
+:ROW:5 
+:COL:relative to the client area of or window (eg the body of an e-mail)
+::
+
+  To click or not to click:
+
+By default after a mouse command a single click is performed, but Vocola ALWAYS expects 4 parameters. The fourth parameter (*clicking*) can be:
+
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING:clicking
+:COL:comment
+:ROW:noclick
+:COL:only move to a position, keep the mouse pressed if it was before
+:ROW:[{left|right|middle}][{click|double|down|up|release}]
+:COL:do with one of the buttons one of the actions
+:ROW:left
+:COL:the default clicking for "left" is "leftclick"
+:ROW:double
+:COL:the default button for a click action is "left", so "leftdouble" in this example
+:ROW:down or leftdown
+:COL:push left button down
+:ROW:release or up
+:COL:after a push down, release the button (see also *MDOWN()* and *ENDMOUSE()* and *CANCELMOUSE()*)
+::
+
+ Examples without clicking:
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:Vocola
+:COL:comment
+
+:ROW:MP 1, 10, 10, 0 
+:COL:MP(1, 10, 10, noclick)
+:COL:positions the mouse near the top left corner of the active window (Note: *0* or *noclick* is equivalent)
+     
+:ROW:RMP 5, 0.5, 0.5, 0 
+:COL:RMP(5, 0.5, 0.5, noclick)
+
+:COL:positions the mouse in the centre of the "client area"
+::
+
+
+ Examples with clicking:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:Vocola
+:COL:comment
+:ROW:MP 2, 0, 0, left
+:COL:MP(2, 0, 0, click)
+:COL:no move, only a click (left and click are equivalent)
+
+:ROW:MP 0,10, 10, right
+:COL:MP(0,10, 10, right)
+:COL:right clicking in top left corner
+
+:ROW:RMP 0, 0.01, -0.01, left, 2 
+:COL:RMP(0, 0.01, -0.01, double)
+:COL:bottom left corner, double click (Note: *leftdouble* is also correct)
+::
+
+The commands *MP* and *RMP* are *wrappers* around the function *doMouse* in natlinkutilsqh.
+
+ Tasks and Icons
+
+(See link("/grammars/globalgrammars/tasks/index.html", "grammar tasks") for use of these and install instructions)
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADER:command
+:COL:Vocola
+:COL:action/explanation
+
+:ROW:TASK n
+:COL:not applicable
+:COL:Go to the specified task on the taskbar (see grammar tasks)
+
+(n is the task number)
+:ROW:TASKOD
+:COL:TASKOD()
+:COL:Send the task to the other display (monitor) (applicable when you have 2 monitors)
+
+Leaves task in maximized or restored state. The restore position is calculated in proportion with the monitor dimensions.
+:ROW:TASKMAX
+:COL:TASKMAX()
+:COL:Maximize the task
+:ROW:TASKMIN
+:COL:TASKMIN()
+:COL:Minimize the task
+:ROW:TASKRESTORE
+:COL:TASKRESTORE()
+:COL:Put task in Restore position. If restore area falls outside the current monitor, it is brought inside the monitor area.
+
+:ROW:TOCLOCK n
+:COL:not applicable
+:COL:Goes to the taskbar clock position 
+-n = 0 or not given: no click
+-n = left: left click (or not given)
+-n = right: right click
+-by left clicking (TOCLOCK left) you get focus on the system tray.
+-by right clicking on the clock in the system tray you get the taskbar menu (TOCLOCK right)
+-TOCLOCK (without parameters) just positions the mouse above the clock in the system tray
+::
+
+
+ Getting a mouse position
+
+A list of the different MP and RMP actions for an actual mouse
+ position can be obtained by the following global commands (from the *commands* grammar in an English speech profile provided you didn't change the commands). The list is printed in the python messages window.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:Voice command
+:COL:Shorthand command
+:COL:in Vocola
+
+:ROW:print absolute mouse position
+:COL:PMP
+:COL:PMP()
+
+:ROW:print relative mouse position
+:COL:PRMP
+:COL:PRMP()
+
+:ROW:print all mouse positions
+:COL:PMP 1
+:COL:PALLMP()
+
+::
+
+ Clipboard
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADER:command
+:COL:Vocola
+:COL:action/explanation
+
+:ROW:CLIPSAVE
+:COL:CLIPSAVE()
+:COL: save the clipboard for later restore
+
+:ROW:CLIPRESTORE
+:COL:CLIPRESTORE()
+:COL: restores the previous saved clipboard
+
+:ROW:CLIPISNOTEMPTY
+:COL:see below
+:COL: this command returns true if the clipboard is not empty, so the actions can continue. 
+
+If the clipboard IS empty *False* is returned and the command will break off.  As a side effect *CLIPRESTORE* is called.
+
+:ROW:SCLIP text
+:COL:SCLIP(text)
+:COL: sends the text by putting it on the clipboard and then press *ctrl+v*. This can possibly circumvent problems with different language keyboards, like the German keyboard layout. 
+
+The previous content of the clipboard is saved before this action and restored after.
+
+:ROW colspan=3: 
+
+so these commands should go together:
+
+*CLIPSAVE; do something; optional CLIPISNOTEMPTY; continue if clip is not empty; CLIPRESTORE*
+
+in Vocola:
+Unimacro("CLIPSAVE; do something; optional CLIPISNOTEMPTY; continue if clip is not empty; CLIPRESTORE");
+
+
+In each case the saved clipboard is restored.
+::
+
+ Date and Time
+:TABLE firstcoldifferent=1, border=1:
+:HEADER:command
+:COL:Vocola
+:COL:action/explanation
+
+:ROW:DATE
+:COL:DATE()
+:COL: Type (print) or Read (see parameter *what*) the current date
+
+Default format is the *%m%d*, and by this default extra zeroes are stripped (eg *01/07* becomes *1/7* (being January 7)
+:ROW:DATE format
+:COL:DATE1(format)
+:COL: Specify the format of your date eg
+- *%m/%d* (default for print, but leaves zero's (like *01/07*)
+- *%B %d* (long month day) (*default for speak* see below, eg *January 7*)
+- *%m-%d-%Y* (month-day-long year eg (01-22-2010)
+- you can specify *0* for default, also for the next case
+
+:ROW:DATE format, what
+:COL:DATE2(format, what)
+
+:COL: By setting *what* to *speak*, the date is spoken on your speakers/headset.
+- You can take the default format by entering *0*
+- You can optionally specify *what* as *print* or as *0*, taking the default (*print*)
+- See the file *Unimacro.vch* for Vocola examples, see SPEAK below for speaking other text.
+
+:ROW:TIME
+:COL:TIME()
+:COL: Type or Read (see parameter *what*)  the current time
+
+:ROW:TIME format
+:COL:TIME1(format)
+:COL: specify the format of your time eg
+- *%H:%M* meaning "hour:minute" (default)
+- you can specify *0* for default, also for the next case
+:ROW:TIME format, what
+:COL:TIME2(format, what)
+
+:COL: By setting *what* to *speak*, the time is spoken on your speakers/headset.
+- You can leave the format to *0*, taking the default format
+- You can opionally specify *what* as *print* or as *0*
+- See the file *Unimacro.vch* for Vocola examples
+::
+
+ 
+ Miscellaneous commands
+
+ :TABLE firstcoldifferent=1, border=1:
+:HEADER:command
+:COL:Vocola
+:COL:action/explanation
+
+:ROW:SPEAK text
+:COL:SPEAK(text)
+:COL:the computer speaks *text* (with TTSPlayString) on your speaker or headset
+
+:ROW:PRINT text
+:COL:PRINT(text)
+:COL:print text to the Messages of Python Macros windowyour speaker or headset
+
+:ROW:MSG text
+:COL:MSG(text)
+:COL rowspan=2: gives a message on the screen, with *OK* to answer. 
+
+
+
+:ROW:MESSAGE text
+:COL:MESSAGE(text)
+
+
+:ROW:YESNO text
+:COL:Unimacro("YESNO do you want to proceed; actions only if yes was answered");
+:COL:Asks a question. If *No* is answered it will return false and the rest of the actions will not be executed.
+
+Note: The microphone is switched ON if it was "off" or "sleeping". It should NOT be switched off while answering (either with the mouse or by voice). Otherwise a *UserWarning* exception is raised and the performing macro is stopped.
+
+:ROW:T and F
+:COL:T () and F ()
+:COL:return True and False respectively, for testing mainly
+
+
+
+Note: All these shorthand commands can be used inside a grammar and (see the examples and *Unimacro.vch*) in Vocola commands.

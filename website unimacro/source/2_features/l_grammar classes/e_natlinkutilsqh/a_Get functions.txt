@@ -1,0 +1,32 @@
+Get functions
+
+Get data mainly from natlinkmain and NatLink. 
+Also see link("/installation/technicaldetails/natlinkmain.html", "the page about natlinkmain").
+It is best NOT to import natlinkmain from a Unimacro grammar, but get the wanted information through these functions:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: function
+:COL: returns
+
+:ROW:getLanguage
+:COL: returns the three letter code of the language of the speech profile. 'enx' for English, 'nld' for Dutch etc
+
+:ROW:getDNSversion
+:COL: return, as integer, the version number of NatSpeak.  Older versions in "nssystem.ini", newer versions (from 7 up) look in the registry. 
+
+:ROW:getUser
+:COL: get, as a string, the name of the current speech profile
+
+:ROW:getWindowsVersion
+:COL: at this moment are known: 'XP', '2000', 'NT4', 'NT351', '98'
+
+:ROW:getModuleFilename
+:COL:the complete path of the calling grammar/manual, has stored in natlinkmain
+
+:ROW:getUnimacroFolder
+:COL: the folder natlinkutilsqh.py is in, should be the NatLink (natpython) user directory.
+
+:ROW:getBaseName(name)
+:COL: returns to base name (without directory and without extension) of name
+::
+

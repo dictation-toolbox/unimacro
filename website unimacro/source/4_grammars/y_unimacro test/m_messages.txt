@@ -1,0 +1,9 @@
+messages test
+
+This tests the *YesNo* and the *Message* dialog boxes.  Also when quotes, new line characters or "\r" characters are used in the message text are handled correct. These character in a window title will be removed.
+
+These dialog boxes can also be called with the Unimacro shorthand commands (USCs) *YESNO* and *MSG* (or *MESSAGE*).
+
+This test is always safe to call, and you can do the different "sub"-tests on prompt.
+
+Call *Unimacro test message* to run this test.

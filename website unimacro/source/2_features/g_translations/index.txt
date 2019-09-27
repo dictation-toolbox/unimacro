@@ -1,0 +1,81 @@
+Translating grammars into other languages
+
+See the link(http://youtu.be/DvYL780_-l4, "*demo movie*"), in this example the tasks grammar is translated into Dutch.  (Note this translation has already been done, it is only meant as an example.)
+
+The Unimacro grammar words can easily be translated into other speech recognition languages like Dutch, German, French, Italian, etc.
+
+But in the same way also grammar keywords can be customised to your taste (synonyms).
+
+The basics are as follows:
+
+In the link("/features/inifiles.html", "inifiles")  of the grammar (to be opened (in English) with *edit grammarname*, and inspected with *show grammarname*, (both  being commands of the grammar link("/grammars/control/index.html", "*control*")):
+-The section *&#091;grammar name&#93;* defines the spoken form of the grammar name.
+-The section *&#091;grammar words&#93;* holds the words of the grammar. After each word you can give your own synonym or translation.  In many cases even more words can be given, separated by *;*.  If your synonyms have spaces inside, these are automatically quoted in the grammar specification.
+
+ Example from grammar *repeat*:
+
+Consider the rules:
+
+:CODE:
+<acceleration> = [much] (faster | slower);
+<speed> = [very] (fast|slow) | normal | steady;
+::
+
+
+The words much, faster, slower, very, fast, slow, normal, steady can all be changed into your translations or synonyms.  If you want to include the word *standard speed* additional to *normal*, and *a lot* instead of *much* you can include in the grammar words section:
+
+:CODE:
+[grammar words]
+...
+much = a lot
+normal = normal; standard speed
+...
+::
+
+The rules then result in:
+
+:CODE:
+<acceleration> = ['a lot'] (faster | slower);
+<speed> = [very] (fast|slow) | normal|'standard speed' | steady;
+::
+
+
+ Warning:
+
+In some cases  making more synonyms can result in invalid rules, although most grammars are designed to prevent this.
+
+Consider the following rule from the grammar *lines* (_lines.py):
+
+:CODE:
+<lines> = line |
+          {count} lines |
+          (previous|next|this|these) (line | {count} lines);
+::
+
+If you want to make synonyms for the grammar words *line* and *lines*, like:
+
+:CODE:
+[grammar words]
+...
+line = line; lying
+lines = lines; lyings
+...
+::
+
+The rule results in:
+
+:CODE:
+<lines> = line|lying |
+          {count} lines|lyings |
+          (previous|next|this|these) (line|lying | {count} lines|lyings);
+::
+
+Which gives unwanted results.  However most grammars will be designed to prevent these errors.
+
+ Changing the order of words
+
+This translation trick is only meant for literal words.  So first get confident with the simple trick. Note: the names of rules and lists remain unchanged!
+
+If you want to change your grammar with another word order, you have to copy your grammar specification into the python file for your specific language.  It can be done but possibly more work has to be done to interpret correct recognition results in the callback functions. (Example of this in the grammar *_repeat.py* for the Dutch case).
+
+

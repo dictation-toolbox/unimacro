@@ -1,0 +1,31 @@
+Make a donation
+
+For getting Natlink work with Dragon 15, the essential steps have been done by Rüdiger Wilke, from Germany.
+
+In the last several years most work on NatLink, Vocola and Unimacro was done by Rüdiger Wilke, Mark Lillibridge and Quintijn Hoogenboom.
+
+Recently Doug Ransom started working on Natlink, especially for an implementation in Python 3.
+
+If you want to make a donation work all this work, you can do so via one of the buttons below. I (Quintijn Hoogenboom) share the gifts with Mark and Rüdiger en Doug.
+
+
+:TABLE align=center, width=50%:
+:HEADER width=50%:Euro's, Dutch interface:
+:COL:Dollars, English interface:
+
+:ROW align=center:<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="K4EWZNFGFWS9U">
+<input type="image" src="https://www.paypalobjects.com/nl_NL/NL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal, de veilige en complete manier van online betalen.">
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+:COL align=center:<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="QL8EZN7JR5STL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+</form>
+::
+
+ Thank you in advance...

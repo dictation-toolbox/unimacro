@@ -1,0 +1,33 @@
+The action mechanism
+
+ Also see link(/features/unimacroandvocola/unimacroshorthandcommands.html, section on Vocola and Unimacro) when using Unimacro Shorthand Commands  and/or meta actions in Vocola
+ 
+ Actions and Keystrokes
+These can be compared with keystroke dvc commands and script dvc commands.  They can be exploited in user defined grammars. Also Vocola can make use of these features, see next section.
+
+
+ Actions
+The actions as called in a user grammar or in a ini file (see below) can be:
+-Keystrokes: a keystroke sequence eg. {alt+f4} for close window
+-a shorthand command in capitals, like HW (for HeardWord), SSK (for SendSystemKeys).  
+See the link(/features/actions/shorthandcommands.html, full list of them).
+-an ExecScript command, being one of the official NatSpeak commands, like "ClearDesktop". Capitalisation of these words should be exactly as in the NatSpeak manual.
+-a link(metaactions.html, meta action), like &lt;&lt;file save as&gt;&gt;
+-any combination of above possibilities, separated by ";" (semi colon) or a new line.
+
+If parts of an action are separated with a ";" or a newline, a short pause is done.  So there is a subtle difference between the keystroke sequences _abc_ and _a; b; c_.
+
+
+ Keystrokes
+This seems to be identical to NatLink.playString(). But there is more: through the ini file keystroke behaviour can be defined.  Keys that need "hard" keystrokes (SendSystemKeys) can be defined, or it can be defined that ALL keystrokes in a specific application must be "hard".  Also can be defined they optional pause between keystrokes.  In current window applications this seems to be not necessary any more.
+
+
+ Using actions in a user defined grammar
+The actions can be called from any user defined grammar.  If you extensively use actions and/or a keystrokes it is easiest to import from the action module like
+
+    from actions import doAction as action
+    from actions import doKeystroke as keystroke
+
+If you want to execute a action simply call _action("...")_. If you only want to do some keystroke combination calling _keystroke("...")_ has the same result as the call to action (but is slightly faster).
+
+

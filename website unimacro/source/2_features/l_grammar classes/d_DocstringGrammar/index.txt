@@ -1,0 +1,49 @@
+DocstringGrammar
+
+With this subclass of IniGrammar, rules can be defined in the docstrings of the rule functions. Things to notice:
+
+-*gotResults_name* changes into *rule_name* for exported rule.
+-For subrules the function name is *subrule_name*.
+-For imported rules (*dgndictation*, *dgnwords* and *dgnletters*) use *importedrule_dgndictation* etc. No docstring needed here.
+-The rule definition is given in the docstring of the function. No semicolon needed at end.
+-The complete grammar can be inspected with the command *show name* (where name is the name of the grammar)
+-Translations and synonyms work as with IniGrammars.
+-The old gramSpec definition can remain for parts of the grammar, as are in that case the gotResults functions.
+-*fullResults* is not anymore in the call of each function (only *words*). But see link(fullresults.html, how to obtain the fullResults).
+ 
+ First example (the grammar _first_sample_docstring.py):
+
+:CODE:
+    def rule_start(self, words):
+        "first sample docstring"
+        keystroke('Heard macro "start" (words "first sample docstring"){enter}')
+::
+
+The complete grammar shows (in this example after calling *show first sample docstring*)
+
+:CODE:
+--- grammar:
+
+<start> exported = first sample docstring;
+::
+
+
+ self.prevRule, self.prevWords, self.nextRule and self.nextWords
+
+These instance variables are maintained at callback time, to facilitate looking forward and looking back one step in a recognition.
+
+:TABLE:
+:HEADING:variable
+:COL:comments
+
+:ROW:self.prevRule
+:COL:The name of the *previous rule* recognised, or *None if it is the first* of the rules
+:ROW:self.prevWords
+:COL:The list of words in the previous rule, or empty list (if first of the rules)
+:ROW:self.nextRule
+:COL:The name of the *next* rule recognised, or *None if it is the last rule* of the recognition
+:ROW:self.nextWords
+:COL:The list of words in the next rule, or empty list (if last rule of the recognition)
+::
+
+See also more link(/features/grammarclasses/inigrammar/programmer.html, instructions for programmers), which are similar to the IniGrammar subclass.

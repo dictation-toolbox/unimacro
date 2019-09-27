@@ -1,0 +1,13 @@
+Technical details
+
+The pages in this section provides more details about some technical issues. They will be revised when time goes.
+
+ Dragon 11
+
+With Dragon 11 several changes made quite a few adaptations in NatLink and Unimacro necessary. The details can be found in the different unittest programs (in the PyTest directory of NatLink). 
+But the most important changes are:
+
+-Word properties are no longer returned by NatLink, but...
+-A new word format makes extracting a lot of properties possible (see link(/installation/technicaldetails/nsformat.html, *nsformat*)).
+-The imported rules &lt;dgnletters> and &lt;dgnwords> are no longer recognized. Only &lt;dgndictation> remains. (This is the equivalent of &lt;_anything> in Vocola.)
+

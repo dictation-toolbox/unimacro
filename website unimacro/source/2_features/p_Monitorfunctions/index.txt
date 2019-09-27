@@ -1,0 +1,68 @@
+Monitor functions
+
+The module "monitorfunctions.py" (tested with "unittestMonitorfunctions.py") is written for manipulation of windows on the monitors/displays. These functions are used in the grammar link(/grammars/globalgrammars/tasks/index.html, *tasks*).
+
+ Other display
+ 
+With the function *move_to_monitor* a window is moved to another monitor
+
+:CODE:
+move_to_monitor(winHndle, newMonitor, oldMonitor, resize):
+    """move window to another monitor
+    preserving position of restore_area as much as possible.
+
+    - get winHndle for example with winHndle = win32gui.GetForegroundWindow()
+    - get current monitor (oldMonitor) with get_nearest_monitor_window(winHndle)
+    - get other monitor (in case of 2 monitors) with get_other_monitors(mon), and take
+      the first of the list that is retured.
+    resize: 0 if window is (assumed to be) fixed in size, can be found with:
+    - window_can_be_resized(winHndle):
+        return 1 if a window can be resized (like Komodo etc). Not eg calc.
+    """
+::
+
+
+ Moving inside one monitor:
+
+:CODE:
+maximize_window(winHndle): just maximize
+
+minimize_window(winHndle): just minimize
+
+restore_window(winHndle, ...): placing in various spots and widths/heights
+    see at definition for parameters
+
+move_window(winHndle, ...)
+
+stretch_window(winHndle, ...)
+
+shrink_window(winHndle, ...)
+
+::
+
+ Position of the taskbar
+
+:CODE:
+get_taskbar_position(): gives the placing of the taskbar ('left', 'bottom', 'right', 'top').
+::
+This can be used for NatSpeak/Unimacro keystroke macros which can depend on this position (for example stacked taskbar windows in Window 7 Aero Peek view).
+
+ Getting mouse positions of monitor
+(new, December 2017)
+
+:CODE:
+get_current_monitor_rect ( pos )  and
+
+get_current_monitor_rect_work( pos)
+
+::
+
+Pass the current mouse position as a tuple (xpos,ypos)
+
+Returns the rect tuple of the monitor, with *_work* only the work area, so excluding task bar or Dragon bar.
+
+ Notes:
+-unittesting is done with the file unittestMonitorfunctions.py (in the *unimacro_test* subdirectory of Unimacro).
+-demos can be done by uncommenting the different *test_...* functions at the bottom of the script monitorfunctions.py, and run the script.
+
+-See for more details in the code...

@@ -1,0 +1,69 @@
+Module info 
+
+Functions concerning moduleInfo (this is a tuple of three which is always passed in the *gotBegin* callbacks).  They can be used to check if someone know that this certain characteristics.  Note that in most functions *modInfo* can be passed, if available.  If not it is collected from *NatLink.getCurrentModule*.
+
+You can get the module info and the progInfo with the command *give window info* or *give window information* (grammar general)
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: function
+:COL: action/returns
+
+:ROW:matchModule(modName, wantedTitle=None, modInfo=None, titleExact=0, caseExact=0)
+:COL:Returns module name (program name!) on match and None on mismatch.
+
+This is a variant on matchWindow (from Joel), but now you can also check only the module (leave out the other variables) 
+and not the (sub) window of this module.
+
+Module names are always converted to lowercase.
+
+You can specify a window title or a list/tuple of window titles.
+
+If you specify a window, it can be checked with exact title or exact case.
+If nothing is specified lower case strings are compared, and only part 
+of the window title has to be given in order to get a match
+
+:ROW:matchTitle(wantedTitle, modInfo=None, titleExact=0, caseExact=0)
+:COL:returns  the module (program) name if the wanted title matches the actual title.
+
+:ROW:getProgName(modInfo=None)
+:COL: gives the module name of the module. ("pythonwin", "excel" etc)
+
+:ROW:getProgInfo(modInfo=None)
+:COL: returns program info as tuple (prog, title, toporchild)
+
+all in lowercase, toporchild = 'top' or 'child'
+
+if no valid program (modInfo[0]) ('', '', 'empty') is returned
+
+:ROW:matchWindow(criteria, modInfo=None, progInfo=None)
+:COL:*note this one is different from the matchWindow in natlinkutils*
+
+looks for a matching window based on the dictionary of criteria
+
+criteria can either be a key with None as value, or a key
+with a part of window title as value (string), or a key with
+a list of parts of window titles as value.
+
+special these are:
+-'all' (everything matches, value is ignored, so normally None)
+-'none'  (nothing matches)
+-'empty' (matches when no valid progInfo is found)
+
+progInfo is a tuple: (prog, title, toporchild),
+
+-prog being the lower case name of the program
+-title being the lower case converted title
+-toporchild being 'top' if top window, 'child' if child window, 'empty' if no valid module
+
+ 
+progInfo may be omitted as well as modInfo.
+For best performance progInfo should be given,
+otherwise giving modInfo is also faster than omitting it.
+
+ 
+
+
+
+
+
+

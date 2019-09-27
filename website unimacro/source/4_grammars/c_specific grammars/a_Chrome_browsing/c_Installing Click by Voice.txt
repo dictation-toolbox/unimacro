@@ -1,0 +1,45 @@
+Installing *CbV* (Click by Voice)
+
+A splendid chrome extension written by Mark Lillibridge.
+
+
+This extension can be installed most easily by following the steps below:
+
+-Also you can view this link(https://youtu.be/6qrjuTCX6Rw, demo video) on how to install this extension in chrome.
+
+=Go to the extensions window of chrome (via button at the right top corner)
+=Search for the extension "clickbyvoice"
+=Choose "Add to Chrome" and there you are.
+
+Once you have this extension installed, you need voice recognition macro's in order to use the extension by speech.
+
+In his page link(https://github.com/mdbridge/click-by-voice, click by voice), Mark Lillibridge shows you how to do this with Vocola commands.
+
+It can also been done with commands in a Unimacro grammar, with is presented in link(/grammars/specificgrammars/chromebrowsing/index.html, this section) on this website. But first be sure you have properly activated the grammar:
+
+ Activate grammar in Unimacro
+ 
+By default this grammar is located in the subfolder *DisabledGrammars* of the Unimacro directory.
+ 
+-Please copy the file *chrome_browsing.py* into the Unimacro directory.
+-If the microphone is toggled with Chrome in the foreground, the grammar should be switched on.
+
+Check that about the following text is printed in your "Messages from NatLink" window:
+ 
+:CODE:
+Cannot find inifile: (...)\enx_inifiles\chrome_browsing.ini
+take sample inifile: (...)\sample_ini\enx_inifiles\chrome_browsing.ini
+===Created new inifile for grammar "chrome_browsing"
+===Please edit this file by calling the command "edit Chrome Browsing"
+ IniGrammar switched on: chrome browsing
+_control, added Unimacro grammar(s): ['chrome browsing']
+::
+
+So if you want to edit you options of this grammar, say *edit Chrome Browsing*.
+
+Now you are switched on, and on the starting point of this video:
+
+witregel()
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/8-qgdcJfTY0?ecver=1" frameborder="0" allowfullscreen></iframe>
+

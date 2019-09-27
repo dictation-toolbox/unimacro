@@ -1,0 +1,15 @@
+unittest Unimacro
+
+In the grammar link("/grammars/unimacrotest/index.html", "*Unimacro test*") a lot of tests are brought together in order to test things of Unimacro.
+
+These tests that can not run "offline" and with no user interaction, like unit tests normally do.
+
+They can be called when your speech profile is open.  Because things are often dependent on context and speech profile some care must be taken when executing these tests.  Please read more information on the detail pages, see link shown above.
+
+   unittest NatLink
+   
+See link(/installation/technicaldetails/testingnatlink.html, unittest NatLink), for instructions of testing the basics of NatLink itself.
+
+   unittest special modules
+   
+

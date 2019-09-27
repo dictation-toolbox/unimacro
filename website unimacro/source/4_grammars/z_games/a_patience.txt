@@ -1,0 +1,81 @@
+Speel patience met uw stem!
+
+Met de grammatica "sol" is dit nu mogelijk. Deze grammatica maakt gebruik van de mogelijkheid om via spraakherkenning met de muis te bewegen en te slepen.
+
+
+  De basis commando's zijn:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:zeg:
+:COL:resultaat
+
+:ROW:kaart 1-7
+:COL:verplaatst de muis naar een rij kaarten (dus 1, 2, 3, 4, 5, 6 of 7)
+
+:ROW:nieuwe kaart<br>volgende<br>verder<br>ga door
+:COL:een nieuwe kaart trekken
+
+:ROW:naar stapel 1-4
+:COL:sleep kaart vanaf de muis positie naar een van de 4 stapels
+
+:ROW:naar 1-7
+:COL:sleep vanaf de muispositie naar een van de 7 rijen
+
+:ROW:1-7 naar stapel 1-4
+:COL:sleep van een van de rijen naar een van de 4 stapels
+
+:ROW:1-7 naar 1-7
+:COL:sleep van de ene rij naar de andere
+
+:ROW:kaart naar 1-7
+:COL:sleep de laatst getrokken kaart naar een van de rijen
+
+:ROW:kaart naar stapel 1-4
+:COL:sleep de laatst getrokken kaart naar een van de stapel
+::
+
+
+  Aanvullende commando's:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:zeg:
+:COL:resultaat:
+
+:ROW:pauzes 0-7
+:COL:Na elk deel van een actie wordt even gepauzeerd. Deze pauzes kunnen met deze commando's worden verlengd of verkort (0 is het snelst, 3 is de standaardwaarde)
+
+:ROW:stapel&nbsp;automatisch
+:COL:verplaats kaarten automatisch naar de 4 stapels na elke beurt
+
+:ROW:muis hoger<br>muis lager<br>muis hoger 1-7<br>muis lager 1-7
+:COL:om de muis iets hoger of iets lager op een rijtje kaarten te krijgen. Dit is handig als je op een rij positioneert maar de muis staat niet (verticaal) op de juiste kaart. Je kunt vervolgen met "naar 1-7" of "naar stapel 1-4"
+::
+
+ commando's die via de grammatica _commandoos_ worden gedefinieerd:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:zeg:
+:COL:resultaat:
+
+:ROW:opnieuw delen
+:COL:de toetsencombinatie {f2}
+::
+
+                
+                
+  De hele grammatica (vertaald vanuit het Engelse origineel):
+
+:CODE:
+<card> exported = kaart {cnum};
+<newcard> exported = nieuwe kaart|volgende|'ga door'|verder;
+<to> exported = naar ((stapel {snum})|{cnum});
+<cardto> exported = kaart naar ((stapel {snum})|{cnum});
+<cardnumto> exported = [kaart] {cnum} naar ((stapel {snum})|{cnum});
+<lower> exported = muis (lager|hoger) [{cnum}];
+<wait> exported = pauzes (0 |{cnum});
+<auto> exported = stapel automatisch;::
+                
+  Programmeer opmerkingen:
+
+-na elke sleep beweging moet even worden gepauzeerd, zo de minimum pauze tijd is 0.05 sec.
+-deze grammatica is een oefening in het slepen van de muis met NatSpeak/natpython

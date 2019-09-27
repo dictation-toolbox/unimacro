@@ -1,0 +1,28 @@
+Order spokenforms Sections
+
+For characters, abbreviations, file name extenstions and punctuation there are  also provisions in the spokenforms module. They are stored in  the next set of  instance variables.
+
+:CODE:
+    char2spoken = {} # characters of radio alphabet possibly extended, got from [alphabet] section
+    spoken2char = {}
+    abbrev2spoken = {} # lists of spoken forms, got from [abbrevs] sections
+    spoken2abbrev = {}
+    ext2spoken = {}    # file extensions (without the dot) (got from [extensions] section)
+    spoken2ext = {}    
+    punct2spoken = {}  # punctuation, from section [punctuationreverse] (other way round!)
+    spoken2punct = {}
+::
+
+ Characters
+As can be seen in the grammar _keystrokes, the radio alphabet is used via the &#091;alphabet] section of the xxx_spokenforms.ini file.
+
+The grammar list {character} is filled with a call to the function *self.setCharactersList('character')*.
+
+At recognition time, the value  (character)  is retrieved  with the function  *self.getCharacterFromSpoken()*. See _keystrokes.py.
+
+ Punctuation
+Also in the grammar _keystrokes the punctuation is used.  The functions are *self.setPunctuationList('punctuation')*
+and *self.getPunctuationFromSpoken()*.
+
+These four functions are defined in the IniGrammar class in natlinkutilsbj.py.
+

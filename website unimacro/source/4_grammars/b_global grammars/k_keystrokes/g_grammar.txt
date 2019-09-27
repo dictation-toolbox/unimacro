@@ -1,0 +1,36 @@
+The grammar definition
+
+ Basics
+
+The basic rule should have been:
+
+:CODE:
+<keys> exported = ({norepkey} | {repkey} [{count}])+;
+::
+
+ Implementation
+Because with these quasi-recursive rules there have been problems in the past (introduced several NatSpeak versions ago) this basic rule has been changed into (and enhanced with the &lt;before&gt; rule):
+
+:CODE:
+<keys> exported = <firstkey> [<stdkeys>+] ;
+<firstkey> = <before>  | <stdkeys>;
+<stdkeys> = ...
+::
+
+ And the further details are, including the  &lt;modifier&gt;: rule:
+
+:CODE:
+<stdkeys> = [ <modifiers> ] (<repkey>[<count>] | <norepkey>);
+<repkey> =  {repkey};
+<count> = {count};
+<norepkey> = {character} | {norepkey} | <effkey>;
+<effkey> = ( Eff|Function ) {effcount};
+<modifiers>  = (Cap | 'All-Caps' | Shift | Control | Alt|halt) + ;
+::
+
+ Lists
+
+The lists  &#123;character&#125;, &#123;effcount&#125; and &#123;count&#125; are filled in the python file. The other lists, &#123;repkey&#125; and &#123;norepkey&#125; are filled from the configuration file, so are user configurable. Even for a specific link("modes.html", "modes").
+
+
+

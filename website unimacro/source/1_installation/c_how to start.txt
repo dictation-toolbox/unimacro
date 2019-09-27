@@ -1,0 +1,71 @@
+How to start?
+
+   Start NatSpeak
+After you did the configuration, at least enabled NatLink, and restarted Dragon the window _Messages from NatLink_ should show up, and give a couple of lines of text. If not, NatLink is not enabled properly.
+
+   Vocola 2
+
+-In order to start with Vocola 2, consult the link("http://vocola.net/v2/default.asp", "Vocola website").
+-There is now also support for several link(http://vocola.net/v2/NonEnglish.asp, Non-English Languages), and the use of English AND these other languages alternatively.
+
+   Unimacro
+-Study the rest of this website...  especially the link("/grammars/control/index.html", "*grammars section*").
+
+-In order to start more smooth with Unimacro, in this release a lot of grammars (python files, ending with *.py*) have been moved into the folder *DisabledGrammars*. So you do not get all grammars at once.
+
+-Go to your Unimacro folder (the "UserDirectory"), which you configured in the GUI. See what grammars are on.    You can also say "Show All Grammars" to get an overview of all active Unimacro grammars. Move away grammars you don't want. Toggle the microphone after you have finished this step.
+
+-Note: there are also python files which must be left in this directory.  Only move out python files that start with underscore "*_*", but leave *_control.py* always in the Unimacro directory.
+
+ Folders grammar
+
+If you want to use for example the folders grammar just say *show folders* to get, in a text file, explanation on this grammar.  If you want to edit things say *edit folders*.
+
+ Active grammars
+ 
+Say *show active grammars* to get a window with all *active grammars of Unimacro*.  Note, Vocola 2 grammars (like *_vocola_main*) are not in this window.
+
+ All possible grammars
+
+Say *show all grammars*, and/or browse in the link("/grammars/control/index.html", "*grammars section*") of this website for more information on the different grammars.
+
+Go - in the windows explorer - to the *UserDirectory* of Unimacro(and NatLink), and move grammar files from the folder *DisabledGrammars* into this UserDirectory.  Toggle the microphone and the grammar should be active.
+
+
+ Easy:
+Grammars you can start with include link(/grammars/globalgrammars/tasks/index.html, *tasks*), link(/grammars/globalgrammars/folders/index.html, *folders*), link(/grammars/specificgrammars/firefoxbrowsing/index.html, *firefox browsing*).
+
+ Medium:
+When you're confident with these, try for example link(/grammars/globalgrammars/lines/index.html, *lines*), 
+link(/grammars/globalgrammars/keystrokes/index.html, *keystrokes*)
+
+ More involved:
+For more specialised things look in link(/grammars/globalgrammars/brackets/index.html, *brackets*)
+, link(/grammars/globalgrammars/oops/index.html, *oops*)
+, link(/grammars/globalgrammars/tags/index.html, *tags*)
+, link(/grammars/globalgrammars/repeat/index.html, *repeat*). Some of these grammars need more documentation and more development.
+
+ Introspection
+An other way to look into the properties of a grammar, goes with *show grammar_name* (eg *show folders*). A temporary txt file will be opened with actual information, including words in all commands lists and the grammar rules.
+
+If you want to change general options or words in a commands list,  *edit grammar_name* and edit the file that is then opened.
+
+ Switching on or off
+
+In the &#091;general] section, important is the *initial on* option.
+
+:CODE:
+[general]
+initial on = 1
+::
+
+You can set this option to *1* or *T* to switch on, but also, more easy, with the command *switch on grammar_name*.
+
+The opposite is *switch off grammar_name*, with as result:
+
+:CODE:
+[general]
+initial on = 0
+::
+
+See more on this in the link(/grammars/control/index.html,  _control grammar).

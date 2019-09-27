@@ -1,0 +1,71 @@
+Firefox browsing, all commands
+
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:toggle numbers | give numbers | hide numbers | clear numbers
+
+numbers on | numbers off
+:COL:To switch on or off the numbers of MLB. 
+
+Unfortunately MLB only has a toggle to switch to another mode. 
+
+With numbers NOT shown the choose | follow commands still work!
+
+:ROW:
+follow {number}
+
+new {number} 
+
+focus {number}
+
+follow {number} context menu
+
+follow {number} new tab
+:COL: follow the numbered link,
+
+open the numbered link in a new tab 
+
+put keyboard focus on the link
+
+put keyboard focus on the link and open the context menu
+
+open the numbered link in a new tab
+:ROW: next tab | previous tab
+
+tab number {1-20} | tab &#091;number&#93; minus {1-20}
+
+tab (number|minus) {1-9} {tabcommands}
+
+{tabcommands} tab | tab {tabcommands}
+
+(next | previous) tab {tabcommands}
+
+:COL: Navigate the tabs. 
+
+Minus counts tabs from the right side of the screen.
+
+*tabcommands* contains currently *refresh* and *close*.
+
+
+:ROW: next page | previous page
+
+page (back|forward) &#091;{1-20}&#93;
+
+{pagecommands} page | page {pagecommands}
+:COL: navigate the pages inside a tab. 
+
+*pagecommands* contains currently only *refresh*.
+
+::
+
+ The lists
+ 
+-*tabcommands* and *pagecommands* can be configured from the configuration file: call *edit Firefox Browsing* to edit.
+
+-The *number* list comes from a very complicated set of rules.  When you call *show Firefox Browsing* you get a complete list of the grammar rules, including the rules that catch the numbers.  Some small numbers do not react all the time.  You can call for example _follow 17_ as either _follow seventeen_ or _follow one seven_. Or _choose 123_ as _choose hundred twenty three_ or _choose one twenty three_ or _choose one two three_.
+
+

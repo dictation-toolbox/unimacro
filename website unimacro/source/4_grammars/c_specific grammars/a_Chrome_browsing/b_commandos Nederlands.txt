@@ -1,0 +1,53 @@
+Chrome brouwsen, alle commando's in het Nederlands
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:commando
+:COL:commentaar
+
+:ROW:toon (getallen | nummers) &#091;{additionalonoroff}&#93;
+
+(getallen | nummers) {additionalonoroff}
+:COL:Schakel de getallen in, met mogelijk aanvullende opties.
+
+*aan* en *uit* behoren ook tot de opties.
+
+De opties kunnen worden geconfigureerd, bijvoorbeeld met contrast, overlay, hybrid, of een combinaties ervan.
+
+
+:ROW:verberg (getallen | nummers)
+
+(nummers | getallen) uit
+:COL:Verberg de getallen
+
+:ROW:
+klik {number}
+
+klik {number} {navigateoptions}
+:COL: Volg de genummerde link, optioneel met een aanvullende optie.
+
+Deze opties kunnen worden geconfigureerd, bijvoorbeeld "nieuw tabblad", "nieuw venster".
+
+Maar ook zijn er opties als "nieuw tabblad blijf", "focus" of "link kopieren".
+::
+
+
+ Overige commando's:
+
+:TABLE firstcoldifferent=1, border=1:
+:ROW: volgende pagina | vorige pagina
+
+pagina (terug|vooruit) &#091;{1-20}&#93;
+
+{pagecommands} pagina | pagina {pagecommands}
+:COL: navigeer binnen het tabblad naar vorige of volgende pagina's
+::
+
+*pagecommands* heeft standaard (default) alleen de optie *vernieuwen*.
+::
+
+-Voor het navigeren tussen de verschillende tabbladen, zie link(/grammars/globalgrammars/tasks/index.html, "*Tasks (taken) grammatica*"), documentatie moet nog uptodate worden gemaakt.
+
+
+
+

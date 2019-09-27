@@ -1,0 +1,143 @@
+BODY {background-color: #dddddd; color: black;
+font-family: Verdana, Helvetica, sans-serif}
+
+LI, TD, P, H1, H2, H3, H4, H5 {font-size: small; font-family: Verdana, Helvetica, sans-serif;
+line-height:125%; margin:0px; padding:0px}
+
+LI {padding:2px 0px}
+H1 {font-size:large; padding:0px 0px 10px 0px }
+h2 {font-size:medium; padding:10px 0px 3px 0px}
+h3 {font-size:small; padding:10px 0px 3px 0px}
+H1, H2, H3, H4, H5 {font-weight: bold}
+p {padding:3px 0px}
+
+a:link {color: black; font-family: Verdana, Helvetica, sans-serif;}
+a:visited {color: black; font-family: Verdana, Helvetica, sans-serif;}
+a:active {color:  black; font-family: Verdana, Helvetica, sans-serif;}
+
+IMG.imageright {float:right; margin:5px 0px 10px 10px}
+IMG.imageleft {float:left; margin:5px 10px 10px 0px}
+
+p.pre {margin:5px 0px 5px 0px; border: 1px solid black; 
+      color: black;
+      padding:5px;
+     font-family: Lucida sans typewriter, fixed, courier;
+     font-size: small;
+     background-color: #dddddd}
+
+IMG.thumbme {border: red solid 4px; }
+TD.topon {color: black; background-color: #cc9933;  border:1px solid black;font-weight:bold}
+TD.topon a:link,
+TD.topon a:visited,
+TD.topon a:active {text-decoration: none; font-weight: normal;
+color: black}
+
+
+TD.topoff  {background-color: #669999; padding:3px;font-weight:bold}
+TD.topoff,
+TD.topoff a:link,
+TD.topoff a:visited,
+TD.topoff a:active {text-decoration: none; color: black}
+
+
+
+TD.lefton {background-color: #cc9933; padding:2px 2px 2px 7px; font-weight: bold;
+           color: black;border-bottom:1px solid black;border-top:1px solid black}
+
+TD.lefton a:link,
+TD.lefton a:visited,
+TD.lefton a:active {text-decoration: none; font-weight: normal}
+
+TD.leftoff {color: black; background-color: #aaaaaa;  padding:2px 2px 5px 7px;font-weight:bold;border-right:1px solid black}
+TD.leftoff a:link,
+TD.leftoff a:visited,
+TD.leftoff a:active {font-weight:bold; text-decoration:none}
+TD.leftoff a:visited {color: #444444}
+
+TD.back {background-color: #aaaaaa}
+TD.navline {background-color: #669999;padding:10px 0px 5px 0px}
+TD.copyright {background-color: #669999;
+   font-size: xx-small; text-align: right; padding:5px}
+
+TD.body {padding:20px;  font-family: Times, serif}
+TD.body a:link {color: black} 
+TD.body a:visited {color: black} 
+TD.body a:active {color: black} 
+TD.body0 {vertical-align: top}
+
+P.pre {margin:20px 50px 1px 1px; border: thin solid #999999; padding:5px;
+        font-family: Lucida sans typewriter, fixed, courier}
+
+EM {font-weight:bold}
+TD.tekst {font-family: Times, serif; color:black}
+TD.leftmenu {padding:5px 0px 5px 5px ; background-color: #aaaaaa; vertical-align:top}
+TD.leftpart {padding:5px 0px 5px 5px ; background-color: #aaaaaa; vertical-align:top}
+TD.banner {background-color:#669999; text-align:center; color:#cc9933; font-weight: bold; font-size:x-large;padding:0px 0px 0px 10px} 
+TD.ibleft {padding:20px; vertical-align: top}
+TD.ibtop {padding:20px}
+TD.ibpright {padding:10px}
+TD.ibpbottom {padding:20px}
+TD.sitemapbutton {background-color:#669999; color:#ff9966; padding:5px; 
+font-weight: bold;text-align: center; width:7%; font-size:small;
+text-decoration:none;border:1px solid black}
+TD.sitemapbutton a:link {color:#ff9966; font-size:small;text-decoration:none}
+TD.sitemapbutton a:visited {color:#ff9966; font-size:small;text-decoration:none}
+TD.sitemapbutton a:active {color:#ff9966; font-size:small;text-decoration:none}
+TD.emailbutton {background-color : #669999; color: white; padding:5px; font-weight: bold;
+text-align: center; width:7%; font-size:small;border:1px solid black}
+TD.emailbutton a:link {color:white; font-size:small;text-decoration:none}
+TD.emailbutton a:visited {color: white;font-size:small;text-decoration:none}
+TD.emailbutton a:active {color:white; font-size:small;text-decoration:none}
+TD.contactbutton {background-color: #ff9966; color:white; padding:5px; 
+font-weight: bold; text-align: center; width:7%; font-size:small}
+TD.contactbutton a:link {color:white; font-size:small;text-decoration:none}
+TD.contactbutton a:visited {color:white; font-size:small;text-decoration:none}
+TD.contactbutton a:active {color:white; font-size:small;text-decoration:none}
+TD.printbutton {background-color: #ff9966; color:#99bbcc; padding:5px; 
+font-weight: bold; text-align: center; width:7%; font-size:small;text-decoration:none}
+TD.printbutton a:link {color:#99bbcc; font-size:small;text-decoration:none}
+TD.printbutton a:visited {color:#99bbcc; font-size:small;text-decoration:none}
+TD.printbutton a:active {color:#99bbcc; font-size:small;text-decoration:none}
+
+TH.th1 {background-color: #99bbcc; padding:2px 2px 2px 5px}
+TH.th {background-color: #aaaaaa; padding:2px 2px 2px 5px}
+TD.td1 { background-color: #ccddee; text-align: left; vertical-align:top;padding:2px}
+TD.td0 { background-color: #ccddee; text-align: left;padding:2px}
+TD.td { background-color: #cccccc; padding:2px}
+TABLE.table TD,
+TABLE.table TD {padding:2px 5px}
+
+TABLE.menu {text-align: center}
+TABLE.picmenu {background-color: #cccccc}
+TABLE.indexmenu {background-color: #cccccc}
+TABLE.inimenu {background-color: #cccccc}
+TABLE.tabon {background-color: green; font-weight: bold}
+TABLE.table { background-color: #999999}
+DIV.header {background-color: #669999}
+DIV.footer {background-color: #eeeeee}
+DIV.body {background-color: #cc9933}
+
+
+
+IMG {border-width:0px}
+@media print {TD.topon {font-size: medium; 
+              border-top: 1px solid black; border-right: 1px solid black;
+              border-left: 1px solid black}}
+@media print {TD.topon a:visited {font-size: medium}}
+@media print {TD.topoff {font-size: small; border-bottom: 1px solid black}}
+@media print {TD.topoff a:link {font-size: small}}
+@media print {TD.topoff a:visited {font-size: small}}
+@media print {TD.topspacer {border-bottom: 1px solid black}}
+@media print {TD.copyright {border-top: 1px solid black}}
+@media print {TD.lefton {font-size: medium}}
+@media print {TD.lefton a:visited {font-size: medium}}
+@media print {TD.leftoff {font-size: x-small}}
+@media print {TD.leftoff a:link {font-size: x-small}}
+@media print {TD.leftoff a:visited {font-size: x-small}}
+@media print {TD.emailbutton {display:none}}
+@media print {TD.leftpart {display:none}}
+@media print {TD.sitemapbutton {display:none}}
+@media screen {td.copprintonly {display:none}}
+@media print {td.copprintonly {display:inline; border-top: 2px solid black; font-size: xx-small}}
+@media print {td.copyright {display:none}}
+

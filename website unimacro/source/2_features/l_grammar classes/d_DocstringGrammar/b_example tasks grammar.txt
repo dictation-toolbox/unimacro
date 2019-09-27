@@ -1,0 +1,105 @@
+example _tasks.py
+
+ The complete grammar (called with *show tasks*):
+ 
+:CODE:
+
+--- grammar:
+
+#commands for switching tasks:
+<taskswitch> exported = (task)({taskcount}|{application}|Back);
+<taskaction> exported = (<taskswitch> | (task))({taskaction});
+
+#commands for positioning (moving) and resizing tasks:
+<taskposition> exported = (<taskswitch>|(task)) position <directionplus> [<percent>];
+<taskmove> exported = (<taskswitch> | (task)) move
+                           (<directionplus>|<angle>)
+                               [<pixels>|<centimeters>|<millimeters>|<inches>|<percent>];
+<taskresize> exported = (<taskswitch> | (task)) (stretch|shrink)
+                             (<directionplus>|<angle>)
+                                [<pixels>|<centimeters>|<millimeters>|<inches>|<percent>];
+    
+    #directional specifications:
+    <angle> = {degrees} degrees;
+    <directionplus> = {directionplus};
+    
+    # size specifications:
+    <pixels> = {pixelcount} [pixels];
+    <centimeters> = {sizecount} centimeters;
+    <millimeters> = {sizecount} millimeters;
+    <inches> = {sizecount} inches;
+    <percent> = {percentcount} percent;
+
+#commands for recording taskbar and clock positions:
+<gettaskposition> exported = ('get task position') ({taskcount}|clock);
+
+# here are the older commands:
+# icon (system tray) commands:
+<iconswitch> exported = (icon) ({iconcount} |{character}|(<direction> [{iconcount}])) [{iconaction}];
+<thisicon> exported = (icon) {iconaction};
+<direction> = {direction};
+
+# windows inside an application:
+<windowswitch> exported  = (Window) ({windowcount}|Back|Previous|Next);
+
+# miscelaneous:
+<fileswitch> exported  = ('switch file to') {switchapp};
+<removecursor> exported = 'remove cursor';
+<convertfile> exported = convert file to (windows|dos|unix);
+::
+
+ A lot of the functions are *DocstringGrammar* style *rule* or *subrule* functions:
+
+:CODE:
+    def rule_taskswitch(self, words):
+        """#commands for switching tasks:    
+        (task)({taskcount}|{application}|Back)
+        """
+        ...
+::
+
+ or
+ 
+:CODE:
+    def subrule_directionplus(self, words):
+        '{directionplus}'
+        # just defining the directionplus list
+::
+ 
+ or
+ 
+:CODE:
+    def subrule_pixels(self, words):
+        """
+        # size specifications:
+        {pixelcount} [pixels]
+        """
+        # giving an optional word and also comment in the specification
+::
+
+   But part of the rules are defined as:
+ 
+:CODE:
+    gramSpec = """
+
+# here are the older commands:
+# icon (system tray) commands:
+<iconswitch> exported = (icon) ({iconcount} |{character}|(<direction> [{iconcount}])) [{iconaction}];
+<thisicon> exported = (icon) {iconaction};
+<direction> = {direction};
+
+# windows inside an application:
+<windowswitch> exported  = (Window) ({windowcount}|Back|Previous|Next);
+...
+    """
+::
+
+ with functions like:
+
+:CODE: 
+    def gotResults_thisicon(self, words, fullResults):
+        """do actions on active icon"""
+        ...
+::
+
+

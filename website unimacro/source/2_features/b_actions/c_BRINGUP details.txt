@@ -1,0 +1,103 @@
+The BRINGUP Unimacro shorthand command
+
+Many BringUp's this way simply go through the *AppBringUp* execScript command of NaturallySpeaking.
+So bringing up a new task like *calc* works this way.
+
+BUT there is more: brought up tasks are remembered, so repeated switching just brings the previous task in focus.
+
+For some applications that were started without the BRINGUP Unimacro shorthand command a new instance will be started.  This new instance will subsequently be switched to repeatedly when called.
+
+ Tasks grammar
+The BRINGUP Unimacro shorthand command is extensively used in the link("/grammars/globalgrammars/tasks\index.html", "*tasks grammar*").  Tasks you want to be able to call should be defined in the *task.ini* configuration file (opened by calling *edit tasks*). A sample:
+
+:CODE:
+[application]
+pythonwin = pythonwin
+idle = idle
+calc = calc
+calculator = calc
+command = cmd
+edit = edit
+emacs = emacs
+email = outlook
+excel = excel
+firefox = firefox
+internet = iexplore
+voice code = voicecode
+voice coder = voicecode
+word = winword
+messages = messages
+dragonpad = dragonpad
+
+::
+
+On the left-hand side are the spoken forms, sometimes for better recognizability.  
+-Note on this level also *edit = uedit32* could be defined, but this tuning can also be done as described below.  When doing it this way, the *BRINGUP edit* action can also be called from other places.  
+-Note also the windows explorer is not called here, because bringing up folders can better be done with the grammar *folders*.
+
+ More tuning
+Some of the applications (on the right hand side) need more tuning.  This can be done in 2 levels:
+
+-through the link(/features/actions/actionsconfigurationfile.html, *actions.ini* configuration file); 
+-through special coding in python: *actions.py*.
+
+ 1. Configuring through actions.ini
+
+By calling *edit actions* you open this configuration file.  A sample:
+
+:CODE:
+[bringup emacs]
+path = D:/emacs-21.3/bin/runemacs.exe
+
+[bringup edit]
+name = uedit32
+
+[bringup dragonpad]
+name = natspeak
+
+[bringup email]
+name = outlook
+
+[bringup internet]
+name = iexplore
+
+[bringup idle]
+path = C:\Python23\pythonw.exe 
+args = C:\Python23\Lib\idlelib\idle.pyw
+
+[bringup ibmrad]
+name = javaw
+title = Java - Rational
+args = -product com.ibm.rational.rad.product.v75.ide
+path = C:\Program Files\IBM\SDP\eclipse.exe
+
+::
+
+-The last example added by Jerome for Eclipse (apparently "Java" environment). The title does not act (yet). Should be worked at.
+
+-Some programs (email, internet) can be configured by giving it the proper executable *name* (outlook, iexplore).
+
+-Also for *edit* some suitable text editor can be defined (eg *name = uedit32*).
+
+-Emacs needs the complete *path*, as it is not installed in one of the windows standard folders. 
+
+-The python IDE *idle* is a subprogram of *pythonw* (requiring the complete path here), having the argument in the variable *args*.
+
+ 2. Configure in python: actions.py:
+   
+This is done presently for voicecode and for messages.
+
+ voicecode
+
+A variable *voicecodeApp = 'emacs'* is defined, and a special function *def voicecodeBringUp()*.
+
+These two ensure first emacs is brought up and after that the VoiceCode things are started (mediator, voicecode-mode), and the VoiceCode user is switched to.
+
+ messages
+
+This one has a special function *def messageBringUp()*, which brings the *Messages from NatLink* window to the front.
+
+
+
+ 
+ 

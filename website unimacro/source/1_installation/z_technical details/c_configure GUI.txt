@@ -1,0 +1,9 @@
+Configure GUI
+
+The configure GUI is now part of the installer. If you choose *Configure NatLink via GUI* from the start menu after you install NatLink from the .exe installer, this GUI is opened. 
+
+The necessary elevated mode is automatically started when you use the scripts from the start menu:
+
+- The "Configure Natlink with GUI" link opens start_configurenatlink.py, this python program does the rest (thanks to Mark)
+
+

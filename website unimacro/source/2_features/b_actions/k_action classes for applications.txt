@@ -1,0 +1,40 @@
+Action classes for specific applications
+
+For specific tasks, that cannot be performed with simple actions (keystrokes), meta-actions or Unimacro Shorthand Commands, it now is possible to define an application specific actions class.
+With this action class actions can be done, like jumping to a line in a file, but also information from the application can be retrieved, like the line number the cursor is on.
+
+ Example: win32pad
+The easiest example is link(www.gena01.com/win32pad, *win32pad*), the notepad lookalike with line numbers. In the file *win32pad-actions.py*, in the *actionclasses* subdirectory of Unimacro, the class *Win32padActions* is defined.
+
+The needed actions go through *windows message functions* (see link(/features/globaldictation/index.html, page about global dictation), but also the module *messagefunctions.py* in the Unimacro directory.
+With these messages function, as called in the class MessageActions (found in actionbases.py), information about a window can be retrieved.
+
+In the example the function getCurrentLineNumber is used to give the line number the cursor is on. This is used in the grammar _lines.py for doing line numbers modulo 100.
+
+ Example: ultra edit
+The program uedit32, link(http://www.ultraedit.com/, *UltraEdit*), which is not free software, does the same trick. Some more effort was needed here to find the foreground tab in this multitab IDE.
+
+ Example: komodo
+With my favourite IDE, link(http://www.activestate.com/komodo-ide, *Komodo*), also not free software, I did not succeed to implement a class that does the same trick. As Komodo can execute python programs, a dialogue via TCP-IP could be setup to retrieve the necessary information. This would be the same strategy as voicecode uses with Emacs.
+
+ Example: excel
+Connection with Excel is made via a so-called *COM object*. One of the functions is again *getCurrentLineNumber*, so the grammar *_lines.py* can also here use the *line numbers modulo hundred* option.
+
+Moreover via this class more information is retrieved from the Excel instance, like sheet names. The program specific grammar *excel.py* also use this this module to get and set information.
+
+
+ Usage: _lines.py
+In the grammar *_lines* use of these functions is made as soon as a valid program specific actions module is found, as in the examples above. Then the grammar lines can use to current line number in order to perform a line number switch modulo 100, has also is established with Emacs through Vocola commands.
+
+When the option *line numbers modulo hundred* is not set, this grammar this no attempts to get an instance of this program specific actions modules.
+
+
+ Usage: Excel
+As described above, the grammar Excel can use this actions class *excel-actions.py* for doing several specific commands.
+
+ Implementation
+care has been taken that the load for Unimacro is as little as possible. Therefore in the module *actions.py* in specific cases the program specific actions modules are instantiated, and the results are kept in a dictionary with the window handles as keys. This means that when an application is visited more often, the instance can be retrieved through this dictionary.
+
+For details about the calling, please study the file *_lines.py*.
+
+For details about the implementation of this program specific actions class this look into the *actionclasses* directory of Unimacro.

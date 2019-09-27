@@ -1,0 +1,38 @@
+﻿History of Natlink, Unimacro and Vocola
+
+ Natlink
+
+Natlink was written in 1999/2000 by Joel Gould, at that time working at Dragon Systems. 
+
+He presented two important presentations about Natlink.
+
+The first one is 
+an link(NatLinkTalk.pdf, "Introduction to NatLink") (pdf, 236kb), and it gives an impression of the functionality of Natlink, and also an introduction of Python.
+
+This talk is also available as link(natlinktalk.ppt, powerpoint) or link(natlinktalk.odp, OpenOffice Presentation).
+ 
+ Unimacro
+Was developed in the early 2000's by Quintijn Hoogenboom, with support from Bart Jan van Os and Ben Staniford.
+
+Around 2010 Frank Olaf Sem-Jacobsen contributed several things, including a _latex grammar.
+
+ Vocola
+
+(will be added)
+
+ Voicecode
+
+The Voicecode project implemented a framework for programming by voice in different programming languages. In the preparation phase Joel Gould presented his talk for these 
+link(VoiceCoders.pdf, "VoiceCoders, how to implement dictation into Natlink") (pdf, 180kb). For an explanation of the working of dictation grammars it is still an important source of information.
+
+This talk is also available as link(voicecoders.ppt, powerpoint) or link(voicecoders.odp, OpenOffice Presentation).
+
+The Voicecode project is regrettably obsolete. But files are still available at link(https://sourceforge.net/projects/voicecode/files/VoiceCode/, SourceForge).
+
+ Dragonfly
+
+(will be added).
+
+
+
+

@@ -1,0 +1,65 @@
+Elevator view of Vocola 2 and Unimacro
+
+In order to position these two "packages" inside the NatLink package,  "elevator views" are presented here, as proposed by Mark Lillibridge.
+
+
+:TABLE firstcoldifferent=0:
+:HEADING:Unimacro
+:COL:Vocola 2
+ 
+:ROW width=50%:
+Some important voice macros (e.g., switching between tasks(windows) by number or name, typing multiple keystrokes at once) and acting based on which windows appear during a macro require sophisticated and lengthy programming and/or grammars.  Currently, power users reinvent the wheel or don't get around to developing all of the useful macros of this kind, and nonpower users go without.  Even when power users make available powerful macros, they're often incompatible with each other or insufficiently customizable by nonprogrammers.
+
+Unimacro is dedicated to changing this.  Unimacro is an attempt to bring together many power users to build a set of reusable power macros that can also be customised by nonprogrammers using configuration files.  Unimacro is thus about software reuse of power macros.  
+
+The unit of modularity in Unimacro is the grammar, which specifies a grammar for a mini voice language and the meanings of each of the commands, which may involve more complicate implementations.  Making these sort of mini languages, most of them being global (valid in each application), also encourages defining consistent and easy to remember sets of commands. Functions doing more complicated things can be reused in grammar files and often in user-defined commands.
+
+Grammars are already available for:
+-typing multiple keystrokes
+-selecting/copying/moving by line numbers
+-switching between tasks
+-continuously repeating an action until stopped
+-switching to files/folders/websites
+-correcting commands
+
+The basic Unimacro infrastructure supports customizing the words used by grammars via configuration files, allowing nonpower users to translate grammars to different languages.  As soon as a translation is written it can be incorporated in the next release so other non-English users can profit.  
+
+In keeping its emphasis on code reuse, Unimacro also emphasizes creating *meta-actions* like &lt;&lt;savefile&gt;&gt; that produce the same effect in different applications even though different keystrokes are required; this allows writing a macro only once that can work across different applications.  Also different Windows (language) versions can be adapted to more quickly.
+
+
+
+:COL width=50%:
+Vocola 2 is a system like NatLink and DNS's advanced scripting language that allows you to create voice commands; unlike those systems, it emphasizes ease of learning and ease of use rather than the ability to create complicated and powerful commands.  It does this primarily through introducing a simple new macro writing language optimized for doing the most common macro tasks in a concise manner.  Compare the oneliner:
+
+    as (thumbnails=h | tiles=s | icons=n | list=l | details=d) = {alt+v} $1;
+
+
+Vs. the DNS version (the three pieces below are entered and kept separately):
+
+    as <as_kind>
+
+
+				Sub Main
+				   SendDragonKeys "{alt+v}" + Left$(ListVar1, InStr(ListVar1+"\","\")-1)
+				End Main
+			
+		
+				<as_kind>:
+				h\thumbnails
+				s\tiles
+				n\icons
+				l\list
+				d\details
+
+
+Note the lack of boilerplate and "black magic" in the Vocola 2 version.
+
+Vocola 2 also makes it easier to organize, browse, and edit commands.
+Unlike DNS which insists on alphabetizing your commands and only lets you see the definition of one command at a time, Vocola 2 lets you arrange commands (including their definitions) anyway you want using your favorite text editor.  For example, you can group all your Emacs buffer change commands together.  You can use this to factor out the common comments/code using user-defined functions, something which is hard to do in DNS.  I find myself writing many more macros with Vocola 2 than DNS because the process is so much faster and easier.
+
+Although Vocola 2 is substantially less powerful than the other systems -- for example, it's only control structure is to repeat a series of actions an integer number of times -- it suffices for 95% of the macros you want to write.  You need to write the remaining macros in one of the other systems, all of which Vocola 2 happily coexists with.  In practice, the nonpower user is unable to do this and either does without or uses code they don't understand provided by someone else.
+
+
+
+
+::

@@ -1,0 +1,31 @@
+Installer 
+
+Using the installer program (with inno setup) is not very difficult. It is controlled from the python script 
+*setupnatlinkwithinno.py*, which resides in *NatLink/natlinkInstaller*. 
+
+You need the program link("http://www.jrsoftware.org/isdl.php", "*inno setup*") on your computer, and you need to have both NatLink and Unimacro files via subversion (SVN).
+
+
+ Local actions:
+ 
+Do the following steps:
+-change __version__ in natlinkstatus (Core directory)
+-Update Unimacro and NatLink
+-Commit NatLink
+-Export (a SVN command) both Unimacro and NatLink into a new folder (eg *D:\NatLink\releases\natlink4.0*)
+-This folder then has subfolders *NatLink* and *Unimacro*!
+-Run the script *setupnatlinkwithinno.py* from the file in this directory (*D:\NatLink\releases\natlink4.0\NatLink\natlinkInstaller*)
+
+The resulting setup....exe will be created in a directory *dist*  (*D:\NatLink\releases\natlink4.0\dist*) and will be called 
+*setup-NatLink-4.0.exe* (*4.0* being the release number).
+
+ Going to sourceforge
+
+-Next you must go to *http://sourceforge.net*. 
+-Login and search for *natlink*.
+-Go to the files section and follow the instructions.
+-Upload the *.exe* file.
+-You also need a *README.txt* file, which shows a short instruction on the relevant download page.
+
+
+

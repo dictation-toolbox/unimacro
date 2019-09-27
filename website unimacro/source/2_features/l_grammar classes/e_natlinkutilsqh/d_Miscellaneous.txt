@@ -1,0 +1,8 @@
+Miscelaneous functions 
+
+
+ SetForegroundWindow
+This important function for switching tasks has been elaborated (febr 2011). The Windows call  to *win32gui.SetForegroundWindow* often fails, because the active foreground window doesn't give up its focus.
+
+This seems to have been tackled by an extra trick (if needed): get the Dragon bar in focus by sending the shortcut key _&#123;numkey*}_ and subsequent an _&#123;esc}_ key. It seems that after this has been done, the switching to the wanted window goes smooth. When this trick is used you see the NatSpeak menu flash up shortly.
+

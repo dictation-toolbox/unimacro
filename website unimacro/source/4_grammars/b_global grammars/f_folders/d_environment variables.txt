@@ -1,0 +1,112 @@
+confignatlinkvocolaunimacroEnvironment variables
+
+For all definitions you can now also use the Windows system environment variables.  Enclose with _%_ and *all capitalise* them.  Its sensible use is to put them at the front of a file, folder or virtual drive definition. Slashes can be omitted.
+
+ Examples:
+
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING:Variable
+:COL:Meaning
+
+:ROW:%HOME%
+
+~
+:COL:pointing to your home folder, most often your path to My documents, see below
+
+Tilde is a common shorthand notation for your home folder. 
+
+:ROW:%PROGRAMFILES%
+:COL:pointing to the program files folder
+
+:ROW:%APPDATA%
+:COL: pointing to your app data folder
+
+:ROW:%DESKTOP%
+:COL: pointing to your desktop folder
+
+::
+
+ Natlink related Environment Variables
+ 
+Starting with version 4.1whiskey also Natlink related environment variables are added. The interface is a bit tricky, but the _folders grammars uses them.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:Variable
+:COL:Example value
+:ROW:%BASEDIRECTORY%
+:COL:C:\NatLink\NatLink\MacroSystem
+:ROW:%COREDIRECTORY%
+:COL:C:\NatLink\NatLink\MacroSystem\core
+:ROW:%DNSINIDIR%
+:COL:C:\ProgramData\Nuance\NaturallySpeaking15
+:ROW:%DNSINSTALLDIR%
+:COL:C:\Program Files (x86)\Nuance\NaturallySpeaking15
+:ROW:%DNSUSERDIRECTORY%
+:COL:C:\ProgramData\Nuance\NaturallySpeaking15\Users\QNederlands\current
+:ROW:%NATLINKDIRECTORY%
+:COL:C:\NatLink\NatLink
+:ROW:%UNIMACRODIRECTORY%
+:COL:C:\NatLink\Unimacro
+:ROW:%UNIMACROUSERDIRECTORY%
+:COL:C:\Documenten\unimacro_qh
+:ROW:%USERDIRECTORY%
+:COL:C:\UserDirectory\dragonfly-macros
+:ROW:%VOCOLAUSERDIRECTORY%
+:COL:C:\Documenten\vocola_qh
+::
+
+ HOME and ~
+The environment variable *%HOME%* is by default NOT set in Windows.  In order to make the story above work, Unimacro takes for *%HOME%*: the *My documents* folder on your system.
+
+Of course you can also set *%HOME%* yourself (in System properties, Advanced, Environment variables). 
+When you are using Emacs (VoiceCode) you probably have set the *%HOME%* variable this way in order to get proper access to your *.emacs* file.
+
+For *~* also this folder is taken.
+
+ Show all these variables
+ 
+You can show all the Environment variables and the Natlink specific variable via a Unimacro Shorthand Command. In Vocola you can enter in your (global) command file:
+
+:CODE:
+print all variables = Unimacro("PRINTALLENVVARIABLES");
+print natlink variables = Unimacro("PRINTNATLINKENVVARIABLES");
+::
+
+ Examples
+ 
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING colspan=2:Virtual drives
+
+:ROW:md
+:COL:%HOME%
+
+:ROW:pf
+:COL:%PROGRAMFILES%
+
+:HEADING colspan=2:Folders
+
+:ROW:md:/private or
+
+ ~private or 
+ 
+ ~/private or
+ 
+ %HOME%/private
+ 
+:COL:all pointing to the folder "private" in your documents
+
+:ROW:
+%NATLINKDIRECTORY%/confignatlinkvocolaunimacro
+:COL: the directory where the config program of Natlink is located.
+
+
+:HEADING colspan=2:Files
+
+:ROW:~/public/examples.doc
+
+:COL:A file in the folder public of your home folder.
+
+::
+

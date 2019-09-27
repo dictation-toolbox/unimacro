@@ -1,0 +1,74 @@
+nsformat
+
+This module was written by Joel Gould a few years after the initial release of NatLink. It is in the *MacroSystem/Core* directory of NatLink.
+
+The purpose is to do formatting of the dictated words in a window/control (*VDct*) was replaced by a DictGramBase subclass. By this DictGramBase all dictated words are caught, but not formatted.
+
+Nsformat can also be used to format words that are called by the *dgndictation* imported rule, also called *_anything* in Vocola.
+
+In NatSpeak versions up to 10 the word properties of each dictated word were extracted and with these word properties the words were formatted.
+
+Starting with Dragon 11 the word properties cannot be extracted by NatLink anymore, but a new mechanism of *category* is introduced in dictated words. Like:
+
+:CODE:
+@\at-sign\at_sign
+.\period\period
+.\period\full stop
+.\dot\dot
+.\point\point
+,\comma\comma
+K\letter
+L\letter\Lima
+a\spelling-letter\A  (in spell mode)
+l\spelling-letter\Lima (in spell mode)
+a\determiner
+::
+
+With these categories the formatting properties are constructed in the updated version of nsformat (with release 4.0 of NatLink).
+
+ Use
+
+The essential call to nsformat is:
+
+:CODE:
+import nsformat
+(...)
+    def gotResults_dgndictation(self, words, fullResults):
+        formattedOutput, outputState = nsformat.formatWords(words, state=-1)  # no capping, no spacing
+::
+
+-Note the output is a tuple of length 2, the output text and the output state, the latter can be used in a subsequent call of nsformat.
+-This example comes (a bit adapted) from the grammar *_brackets.py*, see there for more implementation details.
+-Do not forget *dgndictation imported;* in your grammar specification. If you use the DocstringGrammar subclass (like *_brackets.py*), you can define *importedrule_dgndictation* instead.
+
+
+
+ State
+The state to start with can be given as *None* (default), as integer or as tuple.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=20%:state
+:COL:comment
+
+:ROW:None (default)
+:COL:no space next, active cap next (like beginning of dictation box)
+:ROW:0
+:COL: no properties set, will start with a space and lowercase
+:ROW:&nbsp;-1
+:COL:no space, starting with lowercase
+:ROW:positive integer
+:COL:extract properties according to bit positions
+:ROW:tuple of integers
+:COL:these are the "extracted properties", examples:
+:ROW:(8, 11)
+:COL:no space at start, capitalize all words
+:ROW:(8, 12)
+:COL:no space at start, uppercase all words
+:ROW:(13, 14)
+:COL:no spacing, all lowercase (eg for dictating email address)
+
+::
+
+See more details in the source file, *nsformat.py*, and in the unittest file *unittestNsformat.py* (in the PyTest directory of NatLink).
+
+

@@ -1,0 +1,31 @@
+Nederlandse commando's voor ShownummersPlus!
+
+Deze commando's kun je ook zien door *toon sjoo nummers plus*. Bewerken van de verschillende acties kan na het commando  *bewerk sjoo nummers plus*.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:commando
+:COL:opmerking
+
+:ROW:(toon|verberg) nummers &#091;continu]
+:COL: toon of verberg de nummers,
+
+met *continu* worden de nummers na elke opdracht van deze grammatica opnieuw getoond
+
+:ROW:(toon | verberg) (tree|taakbalk) &#091;nummers]
+:COL:*tree* of *taakbalk* zijn alternatieven, het woord *nummers* is optioneel.
+
+Het woord *tree* lijkt erg goed te werken in de praktijk.
+
+:ROW:{klik} {nummer} &#091;ga door|continu|stop]
+:COL:klik op een nummer (voor alternatieven zie onder).
+
+Vraag (optioneel) om door te gaan met het tonen van de nummers, of om dit te stoppen
+
+:ROW:(tree|taalbalk) {nummer} &#091;{klik}|{actie}]
+:COL:klik op een taakbalk item, optioneel met een klikactie gespecificeerd, of met een aanvullend commando (zie onder).
+
+::
+
+ klik en acties
+-klik kan zijn *klik*, *links klik*, *rechts klik*, *dubbel klik* enz.
+-acties zijn (standaard ingevuld) *sluiten*, *vernieuwen*. Lees ook link(/grammars/globalgrammars/shownumbersplus/specifyactions.html, uitleg over acties),

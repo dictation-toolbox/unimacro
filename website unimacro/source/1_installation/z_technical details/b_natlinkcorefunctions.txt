@@ -1,0 +1,41 @@
+NatLink Core Functions
+
+This module *natlinkcorefunctions.py* is in the *Core* directory.
+
+The functions are used by natlinkstatus.py,
+and can also used by other modules.
+
+The most important are:
+
+ getExtendedEnv
+ 
+You can use this function for expanding *~* or *%HOME%* to your personal home directory, or for other%XXXX% variables.
+
+Note: By default for *~* or *%HOME%* the value of *%PERSONAL%* is taken, which points to the default documents directory of the user that is logged in (*%USERPROFILE%\Documents*). If you want another value for *%HOME%* (and therefore for *~*), you can specify this via the Environment Variables menu in the System Properties program. See an link(https://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/sysdm_advancd_environmnt_addchange_variable.mspx, example).
+
+Starting September 2015 also the actual NatLink directories can be expanded, with a similar function in *natlinkstatus.py*. For usage and examples, please see link(natlinkstatus).
+
+ Functions of natlinkcorefunctions:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:function
+:COL:description
+
+:ROW:
+getBaseFolder
+:COL: returns the folder from the calling module (a function like this should be copied into other modules that need this facility)
+:ROW:fatalError
+:COL:raises error again, if new_raise is set, otherwise continues executing (for this module only)
+:ROW:*getExtendedEnv(env)*
+:COL:gets from os.environ, or from window system calls (CSIDL_...) the
+environment. If HOME is not set (see above), take PERSONAL for HOME and ~.
+
+Run the module in order to see all the possibilities.
+:ROW:getAllFolderEnvironmentVariables
+:COL:get a dict of all possible HOME and CSIDL variables,
+that result in a valid folder path
+:ROW:substituteEnvVariableAtStart
+:COL:substitute back into a file/folder path an environment variable
+::
+
+

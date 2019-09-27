@@ -1,0 +1,72 @@
+Unimacro Shorthand Commands
+
+All sophisticated link(/features/actions/shorthandcommands.html, bold(Unimacro shorthand commands)) can be called from Vocola 2, like
+
+-*Unimacro("WINKEY e")* for starting the explorer
+-*Unimacro("U Delta")* for printing the Greek DELTA on your screen
+-*Unimacro(KW)* for killing a window (skipping the yes/no question)
+-*Unimacro(MDOWN)* for pressing the mouse button and
+-*Unimacro(ENDMOUSE)* for releasing the mouse button
+
+For most of these commands a helper function is included in the Vocola include file *Unimacro.vch*. This file should be copied into the Vocola Commands File Directory.  Your Vocola User Files then need an include line. These functions are performed by the NatLink configure program (GUI or CLI). (Button *Vocola compatibility* of CLI functions *l* and *m*.)
+
+The result is that above functions can be called directly, like Vocola 2 functions:
+-*WINKEY(e)*
+-*U(Delta)*
+-*KW()*
+-*MDOWN()*
+-*ENDMOUSE()*
+
+You can browse through all the possibilities in the include file *Unimacro.vch*. Also consult: 
+link(/features/actions/shorthandcommands.html, *the page on this site*)
+
+Note the function calls that go through Vocola 2 expect a fixed number of parameters. For example the *WINKEY* function expects one parameter, a letter (*e*) or a keystroke (*{f1}*). If you just want to call the Windows key, you can use either *Unimacro(WINKEY)* or (in this example) WINKEY0(). The latter being defined in the include file *Unimacro.vch*.
+
+
+ Example relative mouse positions
+ 
+Next example lets the mouse visit the corners of the screen, active window or the client area of the active window. It remembers the previous mouse position and returns there after the excursion. (Instead of *0* as fourth parameter in the *RMP* function also *noclick* can be given.)
+
+:CODE:
+include "Unimacro.vch";
+
+<area> := (world = 0 | window = 1 | client area = 5 );
+
+travel around the <area> = 
+RM()
+    RMP($1, 0, 0, 0)         VW()
+    RMP($1, -0.01, 0, 0)     VW()
+    RMP($1, -0.01, -0.01, 0) VW()
+    RMP($1, 0, -0.01, 0)     VW()
+    RMP($1, 0, 0, 0)         VW()
+CANCELMOUSE();
+::
+
+ Example moving the mouse around
+ 
+Next example lets the mouse move in *pixels*, *steps* or *jumps*, relative to the current  position. These commands only work on the primary screen only (in case you work with mulptiple screens).
+
+:CODE:
+include "Unimacro.vch";
+
+<mouse_units> := (pixels=1 | steps=10 | jumps=50); 
+
+mouse left 1..20 <mouse_units> = MP(2, Eval(-$1*$2), 0, 0);
+mouse right 1..20 <mouse_units> = MP(2, Eval($1*$2), 0, 0);
+mouse up 1..20 <mouse_units> = MP(2, 0, Eval(-$1*$2), 0);
+mouse down 1..20 <mouse_units> = MP(2, 0, Eval($1*$2), 0);
+::
+
+A different approach is to make one range, which increases the "gaps", in order to remain maintainable by NatSpeak:
+
+:CODE:
+<mouse_range> := (1|2|3|4|5|6|7|8|9|10|
+        11|12|13|14|15|16|17|18|19|20|
+        25|30|35|40|45|50|60|70|80|90|100|
+        125|150|175|200|
+        250|300|350|400|450|500);
+mouse left <mouse_range> = MP(2, Eval(-$1), 0, 0);
+mouse right <mouse_range> = MP(2, $1, 0, 0);
+mouse up <mouse_range> = MP(2, 0, Eval(-$1), 0);
+mouse down <mouse_range> = MP(2, 0, $1, 0);
+::

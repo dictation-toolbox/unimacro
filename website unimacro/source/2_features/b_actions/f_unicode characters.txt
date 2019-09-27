@@ -1,0 +1,106 @@
+Unicode characters
+
+With the Unimacro shorthand command *U* you can paste most *unicode characters* to your screen, like *Alpha*, *eacute* etc. In this way with Dragon NaturallySpeaking Unicode characters can be printed in virtually any program.
+
+In Vocola you can choose between quotes (*"U delta"*) or parenthesis:  *U(delta)*.
+
+ See link(/features/unimacroandvocola/unimacroshorthandcommands.html, "section on Vocola and Unimacro) when you want to use Unimacro Shorthand Commands in Vocola.
+
+
+Simply put in aVocola commands file: *"U delta"* or *U(delta)*. 
+
+Or put in some action in some grammar: *action('U delta')*.
+
+As a test put the following in your local (for example Word) or global commands file:
+
+:CODE:
+test command = 
+"{enter}Delta (as 0394): " U(0394)
+"{enter}Delta (as 394):" U(394)
+"{enter}Delta (as Delta):" U(Delta)
+"{enter}alpha (as alpha):" U(alpha)
+"{enter}alpha (as 03B4):" U(03B1)
+"{enter}Pi (as 03A0):" U(03A0)
+"{enter}Pi (as 3a0):" U(3a0)
+"{enter}Pi (as Pi):" U(Pi)
+"{enter}wrong spades (??, other font?):" U(2660)
+"{enter}Cyrillic capital letter NJE:"  U(040A)
+"{enter}eacute:;" U(eacute)
+"{enter}unicode ETH (as U ETH):;" U(ETH)
+"{enter}ascii ETH (as A 208):;" A(208)
+"{enter} ETH (as U d0):;" U(d0)
+"{enter} ETH (as U 00D0):;" U(00D0)
+"{enter}";
+::
+
+ Note the bottom 5 examples stop at eacute. This is a little mistake which will be corrected in the next version of Unimacro.
+
+ Graham Cole contributed the following list. It (or part of it) can be included in a Vocola commands file (say *edit global commands* or *edit commands* for some application)
+
+:CODE:
+Greek alpha = U(alpha);
+Greek beta = U(beta);
+Greek big beta = U(Beta);
+Greek delta = U(delta);
+Greek big Delta = U(Delta);
+Greek epsilon = U(epsilon);
+Greek gamma = U(gamma);
+Greek big gamma = U(Gamma);
+Greek lambda = U(lambda);
+Greek micro = U(micro);
+Greek omega = U(omega);
+Greek big omega = U(Omega);
+Greek pi = U(pi);
+Greek big pi = U(Pi);
+Greek psi =U(psi);
+Greek rho = U(rho);
+Greek sigma = U(sigma);
+Greek big sigma = U(Sigma);
+Greek tau = U(tau);
+Greek theta = U(theta);
+Greek big theta = U(Theta);
+Greek zeta = U(zeta);
+Euro sign = U(euro);
+Euro abbreviation = EUR;
+Equivalent sign = U(equiv);
+fraction one half = U(frac12);
+fraction one third = U(2153);
+fraction one fourth = U(frac14);
+fraction one five = U(2155);
+fraction one six = U(2159);
+fraction five six = U(215A);
+fraction one eight = U(215B);
+fraction three eight = U(215C);
+fraction five eight = U(215D);
+fraction seven eight = U(215E);
+fraction two third = U(2154);
+fraction two fifth = U(2156);
+fraction three quarter = U(frac34);
+fraction three fifth = U(2157);
+fraction four fifth = U(2158);
+Right Arrow Sign = U(rarr);
+Double Right Arrow = U(rArr);
+Left Arrow Sign = U(larr);
+Double Left Arrow = U(lArr);
+Down Arrow Sign = U(darr);
+Double Down Arrow = U(dArr);
+Up Arrow Sign = U(uarr);
+Double Up Arrow = U(uArr);
+Paragraph Mark = U(para);
+
+::
+
+ Combining with other things
+
+Next example shows how you can surround the Right Arrow Sign by spaces:
+
+:CODE:
+Right Arrow Sign = {space} U(rarr) {space};
+::
+
+  HtmlEntityRefs
+
+ Codes that are also known as "htmlentityrefs" for html are presented here:
+
+getEntityDefs()
+

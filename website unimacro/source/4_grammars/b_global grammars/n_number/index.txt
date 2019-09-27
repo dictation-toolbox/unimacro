@@ -1,0 +1,92 @@
+Number dictation (_number simple)
+
+This grammar uses very smart grammar rules in order to speak virtually any number.
+
+-These number grammar rules can be used on its own (with this grammar), for example when dictating many numbers in your Excel worksheet.
+-This grammar serves also as an example on how to use the number grammar rules in other grammars, like
+link("/grammars/specificgrammars/firefoxbrowsing/index.html", "Firefox browsing") or
+link("/grammars/globalgrammars/lines/index.html", "_lines"). 
+-For more complex examples see link(number extended).
+-For instructions of implementing in your own grammars, see link("Use in other grammars").
+
+ Default name
+The default name is "number simple" (Dutch *getal simpel*).
+
+ Basic grammar rules
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:grammar rule
+:COL:comment
+
+:ROW:Number {integer}
+:COL:print the number you call (see customisation below)
+:ROW:Number minus {integer};
+:COL:print a negative number
+:ROW:Number {float};
+:COL:print fractional number with *point* or *dot* (Dutch *punt* or *komma*)
+
+::
+
+ Easy examples:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:result
+
+:ROW:Number one
+:COL:1
+
+:ROW:Number three hundred twenty three
+:COL:323
+
+:ROW:Number three twenty three
+:COL:the word *hundred* is not needed, same result: 323
+
+:ROW:Number one two tree four five
+:COL:12345
+
+:ROW:Number minus one
+:COL:&nbsp;-1
+
+:ROW:Number three point seven
+:COL:3.7
+::
+
+ More examples:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:result
+
+:ROW:Number oh thirty four
+:COL:a number can have leading zero's (dictated as 'oh' or 'zero'): 034
+
+:ROW:Number minus twenty three fifty four dot fifty
+:COL:&nbsp;-2354.50
+
+:ROW:Number three million two hundred thousand twenty five
+:COL:dictate with the words million, thousand and hundred (avoid the word *and*): 3200025
+
+:ROW:Number three twenty three forty four sixty six ninety nine eight
+:COL:dictate very long numbers possible (leave away the words million, thousand and hundred!the): 3234466998
+
+
+:ROW:Number one zero two zero three zero four zero
+:COL:With single digits this rule sometimes seems not to work with a very long sequence:  10203040
+
+:ROW:Number three twenty one forty fifty six seventy seventy eight ninety nine eight
+:COL:But surprising long numbers can be done this way: 32140567078998
+::
+
+
+ Customisation:
+For different applications the possible actions after printing the number can be customised. In the *numbers simple* grammar  (_numbers simple.py) you can customize this in the function *outputNumber*. (Please report any changes.)
+-In Excel each number is followed by a tab key
+-In different browsers (IE, Firefox, Chrome, Safari) a number is followed by a tab key
+-In natspeak (DragonPad or the dictation box) a number is followed by a enter key.
+
+ Spoken forms
+The number grammar rules use the link(/features/numbers/index.html, numbers spoken forms) mechanism.
+
+
+ 
