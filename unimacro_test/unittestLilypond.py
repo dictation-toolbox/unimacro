@@ -61,7 +61,8 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
     def testSimpleNote(self):
         """test a few basic examples of a lilypond note
         """
-        for s, expNote in [("g,8.", ("g", ",", "8.", "", None)),
+        for s, expNote in [("bf,8.", ("bf", ",", "8.", "", None)),
+                        ("g,8.", ("g", ",", "8.", "", None)),
                         ("a,,8", ("a", ",,", "8", "", None)),
                         ("cis", ("cis", "", "", "", None)),
                         ("aes'(", ("aes", "'", "", "(", None)),
@@ -84,6 +85,16 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
             lyn = lynote.LyNote(s)
             self.checkLyResult( expNote, lyn )
             print 'testIncompleteNote OK: "%s", result: "%s"'% (s, lyn)
+
+        updateNote = "4"            
+        orgNote = "bf"
+        lyorg = lynote.LyNote(orgNote)
+        lyorg.updateNote(updateNote)
+        expUpdated = ("bf", "", "4", "",  None)
+        self.checkLyResult( expUpdated, lyorg )
+        print 'testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg)
+
+
 
         updateNote = ","            
         orgNote = "g'4("

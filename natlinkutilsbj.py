@@ -925,6 +925,9 @@ class GrammarX(GrammarXAncestor):
             print 'recursive call DisplayMessage, no display'
             return
 
+        if six.PY2:
+            MessageText = utilsqh.convertToBinary(MessageText)
+
         mayDisplay = 1
         for t in DisplayMessageForbiddenCharacters:
             if MessageText.find(t) >= 0:

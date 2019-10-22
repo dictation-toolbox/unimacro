@@ -519,9 +519,9 @@ class ThisGrammar(ancestor):
         
         if self.justLeft is None:
             self.getPrevNext()
-        print '------hasWhiteSpaceAround: %s, atEndOfLine: %s, hasWhiteSpaceBefore: %s'% (
+        # print '------hasWhiteSpaceAround: %s, atEndOfLine: %s, hasWhiteSpaceBefore: %s'% (
             self.hasWhiteSpaceAround, self.atEndOfLine, self.hasWhiteSpaceBefore)
-        print '===newNotes: %s'% self.newNotes
+        # print '===newNotes: %s'% self.newNotes
         
         noteOne = self.newNotes[0]
         if isinstance(noteOne, LyNote) and not noteOne.isNote():
@@ -559,7 +559,7 @@ class ThisGrammar(ancestor):
         if not (self.hasWhiteSpaceAfter or str(self.newNotes[-1]).endswith("{enter}")):
             output.append(' ')
         
-        print 'keystroking output: %s'% repr(output)
+        # print 'keystroking output: %s'% repr(output)
         keystroke(join(output))
 
         return
@@ -635,7 +635,7 @@ class ThisGrammar(ancestor):
         self.atEndOfLine
         """
         self.justLeft, self.justRight = self.frescobaldi.getPrevNext()
-        print 'from fr: |%s|(%s) |%s|(%s)'% (self.justLeft, len(self.justLeft), self.justRight, len(self.justRight))
+        # print 'from fr: |%s|(%s) |%s|(%s)'% (self.justLeft, len(self.justLeft), self.justRight, len(self.justRight))
         self.getPrevNextVariables(self.justLeft, self.justRight) 
 
 

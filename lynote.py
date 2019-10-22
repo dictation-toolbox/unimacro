@@ -5,7 +5,7 @@ import copy
 import six
 import utilsqh
 
-reNote = re.compile(r"""([a-g](?:as|es|is|s)?)  # the notename
+reNote = re.compile(r"""([a-g](?:as|es|is|s|f)?)  # the notename also with flat (bf == b flat, english)
                         ([,']*)                 # elevation (octave up/down                        
                         ([0-9]*[.]*)            # duration, including augmentation dots
                         (.*)$                   # rest (assume no spaces)
@@ -60,7 +60,7 @@ class LyNote(object):
             if recursive:
                 print 'recursive call of setVariables failed, s: %s'% s
                 return
-            print 'try recursive call of incomplete note: %s'% s
+            # print 'try recursive call of incomplete note: %s'% s
             sFake = 'c' + s
             self.setVariables(sFake, recursive=1)
             self.note = ""
