@@ -2,3 +2,4 @@
 /actionclasses/*.pyc
 /grammar.bin
 /unimacro_test/*.pyc
+/actionclasses/__pycache__/*.pyc
