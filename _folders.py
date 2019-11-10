@@ -592,9 +592,9 @@ class ThisGrammar(ancestor):
         subfiles = [s for s in subs if os.path.isfile(os.path.join(activeFolder, s))]
         self.subfoldersDict = self.getSpokenFormsDict(subfolders)
         self.subfilesDict = self.getSpokenFormsDict(subfiles, extensions=1)
-        print 'activeFolder, %s, subfolders: %s'% (activeFolder, self.subfoldersDict.keys())
-        print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict.keys())
-        print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict)
+        # print 'activeFolder, %s, subfolders: %s'% (activeFolder, self.subfoldersDict.keys())
+        # print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict.keys())
+        # print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict)
         if self.trackAutoFiles and self.subfilesDict:
             self.setList('subfiles', self.subfilesDict.keys())
         if self.trackAutoFolders and self.subfoldersDict:
@@ -1500,7 +1500,6 @@ class ThisGrammar(ancestor):
 
         """
         File = None
-        print 'subfilesDict: %s'% self.subfilesDict.keys()
         wantedFile = utilsqh.convertToUnicode(words[1])        
         if self.activeFolder and wantedFile in self.subfilesDict:
             File = self.subfilesDict[wantedFile]
