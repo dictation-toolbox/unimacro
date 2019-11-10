@@ -545,17 +545,12 @@ def getFolderFromCabinetWClass(hndle):
         hndle = controls[0]
         text = getwindowtext(hndle)
         ## result is probably u"Address: C:\Documents" or so
-        folder = text.split(": ", 1)[1]
+        folder = extractFolderFromWindowText(text)
         return folder
-    else:
-        print 'getFolderFromCabinetWClass, control not found: %s'% hndle
 
 def getFolderFromDialog(hndle, className):
     """dialog for open etc from office etc
-    
-    Assume the text starts with "....: " (Address, Adres, ...)
-    
-    
+    if #32770, but can be other dialogs, like the messages window itself!
     
     """
     if className == '#32770':
@@ -563,17 +558,28 @@ def getFolderFromDialog(hndle, className):
         if controls:
             hndle = controls[0]
             text = getwindowtext(hndle)
-            if text.find("location:") >= 0:
-                folder = text.split("location:", 1)[1]
-                folder = unquote(folder)
-            elif text.find(":") >= 0:
-                folder = text.split(": ", 1)[1]
-            else:
-                # no activefolder info:
-                return
+            folder = extractFolderFromWindowText(text)
             return folder
-
-            
+        
+def extractFolderFromWindowText(text):
+    """get folder info from CabinetWClass or #32770 window:
+    
+    if "location:" is found, get that info, urlparse unquote(d)
+    if otherwise : is found (Adress: or Adres: (enx or nld)) return the info after that :
+    
+    no check of valid directory is done
+    """
+    if text.find("location:") >= 0:
+        # ms-search:
+        folder = text.split("location:", 1)[1]
+        folder = unquote(folder)
+    elif text.find(":") >= 0:
+        # Adress: or Adres:
+        folder = text.split(": ", 1)[1]
+    else:
+        # no activefolder info:
+        return
+    return folder
     
 def getTopMenu(hWnd):
     '''Get a window's main, top level menu.
@@ -1721,7 +1727,7 @@ if __name__ == '__main__':
     
     # view settings explorer (this one fails!)
     # testExplorerViews(986418)
-    # g = getFolderFromCabinetWClass(2362972)
+    # g = getFolderFromCabinetWClass(1179842)
     g = getFolderFromDialog(331470, '#32770')
     # print(g, type(g))
     pass
