@@ -1,7 +1,7 @@
 __version__ = "$Rev: 610 $ on $Date: 2019-09-02 09:47:47 +0200 (ma, 02 sep 2019) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
-# (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
+# https://unimacro.SourceForge.net and https://qh.antenna.nl/unimacro
+# (c) copyright 2003 see https://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
 #
 #  grammar: _folders.py
@@ -34,7 +34,7 @@ In the inifile also the commands for start this computer or start
 windows explorer must be given. Correct these commands ("Edit
 Folders"/"Bewerk folders") if they do not work correct.
 New feature: if you want to use xxexplorer (can be used hands-free very
-easy, look in http://www.netez.com/xxExplorer), in section [general]
+easy, look in https://www.netez.com/xxExplorer), in section [general]
 you can put a variable
 
 xxexplorer = path to exe or false ('')
@@ -592,7 +592,9 @@ class ThisGrammar(ancestor):
         subfiles = [s for s in subs if os.path.isfile(os.path.join(activeFolder, s))]
         self.subfoldersDict = self.getSpokenFormsDict(subfolders)
         self.subfilesDict = self.getSpokenFormsDict(subfiles, extensions=1)
-        # print 'activeFolder, %s, subfolders: %s'% (activeFolder, self.subfoldersDict.keys())
+        print 'activeFolder, %s, subfolders: %s'% (activeFolder, self.subfoldersDict.keys())
+        print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict.keys())
+        print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict)
         if self.trackAutoFiles and self.subfilesDict:
             self.setList('subfiles', self.subfilesDict.keys())
         if self.trackAutoFolders and self.subfoldersDict:
@@ -831,9 +833,9 @@ class ThisGrammar(ancestor):
     def gotResults_website(self,words,fullResults):
         """start webbrowser, websites in inifile unders [websites]
         
-        if www. is not given insert, if http:// is not given insert it.
+        if www. is not given insert, if https:// is not given insert it.
 
-        so if you have https:// or eg qh.antenna.nl you MUST insert https:// or http://
+        so if you have an old http:// or eg qh.antenna.nl you MUST insert http:// or https://
 
         if <dgndictation> try google!!
 
@@ -846,10 +848,7 @@ class ThisGrammar(ancestor):
         if site.startswith("http:") or site.startswith("https:"):
             pass
         else:
-            if not site.startswith("www."):
-                site = "https://www." + site
-            else:
-                site = "https://"+site
+            site = "https://"+site
         if ((site.startswith('http:') or site.startswith('https:')) and 
                     site.find('\\') > 0):
             site = site.replace('\\', '/')
@@ -1028,7 +1027,7 @@ class ThisGrammar(ancestor):
                 else:
                     Message('No recent folders in list', title="Unimacro grammar folders")
             else:
-                Message('The option "track folders history" is not switched on, see http://qh.antenna.nl/unimacro/')
+                Message('The option "track folders history" is not switched on, see https://qh.antenna.nl/unimacro/')
             return
 
         numberOfItems = len(self.recentFoldersList)
@@ -1501,21 +1500,28 @@ class ThisGrammar(ancestor):
 
         """
         File = None
-        if self.activeFolder and words[1] in self.subfilesDict:
-            print "given file dictation " + words[1]
-            File = self.subfilesDict[words[1]]
-            print "actual filename " + File
+        print 'subfilesDict: %s'% self.subfilesDict.keys()
+        wantedFile = utilsqh.convertToUnicode(words[1])        
+        if self.activeFolder and wantedFile in self.subfilesDict:
+            File = self.subfilesDict[wantedFile]
             extension =self.getFromInifile(words, 'extensions', noWarning=1)
             if extension:
                 File, old_extension =os.path.splitext (File)
                 File = File +'.' + extension
+                print 'got file: %s'% File
             File = os.path.join(self.activeFolder, File)
             if not os.path.isfile(File):
+                print 'folders, file, from subfilesList, not a valid path: %s (return None)'% File
                 File = None
-            print 'file from subfileslist: %s'% file
+            else:
+                print 'file from subfileslist: %s'% File
             self.catchRemember = "file"
         if not File:
-            File = self.filesDict[words[1]]
+            try:
+                File = self.filesDict[wantedFile]
+            except KeyError:
+                print 'file cannot be found in filesDict: %s (and not in subfilesDict either)'% wantedFile
+                return
             File = self.substituteFolder(File)
             print "_folders, get file: actual filename (fixed fileslist): %s"% File
             extension =self.getFromInifile(words, 'extensions', noWarning=1)
