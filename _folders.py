@@ -551,15 +551,16 @@ class ThisGrammar(ancestor):
         f = None
         if className == "CabinetWClass":
             f = mess.getFolderFromCabinetWClass(hndle)
-            if f and f.startswith("search-ms"):
-                keystroke("{esc}")
-                natqh.Wait()
-                f = mess.getFolderFromDialog(hndle, className)
+            # if f and f.startswith("search-ms"):
+            #     keystroke("{esc}")
+            #     natqh.Wait()
+            #     f = mess.getFolderFromDialog(hndle, className)
             if not f:
                 print "getActiveFolder, CabinetWClass failed: %s"% hndle
         elif className == '#32770':
             f = mess.getFolderFromDialog(hndle, className)
-            return
+            if not f:
+                return
             # if not f:
             #     print "getActiveFolder, #32770 failed: %s"% hndle
         else:

@@ -64,6 +64,10 @@ import winxpgui as win32gui
 import win32process
 import pprint
 import re
+try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
 
 # for getting unicode explorer window titles:
 import ctypes
@@ -551,13 +555,22 @@ def getFolderFromDialog(hndle, className):
     
     Assume the text starts with "....: " (Address, Adres, ...)
     
+    
+    
     """
     if className == '#32770':
         controls = findControls(hndle, selectionFunction=selFuncExplorerAddress)
         if controls:
             hndle = controls[0]
             text = getwindowtext(hndle)
-            folder = text.split(": ", 1)[1]
+            if text.find("location:") >= 0:
+                folder = text.split("location:", 1)[1]
+                folder = unquote(folder)
+            elif text.find(":") >= 0:
+                folder = text.split(": ", 1)[1]
+            else:
+                # no activefolder info:
+                return
             return folder
 
             
@@ -1709,6 +1722,6 @@ if __name__ == '__main__':
     # view settings explorer (this one fails!)
     # testExplorerViews(986418)
     # g = getFolderFromCabinetWClass(2362972)
-    g = getFolderFromDialog(1053070, '#32770')
+    g = getFolderFromDialog(331470, '#32770')
     # print(g, type(g))
     pass
