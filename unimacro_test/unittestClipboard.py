@@ -6,49 +6,54 @@
 # unittestClipboard.py
 #
 # this module tests the clipboard module, natlinkclipboard in natlink/macrosystem/core,
-# as developed by Christo Butcher clipboard.py for Dragonfly.
+# as developed by Christo Butcher clipboard.py for Dragonfly and
+# enhanced by Quintijn Hoogenboom, 2019.
+
 #
-#
-import six
 import sys
 import unittest
 import types
 import os
 import os.path
 import time
+from pathqh import path
 # import subprocess
-import natlinkutilsqh
-import actions
+
+# def getBaseFolder(globalsDict=None):
+#     """get the folder of the calling module.
+# 
+#     either sys.argv[0] (when run direct) or
+#     __file__, which can be empty. In that case take the working directory
+#     """
+#     globalsDictHere = globalsDict or globals()
+#     baseFolder = ""
+#     if globalsDictHere['__name__']  == "__main__":
+#         baseFolder = os.path.split(sys.argv[0])[0]
+#         print('baseFolder from argv: %s'% baseFolder)
+#     elif globalsDictHere['__file__']:
+#         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
+#         print('baseFolder from __file__: %s'% baseFolder)
+#     if not baseFolder or baseFolder == '.':
+#         baseFolder = os.getcwd()
+#     return baseFolder
+thisDir = path('.')
+unimacroFolder = (thisDir/'..').normpath()
+if not unimacroFolder in sys.path:
+    sys.path.append(unimacroFolder)
 import TestCaseWithHelpers
 import natlink
 import natlinkclipboard
+import actions
+import natlinkutilsqh
 
 natconnectOption = 0 # no threading has most chances to pass...
 
-def getBaseFolder(globalsDict=None):
-    """get the folder of the calling module.
+logFileName = thisDir/"testresult.txt"
+print('start unittestClipboard', file=open(logFileName, 'w'))
 
-    either sys.argv[0] (when run direct) or
-    __file__, which can be empty. In that case take the working directory
-    """
-    globalsDictHere = globalsDict or globals()
-    baseFolder = ""
-    if globalsDictHere['__name__']  == "__main__":
-        baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
-    elif globalsDictHere['__file__']:
-        baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
-    if not baseFolder or baseFolder == '.':
-        baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
-    return baseFolder
-
-thisDir = getBaseFolder(globals())
-logFileName = os.path.join(thisDir, "testresult.txt")
-testFilesDir = os.path.join(thisDir, 'test_clipboardfiles')
-if not os.path.isdir(testFilesDir):
-    os.mkdir(testFilesDir)
+testFilesDir = thisDir/'test_clipboardfiles'
+if not testFilesDir.isdir():
+    testFilesDir.mkdir()
 
 #---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
@@ -58,31 +63,34 @@ if not os.path.isdir(testFilesDir):
 class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         self.connect()
+        self.isConnected = True
         self.thisHndle = natlink.getCurrentModule()[2]
         self.org_text = "xyz"*3
         natlinkclipboard.Clipboard.set_system_text(self.org_text)
         # self.setupWindows()
         self.setupTextFiles()
-        print 'thisHndle: %s'% self.thisHndle
+        print('thisHndle: %s'% self.thisHndle)
         # print 'explWinHndle: %s'% self.explWinHndle
         # print 'explThisDirHndle: %s'% self.explThisDirHndle
-        print 'text0Hndle: %s'% self.text0Hndle
-        print 'text1Hndle: %s'% self.text1Hndle
-        print 'text2Hndle: %s'% self.text2Hndle
-
+        print('text0Hndle: %s'% self.text0Hndle)
+        print('text1Hndle: %s'% self.text1Hndle)
+        print('text2Hndle: %s'% self.text2Hndle)
+        pass
+    
     def tearDown(self):
         for hndle in self.text0Hndle, self.text1Hndle, self.text2Hndle: #self.explWinHndle, self.explThisDirHndle, :
             natlinkutilsqh.SetForegroundWindow(hndle)
             natlink.playString("{alt+f4}")
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
         self.disconnect()
-
-        pass
+        self.isConnected = False
 
         
     def connect(self):
         # start with 1 for thread safety when run from pythonwin:
         natlink.natConnect(natconnectOption)
+        sys.stdout = open(logFileName, 'a')
+        sys.stderr = open(logFileName, 'a')
 
     def disconnect(self):
         natlink.natDisconnect()
@@ -93,13 +101,13 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         dirWindows = "C:\\windows"
         result = actions.UnimacroBringUp(app=None, filepath=dirWindows)
         if not result:
-            print 'no result for %s'% dirWindows
+            print('no result for %s'% dirWindows)
             return
         self.explWinHndle = natlink.getCurrentModule()[2]
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
         result = actions.UnimacroBringUp(app=None, filepath=thisDir)
         if not result:
-            print 'no result for %s'% thisDir
+            print('no result for %s'% thisDir)
             return
         self.explThisDirHndle = natlink.getCurrentModule()[2]
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
@@ -114,7 +122,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         result = actions.UnimacroBringUp(app=None, filepath=textPath0)
         time.sleep(1)
         curmod = natlink.getCurrentModule()
-        print 'testempty: %s'% repr(curmod)
+        print('testempty: %s'% repr(curmod))
         self.text0Hndle = curmod[2]
 
         textFile1 = "testsmall.txt"
@@ -123,7 +131,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         result = actions.UnimacroBringUp(app=None, filepath=textPath1)
         time.sleep(1)
         curmod = natlink.getCurrentModule()
-        print 'testsmall: %s'% repr(curmod)
+        print('testsmall: %s'% repr(curmod))
         self.text1Hndle = curmod[2]
 
         textFile2 = "testlarge.txt"
@@ -132,8 +140,9 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         result = actions.UnimacroBringUp(app=None, filepath=textPath2)
         time.sleep(2)
         curmod = natlink.getCurrentModule()
-        print 'testlarge: %s'% repr(curmod)
+        print('testlarge: %s'% repr(curmod))
         self.text2Hndle = curmod[2]
+        
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
         pass
         
@@ -142,49 +151,88 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         cb = natlinkclipboard.Clipboard(save_clear=True)
 
-        ## empty file:
-        natlinkutilsqh.SetForegroundWindow(self.text0Hndle)
-        time.sleep(1)
-        natlink.playString("{ctrl+a}{ctrl+c}")
-        # time.sleep(1)
-        cb.copy_from_system(wait_for_change=None)
-        time.sleep(1)
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        print 'cb text: %s'% cb
-        got = cb.get_text()
-        self.assert_equal(u"", got, "should have no text now")
-
-        natlinkutilsqh.SetForegroundWindow(self.text1Hndle)
-        time.sleep(2)
-        natlink.playString("{ctrl+a}{ctrl+c}")
-        # time.sleep(2)
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        # print 'cb text: %s'% cb        
-        cb.copy_from_system(wait_for_change=None)
-        got = cb.get_text()
-        exp = u"abacadabra\nabacadabra\n"
-        self.assert_equal(exp, got, "should have two lines of text")
-
-        natlinkutilsqh.SetForegroundWindow(self.text2Hndle)
-        time.sleep(1)
-        natlink.playString("{ctrl+a}{ctrl+c}")
-        # time.sleep(1)
-        cb.copy_from_system(wait_for_change=None)
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        t = cb.get_text()
-        if t:
-            got = len(t)
-        else:
-            print 'no result from get_text: %s'% t
-            got = None
-        exp = 11000
-        self.assert_equal(exp, got, "should have long text now")
+        ## longer test:
+        for i in range(1, 11):
+            print('---- round: ', i)
+            ## empty file:
+            natlinkutilsqh.SetForegroundWindow(self.text0Hndle)
+            # time.sleep(1)
+            natlink.playString("{ctrl+a}{ctrl+c}")
+            time.sleep(0.5)
+            cb.copy_from_system(waiting_interval=0.1)
+            # time.sleep(1)
+            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            print('cb text: %s'% cb)
+            got = cb.get_text()
+            self.assert_equal("", got, "should have no text now")
+    
+            natlinkutilsqh.SetForegroundWindow(self.text1Hndle)
+            # time.sleep(2)
+            natlink.playString("{ctrl+a}{ctrl+c}")
+            time.sleep(0.5)
+            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            # print 'cb text: %s'% cb        
+            cb.copy_from_system(waiting_interval=None)
+            got = cb.get_text()
+            exp = "abacadabra\nabacadabra\n"
+            self.assert_equal(exp, got, "should have two lines of text")
+    
+            natlinkutilsqh.SetForegroundWindow(self.text2Hndle)
+            # time.sleep(1)
+            natlink.playString("{ctrl+a}{ctrl+c}")
+            time.sleep(0.5)
+            cb.copy_from_system(waiting_interval=None)
+            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            t = cb.get_text()
+            if t:
+                got = len(t)
+            else:
+                print('no result from get_text: %s'% t)
+                got = None
+            exp = 11000
+            self.assert_equal(exp, got, "should have long text now")
+            # empty for the next round:
+            cb.set_text("")
+            time.sleep(1)
             
         cb.restore()
         got_org_text = natlinkclipboard.Clipboard.get_system_text()
         self.assert_equal(self.org_text, got_org_text, "restored text from clipboard not as expected")
 
     
+    def tttestSetForegroundWindow(self):
+        """test switching the different windows, including this
+        
+        This should work without problems with the AutoHotkey script...
+        
+        About 0.15 seconds to get a window in the foreground...
+
+        """
+        thisHndle = natlinkutilsqh.GetForegroundWindow()
+        print("thisHndle: %s"% thisHndle)
+        unknownHndle = 5678659
+        hndles = [thisHndle, self.text0Hndle, self.text1Hndle, self.text2Hndle, unknownHndle]
+        t0 = time.time()
+        rounds = 10
+        for i in range(1, rounds+1):
+            print('start round %s'% i)
+            for h in hndles:
+                result = natlinkutilsqh.SetForegroundWindow(h)
+                if result:
+                    self.assert_not_equal(unknownHndle, h, "hndle should not be unknown (fake) hndle")
+                else:
+                    self.assert_equal(unknownHndle, h, "hndle should be one of the valid hndles")
+
+            time.sleep(0.1)
+        t1 = time.time()
+        deliberate = rounds*0.1
+        total = t1 - t0
+        nettime = t1 - t0 - deliberate
+        nswitches = rounds*len(hndles)
+        timeperswitch = nettime/nswitches
+        print('nswitches: %s, nettime: %.3f, time per switch: %.3f'% ( nswitches, nettime, timeperswitch))
+        print('total: %s, deliberate: %s'% (total, deliberate))
+
     def tttestGet_current_directory(self):
         """test getting the current directory
         
@@ -196,22 +244,30 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         func = self.grammarInstance.get_current_directory
         # fill here the windows hndle... (give window info from _general)
         result = func(hndle)
-        print 'result: %s'% result
+        print('result: %s'% result)
 
-  
-            
-def log(t):
-    print t
+    
+              
+    def log(self, t):
+        if self.isConnected:
+            natlink.displayText(t, 0)
+        else:
+            print(t)
+        print(t, file=open(logFileName, "a"))
 
 def run():
-    log('starting UnittestClipboard')
+    print('starting UnittestClipboard') 
     # trick: if you only want one or two tests to perform, change
     # the test names to her example def test....
     # and change the word 'test' into 'tttest'...
     # do not forget to change back and do all the tests when you are done.
+    # each test does a natConnect and a natDisconnect...
+    sys.stdout = open(logFileName, 'a')
+    sys.stderr = open(logFileName, 'a')
+    
     suite = unittest.makeSuite(UnittestClipboard, 'test')
     result = unittest.TextTestRunner().run(suite)
-    print result
+    
 if __name__ == "__main__":
-    natlink.natConnect()
+    print("run, result will be in %s"% logFileName)
     run()

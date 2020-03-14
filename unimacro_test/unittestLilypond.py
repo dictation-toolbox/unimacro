@@ -8,7 +8,9 @@
 #   This has nothing to do with speech recognition, but here because a Unimacro grammar "frescobaldi.py"
 #   is developed in order to do inputs for lilypond in frescobalde.
 #
-import sys, unittest, types
+import sys
+import unittest
+import types
 import os
 import os.path
 import TestCaseWithHelpers
@@ -24,13 +26,13 @@ def getBaseFolder(globalsDict=None):
     baseFolder = ""
     if globalsDictHere['__name__']  == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
+        print('baseFolder from argv: %s'% baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
+        print('baseFolder from __file__: %s'% baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
+        print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
 thisDir = getBaseFolder(globals())
@@ -71,8 +73,8 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
                         
             lyn = lynote.LyNote(s)
             self.checkLyResult( expNote, lyn )
-            self.assert_(lyn.isNote(), '"%s" should be a note (isNote function), not: %s'% (s, lyn.isNote()))
-            print 'testSimpleNote OK: "%s", result: "%s"'% (s, lyn)
+            self.assertTrue(lyn.isNote(), '"%s" should be a note (isNote function), not: %s'% (s, lyn.isNote()))
+            print('testSimpleNote OK: "%s", result: "%s"'% (s, lyn))
 
     def testIncompleteNoteAndUpdate(self):
         """test a few basic examples of a lilypond note
@@ -84,7 +86,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
                         
             lyn = lynote.LyNote(s)
             self.checkLyResult( expNote, lyn )
-            print 'testIncompleteNote OK: "%s", result: "%s"'% (s, lyn)
+            print('testIncompleteNote OK: "%s", result: "%s"'% (s, lyn))
 
         updateNote = "4"            
         orgNote = "bf"
@@ -92,7 +94,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         lyorg.updateNote(updateNote)
         expUpdated = ("bf", "", "4", "",  None)
         self.checkLyResult( expUpdated, lyorg )
-        print 'testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg)
+        print('testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg))
 
 
 
@@ -102,7 +104,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         lyorg.updateNote(updateNote)
         expUpdated = ("g", "", "4", "(", None)
         self.checkLyResult( expUpdated, lyorg )
-        print 'testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg)
+        print('testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg))
 
         updateNote = "8"            
         orgNote = "a'4("
@@ -110,13 +112,13 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         lyorg.updateNote(updateNote)
         expUpdated = ("a", "'", "8", "(", None)
         self.checkLyResult( expUpdated, lyorg )
-        print 'testIncompleteNote "%s" updated with string "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg)
+        print('testIncompleteNote "%s" updated with string "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg))
 
         lyorg = lynote.LyNote(orgNote)
         lyupdate = lynote.LyNote(updateNote)
         lyorg.updateNote(lyupdate)
         self.checkLyResult( expUpdated, lyorg )
-        print 'testIncompleteNote "%s" updated with instance "%s" OK, result: "%s"'% (orgNote, lyupdate, lyorg)
+        print('testIncompleteNote "%s" updated with instance "%s" OK, result: "%s"'% (orgNote, lyupdate, lyorg))
 
 
 
@@ -129,25 +131,25 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         lyorg.updateNote(updateNote)
         expUpdated = ("c", "''", "8..", "(", [r"\melisma"])
         self.checkLyResult( expUpdated, lyorg )
-        print 'testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg)
+        print('testIncompleteNote "%s" updated with "%s" OK, result: "%s"'% (orgNote, updateNote, lyorg))
 
         lyorg = lynote.LyNote(orgNote)
         lyupdate = lynote.LyNote(updateNote)
         lyorg.updateNote(lyupdate)
         self.checkLyResult( expUpdated, lyorg )
-        print 'testIncompleteNote "%s" updated with instance "%s" OK, result: "%s"'% (orgNote, lyupdate, lyorg)
+        print('testIncompleteNote "%s" updated with instance "%s" OK, result: "%s"'% (orgNote, lyupdate, lyorg))
 
     def testReBackslashedWord(self):
         r"""test \break, \melisma etc, but refuse \( and \)"""
         for s in ['', r'\)']:
             m = lynote.reBackslashedWord.match(s)
             self.assertEqual(None, m, 'string "%s" should not match reBackslashWord'% s)
-            print 'testReBackslashedWord: correct fail to match "%s"'% s
+            print('testReBackslashedWord: correct fail to match "%s"'% s)
         for s in [r'\break', r'\melismaEnd']:
             m = lynote.reBackslashedWord.match(s)
             if m is None:
                 self.fail('string r"%s" should match reBackslashWord'% s)
-            print 'testReBackslashedWord: correct match of "%s"'% s
+            print('testReBackslashedWord: correct match of "%s"'% s)
             
     def testStrAndRepr(self):
         """check the correct str and repr result"""        
@@ -155,10 +157,10 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
             expStr = s
             lyn = lynote.LyNote(s)
             self.assertEqual(expStr, str(lyn), 'str of "%s" fails ("%s")'% (s, str(lyn)))
-            print 'testStrAndRepr: correct str "%s" (being the same)'% s
+            print('testStrAndRepr: correct str "%s" (being the same)'% s)
             expRepr = "lynote: " + s
             self.assertEqual(expRepr, repr(lyn), 'repr of "%s" fails ("%s")'% (s, repr(lyn)))
-            print 'testStrAndRepr: correct repr "%s" (of "%s")'% (s, repr(s))
+            print('testStrAndRepr: correct repr "%s" (of "%s")'% (s, repr(s)))
     
     def testAnalyseString(self):
         """check the analyseString function"""
@@ -231,7 +233,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         
         for i in range(maxWords):
             numWords = i + 1
-            print '---testing %s words from %s'% (numWords, wordsList)
+            print('---testing %s words from %s'% (numWords, wordsList))
         
             if reverse:
                 # tricky with calling names:        
@@ -388,7 +390,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         
             
 def log(t):
-    print t
+    print(t)
 
 def run():
     log('starting unittestLyNote')
@@ -399,6 +401,6 @@ def run():
     suite = unittest.makeSuite(UnittestLyNote, 'test')
 ##    natconnectOption = 0 # no threading has most chances to pass...
     result = unittest.TextTestRunner().run(suite)
-    print result
+    print(result)
 if __name__ == "__main__":
     run()

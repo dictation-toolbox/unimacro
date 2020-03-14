@@ -2,9 +2,13 @@
 
 (from IDM Computer Solutions, www.ultraedit.com)
 """
-import win32gui, ctypes, win32api
-import messagefunctions as mf
-from actionbases import MessageActions
+import win32gui
+import ctypes
+import win32api
+import messagefunctions
+import as
+import mf
+from .actionbases import MessageActions
 import pprint
 
 class Uedit32Actions(MessageActions):

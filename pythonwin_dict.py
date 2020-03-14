@@ -1,4 +1,3 @@
-__version__ = "$Revision: 596 $, $Date: 2018-02-19 10:51:20 +0100 (ma, 19 feb 2018) $, $Author: quintijn $"
 # Python Macro Language for Dragon NaturallySpeaking
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
@@ -157,7 +156,7 @@ class CommandGrammar(natut.GrammarBase):
     """
 
     def initialize(self):
-        print 'initializing/loading CommandGrammar belonging to Python dictatebox'
+        print('initializing/loading CommandGrammar belonging to Python dictatebox')
         self.load(self.gramSpec)
         self.state = None
         self.prevHandle = -1
@@ -177,17 +176,17 @@ class CommandGrammar(natut.GrammarBase):
         if natut.matchWindow(moduleInfo, 'pythonwin', wantedTitle):
             if not self.isActive():
                 self.dictObj.initialize(hndle=winHandle)
-                print 'activate (exclusive: %s) Pythonwin command grammar with dictate box, handle: %s'% \
-                      (self.exclusive, winHandle)
+                print('activate (exclusive: %s) Pythonwin command grammar with dictate box, handle: %s'% \
+                      (self.exclusive, winHandle))
                 self.activateAll(winHandle, exclusive=self.exclusive)
         elif self.isActive():
-            print 'deactivate Pythonwin command grammar with dictate box'
+            print('deactivate Pythonwin command grammar with dictate box')
             self.dictObj.terminate()
             self.deactivateAll()
             self.txt = None
 
     def onTextBegin(self, param):
-        print "ontextbegin: %s"% param
+        print("ontextbegin: %s"% param)
 
     def gotResultsInit(self,words,fullResults):
         if not self.txt:
@@ -195,17 +194,17 @@ class CommandGrammar(natut.GrammarBase):
             self.txt=Cwnd.GetDlgItem(15008)  # edit box
 
     def gotResults_OK(self, words, fullResults):
-        print 'heard command:  %s '% words
+        print('heard command:  %s '% words)
         natut.playString("{tab}{enter}")
 
     def gotResults_scratch(self, words, fullResults):
-        print 'heard command:  %s '% words
+        print('heard command:  %s '% words)
         i,j = self.txt.GetSel()
         if i < j:
             natut.playString("{backspace}")
 
     def gotResults_clear(self, words, fullResults):
-        print 'heard command:  %s '% words
+        print('heard command:  %s '% words)
         self.txt.Clear()
 
 ##class DictGrammar(natut.DictGramBase):
@@ -288,7 +287,7 @@ class CommandGrammar(natut.GrammarBase):
 def D(t):
     """debug text if debugMode is on"""
     if debugMode:
-        print t
+        print(t)
         
 
 
@@ -298,7 +297,7 @@ dictGrammar = None
 ##dictGrammar.initialize()
 cmdGrammar = CommandGrammar()
 cmdGrammar.initialize()
-print 'cmdGrammar initialized'
+print('cmdGrammar initialized')
 ##print 'dictGrammar initialized'
 
 def unload():

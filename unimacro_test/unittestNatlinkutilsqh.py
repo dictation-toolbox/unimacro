@@ -8,7 +8,9 @@
 #   the site mechanism (of Qh private) in which modules of a website generating program
 #   are tested specifically
 #
-import sys, unittest, types
+import sys
+import unittest
+import types
 import os
 import os.path
 import TestCaseWithHelpers
@@ -25,13 +27,13 @@ def getBaseFolder(globalsDict=None):
     baseFolder = ""
     if globalsDictHere['__name__']  == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
+        print('baseFolder from argv: %s'% baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
+        print('baseFolder from __file__: %s'% baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
+        print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
 thisDir = getBaseFolder(globals())
@@ -125,7 +127,7 @@ class UnittestNatlinkutilsqh(TestCaseWithHelpers.TestCaseWithHelpers):
         got = natqh.matchTitle(ListOfTestWords, modInfo=modInfo, caseExact=1)
             
 def log(t):
-    print t
+    print(t)
 
 def run():
     log('starting unittestNatlinkutilsqh')
@@ -136,6 +138,6 @@ def run():
     suite = unittest.makeSuite(UnittestNatlinkutilsqh, 'test')
 ##    natconnectOption = 0 # no threading has most chances to pass...
     result = unittest.TextTestRunner().run(suite)
-    print result
+    print(result)
 if __name__ == "__main__":
     run()

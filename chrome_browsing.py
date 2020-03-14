@@ -29,7 +29,6 @@ import natlink
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
-import string
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 
@@ -44,7 +43,7 @@ class ThisGrammar(ancestor):
     try:
         numberGram = natbj.numberGrammarTill999[language]
     except KeyError:
-        print 'take number grammar from "enx"'
+        print('take number grammar from "enx"')
         numberGram = natbj.numberGrammarTill999['enx']
         
     if language == "nld":
@@ -75,7 +74,7 @@ class ThisGrammar(ancestor):
 
         winHandle = moduleInfo[2]
         if not winHandle:
-            print 'no window handle in %s'% self.name
+            print('no window handle in %s'% self.name)
             return
         if self.prevHandle == winHandle:
             return
@@ -83,7 +82,7 @@ class ThisGrammar(ancestor):
         if natqh.matchModule('chrome', modInfo=moduleInfo):
             # print 'activate %s winHandle %s'% (self.name, winHandle)
             if self.checkForChanges:
-                print 'chrome browsing (%s), checking the inifile'% self.name
+                print('chrome browsing (%s), checking the inifile'% self.name)
                 self.checkInifile()
             self.switchOnOrOff(window=winHandle)
         # elif self.isActive():
@@ -117,7 +116,7 @@ class ThisGrammar(ancestor):
             additional = self.getFromInifile(words[-1], 'additionalonoroff', noWarning=1)
             if additional is None: break
             if additional == '-':
-                print '%s: hide the numbers'% self.name
+                print('%s: hide the numbers'% self.name)
                 self.gotResults_hidenumbers(words, fullResults)
                 return
             words.pop() # remove last word of list.
@@ -128,7 +127,7 @@ class ThisGrammar(ancestor):
                 additionalOptions = True
                 
         if additionalOptions:
-            print '%s: showNumbers command: %s, set as new default for the current session.'% (self.name, showNumbers)
+            print('%s: showNumbers command: %s, set as new default for the current session.'% (self.name, showNumbers))
             # set new chosen string:
             # self.setInInifile("general", "show numbers", showNumbers)
             self.showNumbers = showNumbers
@@ -156,7 +155,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
             dir = 'left'
         else:
-            print 'no direction found in command: %s'% words
+            print('no direction found in command: %s'% words)
         
         counts = self.getNumbersFromSpoken(words)
         if counts:
@@ -183,7 +182,7 @@ class ThisGrammar(ancestor):
             return
         self.collectNumber()
         if not self.number:
-            print 'collected no number'
+            print('collected no number')
             return
         self.getInputcontrol()
         command = self.number
@@ -193,10 +192,10 @@ class ThisGrammar(ancestor):
                 command += ":"
             command += self.navOption
         if command.find(';') >= 0:
-            print 'command: %s'% command
+            print('command: %s'% command)
             commandparts = command.split(';')
             command = commandparts.pop(0)
-            print 'command: %s, commandparts: %s'% (command, commandparts)
+            print('command: %s, commandparts: %s'% (command, commandparts))
         self.doOption(command)
         for additional in commandparts:
             natqh.Wait(visiblePause)
@@ -223,10 +222,10 @@ class ThisGrammar(ancestor):
             if self.showNumbers.find(":") == -1:
                 self.showNumbers = ":" + self.showNumbers
             else:
-                print '%s, "+" sign missing in inifile, "general", "show numbers": "%s", replace by default: "%s"'% (self.name, self.showNumbers, ":+")
+                print('%s, "+" sign missing in inifile, "general", "show numbers": "%s", replace by default: "%s"'% (self.name, self.showNumbers, ":+"))
                 self.showNumbers = ":+"
         if self.showNumbers.find("+") != 1:
-            print '%s, "+" sign missing or in wrong position in inifile, "general", "show numbers": "%s", replace by default: "%s"'% (self.name, self.showNumbers, ":+")
+            print('%s, "+" sign missing or in wrong position in inifile, "general", "show numbers": "%s", replace by default: "%s"'% (self.name, self.showNumbers, ":+"))
             self.showNumbers = ":+"
         # not in inifile:
         self.hideNumbers = ":-"

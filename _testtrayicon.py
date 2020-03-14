@@ -1,5 +1,8 @@
-import natlinkutils, natlink
-import os, os.path, time
+import natlinkutils
+import natlink
+import os
+import os.path
+import time
 
 class ThisGrammar(natlinkutils.GrammarBase):
 
@@ -37,7 +40,7 @@ class ThisGrammar(natlinkutils.GrammarBase):
         
     def doNextIcon(self):
         if self.stopShowing:
-            print 'caught callback, stop the looping'
+            print('caught callback, stop the looping')
             natlink.setTrayIcon()
             natlink.setTimerCallback(None)
             return
@@ -45,20 +48,20 @@ class ThisGrammar(natlinkutils.GrammarBase):
             self.currentLoop = 0
             self.currentDirection += 1
             if self.currentDirection >= len(self.directions):
-                print 'ready all done, remove the icon and stop the timercallback'
+                print('ready all done, remove the icon and stop the timercallback')
                 natlink.setTrayIcon()
                 natlink.setTimerCallback(None)
         if self.currentLoop%2:
             iconName = '%s2'% self.directions[self.currentDirection]
         else:
             iconName = '%s'% self.directions[self.currentDirection]
-        print 'set trayIcon: %s'% iconName
+        print('set trayIcon: %s'% iconName)
         natlink.setTrayIcon(iconName, 'test also click on icon %s'% iconName, self.onTrayIcon)
         
     def onTrayIcon(self, message):
         """calls back into this function if the tray icon is clicked upon
         """
-        print 'caught the onTrayIcon callback, clicked on the tray icon with button: %s'% message
+        print('caught the onTrayIcon callback, clicked on the tray icon with button: %s'% message)
         # remove the icon:
         self.stopShowing = 1
         

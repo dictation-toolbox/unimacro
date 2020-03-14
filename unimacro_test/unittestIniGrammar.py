@@ -13,11 +13,12 @@
 #   note special tests which should be made active with care, when in debugging mode for catching specific commands!
 #   see def xxxx.....
 #
-import sys, unittest, types
+import sys
+import unittest
+import types
 import os
 import os.path
 import time
-import string
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
 import natlink
@@ -48,13 +49,13 @@ def getBaseFolder(globalsDict=None):
     baseFolder = ""
     if globalsDictHere['__name__']  == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
+        print('baseFolder from argv: %s'% baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
+        print('baseFolder from __file__: %s'% baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
+        print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
 thisDir = getBaseFolder(globals())
@@ -73,7 +74,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
     connected = 0
     def setUp(self):
         if not natlink.isNatSpeakRunning():
-            raise TestError,'NatSpeak is not currently running'
+            raise TestError('NatSpeak is not currently running')
         if not self.connected:
             self.connect()
             self.user = natlink.getCurrentUser()[0]
@@ -105,11 +106,11 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         
     def connect(self):
         # start with 1 for thread safety when run from pythonwin:
-        print 'connecting'
+        print('connecting')
         natlink.natConnect(natconnectOption)
         # next line should be enabled when testing the testNumbersGrammar functions in debug mode:
         # otherwise disable!
-        print 'connected natlink (Unimacro)'
+        print('connected natlink (Unimacro)')
         pass
 
     #def disconnect(self):
@@ -134,7 +135,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
             exec(command,globals(),localVars)
         except exceptionType:
             return
-        raise TestError,'Expecting an exception to be raised calling '+command
+        raise TestError('Expecting an exception to be raised calling '+command)
 
     def doTestActiveRules(self, gram, expected):
         """gram must be a grammar instance, sort the rules to be expected and got
@@ -155,13 +156,13 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         if actual != expected:
             time.sleep(1)
-        self.assertEquals(expected, actual, 'Function call "%s" returned unexpected result\nExpected: %s, got: %s'%
+        self.assertEqual(expected, actual, 'Function call "%s" returned unexpected result\nExpected: %s, got: %s'%
                           (command, expected, actual))
     def doTestNumberRecognition(self, words,numberResult):
         try:
             natlink.recognitionMimic(words)
         except natlink.MimicFailed:
-            print 'failed to recognise %s as testnumber'% words
+            print('failed to recognise %s as testnumber'% words)
             return
         return 1 # success
 
@@ -199,7 +200,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         
         """
         natlinkmain.start_natlink()
-        print 'started natlink (Unimacro)'
+        print('started natlink (Unimacro)')
         _number = __import__("_number simple")
         numbersgrammar = _number.thisGrammar
         
@@ -219,7 +220,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '302000303'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
         #
 
@@ -241,7 +242,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '3200005'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
       
         # 324700024    (foutje: 3201005)
@@ -261,7 +262,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '324700024'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
        #
        
@@ -276,7 +277,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '3,5'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
        
     def ttttestNumbersExtendedFixedLengthNld(self):
@@ -291,7 +292,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         
         """
         natlinkmain.start_natlink()
-        print 'started natlink (Unimacro)'
+        print('started natlink (Unimacro)')
         _number = __import__("_number extended")
         numbersgrammar = _number.thisGrammar
         
@@ -315,7 +316,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '.2000'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
         #
 
@@ -337,7 +338,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '3200005'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
       
         # 324700024    (foutje: 3201005)
@@ -357,7 +358,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '324700024'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
        #
        
@@ -372,7 +373,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numberExpected = '3,5'
         numbersgrammar.collectNumber()
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
        
 
@@ -394,7 +395,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         """
         natlinkmain.start_natlink()
-        print 'started natlink (Unimacro)'
+        print('started natlink (Unimacro)')
         
         _number = __import__("_number simple")
         numbersgrammar = _number.thisGrammar
@@ -411,7 +412,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numbersgrammar.callIfExists( 'gotResults', (words, fullResults) )
         numberExpected = '03'
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
 
 
@@ -430,7 +431,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         numbersgrammar.callIfExists( 'gotResults', (words, fullResults) )
         numberExpected = '302000303'
         numberGot = numbersgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "numbers grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
 
 
@@ -442,7 +443,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         """
         natlinkmain.start_natlink()
-        print 'started natlink (Unimacro)'
+        print('started natlink (Unimacro)')
         
         _calc = __import__("_calculator")
         calcgrammar = _calc.thisGrammar
@@ -464,7 +465,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         calcgrammar.callIfExists( 'gotResults', (words, fullResults) )
         numberExpected = '03'
         numberGot = calcgrammar.number
-        self.assertEquals(numberExpected, numberGot,
+        self.assertEqual(numberExpected, numberGot,
                           "calc grammar gives unexpected result\nexpected: %s\ngot: %s"% (numberExpected, numberGot))
 
     def xxxxtestKeystrokesGrammarEnx(self):
@@ -483,7 +484,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         """
         natlinkmain.start_natlink()
-        print 'started natlink (Unimacro)'
+        print('started natlink (Unimacro)')
         import _keystrokes
         kgrammar = _keystrokes.thisGrammar
         
@@ -541,10 +542,10 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         """
         natlinkmain.start_natlink()
-        print 'started natlink (Unimacro)'
+        print('started natlink (Unimacro)')
         import _control
         cgrammar = _control.utilGrammar  # why this name?
-        print 'gramSpec: %s'% cgrammar.gramSpec
+        print('gramSpec: %s'% cgrammar.gramSpec)
         words = ['schakel', 'in', 'toetsen']
         fullResults = [('schakel', 'switch'), ('in', 'switch'), ('toetsen', 'switch')]
         seqsAndRules = [(['schakel', 'in', 'toetsen'], 'switch')]
@@ -553,7 +554,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         cgrammar.checkInifile()
 
         # now call the different functions in the resultsCallback procedure:
-        print 'after second initialise gramSpec: %s'% cgrammar.gramSpec
+        print('after second initialise gramSpec: %s'% cgrammar.gramSpec)
         pass
         ##
 
@@ -627,38 +628,38 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         # test the translation words dictionary from fake inifile (iniSpec) above:        
         expGramSpec = ['<four> exported = rule four;']
         expGramScanList = []
-        expDict =  {u'four': [u'four', u'for'], u'rule': [u'regel']}
+        expDict =  {'four': ['four', 'for'], 'rule': ['regel']}
         gotDict = testGram.getDictOfGrammarWordsTranslations()
         self.assert_equal(expDict, gotDict,  "translated words dict not as expected")
         
         # do the translation step:
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec = u'<four> exported = regel (four|for);';
+        expGramSpec = '<four> exported = regel (four|for);';
         self.assert_equal(expGramSpec, gotGramSpec,  "translated grammar was not as expected")
         
         ### now try small changes in the rule ( no extra parens needed):
         testGram.gramSpec = '<fourparens> exported = rule (four);'
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec = u'<fourparens> exported = regel (four|for);';
+        expGramSpec = '<fourparens> exported = regel (four|for);';
         self.assert_equal(expGramSpec, gotGramSpec,  "translated no extra parens needed grammar was not as expected")
         ## try other variants of no parens needed
         testGram.gramSpec = '<fourparens2> exported = rule (four|five|six);'
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec = u'<fourparens2> exported = regel (four|for|five|six);';
+        expGramSpec = '<fourparens2> exported = regel (four|for|five|six);';
         self.assert_equal(expGramSpec, gotGramSpec,  "translated no extra parens needed grammar was not as expected")
         # another:
         testGram.gramSpec = '<fourparens3> exported = rule [three|four|five|six];'
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec = u'<fourparens3> exported = regel [three|four|for|five|six];';
+        expGramSpec = '<fourparens3> exported = regel [three|four|for|five|six];';
         self.assert_equal(expGramSpec, gotGramSpec,  "translated no extra parens needed grammar was not as expected")
         # another:
         testGram.gramSpec = '<fourparens4> exported = rule [four];'
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec = u'<fourparens4> exported = regel [four|for];';
+        expGramSpec = '<fourparens4> exported = regel [four|for];';
         self.assert_equal(expGramSpec, gotGramSpec,  "translated no extra parens needed grammar was not as expected")
         
         
-        expGramWords =  {'four': [u'four', u'for'], 'rule': [u'regel']}
+        expGramWords =  {'four': ['four', 'for'], 'rule': ['regel']}
         gotGramWords = testGram.gramWords
         self.assert_equal(expGramWords, gotGramWords,  "gramwords dict after translation not as expected")
         
@@ -697,19 +698,19 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         testGram.ini = self.makeInifile('testruleonetwo.ini', iniSpec=iniSpec)
 
         # test the translation words dictionary from fake inifile (iniSpec) above:        
-        expDict =     {u'a lot': [u'veel'],
- u'exported': [u'Uitgevoerd', u'een beetje Afgevoerd'],
- u'extra': [u'Extra'],
- u'four': [u'four', u'for'],
- u'little': [u'een beetje', u'weinig'],
- u'one': [u'een'],
- u'rule': [u'regel']}
+        expDict =     {'a lot': ['veel'],
+ 'exported': ['Uitgevoerd', 'een beetje Afgevoerd'],
+ 'extra': ['Extra'],
+ 'four': ['four', 'for'],
+ 'little': ['een beetje', 'weinig'],
+ 'one': ['een'],
+ 'rule': ['regel']}
         gotDict = testGram.getDictOfGrammarWordsTranslations()
         self.assert_equal(expDict, gotDict,  "translated words dict not as expected")
         
         # do the translation step:
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec = u'''#demo translation\n<one> exported = regel <two> ['veel'] Extra;\n#more rules:\n<two> = (Uitgevoerd|'een beetje Afgevoerd') with {two} {one} [and ['veel'|'een beetje'|weinig]] more; # additional comment\n#try to do my best'''
+        expGramSpec = '''#demo translation\n<one> exported = regel <two> ['veel'] Extra;\n#more rules:\n<two> = (Uitgevoerd|'een beetje Afgevoerd') with {two} {one} [and ['veel'|'een beetje'|weinig]] more; # additional comment\n#try to do my best'''
         self.assert_equal(expGramSpec, gotGramSpec,  "translated grammar was not as expected")
         testGram.load(gotGramSpec)
         expRules = ['one']
@@ -733,7 +734,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
                 natbj.IniGrammar.__init__(self)
 
         testGram = TestGrammar()
-        iniSpec = {u'grammar name': {u'name':u'test inifile handling'},
+        iniSpec = {'grammar name': {'name':'test inifile handling'},
                    }
         testGram.ini = self.makeInifile('testinifilehandling.ini', iniSpec=iniSpec)
 
@@ -747,7 +748,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         expGramSpec = None  # no translation yet
         self.assert_equal(expGramSpec, gotGramSpec,  "no translated grammar at this moment")
         
-        expIniSpec =    {u'grammar name': {u'name': u'test inifile handling'}}
+        expIniSpec =    {'grammar name': {'name': 'test inifile handling'}}
 
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "non-translated grammar does not produce expected ini file")
@@ -759,7 +760,7 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         self.assert_equal(expGramSpec, gotGramSpec,  "no translated grammar at this moment")
       
-        expIniSpec =    {u'grammar name': {u'name': u'test inifile handling'}}
+        expIniSpec =    {'grammar name': {'name': 'test inifile handling'}}
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "non-translated grammar does not produce expected ini file")
 
@@ -772,17 +773,17 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         testGram.ini = self.makeInifile('testinifilehandling.ini', iniSpec=iniSpec)
         
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec =  u'<simple> exported = rule synonym;'
+        expGramSpec =  '<simple> exported = rule synonym;'
 
         self.assert_equal(expGramSpec, gotGramSpec,  "no translated grammar at this moment")
       
       
         ## note the language is here "zyx", so not enx of nld:      
-        expIniSpec =        {u'grammar name': {u'name': u'test inifile handling'},
- u'grammar non translated words': {u'info1': u'These grammar words can be translated.',
-                                   u'info2': u'See http://qh.antenna.nl/unimacro/features/translations for more info',
-                                   u'words': [u'rule']},
- u'grammar words': {u'one': u'synonym'}}
+        expIniSpec =        {'grammar name': {'name': 'test inifile handling'},
+ 'grammar non translated words': {'info1': 'These grammar words can be translated.',
+                                   'info2': 'See http://qh.antenna.nl/unimacro/features/translations for more info',
+                                   'words': ['rule']},
+ 'grammar words': {'one': 'synonym'}}
 
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "translated grammar does not produce expected ini file")
@@ -797,17 +798,17 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         self.assert_equal(expGramSpec, gotGramSpec,  "no translated grammar at this moment")
       
-        expIniSpec =       {u'grammar name': {u'name': u'test inifile handling'},
- u'grammar non translated words': {u'info1': u'These grammar words can be translated.',
-                                   u'info2': u'See http://qh.antenna.nl/unimacro/features/translations for more info',
-                                   u'words': [u'rule']},
- u'grammar obsolete words': {u'one': [u'synonym']}}
+        expIniSpec =       {'grammar name': {'name': 'test inifile handling'},
+ 'grammar non translated words': {'info1': 'These grammar words can be translated.',
+                                   'info2': 'See http://qh.antenna.nl/unimacro/features/translations for more info',
+                                   'words': ['rule']},
+ 'grammar obsolete words': {'one': ['synonym']}}
 
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "non translated grammar with obsolete words does not produce expected ini file")
 
         ## make translated word active again, catching the translation:
-        testGram.gramSpec = u'''<simple> exported = rule one;'''
+        testGram.gramSpec = '''<simple> exported = rule one;'''
         # go on with the previous inifile        
         
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
@@ -816,41 +817,41 @@ class UnittestIniGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         self.assert_equal(expGramSpec, gotGramSpec,  "no translated grammar at this moment")
       
-        expIniSpec =    {u'grammar name': {u'name': u'test inifile handling'},
- u'grammar non translated words': {u'info1': u'These grammar words can be translated.',
-                                   u'info2': u'See http://qh.antenna.nl/unimacro/features/translations for more info',
-                                   u'words': [u'rule']},
- u'grammar obsolete words': {u'one': [u'synonym']}}
+        expIniSpec =    {'grammar name': {'name': 'test inifile handling'},
+ 'grammar non translated words': {'info1': 'These grammar words can be translated.',
+                                   'info2': 'See http://qh.antenna.nl/unimacro/features/translations for more info',
+                                   'words': ['rule']},
+ 'grammar obsolete words': {'one': ['synonym']}}
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "non translated grammar with obsolete words does not produce expected ini file")
 
 
         ## make translated words active again, catching the translation:
-        testGram.gramSpec = u'''<simple> exported = rule one;'''
+        testGram.gramSpec = '''<simple> exported = rule one;'''
         ##
         ## augment ini spec with items that can be removed:
         ## identical words are NOT remembered!!
         ##
-        iniSpec =     {u'grammar name': {u'name': u'test inifile handling'},
-u'grammar non translated words': {u'info1': u'These grammar words can be changed if you want synonyms for them.',
-                                  u'info2': u'See http://qh.antenna.nl/unimacro/features/translations for more info',
-                                  u'words': [u'rule']},
-u'grammar words': {u'one': [u'synonym', u'one'], u'rule': [u'rule']},
-u'grammar obsolete words': {u'two': [u'keep'], 'three': [u'three|also keep'], u'four': [u'four']}}
+        iniSpec =     {'grammar name': {'name': 'test inifile handling'},
+'grammar non translated words': {'info1': 'These grammar words can be changed if you want synonyms for them.',
+                                  'info2': 'See http://qh.antenna.nl/unimacro/features/translations for more info',
+                                  'words': ['rule']},
+'grammar words': {'one': ['synonym', 'one'], 'rule': ['rule']},
+'grammar obsolete words': {'two': ['keep'], 'three': ['three|also keep'], 'four': ['four']}}
 
         testGram.ini = self.makeInifile('testinifilehandling.ini', iniSpec=iniSpec)
         
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
-        expGramSpec =  u'<simple> exported = rule (synonym|one);'
+        expGramSpec =  '<simple> exported = rule (synonym|one);'
 
         self.assert_equal(expGramSpec, gotGramSpec,  "translated grammar with synonyms not correct")
       
-        expIniSpec =     {u'grammar name': {u'name': u'test inifile handling'},
- u'grammar non translated words': {u'info1': u'These grammar words can be translated.',
-                                   u'info2': u'See http://qh.antenna.nl/unimacro/features/translations for more info',
-                                   u'words': [u'rule']},
- u'grammar obsolete words': {u'three': [u'three|also keep'], u'two': [u'keep']},
- u'grammar words': {u'one': [u'synonym', u'one']}}
+        expIniSpec =     {'grammar name': {'name': 'test inifile handling'},
+ 'grammar non translated words': {'info1': 'These grammar words can be translated.',
+                                   'info2': 'See http://qh.antenna.nl/unimacro/features/translations for more info',
+                                   'words': ['rule']},
+ 'grammar obsolete words': {'three': ['three|also keep'], 'two': ['keep']},
+ 'grammar words': {'one': ['synonym', 'one']}}
 
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "non translated grammar with obsolete words does not produce expected ini file")
@@ -863,9 +864,9 @@ u'grammar obsolete words': {u'two': [u'keep'], 'three': [u'three|also keep'], u'
         gotGramSpec = testGram.translateGrammar(testGram.gramSpec)
         expGramSpec =  '<simple> exported = rule (synonym|one);'
         
-        expIniSpec =  {u'grammar name': {u'name': u'test inifile handling'},
- u'grammar obsolete words': {u'three': [u'three|also keep'], u'two': [u'keep']},
- u'grammar words': {u'one': [u'synonym', u'one'], u'rule': u'regel'}}
+        expIniSpec =  {'grammar name': {'name': 'test inifile handling'},
+ 'grammar obsolete words': {'three': ['three|also keep'], 'two': ['keep']},
+ 'grammar words': {'one': ['synonym', 'one'], 'rule': 'regel'}}
 
         gotIniSpec = testGram.ini.toDict()
         self.assert_equal(expIniSpec, gotIniSpec, "non translated grammar with obsolete words does not produce expected ini file")
@@ -929,7 +930,7 @@ def log(t):
     I have no complete insight is this, but checking the logfile afterwards
     always works (QH)
     """
-    print t
+    print(t)
     if logFile:
         logFile.write(t + '\n')
     

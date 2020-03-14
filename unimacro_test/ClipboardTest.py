@@ -7,10 +7,18 @@
 #   NaturallySpeaking should be running with nothing in the editor window
 #   (that you want to preserve) before these tests are run.
 #   performed.
+import sys
+from pathqh import path
+thisDir = path('.')
+unimacroDir=(thisDir/'..').normpath()
+if unimacroDir not in sys.path:
+    print("add unimacroDir to sys.path: %s"% unimacroDir)
+    sys.path.append(unimacroDir)
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
+
+import time
 import actions
-reload(actions)
 
 import unittest
 import UnimacroTestHelpers
@@ -26,15 +34,16 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
     def tearDown(self):
         actions.doAction("BRINGUP dragonpad; KW")
         
-    def test_Something_in_unimacro(self):
+    def tttest_Something_in_unimacro(self):
         testWindowContents = self.doTestWindowContents
         actions.doKeystroke("testing")
         expected = "testing"
         testWindowContents(expected, "Something testing in ClipboardTest went wrong")
         # tearDown when DragonPad is already closed:
         actions.doAction("KW")
+        print("test_Something_in_unimacro done")
  
-    def test_Copy_and_paste_clipboard(self):
+    def tttest_Copy_and_paste_clipboard(self):
         testWindowContents = self.doTestWindowContents
         # This test handles several copy and paste meta actions.
         actions.doKeystroke("testing")
@@ -51,7 +60,8 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
 ##         If it is so it restores the previous clipboard and exits
         testActionResult = self.doTestActionResult
         actions.doKeystroke("testing")
-        actions.doAction("<<selectall>><<copy>>{ctrl+end}")
+        actions.doAction("<<selectall>>;<<copy>>;{ctrl+end}")
+        time.sleep(4)
         actions.doAction('CLIPSAVE')
         t = natqh.getClipboard()
         self.assert_equal("", t, "Clipboard should be empty now" ) 
@@ -60,11 +70,11 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
         self.assert_equal("", t, "Clipboard should still be empty" ) 
         testActionResult(0, "CLIPISNOTEMPTY")
         ## with empty clipboard restore goes automatically: 
-##        actions.doAction("CLIPRESTORE")
+        actions.doAction("CLIPRESTORE")
         t = natqh.getClipboard()
         self.assert_equal("testing", t, "Clipboard should filled again" ) 
 
-    def test_Non_Empty_clipboard_and_restore(self):
+    def tttest_Non_Empty_clipboard_and_restore(self):
         testWindowContents = self.doTestWindowContents
         testActionResult = self.doTestActionResult
 ##         This test saves the clipboard, copies two letters
@@ -83,7 +93,7 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
         t = natqh.getClipboard()
         self.assert_equal("testing", t, "Clipboard should filled now" ) 
 
-    def test_complete_CLIP_action(self):
+    def tttest_complete_CLIP_action(self):
         testWindowContents = self.doTestWindowContents
         testActionResult = self.doTestActionResult
 ##         This test saves the clipboard, copies two letters
@@ -95,7 +105,7 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
         actions.doAction('CLIPSAVE; {shift+left 4}<<copy>>{ctrl+end}; CLIPISNOTEMPTY; {ctrl+end}abcd<<paste>>defg; CLIPRESTORE; <<paste>>')
         testWindowContents("testingabcdtingdefgtesting")
 
-    def test_NON_complete_CLIP_action(self):
+    def tttest_NON_complete_CLIP_action(self):
         testWindowContents = self.doTestWindowContents
         testActionResult = self.doTestActionResult
 ##         This test saves the clipboard,breaks off so does not return the ending

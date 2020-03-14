@@ -1,7 +1,9 @@
 import win32com.client
-import time, os, os.path
+import time
+import os
+import os.path
 from pythoncom import com_error
-from actionbases import AllActions
+from .actionbases import AllActions
 import natlinkutilsqh as natqh
 
 
@@ -26,20 +28,20 @@ class ExcelActions(AllActions):
         self.prevBook = self.prevSheet = self.prevPosition = None
 
     def update(self, progInfo):
-        print 'update of ExcelActions, %s'% self.topHandle
+        print('update of ExcelActions, %s'% self.topHandle)
         if self.topHandle != progInfo[3]:
-            print 'reset, topHandle: %s, progInfo: %s'% (self.topHandle, repr(progInfo))
+            print('reset, topHandle: %s, progInfo: %s'% (self.topHandle, repr(progInfo)))
             self.reset(progInfo)
             if self.app:
-                print 'wrong app for excel, window handle invalid, app is connected to %s, forground window has %s\nPlease close conflicting Excel instance!'% (self.topHandle, progInfo[3])
+                print('wrong app for excel, window handle invalid, app is connected to %s, forground window has %s\nPlease close conflicting Excel instance!'% (self.topHandle, progInfo[3]))
                 self.disconnect() # sets self.app to None
             else:
-                print 'try to reconnect to %s'% self.topHandle
+                print('try to reconnect to %s'% self.topHandle)
                 self.connect()
         if self.app:
             self.checkForChanges(progInfo)
         else:
-            print 'no valid excel instance available for hndle: %s'% self.topHandle
+            print('no valid excel instance available for hndle: %s'% self.topHandle)
         
     def isInForeground(self, app=None, title=None, progInfo=None):
         """return True if app is in foreground
@@ -51,17 +53,17 @@ class ExcelActions(AllActions):
         if not thisApp:
             return False
         if thisApp.Workbooks.Count == 0:
-            print 'Got excel app with no workbooks'
+            print('Got excel app with no workbooks')
             return False
         try:
             name = thisApp.ActiveWorkbook.Name
         except AttributeError:
-            print 'workbook is not saved yet.'
+            print('workbook is not saved yet.')
             return True
         #print 'activeworkbook: %s'% name
         if title.find(name.lower()) >= 0:
             return True
-        print '============\nexcel, isInForeground: cannot find name \n"%s" \nin title: \n"%s"\nProbably you have more excel instances open. Unimacro only can connect to this one instance.\n'% (name, title)
+        print('============\nexcel, isInForeground: cannot find name \n"%s" \nin title: \n"%s"\nProbably you have more excel instances open. Unimacro only can connect to this one instance.\n'% (name, title))
         return False        
         
     def checkForChanges(self, progInfo=None):
@@ -86,7 +88,7 @@ class ExcelActions(AllActions):
         title = self.topTitle = progInfo[1]
 
         if not self.isInForeground(app=self.app, title=title, progInfo=progInfo):
-            print 'not in foreground, excel'
+            print('not in foreground, excel')
             if self.prevBook:
                 changed = 8 # from foreground into background
                 self.prevBook = self.prevSheet = self.prevPosition = None
@@ -100,7 +102,7 @@ class ExcelActions(AllActions):
         self.book = self.app.ActiveWorkbook
         
         if self.book is None:
-            print 'ExcelAction, no active workbook'
+            print('ExcelAction, no active workbook')
             self.bookName = ''
             self.sheetName = ''
             self.sheet = None
@@ -139,7 +141,7 @@ class ExcelActions(AllActions):
             #else:
             #    print 'same position: %s'% repr(cr)
         else:
-            print 'excel-actions, no self.sheet.'
+            print('excel-actions, no self.sheet.')
         #print 'return code checkForChanges: %s'% changed
         return changed
     
@@ -151,25 +153,25 @@ class ExcelActions(AllActions):
         also reset the relevant variables...
         return value irrelevant
         """
-        print 'Connecting to to excel...'
+        print('Connecting to to excel...')
         self.prevBook = self.prevSheet = self.prevPosition = None
         if self.prog != 'excel':
-            print "excel-actions, should only be called when excel is the foreground window, not: %s"% self.prog
+            print("excel-actions, should only be called when excel is the foreground window, not: %s"% self.prog)
             self.app = None
             return
         title = self.topTitle
         try:
             self.app = win32com.client.GetActiveObject(Class="Excel.Application")
         except com_error:
-            print 'Cannot attach to Excel.'
+            print('Cannot attach to Excel.')
             self.app = None
             return
         if self.isInForeground():
             return  # OK
         else:
-            print 'ExcelActions: cannot attach to Excel, because instance is not in the foreground.'
-            print 'Probably there are more excel instances active.'
-            print 'Please close excel instances and try again'
+            print('ExcelActions: cannot attach to Excel, because instance is not in the foreground.')
+            print('Probably there are more excel instances active.')
+            print('Please close excel instances and try again')
             self.disconnect()
             return
 
@@ -216,21 +218,21 @@ class ExcelActions(AllActions):
         if bookList:
             for b in bookList:
                 if title.find(b) >= 0:
-                    print 'found book in instance: %s'% b
+                    print('found book in instance: %s'% b)
                     return b
-        print 'not found title in instance, bookList: %s'% bookList
+        print('not found title in instance, bookList: %s'% bookList)
 
     def getBookNameFromTitle(self, title):
         """return the book name corresponding with title (being the window title)
         """
         excelTexts = ['Microsoft Excel -', '- Microsoft Excel']
-        print 'getBookNameFromTitle: %s'% title
+        print('getBookNameFromTitle: %s'% title)
         if title.find('['):
             title = title.split('[')[0].strip()
         for e in excelTexts:
             if title.find(e) >= 0:
                 title = title.replace(e, '').strip()
-        print 'result: %s'% title
+        print('result: %s'% title)
         return title
             
         
@@ -258,7 +260,7 @@ class ExcelActions(AllActions):
         """
         if book is None:
             book = self.book
-        elif isinstance(book, basestring):
+        elif isinstance(book, str):
             book = self.app.Workbooks[book]
         
         if book:
@@ -289,7 +291,7 @@ class ExcelActions(AllActions):
             #print 'currentposition, lencr: %s, cr: %s'% (len(cr), cr)
             return tuple(cr)
         else:
-            print 'excel-actions, no currentposition, lencr: %s, cr: %s'% (len(cr), cr)
+            print('excel-actions, no currentposition, lencr: %s, cr: %s'% (len(cr), cr))
             return None, None
 
     def pushToListIfDifferent(self, List, value):
@@ -344,11 +346,11 @@ class ExcelActions(AllActions):
         
         goto line in the current column
         """
-        rowNum = unicode(rowNum)
+        rowNum = str(rowNum)
         if not self.app:  return
         cPrev, rPrev = self.getCurrentPosition()
         if rowNum == rPrev:
-            print 'row already selected'
+            print('row already selected')
             return 1
         try:
             range = cPrev + rowNum
@@ -358,7 +360,7 @@ class ExcelActions(AllActions):
             sheet.Range(range).Select()
             return 1
         except:
-            print 'something wrong in excel-actions, metaaction_gotoline.'
+            print('something wrong in excel-actions, metaaction_gotoline.')
             return
             
     def metaaction_selectline(self, dummy=None):
@@ -432,7 +434,7 @@ class ExcelActions(AllActions):
         if not self.app: return
         #self.app.ActiveCell.EntireRow.Select()
         prevRow = self.getPreviousRow()
-        print 'prevRow: %s'% prevRow
+        print('prevRow: %s'% prevRow)
         if prevRow:                
             self.gotoRow(prevRow)
         return 1
@@ -442,13 +444,13 @@ if __name__ == '__main__':
     excel = ExcelActions(progInfo)
     if excel.app:
         #excel.app.Visible = True
-        print 'activeCell: %s'% excel.app.ActiveCell
-        print 'books: %s'% excel.app.Workbooks.Count
-        print 'foreground: %s'%excel.isInForeground()
-        print 'now click on excel please'
-        print excel.app.hndle
+        print('activeCell: %s'% excel.app.ActiveCell)
+        print('books: %s'% excel.app.Workbooks.Count)
+        print('foreground: %s'%excel.isInForeground())
+        print('now click on excel please')
+        print(excel.app.hndle)
         excel.metaaction_gotoline(345)
         time.sleep(5)
     else:
-        print 'no excel.app: %s'% excel.app
+        print('no excel.app: %s'% excel.app)
             

@@ -1,4 +1,3 @@
-__version__ = "$Revision: 29 $, $Date: 2006-07-24 17:41:36 +0200 (ma, 24 jul 2006) $, $Author: quintijn $"
 import D_
 
 #Predefined for training purposes

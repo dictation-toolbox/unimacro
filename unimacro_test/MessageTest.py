@@ -6,7 +6,6 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-__version__ = "$Revision: 53 $, $Date: 2007-05-25 14:58:44 +0200 (vr, 25 mei 2007) $, $Author: quintijn $"
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 import actions
@@ -28,7 +27,7 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
         mes = 'Do you want to do the "handle_embedded_quotes_and_newlines" test?'
         result = actions.YesNo(mes, 'Starting the handle_embedded_quotes_and_newlines Test')
         if not result:
-            print 'handle_embedded_quotes_and_newlines (MessageTest) skipped'
+            print('handle_embedded_quotes_and_newlines (MessageTest) skipped')
             return
         mes1 = 'This has embedded newlines: \n and \\r characters: \r in it:\n' \
               'and embedded quotes: " and \'\n\n\n' \
@@ -38,7 +37,7 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
               'Please answer Yes if there are embedded newlines and quotes in this Dialog and in previous one'
         result = actions.Message(mes1, "\"'\n\rhandle_embedded_quotes_and_newlines (MessageTest)")
         result = actions.YesNo(mes2, "\"\"'\"\r\nhandle_embedded_quotes_and_newlines (MessageTest)")
-        self.assertEquals(True, result, "you answered NO to test: %s"% self.squeeze_whitespace(mes2))
+        self.assertEqual(True, result, "you answered NO to test: %s"% self.squeeze_whitespace(mes2))
 
         
         
@@ -47,7 +46,7 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
         mes = "Do you want to do the Message Box tests?"
         result = actions.YesNo(mes, "Starting the MessageTest (Message Box)")
         if not result:
-            print 'Message Box tests (MessageTest) skipped'
+            print('Message Box tests (MessageTest) skipped')
             return
 
 ##        for alert,icon in enumerate([16, 32, 48, 64]):
@@ -74,7 +73,7 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
                  \nespecially the icons and the number of alerts?
               '''
         result = actions.YesNo(mes, "Evaluation of MessageTest", icon=icon, alert=alert)
-        self.assertEquals(True, result, "you answered NO to test: %s"% self.squeeze_whitespace(mes))
+        self.assertEqual(True, result, "you answered NO to test: %s"% self.squeeze_whitespace(mes))
     
 
 
@@ -83,13 +82,13 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
         mes = "Do you want to do the YesNo Box tests?"
         result = actions.YesNo(mes, "Starting the MessageTest (YesNo Box)")
         if not result:
-            print 'YesNo Box tests (MessageTest) skipped'
+            print('YesNo Box tests (MessageTest) skipped')
             return
 
         res = actions.YesNo('Please answer "Yes"', "MessageTest")
-        self.assert_(res, "Result should be True when you really answered *Yes*")
+        self.assertTrue(res, "Result should be True when you really answered *Yes*")
         res = actions.YesNo("Please answer\n'No'", "MessageTest")
-        self.failIf(res, "Result should be False when you really answered *No*")
+        self.assertFalse(res, "Result should be False when you really answered *No*")
         for alert, icon in enumerate(['query', 'warning', 'critical']):
             if alert:
                 mes = '''This is a test question\n\nicon=%s and
@@ -97,9 +96,9 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
             else:
                 mes = '''This is a test question\n\n\ticon=%s and
                       \n\tno alert (sound heard)\n\nIs this OK?'''%icon
-            print 'alerts: ', alert
+            print('alerts: ', alert)
             result = actions.YesNo(mes, "MessageTest", icon=icon, alert=alert)
-            self.assertEquals(True, result, "you answered NO to test: %s"% self.squeeze_whitespace(mes))
+            self.assertEqual(True, result, "you answered NO to test: %s"% self.squeeze_whitespace(mes))
 
 
 if __name__ == "__main__":

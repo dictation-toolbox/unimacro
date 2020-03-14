@@ -45,7 +45,6 @@ import natlink
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
-import string
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 
@@ -66,7 +65,7 @@ class ThisGrammar(ancestor):
     try:
         numberGram = natbj.numberGrammarTill999[language]
     except KeyError:
-        print 'take number grammar from "enx"'
+        print('take number grammar from "enx"')
         numberGram = natbj.numberGrammarTill999['enx']
         
     if language == "nld":
@@ -112,7 +111,7 @@ class ThisGrammar(ancestor):
         if natqh.matchModule('firefox', modInfo=moduleInfo):
             #print 'activate firefox %s mode'% mode
             if self.checkForChanges:
-                print 'firefox browsing (%s), checking the inifile'% self.name
+                print('firefox browsing (%s), checking the inifile'% self.name)
                 self.checkInifile()
 
             self.switchOnOrOff()
@@ -164,7 +163,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
             dir = 'left'
         else:
-            print 'no direction found in command: %s'% words
+            print('no direction found in command: %s'% words)
         
         counts = self.getNumbersFromSpoken(words)
         if counts:
@@ -241,7 +240,7 @@ class ThisGrammar(ancestor):
                       mbDonumber(numberString,'ctrl')
             else:
                   if minus:
-                      print 'not implemented in hah'
+                      print('not implemented in hah')
                   else:
                       keystroke('{ctrl+%s}'% count)
         else:
@@ -287,14 +286,14 @@ class ThisGrammar(ancestor):
         if not self.hadChoose:
             return
         self.collectNumber()
-        print '%s: dictated number: %s'% (self.name, self.number)
+        print('%s: dictated number: %s'% (self.name, self.number))
         
         if mode =="hah":
 ##            print 'hah go to number:',self.number
             keystroke("%s"% self.number)
             # natqh.Wait(visiblePause)
             keystroke(getNumbers[mode])
-            print 'firefox browsing with hah obsolete'
+            print('firefox browsing with hah obsolete')
             return
             if self.hadChoose in ['focus']:
                 pass
@@ -311,7 +310,7 @@ class ThisGrammar(ancestor):
                 keystroke("{numpadd++}")
                 return
             else:
-                print 'unknown word in command: %s'% self.hadNew
+                print('unknown word in command: %s'% self.hadNew)
                 keystroke("{enter}")
 
             natqh.Wait(waitBeforeNewNumbers)
@@ -337,11 +336,11 @@ def getKeyCode(k):
     """get the code of a key"""
     if k[0] == '{':
         return lookupdict[k[1:-1]]
-    elif k in unicode(string.lowercase):
+    elif k in utilsqh.lowercase:
         return ord(k.upper())
-    elif k in unicode(string.uppercase):
+    elif k in utilsqh.uppercase:
         return ord(k)
-    elif k in unicode(string.digits):
+    elif k in utilsqh.digits:
         return 96 + int(k)
 
 modifiers = { 
@@ -371,8 +370,8 @@ def mbDonumber(number, modifier=None):
     try:
         natlink.playEvents(events)
     except natlink.NatError:
-        print "=================="
-        print "Error playing events in firefox browsing, doNumber: %s"% repr(events)
+        print("==================")
+        print("Error playing events in firefox browsing, doNumber: %s"% repr(events))
         
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)

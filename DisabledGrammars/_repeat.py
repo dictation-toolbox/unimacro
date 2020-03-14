@@ -1,4 +1,3 @@
-__version__ = "$Revision: 561 $, $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -43,7 +42,9 @@ natbj = __import__('natlinkutilsbj')
 natut = __import__('natlinkutils')
 from actions import doAction as action
 
-import os, os.path, sys
+import os
+import os.path
+import sys
 import time         # for clock
 import natlink
 import types
@@ -72,7 +73,7 @@ defaultSpeed = {
 SPEED = {}
      
 for state in states:
-    if defaultSpeed.has_key(state):
+    if state in defaultSpeed:
         d = defaultSpeed[state]
         if len(d) == 2:
             rate = (d[1]/d[0])**0.25
@@ -82,7 +83,7 @@ for state in states:
         elif len(d) == 5:
             SPEED[state] = defaultSpeed[state][:]
         else:
-            print 'no valid speeds for: %s'% state 
+            print('no valid speeds for: %s'% state) 
 
 defaultMousePixels = 1
 waitingSpeed = 500
@@ -331,20 +332,20 @@ class ThisGrammar(ancestor):
         elif k == 'mousing' or self.state == 'dragging':
             speed = SPEED[k][s]
             steps = defaultMousePixels
-            print 'mousing/dragging, speed: %s, steps: %s'% (speed, steps) 
+            print('mousing/dragging, speed: %s, steps: %s'% (speed, steps)) 
             if s < minSpeed:
                 steps = (minSpeed//speed) + 1
                 speed = steps*speed
                 if steps < defaultMousePixels:
                     steps = defaultMousePixels
                     speed = speed*defaultMousePixels/steps
-                    print 'enlarge steps: %s, new speed: %s'% (steps, speed)
+                    print('enlarge steps: %s, new speed: %s'% (steps, speed))
             else:
                 speed = s
             debugPrint('mouse starting with speed: %s, steps: %s'% (speed, steps))
             natlink.setTimerCallback(self.onTimer, speed)
             self.mouseSteps = steps
-        elif SPEED.has_key(k):
+        elif k in SPEED:
             debugPrint('starting with speed: %s'% SPEED[k][s])
             natlink.setTimerCallback(self.onTimer, SPEED[k][s])
         else:
@@ -372,7 +373,7 @@ class ThisGrammar(ancestor):
                 key = 'ctrl+' + key
 
             if self.waiting and self.Count:
-                nowCount = " " + `self.Count`
+                nowCount = " " + repr(self.Count)
             else:
                 nowCount = ""
                 
@@ -400,7 +401,7 @@ class ThisGrammar(ancestor):
         elif self.state == 'searching':
             self.setTrayIcon(1)
             if not self.curDir:
-                print 'searching, no current direction: %s, assume down'% self.curDir
+                print('searching, no current direction: %s, assume down'% self.curDir)
                 self.curDir = self.getLastSearchDirection() or 'down'
             self.insideCommand = 1
             count = self.Count or 1
@@ -485,11 +486,11 @@ class ThisGrammar(ancestor):
             if showAll:
                 self.DisplayMessage('<%s>'% ' '.join(words))
         else:
-            print 'recogtype: %s'% recogType
+            print('recogtype: %s'% recogType)
         self.inside = 0
             
     def gotResults_reverse(self,words,fullResults):
-        debugPrint('reverse: %s'%`words`)
+        debugPrint('reverse: %s'%repr(words))
         if self.nDir:
             self.flush()
         d = self.curDir
@@ -559,7 +560,7 @@ class ThisGrammar(ancestor):
             elif w in ['right', 'rechts']: d = 'right'
             elif w in ['left', 'links']: d = 'left'
             else:
-                print 'invalid direction:', w
+                print('invalid direction:', w)
                 return
             if d != self.curDir:
                 self.curDir = d
@@ -572,7 +573,7 @@ class ThisGrammar(ancestor):
     def gotResults_endMoving(self,words,fullResults):
         if self.nDir or self.Count or self.nSpeed != None:
             self.flush()
-        debugPrint('end moving: %s'% `words`)
+        debugPrint('end moving: %s'% repr(words))
         for w in words:
             if w in ['hold','hold on', 'hold it', 'wacht']:
                 self.waiting =  1
@@ -584,7 +585,7 @@ class ThisGrammar(ancestor):
     def gotResults_endMousing(self,words,fullResults):
         if self.nDir or self.Count or self.nSpeed != None:
             self.flush()
-        debugPrint('end mousing: %s'% `words`)
+        debugPrint('end mousing: %s'% repr(words))
         for w in words:
             if w in ['hold','hold on', 'hold it', 'wacht']:
                 self.waiting =  1
@@ -600,7 +601,7 @@ class ThisGrammar(ancestor):
     def gotResults_endSearching(self,words,fullResults):
         if self.nDir or self.Count or self.nSpeed != None:
             self.flush()
-        debugPrint('end searching: %s'% `words`)
+        debugPrint('end searching: %s'% repr(words))
         for w in words:
             if w in ['hold','hold on', 'hold it', 'wacht']:
                 self.waiting =  1
@@ -615,7 +616,7 @@ class ThisGrammar(ancestor):
     def gotResults_endRepeating(self,words,fullResults):
         if self.nDir or self.Count or self.nSpeed != None:
             self.flush()
-        debugPrint('end repeating: %s'% `words`)
+        debugPrint('end repeating: %s'% repr(words))
         for w in words:
             if w in ['hold','hold on', 'hold it', 'wacht']:
                 self.waiting =  1
@@ -694,9 +695,9 @@ class ThisGrammar(ancestor):
             elif w in ['normal', 'normaal', 'steady', 'gestaag']:
                 self.nSpeed = 0
             else:
-                print 'speed, invalid keyword:', w
+                print('speed, invalid keyword:', w)
         self.nSpeed = max(min(self.nSpeed, 2), -2)
-        debugPrint ('speed words: %s, speed: %s' % (`words`, self.nSpeed))
+        debugPrint ('speed words: %s, speed: %s' % (repr(words), self.nSpeed))
 
 
     def gotResults_acceleration(self,words,fullResults):
@@ -712,11 +713,11 @@ class ThisGrammar(ancestor):
             elif w in ['faster', 'sneller']:
                 diff = -factor
             else:
-                print 'acceleration, invalid keyword:', w
+                print('acceleration, invalid keyword:', w)
                 debugPrint ('acceleration, invalid keyword: %s'% w)
         self.nSpeed = self.nSpeed + diff
         self.nSpeed = max(min(self.nSpeed, 2), -2)
-        debugPrint ('acceleration words: %s, new speed: %s' % (`words`, self.nSpeed))
+        debugPrint ('acceleration words: %s, new speed: %s' % (repr(words), self.nSpeed))
 
     def gotResults_startMoving(self,words,fullResults):
         self.activateSet(['moving'], exclusive = 1)
@@ -736,7 +737,7 @@ class ThisGrammar(ancestor):
 
     def gotResults_startMousing(self,words,fullResults):
         self.activateSet(['mousing'], exclusive = 1)
-        debugPrint('start mousing %s' % `words`)
+        debugPrint('start mousing %s' % repr(words))
         if self.hasCommon(words, ["MUIS",'MOUSE']):
             self.state = 'mousing'
         if self.hasCommon(words, ["SLEEP",'DRAG']):
@@ -755,7 +756,7 @@ class ThisGrammar(ancestor):
 
     def gotResults_test(self,words,fullResults):
         self.cancelMode()
-        print 'words in test', words
+        print('words in test', words)
         natlink.recognitionMimic(words)
 
         
@@ -797,7 +798,7 @@ class ThisGrammar(ancestor):
             self.flush()
         if self.state in states:
             self.startNow()
-        debugPrint ('end of phrase (gotResults): %s'% `words`)
+        debugPrint ('end of phrase (gotResults): %s'% repr(words))
         self.inside = 0 
 
     def flush(self):
@@ -846,7 +847,7 @@ class ThisGrammar(ancestor):
             iconName = os.path.join(iconDirectory, 'repeat')
         else:
             natlink.setTrayIcon()
-            print 'setTrayIcon, invalid state:', self.state
+            print('setTrayIcon, invalid state:', self.state)
             return
 
         if self.waiting:
@@ -867,12 +868,12 @@ class ThisGrammar(ancestor):
                 # absolute path, attach extension:
                 iconName = iconName + '.ico'
         except IndexError:
-            print 'cannot set tray icon, no iconName (_repeat), try to clear'
+            print('cannot set tray icon, no iconName (_repeat), try to clear')
             natlink.setTrayIcon()
         try:
             natlink.setTrayIcon(iconName,toolTip,self.onTrayIcon)
         except natlink.NatError:
-            print 'cannot set tray icon (_repeat), try to clear'
+            print('cannot set tray icon (_repeat), try to clear')
             natlink.setTrayIcon()
                     
 
@@ -887,7 +888,7 @@ class ThisGrammar(ancestor):
         debugPrint('repeatNow: %s times, %s phrases' % (self.nTimes, self.nPhrase))
         # put repeat mode ON:
         self.repeatFlag = 1
-        itemrange = range(len(self.lastResults))
+        itemrange = list(range(len(self.lastResults)))
         if not itemrange:
             self.repeatFlag = 0
             return None
@@ -916,15 +917,15 @@ startTime = time.clock()
 if DEBUG:
     fOutName = 'c:\\DEBUG '+__name__+'.txt'
     debugFile = open(fOutName, 'w')
-    print 'DEBUG uitvoer naar: %s'% fOutName
+    print('DEBUG uitvoer naar: %s'% fOutName)
 
 def debugPrint(t):
     if not DEBUG: return
-    print '_gm: %s'% t
-    if type(t) == types.StringType:
+    print('_gm: %s'% t)
+    if type(t) == bytes:
         debugFile.write(t)
     else:
-        debugFile.write(`t`)
+        debugFile.write(repr(t))
     debugFile.write('\n')
     debugFile.flush()
 

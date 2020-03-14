@@ -36,10 +36,10 @@ class ThisGrammar(ancestor):
     """
     def initialize(self):
         if not self.language:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
-        print 'loaded: %s'% self.gramSpec 
+        print('loaded: %s'% self.gramSpec) 
         self.prevHndle = None
 
     def gotBegin(self,moduleInfo):
@@ -74,14 +74,14 @@ class ThisGrammar(ancestor):
         """
         wNumList = self.getNumbersFromSpoken(words) # returns a string or None
         if len(wNumList) != 1:
-            print 'natspeak dialog: error in command, no number found: %s'% wNumList
+            print('natspeak dialog: error in command, no number found: %s'% wNumList)
             return
         chooseNum = wNumList[0]
         self.exitDialog()
         self.foldersGram.gotoRecentFolder(chooseNum-1)  # remember choose is 1 based, the list is 0 based 
 
     def gotResults_okcancelrfd(self, words, fullResults):
-        print 'dialog ok cancel: %s, just close the dialog'% words
+        print('dialog ok cancel: %s, just close the dialog'% words)
         self.exitDialog()
 
     def exitDialog(self):

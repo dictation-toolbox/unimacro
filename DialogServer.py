@@ -1,12 +1,16 @@
-__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 # This file implements a crude Training dialog to Train phrases
 # Author: Bart Jan van Os, Version: 0.1
 # adapted by QH, july 2006
 # starts a process (copy of pythonwin) to implement choice lists
 
-import string,sys,cPickle,os.path
+import sys
+import pickle
+import os.path
 
-import win32ui,win32con,win32api,commctrl
+import win32ui
+import win32con
+import win32api
+import commctrl
 from pywin.mfc import dialog
 from pywin.tools import hierlist
 from pywin.framework import dlgappcore
@@ -53,8 +57,8 @@ class ServerGrammar(GrammarBase):
 
 
     def gotResults_ListDialog(self,words,fullResults):
-        print natlink.getCallbackDepth()
-        print 'Request List Dialog'
+        print(natlink.getCallbackDepth())
+        print('Request List Dialog')
         win32ui.GetMainFrame().PostMessage(IDC_LD)
         SetMic('on')
 
@@ -101,7 +105,7 @@ class SelectGrammar(GrammarBase):
     def gotResults_Spelling(self,words,fullResults):
         chars=''
         for w in words:
-            c=w.split(u'\\')[0]
+            c=w.split('\\')[0]
             if c=='':
                 chars=chars+'\\'                
             else:
@@ -166,7 +170,7 @@ class MainWindow(dlgappcore.AppDialog):
 
     def executeStartRequest(self):
         if len(sys.argv)>1:
-            print 'Request=',sys.argv[1]
+            print('Request=',sys.argv[1])
             if sys.argv[1]=='/listdialog':
                 win32ui.GetMainFrame().PostMessage(IDC_LD)
         
@@ -202,7 +206,7 @@ class MainWindow(dlgappcore.AppDialog):
             RequestFile=open(RequestFileName,'r')
         except:
             RequestFile=open(baseDirectory+'\\TestRequest.bin','r')
-        Data=cPickle.load(RequestFile)
+        Data=pickle.load(RequestFile)
         GrammarFile.close()
         return Data
 
@@ -240,7 +244,7 @@ class ServerApp(dlgappcore.DialogApp):
         self.dlg = self.frame = self.CreateDialog()
     
         if self.frame is None:
-            raise error, "No dialog was created by CreateDialog()"
+            raise error("No dialog was created by CreateDialog()")
             return
 
         self._obj_.InitDlgInstance(self.dlg)
@@ -264,11 +268,11 @@ class ServerApp(dlgappcore.DialogApp):
 
 
 def CheckCreateApp():
-    if sys.modules.has_key("pywin.framework.startup"):
+    if "pywin.framework.startup" in sys.modules:
         App=ServerApp()
         App.InitInstance()
     else:
-        print 'does not have "pywin.framework.startup" imported'
+        print('does not have "pywin.framework.startup" imported')
 
 def demodlg ():
     dlg=MainWindow()

@@ -13,7 +13,8 @@ import natlink
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
-import string, pprint, types
+import pprint
+import types
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 import actions
@@ -27,7 +28,7 @@ class ThisGrammar(ancestor):
     try:
         numberGram = natbj.numberGrammarTill999[language]
     except KeyError:
-        print 'take number grammar from "enx"'
+        print('take number grammar from "enx"')
         numberGram = natbj.numberGrammarTill999['enx']
         
     name = 'excel'
@@ -64,7 +65,7 @@ class ThisGrammar(ancestor):
             if natqh.matchModule('excel', modInfo=moduleInfo):
                 #print 'activate firefox %s mode'% mode
                 if self.checkForChanges:
-                    print 'excel (%s), checking the inifile'% self.name
+                    print('excel (%s), checking the inifile'% self.name)
                     self.checkInifile()
                 self.switchOnOrOff()
             elif self.isActive():
@@ -80,10 +81,10 @@ class ThisGrammar(ancestor):
             if self.excel is None:
                 self.excel = actions.get_instance_from_progInfo(progInfo)
                 if self.excel.app:
-                    print 'excel.app: %s'% self.excel.app
-                    print 'Workbooks: %s'% self.excel.app.Workbooks.Count
+                    print('excel.app: %s'% self.excel.app)
+                    print('Workbooks: %s'% self.excel.app.Workbooks.Count)
                 else:
-                    print 'no instance for this Excel object available'
+                    print('no instance for this Excel object available')
                     self.deactivateAll()
                     return
                     
@@ -111,24 +112,24 @@ class ThisGrammar(ancestor):
         """here set settings of instance variables, when state has changed
         """
         if res <= 1:
-            print 'only position'
+            print('only position')
             return
         sheets = self.excel.getSheetsList()
         if not sheets:
-            print 'warning Excel: no sheets found in getSheetsList'
+            print('warning Excel: no sheets found in getSheetsList')
         if sheets != self.sheetsList:
             self.sheetsList = sheets
             self.sheetsDict = self.spokenforms.getDictOfMixedSpokenForms(sheets)
-            self.sheetsList = self.sheetsDict.keys()
+            self.sheetsList = list(self.sheetsDict.keys())
             self.setList('sheets', self.sheetsList)
-            print 'sheets: %s'% self.sheetsList
+            print('sheets: %s'% self.sheetsList)
         books = self.excel.getBooksList()
         if books != self.booksList:
             self.booksList = books
             self.booksDict = self.spokenforms.getDictOfMixedSpokenForms(books)
-            self.booksList = self.booksDict.keys()
+            self.booksList = list(self.booksDict.keys())
             self.setList('books', self.booksList)
-            print 'books: %s'% self.booksList
+            print('books: %s'% self.booksList)
 
     # several commands in Docstring format:
     def rule_backgroundcolor(self, words):
@@ -158,22 +159,22 @@ class ThisGrammar(ancestor):
 
 
     def gotResults_books(self,words,fullResults):
-        print 'books: %s'% words
-        print self.booksList
+        print('books: %s'% words)
+        print(self.booksList)
 
     def gotResults_sheets(self,words,fullResults):
-        print 'sheets: %s'% words
-        print self.sheetsList
+        print('sheets: %s'% words)
+        print(self.sheetsList)
         self.excel.selectSheet(self.sheetsDict[words[1]])        
 
     def gotResults_negativeaction(self,words,fullResults):
         #print 'excel, make active cell negative'
         n = self.excel.app.ActiveCell.Value
-        if type(n) == types.FloatType:
+        if type(n) == float:
             n = -n
             self.excel.app.ActiveCell.Value = n
         else:
-            print 'excel, not a float: %s (%s)'% (n, type(n))
+            print('excel, not a float: %s (%s)'% (n, type(n)))
 
     def gotResults_col(self,words,fullResults):
         self.hadCol = 1
@@ -182,7 +183,7 @@ class ThisGrammar(ancestor):
             if prevCol:                
                 self.gotoCol(prevCol)
             else:
-                print 'no column to go back to'
+                print('no column to go back to')
             return
         col = self.getCharacterFromSpoken(words[1])
         if col:
@@ -197,7 +198,7 @@ class ThisGrammar(ancestor):
     def gotResults_before(self,words,fullResults):
         if self.hasCommon(words, 'here'):
             if not self.doWaitForMouseToStop():
-                print 'excel, mouse does not stop, cancel command'
+                print('excel, mouse does not stop, cancel command')
                 return
             natqh.buttonClick()
 
@@ -215,7 +216,7 @@ class ThisGrammar(ancestor):
         sheet = self.excel.sheet
         col = col.strip()
         if col == self.excel.currentColumn:
-            print 'column %s already selected'% col
+            print('column %s already selected'% col)
             return
         #print 'col: %s, curRow: %s'% (col, self.excel.currentRow)
         range = col + self.excel.currentRow
@@ -228,10 +229,10 @@ class ThisGrammar(ancestor):
         """print position info, for debugging purposes
         """
         if comment:
-            print '----%s'% comment
-        print 'colum info: %s'% self.excel.columns
-        print 'row info: %s'% self.excel.rows
-        print '---------'
+            print('----%s'% comment)
+        print('colum info: %s'% self.excel.columns)
+        print('row info: %s'% self.excel.rows)
+        print('---------')
         
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)

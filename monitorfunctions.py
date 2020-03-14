@@ -70,8 +70,14 @@ This module provides functions for getting:
     
 """
 
-import win32api, math, win32gui, win32con
-import time, pprint, types, math
+import win32api
+import math
+import win32gui
+import win32con
+import time
+import pprint
+import types
+import math
 import copy
 import messagefunctions # only for taskbar position (left, bottom etc)
 
@@ -101,7 +107,7 @@ def monitor_info():
         m['offsetx'] = m['Work'][0] - m['Monitor'][0]
         m['offsety'] = m['Work'][1] - m['Monitor'][1]
         
-    MONITOR_HNDLES = MONITOR_INFO.keys()
+    MONITOR_HNDLES = list(MONITOR_INFO.keys())
     BORDERX = win32api.GetSystemMetrics(win32con.SM_CXBORDER)  # 5
     BORDERY = win32api.GetSystemMetrics(win32con.SM_CYBORDER)  # 6
     VIRTUAL_SCREEN = []
@@ -123,7 +129,7 @@ def fake_monitor_info_for_testing(nmon, virtual_screen):
     global NMON, VIRTUAL_SCREEN
     NMON = nmon
     VIRTUAL_SCREEN = virtual_screen
-    print 'fake_monitor_info_for_testing, set NMON to %s and VIRTUAL_SCREEN to %s'% (nmon, virtual_screen)
+    print('fake_monitor_info_for_testing, set NMON to %s and VIRTUAL_SCREEN to %s'% (nmon, virtual_screen))
     
     
 ###########################################
@@ -190,7 +196,7 @@ def get_monitor_rect(monitorIndex):
     try:
         moninfo = MONITOR_INFO[MONITOR_HNDLES[monitorIndex]]
     except IndexError:
-        print 'monitorfunctions.get_monitor_rect: monitorindex not available %s'% monitorIndex
+        print('monitorfunctions.get_monitor_rect: monitorindex not available %s'% monitorIndex)
         return
     rect = copy.copy(moninfo['Monitor'])
     return rect
@@ -204,7 +210,7 @@ def get_monitor_rect_work(monitorIndex):
     try:
         moninfo = MONITOR_INFO[MONITOR_HNDLES[monitorIndex]]
     except IndexError:
-        print 'monitorfunctions.get_monitor_rect: monitorindex not available %s'% monitorIndex
+        print('monitorfunctions.get_monitor_rect: monitorindex not available %s'% monitorIndex)
         return
     rect = copy.copy(moninfo['Work'])
     return rect
@@ -224,7 +230,7 @@ def get_taskbar_position():
     m = MONITOR_INFO
     hApp = messagefunctions.findTopWindow(wantedClass='Shell_TrayWnd')
     if not hApp:
-        print 'no taskbar (system tray) found'
+        print('no taskbar (system tray) found')
         return
     info = list( win32gui.GetWindowPlacement(hApp) )
     RA = list(info[4])
@@ -279,8 +285,8 @@ def restore_window(winHndle, monitor=None, xwidth=None, ywidth=None,
 
     # for non resizable windows:
     if not window_can_be_resized(winHndle):
-        print 'no resize window, setting xwidth and ywidth to 0(width was: %s, %s'%\
-                (xwidth, ywidth)
+        print('no resize window, setting xwidth and ywidth to 0(width was: %s, %s'%\
+                (xwidth, ywidth))
         ## center in correct way:
         #if xwidth:
         #    xpos = 0.5
@@ -456,7 +462,7 @@ def _move_resize_restore_area(RestoreArea, resize, direction, amount, units,
     elif direction in ('top', 'up'):
         alpha, distance = 0, RA[1] - boundingbox[1]
     elif type(direction
-              ) in (types.FloatType, types.IntType):
+              ) in (float, int):
         alpha = direction
 
     # setting reverse (for making smaller)
@@ -487,7 +493,7 @@ def _move_resize_restore_area(RestoreArea, resize, direction, amount, units,
         side_corner = 'top'
     elif direction == 'down':
         side_corner = 'bottom'
-    elif type(side_corner) == types.StringType:
+    elif type(side_corner) == bytes:
         side_corner = direction
         
         
@@ -844,7 +850,7 @@ def _get_new_coordinates_same_monitor(begin, end, size, width, positioning, minW
 
     if positioning is None:
         return begin, begin + width
-    if type(positioning) == types.StringType:
+    if type(positioning) == bytes:
         
         if positioning in ('left', 'up'):
             positioning = 0
@@ -1130,46 +1136,46 @@ def _set_restore_area(hndle, left, top, right, bottom):
 def test_individual_points():
     """testing of points being inside or near some monitor
     """
-    print 'for two monitors (my case) some additional calls:'
-    print 'is inside (one of the ) monitors:'
-    print '0, 0, always: ', is_inside_monitor( (0,0) )
-    print '800, 500, mostly inside first: ', is_inside_monitor( (800,500) )   #first
-    print '2000, 600 often inside second:', is_inside_monitor( (2000,600) )
-    print '-10, -1000 outside: ', is_inside_monitor( (-10, -1000) )
-    print '10000, 5000 outside: ', is_inside_monitor( (10000, 5000) )
-    print 'guessing nearest position if outside:'
-    print 'point inside: ', get_closest_position( (0,0) )
-    print 'point inside: ', get_closest_position( (500,500) )
-    print 'left of monitor 1 (-10, 200): ', get_closest_position( (-10, 200) )
-    print 'down of monitor 2 (1800, 1000): ', get_closest_position( (1800, 1000) )
-    print 'big guess of (10000, -5000)', get_closest_position( (10000, -5000) )
+    print('for two monitors (my case) some additional calls:')
+    print('is inside (one of the ) monitors:')
+    print('0, 0, always: ', is_inside_monitor( (0,0) ))
+    print('800, 500, mostly inside first: ', is_inside_monitor( (800,500) ))   #first
+    print('2000, 600 often inside second:', is_inside_monitor( (2000,600) ))
+    print('-10, -1000 outside: ', is_inside_monitor( (-10, -1000) ))
+    print('10000, 5000 outside: ', is_inside_monitor( (10000, 5000) ))
+    print('guessing nearest position if outside:')
+    print('point inside: ', get_closest_position( (0,0) ))
+    print('point inside: ', get_closest_position( (500,500) ))
+    print('left of monitor 1 (-10, 200): ', get_closest_position( (-10, 200) ))
+    print('down of monitor 2 (1800, 1000): ', get_closest_position( (1800, 1000) ))
+    print('big guess of (10000, -5000)', get_closest_position( (10000, -5000) ))
 
 def test_get_nearest_monitors():
     """test getting the nearest monitor, wrappers around API functions
     """
 
     mon = get_nearest_monitor_point( (500, 500) )
-    print 'nearest monitor point: %s'% mon
+    print('nearest monitor point: %s'% mon)
     winHndle = win32gui.GetForegroundWindow()
-    print 'window hndle: %s'% winHndle
+    print('window hndle: %s'% winHndle)
     mon = get_nearest_monitor_window(winHndle)
-    print 'nearest monitor: %s'% mon
+    print('nearest monitor: %s'% mon)
     canBeResized = window_can_be_resized(winHndle)
-    print 'window can be resized: %s'% canBeResized
+    print('window can be resized: %s'% canBeResized)
     
 
 def test_basic_values():
     """testing the system metrics and monitor info of multiple monitors
     """
     monitor_info()
-    print '---number of monitors: %s'% NMON
-    print '---total virtual screen: %s'% VIRTUAL_SCREEN
-    print '---border of windows: %s, %s'%  (BORDERX, BORDERY)
-    print '---MONITOR_HNDLES: %s'% MONITOR_HNDLES
+    print('---number of monitors: %s'% NMON)
+    print('---total virtual screen: %s'% VIRTUAL_SCREEN)
+    print('---border of windows: %s, %s'%  (BORDERX, BORDERY))
+    print('---MONITOR_HNDLES: %s'% MONITOR_HNDLES)
     for mon in MONITOR_HNDLES:
-        print '----monitor: %s:'% mon
+        print('----monitor: %s:'% mon)
         pprint.pprint(MONITOR_INFO[mon])
-    print '----'   
+    print('----')   
 
 defaultSleepTime = 1
 def wait(mult=1):
@@ -1188,7 +1194,7 @@ def test_mouse_to_other_monitor():
     moninfo = MONITOR_INFO[others[0]]
     mousefour = moninfo['Monitor']
     x, y = mousefour[0] + int((mousefour[2] - mousefour[0])/2.0), mousefour[1] + int((mousefour[3] - mousefour[1])/2.0)
-    print 'middle of other monitor:', x, y
+    print('middle of other monitor:', x, y)
     
     
 def test_move_to_other_monitor():
@@ -1199,7 +1205,7 @@ def test_move_to_other_monitor():
     canBeResized = window_can_be_resized(winHndle)
     mon = get_nearest_monitor_window(winHndle)
     others = get_other_monitors(mon)
-    print 'other monitors: %s'% others
+    print('other monitors: %s'% others)
     restore_window(winHndle)
     wait()
     otherMon = others[0]
@@ -1292,7 +1298,7 @@ def test_default_restore():
     winHndle = win32gui.GetForegroundWindow()
     _set_restore_area(winHndle, -1700, -1000, 1000, 5000)
     mon = get_nearest_monitor_window(winHndle)
-    print 'monitor: %s'% mon
+    print('monitor: %s'% mon)
     restore_window(winHndle, mon)
     wait()
     _set_restore_area(winHndle, -1700, -1000, 1000, 5000)
@@ -1301,7 +1307,7 @@ def test_default_restore():
 
     _set_restore_area(winHndle, 500, -1000, 4700, 5000)
     mon = get_nearest_monitor_window(winHndle)
-    print 'monitor: %s'% mon
+    print('monitor: %s'% mon)
     restore_window(winHndle)
     wait()
     _set_restore_area(winHndle, 500, -1000, 4700, 5000)
@@ -1728,7 +1734,7 @@ def test_minimize_maximize_restore():
     maximize_window(winHndle)
  
 def test_taskbar_position():
-    print 'taskbar located: %s'% get_taskbar_position()
+    print('taskbar located: %s'% get_taskbar_position())
     
 def do_doctest():
     import doctest

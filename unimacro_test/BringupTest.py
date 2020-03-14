@@ -6,13 +6,13 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-__version__ = "$Revision: 595 $, $Date: 2018-02-11 16:12:02 +0100 (zo, 11 feb 2018) $, $Author: quintijn $"
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 import actions
-reload(actions)  # in order to test actions without reloading NatSpeak
 import natlink
-import unittest, time, types
+import unittest
+import time
+import types
 import UnimacroTestHelpers
 
 #special mods, the bring up you ask for produces and other module:
@@ -51,7 +51,7 @@ class BringupTest(UnimacroTestHelpers.UnimacroTestHelpers):
     def tearDown(self):
         endUser = natlink.getCurrentUser()[0]
         if self.startUser != endUser:
-            print 'reopen user: %s'% self.startUser
+            print('reopen user: %s'% self.startUser)
             natlink.openUser(self.startUser)
         actions.debugActions(0)
         
@@ -108,7 +108,7 @@ class BringupTest(UnimacroTestHelpers.UnimacroTestHelpers):
         preserveApps = ['emacs']  #ther adepps are killed after the test
         apps = ['voicecode', 'notepad']
         if not self.doTestBringupApplications(apps, preserveApps, prompt="test_Bringup_voicecode_user_switching"):
-            print 'test_Bringup_voicecode_user_switching skipped halfway'
+            print('test_Bringup_voicecode_user_switching skipped halfway')
             return
         newUser, dummy = natlink.getCurrentUser()
         self.assert_equal('VoiceCode', newUser, "user name should be switched to 'VoiceCode'")
@@ -142,18 +142,18 @@ class BringupTest(UnimacroTestHelpers.UnimacroTestHelpers):
                    'using %s'%apps,
                    'keeping open: %s'% preserveApps,
                    'destroying after testing: %s'% destroyApps]
-            if type(prompt) == types.StringType:
+            if type(prompt) == bytes:
                 mes.insert(0, prompt+'\n\n')
             result = actions.YesNo(mes, "Starting the Bringup applicationsTest ")
             if not result:
-                print 'Bringup applications test skipped'
+                print('Bringup applications test skipped')
                 return
 
         appString = ', '.join(apps)
 
         # these should correspond with "name" in [bringup app] section of actions.ini
         # call for edit actions to inspect these:
-        expectedMods = dict(zip(apps, apps))
+        expectedMods = dict(list(zip(apps, apps)))
         expectedMods.update(specialMods)
 
         # bring them up:        

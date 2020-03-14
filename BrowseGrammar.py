@@ -1,4 +1,3 @@
-__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -42,7 +41,6 @@ NatLink grammars
 
 The browser is based upon a tree dialog, adapted from the hiertest demo
 """
-import six
 
 import os
 import copy
@@ -65,18 +63,13 @@ MaxUnfoldLen=40
 
 
 def IsText(value):
-    return isinstance(value, six.string_types)
+    return isinstance(value, str)
 
-def GrammarElementSort(something, other):
-    if IsText(something):
-        ssomething=something.lower()
-    else:
-        ssomething=something.GetName().lower()
-    if IsText(other):
-        sother=other.lower()
-    else:
-        sother=other.GetName().lower()
-    return cmp(ssomething, sother)
+def GrammarElementKey(item):
+    if type(item) == str:
+        return item.lower()
+    return item.GetName().lower()
+    
 
 class GrammarElement:
 
@@ -106,7 +99,8 @@ class GrammarElement:
         self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
         pass
     def Sort(self):
-        self.Included.sort(GrammarElementSort)
+        self.Included.sort(key=GrammarElementKey)
+        pass
     
     def SetToAllText(self,Text):
         UnicodeText = [utilsqh.convertToUnicode(t) for t in Text]
@@ -172,7 +166,9 @@ class GrammarElement:
             self.IsLA=self.IsAllText() and (len(u' | '.join(self.Included))>MaxUnfoldLen)
             if not self.IsLA and (self.AlternativesDict!={}):
                 count=0
-                for x in self.Included: count=count+self.AlternativesDict.has_key(x)
+                for x in self.Included:
+                    if x in self.AlternativesDict:
+                        count += 1
                 self.IsLA=self.IsLA or ((1.0*count/len(self.Included))>0.45)
         else:
             self.IsLA=0
@@ -201,7 +197,7 @@ class GrammarElement:
             if not IsText(x):
                 if x.GramType==RuleCode:
                     i=self.Included.index(x)
-                    if DefRules.has_key(x.Name):
+                    if x.Name in DefRules:
                         self.Included[i]=DefRules[x.Name]
                         if not x.Name in UsedRules:
                             UsedRules.append(x.Name)
@@ -380,9 +376,9 @@ class GrammarElement:
                     return x,Path,objPath
         return None,[],[]
 
-def caseIndependentSort(something, other):
-    something, other= repr(something).lower(),repr(other).lower()
-    return cmp(something, other)
+# def caseIndependentSort(something, other):
+#     something, other= repr(something).lower(),repr(other).lower()
+#     return cmp(something, other)
 
 def RemoveDuplicatesOfSortedList(List):
     for i in range(len(List)-1,-1,-1):
@@ -404,7 +400,7 @@ def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
         if element[0]=='start':
             NewElement=GrammarElement()
             NewElement.Init(element[1],'')
-            if (element[1]==AltCode) and (Dicts.has_key(name)):
+            if (element[1]==AltCode) and name in Dicts:
                 NewElement.SetAlternativesDict(Dicts[name])
             CurElement.Append(NewElement)
             CurElement=NewElement
@@ -413,16 +409,16 @@ def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
             NewElement=GrammarElement()
             RuleName=KnownRules[element[1]]
             NewElement.Init(RuleCode,RuleName)
-            if ImportRules.has_key(RuleName):
+            if RuleName in ImportRules:
                 NewElement.Append('<imported>')
             CurElement.Append(NewElement)
         elif element[0]=='list':
             NewElement=GrammarElement()
             ListName=KnownLists[element[1]]
             NewElement.Init(ListCode,ListName)
-            if Dicts.has_key(ListName):
+            if ListName in Dicts:
                 NewElement.SetAlternativesDict(Dicts[ListName])
-            if Lists.has_key(ListName):
+            if ListName in Lists:
                 NewElement.SetToAllText(Lists[ListName])
             CurElement.Append(NewElement)
         elif element[0]=='end':
@@ -436,16 +432,16 @@ def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
         elif element[0]=='word':
             CurElement.Append(KnownWords[element[1]])
 
-def checkForBinary(line):
-    """ helper for converting to Binary
-    """
-    if type(line) == six.binary_type:
-        return line
-    elif type(line) == six.text_type:
-        return utilsqh.convertToBinary(line)
-    else:
-        raise ValueError("BrowseGrammar, checkForBinary should have binary or unicode as input, not: %s (%s)"% (line, type(line)))
-
+# def checkForBinary(line):
+#     """ helper for converting to Binary
+#     """
+#     if type(line) == bytes:
+#         return line
+#     elif type(line) == str:
+#         return utilsqh.convertToBinary(line)
+#     else:
+#         raise ValueError("BrowseGrammar, checkForBinary should have binary or unicode as input, not: %s (%s)"% (line, type(line)))
+# 
 
 def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exclusive=0,
                             exclusiveState=0):
@@ -456,8 +452,8 @@ def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exc
     # with gramparserlexyacc:
     Parser = gramparser.GramParser(gramSpec)
     # print '%s, type gramSpec: %s, '% (gramName, type(gramSpec))
-    if type(gramSpec) == types.ListType:
-        gramSpec = [checkForBinary(g) for g in gramSpec]
+    # if type(gramSpec) == list:
+    #     gramSpec = [checkForBinary(g) for g in gramSpec]
     Parser.doParse()
     ParserInfo=(InverseDict(Parser.knownWords),InverseDict(Parser.knownRules),
         InverseDict(Parser.knownLists),Parser.importRules)
@@ -483,7 +479,7 @@ def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exc
         Obsolete=GrammarElement()
         Obsolete.Init(RuleCode,'Obsolete')
         for rule in stack:
-            if Parser.exportRules.has_key(rule.Name):
+            if rule.Name in Parser.exportRules:
                 Grammar.Insert(rule)
             elif not rule.Name in UsedRules:
                 Obsolete.Insert(rule)

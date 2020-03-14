@@ -1,4 +1,3 @@
-__version__ = "$Revision: 57 $, $Date: 2008-01-08 17:14:17 +0100 (di, 08 jan 2008) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)))
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -45,8 +44,14 @@ inside the VoiceDictation instance there is self.dictObj, which is the link to
 the (intercepted) dictation object.
 
 """
-import win32api, win32gui, win32con
-import time, string, os, sys, types, re
+import win32api
+import win32gui
+import win32con
+import time
+import os
+import sys
+import types
+import re
 #print 'sys.path: %s'% sys.path
 import messagefunctions as mess
 import windowparameters
@@ -63,7 +68,7 @@ natbj = __import__('natlinkutilsbj')
 
 from time import sleep  
 
-class VoiceDictation(object):
+class VoiceDictation:
     dictObj = None  # is going to hold the internal dictObj (from natlink)
     #ctrl = None
     # Initialization.  Create a DictObj instance 
@@ -79,8 +84,8 @@ class VoiceDictation(object):
         self.dictObj.setBeginCallback(self.onTextBegin)
         self.dictObj.setChangeCallback(self.onTextChange)
         self.WindowsParameters = windowparameters.PROGS
-        self.appNames = self.WindowsParameters.keys()
-        print '_enabledictation tries applications: %s'% self.appNames
+        self.appNames = list(self.WindowsParameters.keys())
+        print('_enabledictation tries applications: %s'% self.appNames)
         
         self.activeApp = None
         #self.getEditControl()
@@ -104,20 +109,20 @@ class VoiceDictation(object):
                 dct.deactivate()
                 self.dctactive = 0
             prog, title, toporchild, hndle = natqh.getProgInfo(moduleInfo)
-            print 'changing app to: "%s", %s'% (prog, hndle)
+            print('changing app to: "%s", %s'% (prog, hndle))
             self.app, self.ctrl = None, None
             if prog in self.WindowsParameters:
                 self.getEditControl(prog, hndle)
                 if self.ctrl:
-                    print 'got edit control for "%s": %s'% (prog, self.ctrl)
+                    print('got edit control for "%s": %s'% (prog, self.ctrl))
                     self.app = prog
                 else:
-                    print 'no edit control found for "%s"'% prog
+                    print('no edit control found for "%s"'% prog)
         if self.ctrl is None:
             return
         if not self.dctactive:
             dct = self.dictObj
-            print 'activate dictObj to %s'% self.ctrl
+            print('activate dictObj to %s'% self.ctrl)
             dct.activate(self.ctrl)
             self.dctactive = 1
             
@@ -195,9 +200,9 @@ class VoiceDictation(object):
 
 
         wantedText, wantedClass, selectionFunction = W["edittext"], W["editcontrol"], W["selectionfunction"]
-        print 'wantedText: "%s", wantedClass: "%s", selectionFunction: %s'% (wantedText, wantedClass, selectionFunction)
+        print('wantedText: "%s", wantedClass: "%s", selectionFunction: %s'% (wantedText, wantedClass, selectionFunction))
         ctrls =  mess.findControls(appHndle, wantedText, wantedClass, selectionFunction) # pass the relevant windows parameters, as dict
-        print 'ctrls for "%s": %s'% (prog, ctrls)
+        print('ctrls for "%s": %s'% (prog, ctrls))
         # some special triggering in a difficult case:
         if ctrls:
             editHndle = ctrls[0]
@@ -217,7 +222,7 @@ class VoiceDictation(object):
         if not self.ctrl:
             D("do not have ctrl control")
             return
-        print 'onTextChange for %s'% self.ctrl
+        print('onTextChange for %s'% self.ctrl)
         dct = self.dictObj
         dct.setLock(1)
         getFocus = (selEnd - selStart > 1) # at start of call
@@ -225,7 +230,7 @@ class VoiceDictation(object):
             if self.lastSel == (delStart, delEnd):    
                 dct.setText(self.lastSelText, delStart, selEnd)  # empty now
             else:
-                print 'window changed, update again'
+                print('window changed, update again')
                 self.updateState()
             self.insertText(delStart, delEnd, newText)
 
@@ -234,7 +239,7 @@ class VoiceDictation(object):
             # loosing scratch that info:
             self.scratchinfo = []
             if delStart < delEnd:
-                print 'selection to delete: %s, %s'% (delStart, delEnd)
+                print('selection to delete: %s, %s'% (delStart, delEnd))
             if selStart < selEnd:
                 self.setSelection(selStart,selEnd) # only set the window...
             else:
@@ -285,12 +290,12 @@ class VoiceDictation(object):
         elif self.linesep == '\r\n':
             t = t.replace('\n', '\r\n')
             t = t.replace('\r\r\n', '\r\n')
-        print 'correctedForNewlines: %s'% repr(t)
+        print('correctedForNewlines: %s'% repr(t))
         return t
 
     def updateState(self):
         
-        print 'do updateState for %s'% self.ctrl
+        print('do updateState for %s'% self.ctrl)
         dct = self.dictObj
         if self.ctrl:
             text = self.getWindowText()
@@ -298,10 +303,10 @@ class VoiceDictation(object):
             selStart,selEnd = self.getSelection()
             #D("updateState, ctrl: selStart, selEnd: %s, %s"% (selStart, selEnd))
         visStart,visEnd = self.getVisibleRegion()
-        print 'visStart, visEnd: %s, %s'% (visStart, visEnd)
+        print('visStart, visEnd: %s, %s'% (visStart, visEnd))
         if (visStart, visEnd) == (None, None):
             visStart, visEnd = 0, len(text)
-        print 'visStart, visEnd: %s, %s'% (visStart, visEnd)
+        print('visStart, visEnd: %s, %s'% (visStart, visEnd))
         dct.setLock(1)
         dct.setText(text,0,0x7FFFFFFF)
         dct.setTextSel(selStart,selEnd)
@@ -396,7 +401,7 @@ class VoiceDictation(object):
 testMode = 1
 def D(t):
     if testMode:
-        print t
+        print(t)
 
 dictationObject = VoiceDictation()
 dictationObject.initialize()

@@ -26,7 +26,8 @@ __version__ = "$Rev: 561 $ on $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015)
 
 import unittest
 import natlink
-import os, sys
+import os
+import sys
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
@@ -59,13 +60,13 @@ class UnittestGrammar(natbj.IniGrammar):
         """do one of the unittests"""
         test = words[-1]
         self.doAll = 0
-        print "---------------------------------do unimacro unittest for: %s"% test
+        print("---------------------------------do unimacro unittest for: %s"% test)
         self.doUnitTests([test])
 
     def gotResults_alltests(self, words, fullResults):
         """do all the unittests"""
-        print "---------------------------------do all unimacro unittests"
-        tests = self.allTests.keys()
+        print("---------------------------------do all unimacro unittests")
+        tests = list(self.allTests.keys())
         tests.sort()
         self.doAll = 1
         self.doUnitTests(tests)
@@ -79,9 +80,9 @@ class UnittestGrammar(natbj.IniGrammar):
         self.testFolder = os.path.join(natqh.getUnimacroDirectory(), "unimacro_test")
         testFiles = glob.glob(os.path.join(self.testFolder, "*test.py"))
 ##        print 'testFiles: %s'% testFiles
-        testNames = map(self.extractTestName, testFiles)
-        print 'testNames: %s'% testNames
-        self.allTests = dict(zip(testNames, testFiles))
+        testNames = list(map(self.extractTestName, testFiles))
+        print('testNames: %s'% testNames)
+        self.allTests = dict(list(zip(testNames, testFiles)))
         return testNames
 
     def extractTestName(self, fullPath):
@@ -101,7 +102,7 @@ class UnittestGrammar(natbj.IniGrammar):
         self.activeTests = []
 
         for test in tests:
-            print 'do test %s (%s)'% (test, self.allTests[test])
+            print('do test %s (%s)'% (test, self.allTests[test]))
             suite = self.addUnitTest(test, self.allTests[test])
             if suite:
                 self.activeTests.append(test)
@@ -112,12 +113,12 @@ class UnittestGrammar(natbj.IniGrammar):
         if suiteAll:
             natlink.setMicState('off')
             result = unittest.TextTestRunner().run(suiteAll)
-            print 'after testing------------------------------------'
+            print('after testing------------------------------------')
             self.dumpResult(result, filesToSkip=self.filesToSkipInResult)            
             natlink.setMicState('on')
 
         else:
-            print "nothing valid to test"
+            print("nothing valid to test")
 
     def addUnitTest(self, test, fileName):
         """do one of the unittests"""
@@ -126,12 +127,11 @@ class UnittestGrammar(natbj.IniGrammar):
         modName = utilsqh.removeFromEnd(modName, ".py", ignoreCase=1)
     
         testMod = __import__(modName)
-        reload(testMod)
         testClassName = modName
         try:
             testClass = getattr(testMod, testClassName)
         except AttributeError:
-            print '****cannot find test class in test module, skipping test: %s'% testClassName
+            print('****cannot find test class in test module, skipping test: %s'% testClassName)
             return
         suite = unittest.makeSuite(testClass, 'test')
         return suite
@@ -141,7 +141,7 @@ class UnittestGrammar(natbj.IniGrammar):
         """add to sys.path if not present yet"""
         if folder in sys.path:
             return
-        print 'adding to path: %s'% folder
+        print('adding to path: %s'% folder)
         sys.path.append(folder)
 
     def dumpResult(self, testResult, filesToSkip=None):
@@ -149,7 +149,7 @@ class UnittestGrammar(natbj.IniGrammar):
 
         slightly different version in voice coder (test_defs.py)
         """
-        alert = self.activeTests > 0
+        alert = len(self.activeTests) > 0
         testResultFile = os.path.join(self.testFolder, "testresult.txt")
         f = open(testResultFile, 'w')
         if testResult.wasSuccessful():

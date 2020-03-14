@@ -40,10 +40,10 @@ class ThisGrammar(natbj.DocstringGrammar):
         self.prevHandle = winHandle
         if natqh.matchModule('natspeak', wantedTitle='dragonpad',
                                 modInfo=moduleInfo):
-            print 'activate grammar %s'% self.name
+            print('activate grammar %s'% self.name)
             self.activateAll()
         elif self.isActive():
-            print 'deactivate grammar %s'% self.name
+            print('deactivate grammar %s'% self.name)
             self.deactivateAll()
 
     def gotResultsInit(self, words, fullResults):

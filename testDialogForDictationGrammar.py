@@ -1,4 +1,3 @@
-__version__ = "$Revision: 43 $, $Date: 2007-03-30 09:28:14 +0200 (vr, 30 mrt 2007) $, $Author: quintijn $"
 
 import win32ui
 from pywin.mfc.dialog  import Dialog
@@ -40,15 +39,15 @@ def setDialog():
 ##                '__setitem__', '_obj_', 'bHaveInit', 'close', 'dll', 'has_key',
 ##                'items', 'keys', 'values']
     d.CreateWindow()
-    print 'keys: %s'% d.keys()
-    print 'values: %s'% d.values()
-    print 'items: %s'% d.items()
+    print('keys: %s'% list(d.keys()))
+    print('values: %s'% list(d.values()))
+    print('items: %s'% list(d.items()))
 
     # search for dialog items in this window:    
     for i in range(100000):
         try:
             it = d.GetDlgItem(i)
-            print 'i: %s, it: %s'% (i, it)
+            print('i: %s, it: %s'% (i, it))
         except:
             pass
 ##    print 'IDC_PROMPT2: %s'% win32ui.IDC_PROMPT2

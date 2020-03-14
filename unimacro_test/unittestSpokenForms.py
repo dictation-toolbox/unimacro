@@ -8,7 +8,6 @@
 # with numbers to spoken forms
 # see spokenforms.py in the Unimacro directory
 # discard DNS version < 11... (abbrevs not N. L. D. but N L D)
-import six
 import sys
 import os
 import types
@@ -17,7 +16,7 @@ import time
 import pprint
 
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
-extraPaths = r"C:\natlink\unimacro", r"D:\natlink\unimacro"
+extraPaths = (r"C:\natlinkgit3\unimacro",)
 for extraPath in extraPaths:
     if os.path.isdir(extraPath):
         if extraPath not in sys.path:
@@ -32,25 +31,25 @@ def convertListToUnicode(L):
     """convert inplace the string values of a list to Unicode, Python 2
     """
     for i, item in enumerate(L):
-         if type(item) == six.binary_type:
+         if type(item) == bytes:
              L[i] = utilsqh.convertToUnicode(item)
  
 def convertKeysValuesToUnicode(D):
     """convert list of string values to Unicode, Python 2
   2: ['two', 'too'] to  2: [u'two', u'too'],
     """
-    for k, values in D.iteritems():
-        if type(values) == types.ListType:
+    for k, values in D.items():
+        if type(values) == list:
            for i, value in enumerate(values):
                 values[i] = utilsqh.convertToUnicode(value)
-        elif type(values) == six.binary_type:
+        elif type(values) == bytes:
             values = utilsqh.convertToUnicode(values)
-        if type(k) == six.binary_type:
+        if type(k) == bytes:
             del D[k]
             k = utilsqh.convertToUnicode(k)
             D[k] = values
         else:
-            if type(values) != types.ListType:
+            if type(values) != list:
                 D[k] = values
 
 DNSVersion = 15  # can test in other versions too
@@ -159,9 +158,6 @@ expected_n2s =    {0: ['oh', 'zero'],
  10000: ['ten thousand'],
  100000: ['hundredthousand'],
  1000000: ['million', 'one million']}
-
-if six.PY2:
-   convertKeysValuesToUnicode(expected_n2s)  # in the dict itself
 
 expected_s2n =  {'eight': 8,
  'eighteen': 18,
@@ -275,26 +271,18 @@ expected_s2n =  {'eight': 8,
  'two': 2,
  'zero': 0}
 
-if six.PY2: convertKeysValuesToUnicode(expected_s2n)
-
-
 
 expected_spoken2char = {'Alpha': 'a', 'Bravo': 'b', 'Charlie': 'c', 'Delta': 'd', 'Echo': 'e'}
-if six.PY2: convertKeysValuesToUnicode(expected_spoken2char)
 
 expected_char2spoken =   {'a': ['Alpha'],
                             'b': ['Bravo'],
                             'c': ['Charlie'],
                             'd': ['Delta'],
                             'e': ['Echo']}
-if six.PY2: convertKeysValuesToUnicode(expected_char2spoken)  # in the dict itself
-
 
 expected_abbrev2spoken =  {'enx': ['E N X', 'enx'], 'fra': ['F R A'], 'nld': ['N L D'], 'qh': ['Q H']}
-if six.PY2: convertKeysValuesToUnicode(expected_abbrev2spoken)  # in the dict itself
 
 expected_spoken2abbrev =    {'E N X': 'enx', 'F R A': 'fra', 'Q H': 'qh', 'N L D': 'nld', 'enx': 'enx'}
-if six.PY2: convertKeysValuesToUnicode(expected_spoken2abbrev)  # in the dict itself
 
 expected_spoken2ext =     {'I N I': ['ini'],
                                 'P why': ['py'],
@@ -303,10 +291,9 @@ expected_spoken2ext =     {'I N I': ['ini'],
                                 'X L S X': ['xlsx'],
                                 'doc': ['doc'],
                                 'doc X': ['docx'],
-                                'excel': ['xlsx', 'xls'],
+                                'excel': ['xls', 'xlsx'],
                                 'python': ['py', 'pyw'],
-                                'word': ['docx', 'doc']}
-if six.PY2: convertKeysValuesToUnicode(expected_spoken2ext)  # in the dict itself
+                                'word': ['doc', 'docx']}
 
 
 expected_ext2spoken =     {'doc': ['word', 'doc'],
@@ -316,16 +303,13 @@ expected_ext2spoken =     {'doc': ['word', 'doc'],
                                 'pyw': ['python', 'P why W'],
                                 'xls': ['excel', 'X L S'],
                                 'xlsx': ['excel', 'X L S X']}
-if six.PY2: convertKeysValuesToUnicode(expected_ext2spoken)  # in the dict itself
 
 expected_spoken2punct =     {'colon': ':', 'exclamation mark': '!', 'point': '.', 'semi colon': ';'}
-if six.PY2: convertKeysValuesToUnicode(expected_spoken2punct)  # in the dict itself
 
 expected_punct2spoken =     {'!': ['exclamation mark'],
                             '.': ['point'],
                             ':': ['colon'],
                             ';': ['semi colon']}
-if six.PY2: convertKeysValuesToUnicode(expected_punct2spoken)  # in the dict itself
 
 
 #---------------------------------------------------------------------------
@@ -337,7 +321,7 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
     def tearDown(self):
         pass
 
-    def tttest_basic_dicts(self):
+    def test_basic_dicts(self):
         n = self.numbers
 
         self.assert_equal(expected_s2n, n.s2n, "numbers, spoken2numbers is not as expected")
@@ -376,14 +360,14 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         # we believe the mechanism is OK for the second time test of the other dicts...
 
         
-    def tttest_switching_language(self):
+    def test_switching_language(self):
         n = self.numbers
         self.assert_equal(expected_s2n, n.s2n, "numbers, spoken2numbers is not as expected")
 
         self.assert_equal(expected_n2s, n.n2s, "numbers, numbers2spoken is not as expected")
         
         # next instance non existing language:
-        print '\nexpect messages from spokenforms, as it is switched to a non existing language'
+        print('\nexpect messages from spokenforms, as it is switched to a non existing language')
         m = spokenforms.SpokenForms('othertest', DNSVersion=DNSVersion)
         expected_othertest =   {}
         self.assert_equal(expected_othertest, m.s2n, "numbers, other language (no entries) spoken2numbers is not as expected")
@@ -395,45 +379,41 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         self.assert_equal(expected_s2n, n.s2n, "numbers again, spoken2numbers is not as expected")
         
         self.assert_equal(expected_n2s, n.n2s, "numbers again, numbers2spoken is not as expected")
-        print '-----end of these expected messages\n'
+        print('-----end of these expected messages\n')
 
 
         
-    def tttest_make_mixed_list(self):
+    def test_make_mixed_list(self):
         """make a list of spoken forms if the numbers are there
         """
         n = self.numbers
         L = [1, 2, 4, 5, 6]
         got = n.getMixedList(L)
         expected =     ['on\xe9', 'two', 'too', 'four', 'for', 'five', 'six']
-        if six.PY2: convertListToUnicode(expected)
         self.assert_equal(expected, n.getMixedList(L), "numbers: spoken forms list not as expected")
 
         # non existing language:        
-        print '\nexpect messages from spokenforms.ini, as language is unknown'
+        print('\nexpect messages from spokenforms.ini, as language is unknown')
         m = spokenforms.SpokenForms('othertest', DNSVersion=DNSVersion)
 
         got = n.getMixedList(L)
         expected =    ['1', '2', '4', '5', '6']
-        if six.PY2: convertListToUnicode(expected)
         self.assert_equal(expected, n.getMixedList(L), "numbers: spoken forms list not as expected")
 
         # back to previous:
         n = spokenforms.SpokenForms('test', DNSVersion=DNSVersion)
         got = n.getMixedList(L)
         expected = ['on\xe9', 'two', 'too', 'four', 'for', 'five', 'six']
-        if six.PY2: convertListToUnicode(expected)
 
         self.assert_equal(expected, n.getMixedList(L), "numbers: spoken forms list not as expected")
-        print '----end of these expected messages'
+        print('----end of these expected messages')
 
-    def tttest_get_number_back_from_spoken_form(self):
+    def test_get_number_back_from_spoken_form(self):
         """the reverse process, occurring after a recognition
         """
         n = self.numbers
         expected = 1
         input = 'on\xe9'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input), "numbers: get number back from spoken form not as expected")
         
         expected = 5
@@ -464,79 +444,67 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         originalList = [0,1,2]
         expected = None
         input = 'four'
-        if six.PY2: input = utilsqh.convertToUnicode(input)        
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList), "numbers: get number back from spoken form not as expected (with originalList)")
         expected = 1
         
         input = 'on\xe9'
-        if six.PY2: input = utilsqh.convertToUnicode(input)        
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList), "numbers: get number back from spoken form not as expected (with originalList)")
         expected = 1
         self.assert_equal(expected, n.getNumberFromSpoken(1, originalList), "numbers: get number back from spoken form not as expected (with originalList)")
         expected = None
         self.assert_equal(expected, n.getNumberFromSpoken(10, originalList), "numbers: get number back from spoken form not as expected (with originalList)")
 
-    def tttest_get_number_back_from_spoken_form_asStr(self):
+    def test_get_number_back_from_spoken_form_asStr(self):
         """the reverse process, occurring after a recognition, return as string
         """
         n = self.numbers
-        expected = '1' if six.PY3 else u'1'
+        expected = '1'
         input = 'on\xe9'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, asStr=True), "numbers: get number back as str from spoken form not as expected")
         
-        expected = '5' if six.PY3 else u'5'
+        expected = '5'
         self.assert_equal(expected, n.getNumberFromSpoken(5, asStr=True), "numbers: get number back as str from spoken form not as expected")
 
         expected = None
         input = 'foo'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, asStr=True), "numbers: get number back as str from spoken form not as expected")
         
         # with original list:
         originalList = [1, 2, 5, 6, 7]
         expected = None
         input = 'foo'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
 
-        expected = '7' if six.PY3 else u'7'
+        expected = '7'
         input = '7'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
 
         expected = None
         input = '8'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
 
-        expected = '2' if six.PY3 else u'2'
+        expected = '2'
         input = '2'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
 
         expected = None
         input = 'foo'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
         
         # real check! in instance, but not in originalList:
         expected = None
         input = 'four'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
         
         # originalList ints:
         originalList = [0,1,2]
         expected = None
         input = 'four'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
-        expected = '1' if six.PY3 else u'1'
+        expected = '1'
         input = 'on\xe9'
-        if six.PY2: input = utilsqh.convertToUnicode(input)
         self.assert_equal(expected, n.getNumberFromSpoken(input, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
-        expected = '1' if six.PY3 else u'1'
+        expected = '1'
         self.assert_equal(expected, n.getNumberFromSpoken(1, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
         expected = None
         self.assert_equal(expected, n.getNumberFromSpoken(10, originalList, asStr=True), "numbers: get number back as str from spoken form not as expected (with originalList)")
@@ -546,10 +514,9 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         func = self.numbers.generateSpokenFormsFromNumber
         result = func(number)
-        if six.PY2: convertListToUnicode(explist)
         self.assert_equal(explist, result, "test generateSpokenFormsFromNumber test failed for number: %s"% number)
         
-    def tttest_get_list_of_spoken_forms_larger_number(self):
+    def test_get_list_of_spoken_forms_larger_number(self):
         """construct a list of spoken forms for numbers up to 10000
         """
         n = self.numbers
@@ -573,21 +540,14 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
     def doTestGenerateMixedListOfSpokenForms(self, number, expList):
         """test the automatic generation of a list of spoken forms for larger numbers
         """
-        if six.PY2:
-            if type(number) == six.binary_type:
-                number = utilsqh.convertToUnicode(number)
         func = self.numbers.generateMixedListOfSpokenForms
         result = func(number)
-        if six.PY2: convertListToUnicode(expList)
         self.assert_equal(expList, result, "test generateMixedListOfSpokenForms test failed for number: %s"% number)
         
     def doTestDictOfSpokenForms(self, List, ExpDict):
         """test the automatic generation of a dict of spoken forms for given values list
         """
         func = self.numbers.getDictOfMixedSpokenForms
-        if six.PY2:
-            convertListToUnicode(List)
-            convertKeysValuesToUnicode(ExpDict)
         result = func(List)
         self.assert_equal(ExpDict, result, "test getDictOfMixedSpokenForms test failed for List: %s"% List)
         
@@ -602,20 +562,20 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         testfunc("Unimacro_qh", ["Unimacro Q H"])
         
         testfunc("Foto's", ["Fotoos"])
-        testfunc(u"Foto's le\u0301rlingenavond Pau", ["Fotoos l\xe9rlingenavond Pau"])
-        testfunc('file fra 100', [u'file F R A hundred', u'file F R A one hundred'])
-        testfunc('file enx', [u'file E N X', u'file enx'])
-        testfunc('file enx 100', [u'file E N X hundred', u'file E N X one hundred',
-                                  u'file enx hundred', u'file enx one hundred'])
+        testfunc("Foto's le\u0301rlingenavond Pau", ["Fotoos l\xe9rlingenavond Pau"])
+        testfunc('file fra 100', ['file F R A hundred', 'file F R A one hundred'])
+        testfunc('file enx', ['file E N X', 'file enx'])
+        testfunc('file enx 100', ['file E N X hundred', 'file E N X one hundred',
+                                  'file enx hundred', 'file enx one hundred'])
 
-    def tttest_get_mixed_list_of_spoken_forms(self):
+    def test_get_mixed_list_of_spoken_forms(self):
         """construct a list of spoken forms from filenames etc
        
         """
         n = self.numbers
         testfunc = self.doTestGenerateMixedListOfSpokenForms
         testfunc("Foto's", ["Fotoos"])
-        testfunc(u"Foto's le\u0301rlingenavond Pau", ["Fotoos l\xe9rlingenavond Pau"])
+        testfunc("Foto's le\u0301rlingenavond Pau", ["Fotoos l\xe9rlingenavond Pau"])
         testfunc('file 100', ['file hundred', 'file one hundred'])
         testfunc('test file', ['test file'])
         testfunc('10test 203file',
@@ -635,7 +595,7 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
                         'test on\xe9 for too thousand ten file',
                         'test on\xe9 for twenty ten file'])
 
-    def tttest_get_mixed_list_of_spoken_forms_skip_numbers(self):
+    def test_get_mixed_list_of_spoken_forms_skip_numbers(self):
         """construct a list of spoken forms from filenames etc with skipping numbers
         
         
@@ -644,13 +604,13 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         n = self.numbers
         testfunc = self.doTestGenerateMixedListOfSpokenForms
-        testfunc('1_file.txt', ['file txt', 'on\xe9 file txt'])
+        testfunc('1_file.txt', ['file txt', 'oné file txt'])
         testfunc('2_dir', ['dir', 'two dir', 'too dir'])
         
         testfunc('directory avp (3)', ['directory avp', 'directory avp three'])
         testfunc('file (4).doc', ['file four doc', 'file for doc'])
 
-    def tttest_get_mixed_list_of_spoken_forms_skip_start_letters(self):
+    def test_get_mixed_list_of_spoken_forms_skip_start_letters(self):
         """construct a list of spoken forms from filenames etc with skipping start letters
         
         a_test should be a test and test
@@ -669,7 +629,7 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         testfunc('this_file.txt', ['this file txt'])
         
 
-    def tttest_get_dict_of_spoken_forms(self):
+    def test_get_dict_of_spoken_forms(self):
         """construct a dict of spoken forms from a list of values (sheets in excel)
         """
         testfunc = self.doTestDictOfSpokenForms
@@ -680,17 +640,11 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         """test the checking of a numbers list and sort by the number
         """
         func = self.numbers.sortedByNumbersValues
-        if six.PY2:
-            if type(expected) == types.ListType:
-                convertListToUnicode(expected)
-            if type(expected) == type({}):
-                convertKeysValuesToUnicode(expected)
-               
-            convertListToUnicode(list_spoken)
+       
         result = func(list_spoken, valueSpokenDict=valueSpokenDict)
         self.assert_equal(expected, result, "test SortedByNumbersValues test failed for spoken forms list: %s"% list_spoken)
         
-    def tttest_get_list_of_spoken_forms_sorted_by_number_values(self):
+    def test_get_list_of_spoken_forms_sorted_by_number_values(self):
         """list of spoken forms, check numbers behind the items and sort by numbers
         """
         testfunc = self.doTestSortedByNumbersValues
@@ -702,15 +656,12 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         """formatted list of numbers spoken forms, for show ini files
         """
         func = inivars.formatReverseNumbersDict
-        if six.PY2: convertKeysValuesToUnicode(D)
         result = func(D)
         self.assert_equal(expected, result, "test formatReverseNumbersDict test failed for dict: %s"% D)
         
-    def tttest_format_spoken_forms_from_numbers_dict(self):
+    def test_format_spoken_forms_from_numbers_dict(self):
         testfunc = self.doTestFormatSpokenFormsFromNumbersDict     
         expected = 'on\xe9 ... three'
-        if six.PY2:
-             expected = utilsqh.convertToUnicode(expected)
         
         testfunc(expected, {1: ['on\xe9'], 2: ['two'], 3: ['three']})
         pass
@@ -718,15 +669,12 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
     def doTestGetPunctuationList(self, expected, spoken, originalList=None):
         """test the get punctuation function
         """
-        if six.PY2:
-            expected = utilsqh.convertToUnicode(expected)
-            spoken = utilsqh.convertToUnicode(spoken)
         func = self.numbers.getPunctuationFromSpoken
         result = func(spoken, originalList)
         self.assert_equal(expected, result, "test getPunctuationFromSpoken failed for spoken: %s and originalList %s"% (spoken, originalList))
  
 
-    def tttest_get_punctuation_list(self):
+    def test_get_punctuation_list(self):
         """test the punctuation from the punctuationreverse section
         """
         testfunc = self.doTestGetPunctuationList
@@ -747,7 +695,7 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
 
     
 def run():
-    print 'starting UnittestNumbersSpokenForms'
+    print('starting UnittestNumbersSpokenForms')
     unittest.main()
     
 

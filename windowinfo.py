@@ -78,9 +78,9 @@ def flagsToTuple(flags):
     elif flags == 0:
         return ()
     Flags = []
-    if type(flags) in (types.IntType, types.LongType):
-        if type(flags) == types.IntType: n = 32
-        elif type(flags) == types.LongType: n = 64
+    if type(flags) in (int, int):
+        if type(flags) == int: n = 32
+        elif type(flags) == int: n = 64
         else:
             raise ValueError('type should be "int" or "long" here, not: %s'% type(flags))
         if flags:
@@ -89,10 +89,10 @@ def flagsToTuple(flags):
                     Flags.append(i)
             else:
                 pass # flags == 0
-    elif type(flags) in (types.TupleType, types.ListType):
+    elif type(flags) in (tuple, list):
         Flags = flags
     else:
-        print 'type flags: %s'% type(flags)
+        print('type flags: %s'% type(flags))
         Flags = flags
     return tuple(Flags)
 
@@ -108,6 +108,6 @@ if __name__ == '__main__':
     #moveCursorInCurrentWindow(200, 200)
     # should return False:
     time.sleep(1)
-    print 'hasMenuOpen: %s'% hasMenuOpen()
-    print 'hasPopupOpen: %s'% hasPopupOpen()
-    print 'flags: %s'% `getWindowFlags()`
+    print('hasMenuOpen: %s'% hasMenuOpen())
+    print('hasPopupOpen: %s'% hasPopupOpen())
+    print('flags: %s'% repr(getWindowFlags()))

@@ -1,4 +1,3 @@
-__version__ = "$Revision: 351 $, $Date: 2011-01-10 17:20:10 +0100 (ma, 10 jan 2011) $, $Author: quintijn $"
 ############################################################################
 #
 # global Python grammar file: _setpriority.py
@@ -41,14 +40,14 @@ id = win32api.GetCurrentProcessId()
 h  = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,0,id)
 oldPClass = win32process.GetPriorityClass(h)
 
-if displayResults: print 'Current Process Priority = ',GetPriorityClassName(oldPClass)
+if displayResults: print('Current Process Priority = ',GetPriorityClassName(oldPClass))
 
 if oldPClass == desiredPClass:
-     if displayResults: print 'WARNING: Current Process already has desired priority!'
+     if displayResults: print('WARNING: Current Process already has desired priority!')
 else:
      win32process.SetPriorityClass(h,desiredPClass)
      newPClass=win32process.GetPriorityClass(h)
      if oldPClass==newPClass:
-         print 'WARNING: Change of process priority failed!'
+         print('WARNING: Change of process priority failed!')
      else:
-         if displayResults: print 'New Process Priority     = ',GetPriorityClassName(newPClass)
+         if displayResults: print('New Process Priority     = ',GetPriorityClassName(newPClass))

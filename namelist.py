@@ -9,12 +9,15 @@ the spoken forms for "-" seem to be not needed anymore.
 Can be run from inputoutput.py (function namelist) or unimacro (function namelistUnimacro) 
 
 """
-import os, os.path, pprint, string, re
+import os
+import os.path
+import pprint
+import re
 try:
     set
 except AttributeError:
     from sets import Set as set
-from utilsqh import path
+from pathqh import path
 
 # complete words that need a spoken form:
 needsSpokenForm = {}
@@ -88,7 +91,7 @@ def namelist(inputfile, outputfile):
         if firstName and secondName:
             fullName = firstName + secondName
             fullNames.add(str(fullName))
-    total = filter(None, list(fullNames | firstNames | secondNames))
+    total = [_f for _f in list(fullNames | firstNames | secondNames) if _f]
     total.sort()
     outFile = open(outputfile, 'w').write('\n'.join(total))
 
@@ -157,7 +160,7 @@ def namelistUnimacro(inputstring, ini=None):
     return result
 
 
-class WrittenSpoken(object):
+class WrittenSpoken:
     """Analyse the written\spoken for input
 
 !!Note the doubling of backslashes, due to doctest functioning!    
@@ -216,14 +219,14 @@ combinations:
             self.spoken =  input.split('\\')[ - 1]
         elif input.find('-') > 0:
             parts = input.split('-')
-            results = map(WrittenSpoken, parts)
+            results = list(map(WrittenSpoken, parts))
             written = [r.written for r in results]
             spoken = [r.spoken for r in results]
             self.written = '-'.join(written)
             self.spoken = ' '.join(spoken)
         elif input.find(' ') > 0:
             parts = input.split(' ')
-            results = map(WrittenSpoken, parts)
+            results = list(map(WrittenSpoken, parts))
             written = [r.written for r in results]
             spoken = [r.spoken for r in results]
             self.written = ' '.join(written)
@@ -258,7 +261,7 @@ combinations:
             result = self.written
         else:
             result = self.written  + '\\' + self.spoken
-        if result[0] in unicode(string.lowercase):
+        if result[0] in utilsqh.lowercase:
             result = result[0].capitalize() + result[1:]
         return result
 
@@ -290,26 +293,25 @@ def cleanLine(line):
 
     if line.find("_") >= 0:
         return
-    if line[0] in unicode(string.digits):
+    if line[0] in utilsqh.digits:
         return
     return line
 
 
 def runPanel(frame, notebook):
     """add functions to controlpanel"""
-    print 'starting cp %s'% __name__
+    print('starting cp %s'% __name__)
     from controlpanel import ControlPanel
     cp = ControlPanel(notebook, frame, -1, __name__)
     cp.addFunction(namelist, 'inputfile, outputfile')
     cp.addDefaults()
-    print 'started cp %s'% __name__
+    print('started cp %s'% __name__)
     return cp
 
 def _test():
-    import doctest, namelist
-    reload(namelist)
+    import doctest
     doctest.master = None
-    return  doctest.testmod(namelist, verbose=0)
+    return  doctest.testmod()
 
 def _testrun():
     # need files on computer QH for this, sorry...

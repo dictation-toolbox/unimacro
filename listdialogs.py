@@ -1,10 +1,12 @@
-pen__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 #Bart Jan's work, needs testing presently
 from pywin.mfc import dialog
 from pywin.framework import dlgappcore, app
-import win32ui, win32con, commctrl, win32api
+import win32ui
+import win32con
+import commctrl
+import win32api
 from natlinkutilsbj import *
-import sys,os,cPickle, string
+import sys,os,pickle
 import time
 # hopelijk: QH
 from natlinkutilsqh import getUnimacroDirectory, AppBringUp
@@ -20,7 +22,7 @@ class ListDialog (dialog.Dialog):  # Taken from the demo; adapted
 ##        print 'title: %s'% title
 ##        print 'List: %s'% List
         id = self._maketemplate(title, size, okButton, resize)
-        print 'id: %s'% id
+        print('id: %s'% id)
         dialog.Dialog.__init__ (self, id)
         self.Owner=None
         self.defer=None
@@ -69,7 +71,7 @@ class ListDialog (dialog.Dialog):  # Taken from the demo; adapted
         index = 0
         for item in self.items:
             #preceding spaces are stripped to facilitate list completion
-            itemText=unicode(item).lstrip()
+            itemText=str(item).lstrip()
             index = self.itemsControl.InsertItem(index+1, itemText, 0)
 
     def OnListClick(self, id, code):
@@ -79,9 +81,9 @@ class ListDialog (dialog.Dialog):  # Taken from the demo; adapted
 
     def OnListItemChange(self,std, extra):
         (hwndFrom, idFrom, code), (itemNotify, sub, newState, oldState, change, point, lparam) = std, extra
-        oldSel = (oldState & commctrl.LVIS_SELECTED)<>0
-        newSel = (newState & commctrl.LVIS_SELECTED)<>0
-        if oldSel <> newSel:
+        oldSel = (oldState & commctrl.LVIS_SELECTED)!=0
+        newSel = (newState & commctrl.LVIS_SELECTED)!=0
+        if oldSel != newSel:
             try:
                 if newSel:
                     self.SelItems.append(itemNotify)
@@ -227,7 +229,7 @@ class MultiListDialog(ListDialog):
         index = 0
         for items in self.items:
             #preceding spaces are stripped to facilitate list completion            
-            itemText=unicode(items[0]).lstrip()
+            itemText=str(items[0]).lstrip()
             index = self.itemsControl.InsertItem(index+1, itemText, 0)
             for itemno in range(1,numCols):
                 item = items[itemno]
@@ -235,22 +237,22 @@ class MultiListDialog(ListDialog):
 
 
 #############global functions######################
-def caseIndependentSort(something, other):
-    something, other= repr(something).lower(),repr(other).lower()
-    return cmp(something, other)
+# def caseIndependentSort(something, other):
+#     something, other= repr(something).lower(),repr(other).lower()
+#     return cmp(something, other)
     
 def BuildDlgList(Refs,reverse=0):
 # takes a dictionary and builds a list with tuples for listcontrol construction
 # first the key, then the value
     RL = []
-    RefKeys=Refs.keys()
-    if not reverse: RefKeys.sort(caseIndependentSort)
+    RefKeys=list(Refs.keys())
+    if not reverse: RefKeys.sort(key=str.lower)
     for x in RefKeys:
         if reverse:
             RL.append((Refs[x],x))
         else:
             RL.append((x,Refs[x]))
-    if reverse: RL.sort(caseIndependentSort)            
+    if reverse: RL.sort(key=str.lower)            
     return RL
 
 
@@ -281,7 +283,7 @@ ResultFileName=baseDirectory+'\\result.bin'
 
 def DumpData(Data,FileName):
     File=open(FileName,'w')
-    cPickle.dump(Data, File)
+    pickle.dump(Data, File)
     File.close()
 
 def GetDumpedData(FileName):
@@ -289,7 +291,7 @@ def GetDumpedData(FileName):
         File=open(FileName,'r')
     except:
         return None
-    Data=cPickle.load(File)
+    Data=pickle.load(File)
     File.close()
     return Data
 
@@ -373,10 +375,10 @@ def test_natspeak_on():
 
 def test_folders_list():
     """only display, background"""
-    List=["d:\natlink\unimacro", "d:\documenten"]
+    List=["d:\natlink\\unimacro", "d:\documenten"]
     dlg = MultiListDialog('Say "recent file #"', List, ['directory'])
     hndle = dlg.CreateWindow()
-    print 'hnlde: %s'% hndle
+    print('hnlde: %s'% hndle)
 
 if __name__=='__main__':
-    print test()
+    print(test())

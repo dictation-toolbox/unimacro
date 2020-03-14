@@ -10,14 +10,17 @@
 # run from a (preferably clean) US user profile, easiest from IDLE.
 # do not run from pythonwin. 
 #
-import sys, unittest, types
+import sys
+import unittest
+import types
 import os
 import os.path
 import time
-import string
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
-import natlink, natlinkmain, natlinkstatus
+import natlink
+import natlinkmain
+import natlinkstatus
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 import actions
@@ -44,13 +47,13 @@ def getBaseFolder(globalsDict=None):
     baseFolder = ""
     if globalsDictHere['__name__']  == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
+        print('baseFolder from argv: %s'% baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
+        print('baseFolder from __file__: %s'% baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
+        print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
 thisDir = getBaseFolder(globals())
@@ -67,7 +70,7 @@ logFileName = os.path.join(thisDir, "testresult.txt")
 class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         if not natlink.isNatSpeakRunning():
-            raise TestError,'NatSpeak is not currently running'
+            raise TestError('NatSpeak is not currently running')
         self.connect()
         self.user = natlink.getCurrentUser()[0]
         self.setMicState = "off"
@@ -124,7 +127,7 @@ class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
             exec(command,globals(),localVars)
         except exceptionType:
             return
-        raise TestError,'Expecting an exception to be raised calling '+command
+        raise TestError('Expecting an exception to be raised calling '+command)
 
     def testKeystroke(self):
         """test in foreground window do some keystrokes with marks functions
@@ -180,7 +183,7 @@ def log(t):
     I have no complete insight is this, but checking the logfile afterwards
     always works (QH)
     """
-    print t
+    print(t)
     if logFile:
         logFile.write(t + '\n')
     

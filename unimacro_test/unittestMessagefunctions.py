@@ -26,20 +26,22 @@
 # increase or decrease for more visible or faster testing:
 visibleTime = 0.5 # set higher, if you want to see what happens, 1, 2...
 
-import sys, os, os.path
+import sys
+import os
+import os.path
 import win32clipboard
-
+from pathqh import path
 
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
-extraPaths = r"C:\natlink\unimacro", r"D:\natlink\unimacro"
+extraPaths = [path(r"C:\natlinkGIT3\unimacro")]
 for extraPath in extraPaths:
-    if os.path.isdir(extraPath):
-        if extraPath not in sys.path:
-            sys.path.append(extraPath)
+    extraPath.isdir()
+    extraNorm = extraPath.normpath()
+    if extraNorm not in sys.path:
+        sys.path.append(extraNorm)
 # little trick to keep testers apart (do not bother)
 try:
     import testermod
-    reload(testermod)
     tester = testermod.tester
 except ImportError:
     tester = "aligen"
@@ -48,15 +50,16 @@ import windowparameters
 
 W = windowparameters.PROGS[tester]
 
-import sys, unittest
+import sys
+import unittest
 import os
 import os.path
 import time
-import string
 import traceback        # for printing exceptions
 from struct import pack
 import natlink
-import win32gui, win32ui
+import win32gui
+import win32ui
 from messagefunctions import *
 import messagefunctions as mess
 import TestCaseWithHelpers
@@ -67,7 +70,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         self.__class__.ctrl = None
         self.__class__.app = None
-        for k,v in W.items():
+        for k,v in list(W.items()):
             setattr(self, k, v)
 
         self.getEditControl()
@@ -159,7 +162,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
             appWindow = findTopWindow(wantedClass=W["windowclass"], wantedText=W["windowcaption"])
             if appWindow: break
         else:
-            print 'starting %s failed, dumping apps'% testApp 
+            print('starting %s failed, dumping apps'% testApp) 
             pprint.pprint(dumpTopWindows())
             return
 
@@ -198,8 +201,8 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
             return
         wC, wT = W["editcontrol"], W["edittext"]
         choiceControl = 0
-        if type(wT) in [types.NoneType, types.StringType, types.IntType]: wT =  [wT]
-        if type(wC) in [types.NoneType, types.StringType, types.IntType]: wC =  [wC]
+        if type(wT) in [type(None), bytes, int]: wT =  [wT]
+        if type(wC) in [type(None), bytes, int]: wC =  [wC]
         ctrl = self.app            
         for wtext, wclass in zip(wT, wC):
             ctrls =  mess.findControls(ctrl,wantedText=wtext, wantedClass=wclass,selectionFunction=selectionFunction)
@@ -238,16 +241,16 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         dumpTopWindows(all=None)
     #---------------------------------------------------------------------------
     def test_get_controls_of_application(self):
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         if self.ctrl:
-            print 'edit area: %s'% self.ctrl
+            print('edit area: %s'% self.ctrl)
         else:
-            print 'all controls of app %s------'% testApp
-            print 'all controls of application:-----------------'
+            print('all controls of app %s------'% testApp)
+            print('all controls of application:-----------------')
             pprint.pprint(dumpWindow(self.app))
         
     def test_existence_of_application(self):
-        self.assert_(self.app > 0, "app (handle to applicatione) should be there now")
+        self.assertTrue(self.app > 0, "app (handle to applicatione) should be there now")
         #print 'all top windows:------------'
         #pprint.pprint(dumpTopWindows())
         # try closing and then through exception again:
@@ -257,8 +260,8 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         #if W["testcloseapp"]:
         #    quitProgram(self.app)
         #pass
-        self.assert_(self.ctrl > 0, "ctrl (handle to edit control) should be there now")
-        print 'content of window at start:\n|%s|'% mess.getEditText(self.ctrl)
+        self.assertTrue(self.ctrl > 0, "ctrl (handle to edit control) should be there now")
+        print('content of window at start:\n|%s|'% mess.getEditText(self.ctrl))
         
     def test_set_text_in_application(self):
         """setting and getting text in application
@@ -267,7 +270,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         In the latter case newlines are inserted.
         """
         sep = self.linesep
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         gotText = getEditText(self.ctrl)
         self.assert_equal([sep], gotText, 'text of edit box should be empty at start, adjust W["linesep"] or W["aftertext"] in windowparameters!')
 
@@ -315,7 +318,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         
         """
         sep = self.linesep
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         # setting "hello there"
         setText = "hello there"
         setEditText(self.ctrl, setText)
@@ -354,13 +357,13 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     def test_scrolling_text_in_application(self):
         """see what happens if text scrolls in a control"""
         sep = self.linesep
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         # setting text:
         longerText = "This text is longer than 80 characters, so should scroll in most controls. I therefore like to see what happens with this text."
         secondPara = "This goes on the next line. Is also considerable of length, so we can find the differences between scrolled lines and real new lines."
         setEditText(self.ctrl, [longerText, secondPara] )
         gotText = getEditText(self.ctrl)
-        self.assert_(len(gotText) > 1, "text should scroll, make window more narrow")
+        self.assertTrue(len(gotText) > 1, "text should scroll, make window more narrow")
         
         expected = ''.join([longerText+sep, secondPara+sep])
         got = ''.join(gotText)
@@ -376,7 +379,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         sep = self.linesep
         aft = self.aftertext
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         # setting text:
         longerText = "This text is longer than 80 characters, so should scroll in most controls. I therefore like to see what happens with this text. I hope to see the scrolling taking place, without updating the line number. I type on and on in the hope that even a very wide control cannot handle this amount of text in one line."
                      
@@ -386,7 +389,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         total.append(longerText)
         setEditText(self.ctrl, sep.join(total) )
         gotText = getEditText(self.ctrl)
-        self.assert_(len(gotText) > 1, "text should scroll, make window more narrow")
+        self.assertTrue(len(gotText) > 1, "text should scroll, make window more narrow")
         
         expected = sep.join(total) + aft
         got = ''.join(gotText)
@@ -431,30 +434,30 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
 
         #getStartEndOfLine(self.ctrl, ln)
         info = getNumberOfLines(self.ctrl)
-        print 'info: %s'% repr(info)
+        print('info: %s'% repr(info))
         for i in range(1):
             rawLength = getRawTextLength(self.ctrl)
             gotTextAll, bufLen = getWindowTextAll(self.ctrl, rawLength=rawLength)
-        print 'rawLength: %s'% rawLength
+        print('rawLength: %s'% rawLength)
         # get selection (at end)
         gotText = ''.join(getEditText(self.ctrl))
-        print 'length of buffer: %s'% len(gotText)
+        print('length of buffer: %s'% len(gotText))
         #print 'buffer (old way): %s'% repr(gotText)
 
 
         gotTextAll, bufLen = getWindowTextAll(self.ctrl)
         setEditText(self.ctrl, gotTextAll)
         gotTextAll2, bufLen2 = getWindowTextAll(self.ctrl)
-        print 'second All== firstAll? %s'% (gotTextAll == gotTextAll2)
-        print 'gotText (%s): %s'% (len(gotText), repr(gotText[:100]))
-        print 'gotText2 (%s): %s'% (len(gotTextAll2), repr(gotTextAll2[:100]))
+        print('second All== firstAll? %s'% (gotTextAll == gotTextAll2))
+        print('gotText (%s): %s'% (len(gotText), repr(gotText[:100])))
+        print('gotText2 (%s): %s'% (len(gotTextAll2), repr(gotTextAll2[:100])))
         setEditText(self.ctrl, gotTextAll2)
         gotText2 = ''.join(getEditText(self.ctrl))
         setEditText(self.ctrl, gotText2)
         gotText3 = ''.join(getEditText(self.ctrl))
-        print 'gotText2 (%s): %s'% (len(gotTextAll2), repr(gotTextAll2[:100]))
-        print 'Org: 1 == 2? %s'% (gotText == gotText2)
-        print 'Org: 2 == 3? %s'% (gotText3 == gotText2)
+        print('gotText2 (%s): %s'% (len(gotTextAll2), repr(gotTextAll2[:100])))
+        print('Org: 1 == 2? %s'% (gotText == gotText2))
+        print('Org: 2 == 3? %s'% (gotText3 == gotText2))
 
         #for i in range(5000):
         #    total.append("This is another still sligthly longer line %s."% (i+1,))
@@ -468,7 +471,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         
         """
         sep = self.linesep
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         # setting "hello there"
         setText = "hello there"
         setEditText(self.ctrl, setText, classname=self.classname)
@@ -528,7 +531,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         sep = self.linesep
         
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         # setting "hello there"
         L = []
         for i in range(100):
@@ -537,9 +540,9 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         setEditText(self.ctrl, L)
         lineNo = getFirstVisibleLine(self.ctrl)
         expectedMin = 100
-        self.assert_(lineNo > expectedMin, "lineNo should be at least %s, is now: %s"%
+        self.assertTrue(lineNo > expectedMin, "lineNo should be at least %s, is now: %s"%
                      (expectedMin, lineNo))
-        print 'first visible line in app: %s'% lineNo
+        print('first visible line in app: %s'% lineNo)
         gotText = getEditText(self.ctrl, visible=True)
         pass
 
@@ -550,7 +553,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         sep = self.linesep
         editcontrol = self.editcontrol
         
-        self.assert_(self.app > 0, "app should be there now")
+        self.assertTrue(self.app > 0, "app should be there now")
         # first selectall with empty window:
         gotText = getEditText(self.ctrl)
         expected = [sep]
@@ -558,8 +561,8 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         time.sleep(0.1)
         lo, hi = getSelection(self.ctrl)
         expSel = (0, 0)  # or (0, len(sep)) now it seems the selection is WITHOUT the trailing \r or \r\n characters
-        self.assert_(expSel == (lo,hi), "selection initially empty screen not as expected\nExpected: %s\nActual: %s"%
-                     (`expSel`, `(lo, hi)`))
+        self.assertTrue(expSel == (lo,hi), "selection initially empty screen not as expected\nExpected: %s\nActual: %s"%
+                     (repr(expSel), repr((lo, hi))))
         #clearClipboard()
         activateMenuItem(self.app, W["commandselectall"])
         time.sleep(0.1)
@@ -568,8 +571,8 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
             expSel = (0,  len(sep))  # aligen
         else:                        # differs from
             expSel = (0, 0)          # wordpad
-        self.assert_(expSel == (lo,hi), "selection empty screen after command Select All not as expected\nExpected: %s\nActual: %s"%
-                     (`expSel`, `(lo, hi)`))
+        self.assertTrue(expSel == (lo,hi), "selection empty screen after command Select All not as expected\nExpected: %s\nActual: %s"%
+                     (repr(expSel), repr((lo, hi))))
         
         #now put some text in and check:
         setText = "text for selection"
@@ -589,13 +592,13 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
             expSel = (0,len(setText+sep))     # DragonPad  (sep is \r)
         else:
             expSel = (0,len(setText))       # wordpad
-        self.assert_(expSel == (lo,hi), "selection after select all not as expected, check W['commandselectall']\nExpected: %s\nActual: %s"%
-                     (`expSel`, `(lo, hi)`))
+        self.assertTrue(expSel == (lo,hi), "selection after select all not as expected, check W['commandselectall']\nExpected: %s\nActual: %s"%
+                     (repr(expSel), repr((lo, hi))))
 
         setText = ["", "more", "", "", "lines", "", "", "of", "", "", "text.", ""]
         setEditText(self.ctrl, setText)
         gotText = getEditText(self.ctrl)
-        print 'gotText: %s'% repr(gotText)
+        print('gotText: %s'% repr(gotText))
         expected = [s+sep for s in setText]
         self.assert_equal(expected, gotText, "text of edit box should contain more lines of text now")
         #clearClipboard()
@@ -604,8 +607,8 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         lo, hi = getSelection(self.ctrl)
         hiExp= sum(len(s) for s in expected) 
         expSel = (0,hiExp)
-        self.assert_(expSel == (lo,hi), "selection after select all not as expected (trailing empty line), check W['commandselectall']\nExpected: %s\nActual: %s"%
-                     (`expSel`, `(lo, hi)`))
+        self.assertTrue(expSel == (lo,hi), "selection after select all not as expected (trailing empty line), check W['commandselectall']\nExpected: %s\nActual: %s"%
+                     (repr(expSel), repr((lo, hi))))
 
         setText = ["", "more", "", "", "lines"]
         setEditText(self.ctrl, setText)
@@ -619,8 +622,8 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         hiExp= sum(len(s) for s in expected) 
         # now the selection is INCLUDING the trailing \r character!!
         expSel = (0,hiExp)
-        self.assert_(expSel == (lo,hi), "selection after select all not as expected (no trailing em, check W['commandselectall']\nExpected: %s\nActual: %s"%
-                     (`expSel`, `(lo, hi)`))
+        self.assertTrue(expSel == (lo,hi), "selection after select all not as expected (no trailing em, check W['commandselectall']\nExpected: %s\nActual: %s"%
+                     (repr(expSel), repr((lo, hi))))
 
         
 
@@ -636,27 +639,27 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         time.sleep(0.1)
         gotText = getEditText(self.ctrl)
         expected = ["azZA" + sep]
-        self.assert_(expected == gotText, "sendking keystrokes give unexpected tesult\nExpected: %s\nActual: %s"%
+        self.assertTrue(expected == gotText, "sendking keystrokes give unexpected tesult\nExpected: %s\nActual: %s"%
                      (repr(expected), repr(gotText)))
 
         # trying delete key:
         sendKey(self.ctrl, "{delete}")
         gotText = getEditText(self.ctrl)
         expected = ["azZ" + sep]
-        self.assert_(expected == gotText, "sendking keystrokes (DELETE) give unexpected tesult\nExpected: %s\nActual: %s"%
+        self.assertTrue(expected == gotText, "sendking keystrokes (DELETE) give unexpected tesult\nExpected: %s\nActual: %s"%
                      (repr(expected), repr(gotText)))
         # trying backspace (back) key:
         sendKey(self.ctrl, "{back}")
         gotText = getEditText(self.ctrl)
         expected = ["az" + sep]
-        self.assert_(expected == gotText, "sendking keystrokes (BACK, backspace) give unexpected tesult\nExpected: %s\nActual: %s"%
+        self.assertTrue(expected == gotText, "sendking keystrokes (BACK, backspace) give unexpected tesult\nExpected: %s\nActual: %s"%
                      (repr(expected), repr(gotText)))
 
         # extra little trick:
         sendKey(self.ctrl, "{backspace}")
         gotText = getEditText(self.ctrl)
         expected = ["a" + sep]
-        self.assert_(expected == gotText, "sendking keystrokes (BACK, backspace) give unexpected tesult\nExpected: %s\nActual: %s"%
+        self.assertTrue(expected == gotText, "sendking keystrokes (BACK, backspace) give unexpected tesult\nExpected: %s\nActual: %s"%
                      (repr(expected), repr(gotText)))
 
         # now try to delete selection:
@@ -668,22 +671,22 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         time.sleep(0.1)
         gotText = getEditText(self.ctrl)
         expected = [sep]
-        self.assert_(expected == gotText, "sendking keystrokes (delete) should have emptied the window\nExpected: %s\nActual: %s"%
+        self.assertTrue(expected == gotText, "sendking keystrokes (delete) should have emptied the window\nExpected: %s\nActual: %s"%
                      (repr(expected), repr(gotText)))
 
 def try_win32pad():
     """needs win32pad being open and with a file in, explores the line number facilities
     """
     appWindows = findTopWindows(wantedClass="win32padClass")
-    print '# appWindows: %s'% len(appWindows)
+    print('# appWindows: %s'% len(appWindows))
 
-    if len(appWindows) <> 1:
-        print 'no win32pad found, or more instances: %s'% len(appWindows)
+    if len(appWindows) != 1:
+        print('no win32pad found, or more instances: %s'% len(appWindows))
         return
     
     appWindow = appWindows[0]
     title = win32gui.GetWindowText(appWindow)
-    print 'appWindow win32pad: %s (%s)'% (appWindow, title)
+    print('appWindow win32pad: %s (%s)'% (appWindow, title))
     pprint.pprint(dumpWindow(appWindow))
 
 
@@ -696,10 +699,10 @@ def try_32770():
     only print details if Adres: of Address: is found...
     """
     appWindows = findTopWindows(wantedClass="#32770")
-    print '# appWindows: %s'% len(appWindows)
+    print('# appWindows: %s'% len(appWindows))
     for appWindow in appWindows:
         title = win32gui.GetWindowText(appWindow)
-        print 'appWindow 32770: %s (%s)'% (appWindow, title)
+        print('appWindow 32770: %s (%s)'% (appWindow, title))
     #    
     #    
     #for appWindow in appWindows:
@@ -711,14 +714,14 @@ def try_32770():
     
         controls = findControls(appWindow, selectionFunction=selFuncExplorerAddress)
         if controls:
-            print 'controls: %s'% controls
+            print('controls: %s'% controls)
             hndle = controls[0]
             text = win32gui.GetWindowText(hndle)
             folder = text.split(": ", 1)[1]
             if os.path.isdir(folder):
-                print 'ok: %s'% folder
+                print('ok: %s'% folder)
             else:
-                print 'no folder: %s'% folder
+                print('no folder: %s'% folder)
             pprint.pprint(dumpWindow(appWindow))
         #else:
     pprint.pprint(dumpWindow(appWindow))
@@ -748,7 +751,7 @@ def run_hotshot():
         
 
 def run():
-    print 'starting unittestMessagefunctions'
+    print('starting unittestMessagefunctions')
     unittest.main()
     
 

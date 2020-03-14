@@ -40,8 +40,11 @@ self.lastDirection gives the last selection direction, persistent
 
 For more information on this number part, see grammar _testnumbersspokenforms.py
 """
-import six
-import time, string, os, sys, types, re
+import time
+import os
+import sys
+import types
+import re
 import natlink
 import inivars
 import re
@@ -57,7 +60,7 @@ import actions
 class LinesError(Exception): pass
 
 
-counts = range(1,20) + range(20,50,5) + range(50,100,10) + range(100, 1001, 100)
+counts = list(range(1,20)) + list(range(20,50,5)) + list(range(50,100,10)) + list(range(100, 1001, 100))
 #print 'counts: %s'% counts
 
 ancestor = natbj.DocstringGrammar
@@ -193,14 +196,14 @@ class ThisGrammar(ancestor):
            <wordspecifyaction> | <before> <wordspecifyaction> |
            <wordspecifyaction> <afterwordoptional> | <before> <wordspecifyaction> <afterwordoptional>
         """
-        print "never comes here! %s"% words
+        print("never comes here! %s"% words)
 
     
     def subrule_wordspec(self, words):
         """word | {n2-20} words | word (left|right) | {n2-20} words (left|right)
         """
         lenwords = len(words)
-        print "wordspec, got: %s (%s)"% (words, lenwords)
+        print("wordspec, got: %s (%s)"% (words, lenwords))
         for i, w in enumerate(words):
             if self.hasCommon(w, 'word'):
                 self.count = 1
@@ -209,8 +212,8 @@ class ThisGrammar(ancestor):
                         direction = 'left'
             elif self.hasCommon(w, 'words'):
                 if not self.count:
-                    print 'error in grammar lines, wordspec, count should have a value by now: %s\nprocessing word: %s (words: %s)'% \
-                          (self.count, w, words)
+                    print('error in grammar lines, wordspec, count should have a value by now: %s\nprocessing word: %s (words: %s)'% \
+                          (self.count, w, words))
                 if i < lenwords - 1:
                     if self.hasCommon(words[i+1], 'left'):
                         self.direction = 'left'
@@ -219,8 +222,8 @@ class ThisGrammar(ancestor):
             else:
                 self.count = self.getNumberFromSpoken(w)
                 if not self.count:
-                    print 'error in grammar lines, wordspec, count been caught here: %s\nprocessing word: %s (words: %s)'% \
-                          (self.count, w, words)
+                    print('error in grammar lines, wordspec, count been caught here: %s\nprocessing word: %s (words: %s)'% \
+                          (self.count, w, words))
                 continue
             # process the count:
             if self.wordAction:
@@ -232,7 +235,7 @@ class ThisGrammar(ancestor):
         """<wordspec> <wordaction> |
                <wordaction> <wordspec>
         """
-        print "should never come in subrule_wordspecifyaction %s"% words
+        print("should never come in subrule_wordspecifyaction %s"% words)
         
         
     def subrule_wordaction(self, words):
@@ -255,19 +258,19 @@ class ThisGrammar(ancestor):
     def subrule_afterwordoptional(self, words):
         """{afterwordaction} | {afterwordaction} <wordspec> | <wordspec> {afterwordaction}
         """
-        print "afterwordoptional, got: %s"% words
+        print("afterwordoptional, got: %s"% words)
         self.wordAction = self.getFromInifile(words, 'afterwordaction')
         if not self.doMouseMoveStopClick():
             self.count = None
             self.wordAction = 0
-            print 'aborted doMouseMoveStop action, stop this rule'
+            print('aborted doMouseMoveStop action, stop this rule')
             return
         # because <wordspec> is optional, test here if it is yet to come (nextRule)
         if self.count:
             # had wordspec rule:
             self.doWordAction()
         elif self.count is None and self.nextRule != 'wordspec':
-            print 'no word specification in afterwordoptional'
+            print('no word specification in afterwordoptional')
             self.count = 0 # go with a single click if no wordspec has been given
             self.doWordAction()
             
@@ -292,7 +295,7 @@ class ThisGrammar(ancestor):
         if variables missing, do nothing
         """
         if self.count is None or self.wordAction is None:
-            print 'not ready for word action: %s, %s, %s'% (self.count, self.direction, self.wordAction)
+            print('not ready for word action: %s, %s, %s'% (self.count, self.direction, self.wordAction))
             return
         if self.count == 0:
             #print 'doWordAction, single click: %s, %s, %s'% (self.count, self.direction, self.wordAction)
@@ -314,7 +317,7 @@ class ThisGrammar(ancestor):
         if variables missing, do nothing
         """
         if self.count is None or self.searchAction is None:
-            print 'not ready for word action: %s, %s, %s'% (self.count, self.direction, self.wordAction)
+            print('not ready for word action: %s, %s, %s'% (self.count, self.direction, self.wordAction))
             return
         if self.count == 0:
             #print 'doWordAction, single click: %s, %s, %s'% (self.count, self.direction, self.wordAction)
@@ -324,7 +327,7 @@ class ThisGrammar(ancestor):
             wordSelect = "SELECTWORD %s, %s"% (self.count, self.direction)
             action(wordSelect)
         if self.searchAction:
-            print 'now the search action in the tasks grammar: %s'% self.searchAction
+            print('now the search action in the tasks grammar: %s'% self.searchAction)
             self.tasksGrammar.rule_searchinothertask(self.searchAction)
         self.resetWordVariables()
 
@@ -368,10 +371,10 @@ class ThisGrammar(ancestor):
             getCounts = self.getNumbersFromSpoken(words, counts)
             if getCounts:
                 if len(getCounts) > 1:
-                    print 'warning, more counts found: %s (take the first)'% getCounts
+                    print('warning, more counts found: %s (take the first)'% getCounts)
                 self.numlines = getCounts[0]
             else:
-                print 'should collect a count, nothing found, take 1'
+                print('should collect a count, nothing found, take 1')
 
     def gotResults_paras(self,words,fullResults):
         self.lastDirection = 'down'
@@ -387,10 +390,10 @@ class ThisGrammar(ancestor):
             getCounts = self.getNumbersFromSpoken(words, counts)
             if getCounts:
                 if len(getCounts) > 1:
-                    print 'warning, more counts found: %s (take the first)'% getCounts
+                    print('warning, more counts found: %s (take the first)'% getCounts)
                 self.numlines = getCounts[0]
             else:
-                print 'should collect a count, nothing found, take 1'
+                print('should collect a count, nothing found, take 1')
 
 
     def gotResults_action(self,words,fullResults):
@@ -420,7 +423,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, ['to']):
             self.action[1] = 'to'
             self.waitForNumber('movecopyto')
-        print 'movecopyto: %s (%s)'% (self.movecopyto, type(self.movecopyto))
+        print('movecopyto: %s (%s)'% (self.movecopyto, type(self.movecopyto)))
 
 
     def gotResults_before(self,words,fullResults):
@@ -458,7 +461,7 @@ class ThisGrammar(ancestor):
                 self.line = intLine # always absolute
             elif self.currentLine:
                 intLine = getLineRelativeTo(intLine, self.currentLine)
-                print 'getLineRelativeTo, old: %s new: %s (currentline: %s)'% (self.line, intLine, self.currentLine)
+                print('getLineRelativeTo, old: %s new: %s (currentline: %s)'% (self.line, intLine, self.currentLine))
                 self.line = intLine
             else:
                 self.line = intLine
@@ -472,7 +475,7 @@ class ThisGrammar(ancestor):
                     modulo = 100
                 else:
                     modulo = 10
-                print 'modulo for through: %s'% modulo
+                print('modulo for through: %s'% modulo)
                 intThrough = getLineRelativeTo(intThrough, self.line, modulo=modulo,
                                                minLine=self.line)
                 self.through = intThrough
@@ -514,14 +517,14 @@ class ThisGrammar(ancestor):
                 if self.numlines > 1:
                     T.append('<<selectdown %s>>' % (self.numlines-1,))
         elif self.firstPart == 'paras':
-            print 'paragraphs!'
+            print('paragraphs!')
             if self.goingUp:
-                print 'vorige alinea'
+                print('vorige alinea')
                 T.append('<<selectpreviouspara>>')
                 if self.numlines > 1:
                     T.append('<<selectparaup %s>>' % (self.numlines-1,))
             else:
-                print 'deze of volgende alinea'
+                print('deze of volgende alinea')
                 T.append('<<selectpara>>')
                 if self.numlines > 1:
                     T.append('<<selectparadown %s>>' % (self.numlines-1,))
@@ -548,9 +551,9 @@ class ThisGrammar(ancestor):
             return
         if not self.action:
             return
-        if isinstance(self.action, six.string_types):
+        if isinstance(self.action, str):
             action(self.action, comment=comment)
-        elif type(self.action) == types.ListType:
+        elif type(self.action) == list:
             if self.action[0] == 'move':
                 T.append('<<cut>>')
             elif self.action[0] == 'copy':
@@ -563,14 +566,14 @@ class ThisGrammar(ancestor):
             else:
                 raise LinesError('invalid movecopy action (first word): %s'% self.action)
 
-            print 'gotResult: movecopyto: %s (%s)'% (self.movecopyto, type(self.movecopyto))
-            print 'gotResult: numlines: %s'% self.numlines
+            print('gotResult: movecopyto: %s (%s)'% (self.movecopyto, type(self.movecopyto)))
+            print('gotResult: numlines: %s'% self.numlines)
 
             if self.action[1] == 'up':
                 if self.prog in ['excel']:
                     T.append("<<movetotopofselection>>")
                 if self.prog in ['pycharm64', 'pycharm32']:
-                    print 'pycharm, %s'% repr(T)
+                    print('pycharm, %s'% repr(T))
                     if self.action[0] == 'copy':
                         T.append("{ctrl+d}")   # duplicate
                     T.append("{shift+ctrl+up %s}"% self.numlines)
@@ -583,7 +586,7 @@ class ThisGrammar(ancestor):
                     T.append("<<movetobottomofselection>>")
                     self.movecopyto += 1
                 if self.prog in ['pycharm64', 'pycharm32']:
-                    print 'pycharm, %s'% repr(T)
+                    print('pycharm, %s'% repr(T))
                     if T and T[0] == "<<copy>>":
                         T = ["{ctrl+d}"]  ## duplicate
                     else:
@@ -600,7 +603,7 @@ class ThisGrammar(ancestor):
                         if self.movecopyto > currentLine + self.numlines:
                             self.movecopyto -= self.numlines
                     else:
-                        print '_lines: movecopyaction: current line not known, move can be wrong if target is below current line'
+                        print('_lines: movecopyaction: current line not known, move can be wrong if target is below current line')
 
                 T.append('<<gotoline %s>>' % self.movecopyto)
             else:
@@ -663,7 +666,7 @@ class ThisGrammar(ancestor):
             ini = ini or self.ini
             self.lineNumbersModuloHundred = self.ini.getBool('general', 'line numbers modulo hundred')
             if self.lineNumbersModuloHundred:
-                print '_lines: do "line numbers modulo hundred" if the application allows this'
+                print('_lines: do "line numbers modulo hundred" if the application allows this')
 
             self.activateRules = ini.getDict('general', 'activate')
             if not self.activateRules:
@@ -708,13 +711,13 @@ class ThisGrammar(ancestor):
                 self.tasksGrammar = natbj.GetGrammarObject(self.tasksGrammarName)
                 if self.tasksGrammar:
                     self.enableSearchCommands = 1
-                    print '_lines, enable search commands, coupling grammar %s with %s'% (self.name, self.tasksGrammarName)
+                    print('_lines, enable search commands, coupling grammar %s with %s'% (self.name, self.tasksGrammarName))
                 else:
-                    print '_lines, enable search commands failed, invalid name: %s'% self.tasksGrammarName
+                    print('_lines, enable search commands failed, invalid name: %s'% self.tasksGrammarName)
                     self.enableSearchCommands = 0
             
         except inivars.IniError:
-            print 'IniError while initialising ini variables in _lines'
+            print('IniError while initialising ini variables in _lines')
 
             
     def windowPolicy(self, modInfo, progInfo=None): 

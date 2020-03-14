@@ -2,9 +2,11 @@
 
 see www.activestate.com. Does not work (yet)
 """
-import win32gui, ctypes, win32api
+import win32gui
+import ctypes
+import win32api
 import messagefunctions as mf
-from actionbases import MessageActions
+from .actionbases import MessageActions
 import pprint
 
 class KomodoActions(MessageActions):
@@ -19,27 +21,28 @@ class KomodoActions(MessageActions):
         user32 = ctypes.windll.user32
         #
         controls = mf.findControls(handle, wantedClass="Scintilla")
-        print 'Scintilla controls: %s'% controls
+        print('Scintilla controls: %s'% controls)
         for c in controls:
             ln = self.getCurrentLineNumber(c)
             numberLines = self.getNumberOfLines(c)
             visible1 = self.isVisible(c)
             info = win32gui.GetWindowPlacement(c) 
-            print 'c: %s, linenumber: %s, nl: %s, info: %s'% (c, ln, numberLines, repr(info))
+            print('c: %s, linenumber: %s, nl: %s, info: %s'% (c, ln, numberLines, repr(info)))
             parent = c
             while 1:
                 parent = win32gui.GetParent(parent)
                 clName = win32gui.GetClassName(parent)
                 visible = self.isVisible(parent)
                 info = win32gui.GetWindowPlacement(parent) 
-                print 'parent: %s, class: %s, visible: %s, info: %s'% (parent, clName, visible, repr(info))
+                print('parent: %s, class: %s, visible: %s, info: %s'% (parent, clName, visible, repr(info)))
                 if parent == handle:
-                    print 'at top'
+                    print('at top')
                     break
         
 
 # several tries for getting introspection of the Komodo controls failed sofar (QH, October 2013) 
-import ctypes, win32con
+import ctypes
+import win32con
 def get_windows(startWith=None):
     '''Returns windows in z-order (top first)'''
     user32 = ctypes.windll.user32
@@ -49,11 +52,11 @@ def get_windows(startWith=None):
         return lst
     lst.append(top)
     next = top
-    print 'top: %s'% next
+    print('top: %s'% next)
     while True:
         
         next = user32.GetTopWindow(next)
-        print 'next: %s'% next
+        print('next: %s'% next)
         if not next:
             break
     #    lst.append(next)
@@ -63,7 +66,7 @@ if __name__ == '__main__':
 
     focus =66284
     
-    print 'focus; %s'% focus
+    print('focus; %s'% focus)
     progInfo = ('komodo', 'babbababa', 'top', focus)
     ka = KomodoActions( progInfo )
     get_windows()

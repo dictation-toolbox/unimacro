@@ -1,4 +1,3 @@
-__version__ = "$Revision: 417 $, $Date: 2011-03-13 17:14:04 +0100 (zo, 13 mrt 2011) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -31,7 +30,13 @@ __version__ = "$Revision: 417 $, $Date: 2011-03-13 17:14:04 +0100 (zo, 13 mrt 20
 Extensive use is made of mouse (dragging) routines.
 """
 
-import natlink, win32gui, types, time, os, os.path, win32api
+import natlink
+import win32gui
+import types
+import time
+import os
+import os.path
+import win32api
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
@@ -40,8 +45,8 @@ from actions import doKeystroke as keystroke
 
 
 #aantal carden en aantal stapelplaatsen:
-cnum = range(1,8)
-snum = range(1,5)
+cnum = list(range(1,8))
+snum = list(range(1,5))
 #card sizes and spacing:
 #kwidth, kheight = 72, 96
 kwidth, kheight = 93, 121
@@ -69,7 +74,7 @@ class ThisGrammar(ancestor):
         if self.load(self.gramSpec):
             self.setNumbersList("cnum", cnum)
             self.setNumbersList("snum", snum)
-            print 'grammar solitaire (%s) active'% self.name
+            print('grammar solitaire (%s) active'% self.name)
             self.prevHandle = -1
             self.stackAuto = 0
             self.pause = 1
@@ -81,35 +86,35 @@ class ThisGrammar(ancestor):
     def cancelMode(self):
         #self.setExclusive(0)
         if self.inTimer:
-            print 'cancel timer'
+            print('cancel timer')
             natlink.setTimerCallback(None,0)
             self.inTimer = 0
 
     def onTimer(self):
         if natlink.getMicState() != 'on':
-            print 'mic switched off, cancel timer'
+            print('mic switched off, cancel timer')
             self.cancelMode()
             return
         modInfo = natlink.getCurrentModule()
         if modInfo[2] != self.prevHandle:
-            print 'window handle changed, cancel timer'
+            print('window handle changed, cancel timer')
             self.cancelMode()
             return
-        print 'in onTimer: %.1f'% time.clock()
+        print('in onTimer: %.1f'% time.clock())
         self.rule_newcard([])
         
 
     def gotBegin(self,moduleInfo):
-        print 'gotbegin, cancelmode'
+        print('gotbegin, cancelmode')
         self.cancelMode()
         winHandle = moduleInfo[2]
         if self.prevHandle == winHandle: return
         self.prevHandle = winHandle
         if moduleInfo[0].lower().find('solitaire.exe') > 0 and natqh.isTopWindow(moduleInfo[2]):
             if self.checkForChanges:
-                print 'grammar solitaire (%s) checking the inifile'% self.name
+                print('grammar solitaire (%s) checking the inifile'% self.name)
                 self.checkInifile()
-            print 'self.mayBeSwitchedOn: %s'% self.mayBeSwitchedOn
+            print('self.mayBeSwitchedOn: %s'% self.mayBeSwitchedOn)
             exclusive = self.mayBeSwitchedOn == 'exclusive'
             self.activateAll(exclusive=exclusive)
         else:
@@ -164,7 +169,7 @@ class ThisGrammar(ancestor):
         self.moveTo(firstrowpos(2))
         if self.hasCommon(words, 'continue'):
             timeEachMilliseconds = max(1, self.pauseTime)*500
-            print 'set the timer to %s'% timeEachMilliseconds
+            print('set the timer to %s'% timeEachMilliseconds)
             natlink.setTimerCallback(self.onTimer, timeEachMilliseconds)
             self.inTimer = 1
             
@@ -220,7 +225,7 @@ class ThisGrammar(ancestor):
             to = firstrowpos(to+3)
         else:
             to = cardpos(to)
-        print 'position: %s'% repr(to)
+        print('position: %s'% repr(to))
         self.moveTo(to)
         
     def rule_cardnumto(self, words):
@@ -229,7 +234,7 @@ class ThisGrammar(ancestor):
         #
         #the first word is optional,and is recognised with the function
         #self.hasCommon, which can handle translations or synonyms
-        print 'cardnumto: %s'% words
+        print('cardnumto: %s'% words)
         natqh.rememberMouse()
         if self.hasCommon(words[0],['card']):
             ww = words[1:]
@@ -255,7 +260,7 @@ class ThisGrammar(ancestor):
     def rule_cardto(self, words):
         "card to ((stack {snum})|{cnum})"
         #drag the last drawn card to a stack or to a pile
-        print 'cardto: %s'% words
+        print('cardto: %s'% words)
 
         natqh.rememberMouse()
         self.moveTo(firstrowpos(2))        
@@ -294,13 +299,13 @@ class ThisGrammar(ancestor):
     # Pause a few times, dependent on the pause state.
     def dragTo(self, pos):
         xold,yold = natqh.getMousePosition(5)
-        print 'hold down: %s, %s'% (xold, yold)
+        print('hold down: %s, %s'% (xold, yold))
         natqh.doMouse(0,5,xold, yold, 'down')
         xyincr = 50
         nstepsx = int(abs(pos[0]-xold)/xyincr)
         nstepsy = int(abs(pos[1]-yold)/xyincr)
         nsteps = max(nstepsx, nstepsy)
-        print 'nstepsx: %s, nstepsy: %s, nsteps: %s'% (nstepsx, nstepsy, nsteps)
+        print('nstepsx: %s, nstepsy: %s, nsteps: %s'% (nstepsx, nstepsy, nsteps))
         ysteps = int((pos[1]-yold)/nsteps)
         xsteps = int((pos[0]-xold)/nsteps)
         x, y = xold, yold
@@ -310,7 +315,7 @@ class ThisGrammar(ancestor):
             natqh.doMouse(0,5, x, y, 'move')
             self.Wait(0.01)
         if x != pos[0] or y != pos[1]:
-            print 'final move: %s, %s, %s, %s'% (x, pos[0], y, pos[1])
+            print('final move: %s, %s, %s, %s'% (x, pos[0], y, pos[1]))
             natqh.doMouse(0,5, pos[0], pos[1], 'move')
             self.Wait(0.01)            
         natqh.doMouse(0,5, pos[0], pos[1], 'move')
@@ -361,5 +366,5 @@ def changeCallback(type,args):
     if ((type == 'mic') and (args=='on')):
         return   # check WAS in natlinkmain...
     if thisGrammar:
-        print 'cancel'
+        print('cancel')
         thisGrammar.cancelMode()

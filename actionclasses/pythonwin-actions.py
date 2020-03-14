@@ -1,8 +1,11 @@
 """actions from application pythonwin
 """
-import win32gui, win32con
-import messagefunctions as mf
-from actionbases import MessageActions
+import win32gui
+import win32con
+import messagefunctions
+import as
+import mf
+from .actionbases import MessageActions
 import pprint
 class PythonwinActions(MessageActions):
     handlesDict = {}

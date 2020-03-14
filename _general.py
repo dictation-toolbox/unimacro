@@ -1,4 +1,3 @@
-__version__ = "$Rev: 614 $ on $Date: 2019-09-02 15:54:07 +0200 (ma, 02 sep 2019) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
@@ -9,8 +8,6 @@ __version__ = "$Rev: 614 $ on $Date: 2019-09-02 15:54:07 +0200 (ma, 02 sep 2019)
 # written by Quintijn Hoogenboom (QH softwaretraining & advies),
 # developed during the past few years.
 #
-
-
 #
 """do a set of general commands, with language versions possible, version 7
 
@@ -22,7 +19,7 @@ mode, that only works when spell mode or command mode is on.
 #
 #
 
-Counts = range(1,20) + range(20,51,5)
+Counts = list(range(1,20)) + list(range(20,51,5))
 
 # for taskswitch:
 Handles = {}
@@ -30,7 +27,6 @@ Handles = {}
 systrayHndle = 0
 
 import re
-import string
 import types
 import copy
 import time
@@ -173,7 +169,7 @@ class ThisGrammar(ancestor):
             self.setCharactersList('character')
             self.setPunctuationList('punctuation')
             self.specialSearchWords = self.Lists['searchwords'] or [] # like function, class of (inifile) section
-            print 'specialSearchWords: %s'% self.specialSearchWords
+            print('specialSearchWords: %s'% self.specialSearchWords)
             self.setNumbersList('count', Counts)
             self.setList('modes', modes)
 ##            self.testlist = ['11\\Canon fiftyfive two fifty',
@@ -193,7 +189,7 @@ class ThisGrammar(ancestor):
             # self.deactivateAll()  # why is this necessary? The activateAll in switchOn is definitly now Ok...
             self.title = 'Unimacro grammar "'+__name__+'" (language: '+self.language+')'
         else:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
 
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
@@ -218,7 +214,7 @@ class ThisGrammar(ancestor):
         # self.specialSearchWords = None
 
         if words[0] in ['Hier', 'Here']:
-            print 'Here from _general...'
+            print('Here from _general...')
             natut.buttonClick()
             natqh.Wait()
 
@@ -229,20 +225,20 @@ class ThisGrammar(ancestor):
         
         """
         self.gotPassword = 1
-        print 'gotPassword: ', self.gotPassword
+        print('gotPassword: ', self.gotPassword)
 
     def gotResults_pastepart(self,words,fullResults):
         """paste part of clipboard, parts are separated by ";"
         """
         n = self.getNumberFromSpoken(words[-1])
         t = natqh.getClipboard()
-        print '(%s) %s'% (type(t), t)
+        print('(%s) %s'% (type(t), t))
         T = self.partsSplitSpecial(t)
         if n <= len(T):
             keystroke(T[n-1])
             # action("SCLIP %s"% T[n-1])
         else:
-            print '_general, pastepart: length of list only: %s (t: %s)'% (len(T), t)
+            print('_general, pastepart: length of list only: %s (t: %s)'% (len(T), t))
 
     def gotResults_pasteallparts(self,words,fullResults):
         """paste parts, separated by ";" with a hard set keystroke in between
@@ -251,9 +247,9 @@ class ThisGrammar(ancestor):
         """
         n = self.getNumberFromSpoken(words[-1])
         t = natqh.getClipboard()
-        print '(%s) %s'% (type(t), t)
+        print('(%s) %s'% (type(t), t))
         T = self.partsSplitSpecial(t)
-        print 'put item by item %s words'% len(T)
+        print('put item by item %s words'% len(T))
         for t in T:
             keystroke(t)
             keystroke("{enter}")
@@ -268,13 +264,13 @@ class ThisGrammar(ancestor):
         m = reCoords.match(t)
         if m:
             parts = m.groups()
-            print 'coordinates: %s, length: %s'% (repr(parts), len(parts))
+            print('coordinates: %s, length: %s'% (repr(parts), len(parts)))
         elif t.find(";") >= 0:
             parts = t.split(";")
-            print 'splitted string: %s, length: %s'% (repr(parts), len(parts))
+            print('splitted string: %s, length: %s'% (repr(parts), len(parts)))
         else:
             parts = [t]
-            print 'cannot split text: %s\nreturn list of length 1: %s'% (t, parts)
+            print('cannot split text: %s\nreturn list of length 1: %s'% (t, parts))
         return parts
         
 
@@ -282,34 +278,34 @@ class ThisGrammar(ancestor):
         
         files = [f[:-4] for f in os.listdir(wordsFolder)]
         if files:
-            print 'in folder: %s, files: %s'% (wordsFolder, files)
+            print('in folder: %s, files: %s'% (wordsFolder, files))
         else:
-            print 'in folder: %s, no files found'% wordsFolder
+            print('in folder: %s, no files found'% wordsFolder)
             return
         
         for f in files:
             F = f + '.txt'
             if f == 'deleted words':
-                print 'delete words!'
+                print('delete words!')
                 for l in open(os.path.join(wordsFolder, F)):
                     w = l.strip()
                     if w.find('\\\\') > 0:
                         w, p = w.split('\\\\')
-                    print f, ', word to delete :', w
+                    print(f, ', word to delete :', w)
                     natqh.deleteWordIfNecessary(w)
                 continue
 
             if f in FORMATS:
                 formatting = FORMATS[f]
-                print 'to formatting for file: %s: %x'% (f, formatting)
+                print('to formatting for file: %s: %x'% (f, formatting))
             else:
-                print 'no formatting information for file: %s'% f
+                print('no formatting information for file: %s'% f)
                 formatting = 0
 
             for l in open(os.path.join(wordsFolder, F)):
                 p = 0 # possibly user defined properties
                 w = l.strip()
-                print f, ', word:', w
+                print(f, ', word:', w)
                 if w.find('\\\\') > 0:
                     w, p = w.split('\\\\')
                     exec("p = %s"%p)
@@ -320,10 +316,10 @@ class ThisGrammar(ancestor):
                 natqh.addWordIfNecessary(w)
                 formatOld = natlink.getWordInfo(w)
                 if formatOld == newFormat:
-                    print 'format already okay: %s (%x)'% (w, newFormat)
+                    print('format already okay: %s (%x)'% (w, newFormat))
                 else:
                     natlink.setWordInfo(w, newFormat)
-                    print 'format set for %s: %x'% (w, newFormat)
+                    print('format set for %s: %x'% (w, newFormat))
 
 ##    def gotResults_datetime(self,words,fullResults):
 ##        """print copy or playback date, time or date and time
@@ -363,7 +359,7 @@ class ThisGrammar(ancestor):
         self.search = 1
         if words[0] in self.specialSearchWords:
             self.specialSearchWord = self.getFromInifile(words[0], 'searchwords')
-            print 'do search with special search word: %s (%s)'% (self.specialSearchWord, words[0])
+            print('do search with special search word: %s (%s)'% (self.specialSearchWord, words[0]))
             words.pop(0)
 
         counts = self.getNumbersFromSpoken(words, Counts)
@@ -417,7 +413,7 @@ class ThisGrammar(ancestor):
         capNext = 0
         for w in words:
             if self.hasCommon(w, "capital"):
-                print 'got word (synonym of) "capital": %s'% w
+                print('got word (synonym of) "capital": %s'% w)
                 capNext = 1
                 continue
             if self.hasCommon(w, "space"):
@@ -437,19 +433,19 @@ class ThisGrammar(ancestor):
                 if char:
                     self.text += char
                 else:
-                    print 'general: character or punctuation not found for spoken form: %s'% w
+                    print('general: character or punctuation not found for spoken form: %s'% w)
         
     def gotResults_dgndictation(self,words,fullResults):
         #self.text = ' '.join(map(natqh.stripSpokenForm, words))
         # try with the improved nsformat function 
         if self.gotPassword:
-            print 'gotPassword, analyse password: %s'% words
+            print('gotPassword, analyse password: %s'% words)
             text = nsformat.formatPassword(words)
             keystroke(text)
             self.gotPassword = 0
-            print 'reset gotPassword, ', self.gotPassword
+            print('reset gotPassword, ', self.gotPassword)
         if self.gotVariable:
-            print 'do variable trick %s on %s'% (self.gotVariable, words)
+            print('do variable trick %s on %s'% (self.gotVariable, words))
             vartrick = self.gotVariable
             funcName = 'format_%s'% vartrick
             # print 'funcName: %s'% funcName
@@ -457,7 +453,7 @@ class ThisGrammar(ancestor):
                 func = getattr(self, funcName)
                 # print 'func: %s'% func
             except AttributeError:
-                print 'no formatfunction for variable trick: %s'% vartrick
+                print('no formatfunction for variable trick: %s'% vartrick)
                 return
 
             result = func(words)
@@ -471,7 +467,7 @@ class ThisGrammar(ancestor):
             self.search = 3
         elif self.search and self.text in ['terug', 'back']:
             self.search = 4
-        print 'dgndictation: %s'% self.text
+        print('dgndictation: %s'% self.text)
 
     def format_camel(self, words):
         """format camel case, rule variable
@@ -524,14 +520,14 @@ class ThisGrammar(ancestor):
         if not browser:
             self.DisplayMessage ('command only for browsers')
             return
-        print 'words:', words
+        print('words:', words)
         natqh.saveClipboard()
         action('<<addressfield>>; {extend}{shift+exthome}{ctrl+c};<<addressfieldclose>>')
         askedBrowser = self.getFromInifile(words, 'browsers')
         if askedBrowser == prog:
             self.DisplayMessage('command only for another browser')
             return
-        print 'try to bring up browser: |%s|'% askedBrowser
+        print('try to bring up browser: |%s|'% askedBrowser)
         action('RW')
         action('AppBringUp "%s"'% askedBrowser)
         action('WTC')
@@ -552,17 +548,17 @@ class ThisGrammar(ancestor):
             psock = open(pickleFile, 'r')
             memory = pickle.load(psock)
             psock.close()
-            print '--------------------memory from pickle: %s'% pickleFile
+            print('--------------------memory from pickle: %s'% pickleFile)
         except:
             memory = {}
-            print '--------------------no or invalid pickle file: %s'% pickleFile
+            print('--------------------no or invalid pickle file: %s'% pickleFile)
             
         utilsqh.createFolderIfNotExistent(docPath)
         os.chdir(docPath)
         self.DisplayMessage('writing documentation to: %s'% docPath)
         pydoc.writedocs(base)
         self.DisplayMessage('checking unimacro grammars, modules and other grammars, modules')
-        loadedGrammars = natlinkmain.loadedFiles.keys()
+        loadedGrammars = list(natlinkmain.loadedFiles.keys())
         if 'unimacro grammars' not in memory:
             memory['unimacro grammars'] = {}
         mem = memory['unimacro grammars']
@@ -583,18 +579,18 @@ class ThisGrammar(ancestor):
                 try:
                     M = __import__(m)
                 except ImportError:
-                    print 'cannot import module: %s'% m
+                    print('cannot import module: %s'% m)
                     continue
                 mem[m] = M.__doc__
                 mem[m] = M.__doc__
                 del M
 
-        print 'writing to pickle file: %s'% pickleFile
+        print('writing to pickle file: %s'% pickleFile)
         psock = open(pickleFile, 'w')
         pickle.dump(memory, psock)
         psock.close()
         L = []
-        htmlFiles = filter(isHtmlFile, os.listdir(docPath))
+        htmlFiles = list(filter(isHtmlFile, os.listdir(docPath)))
         
         
         categories = self.ini.get('documentation')
@@ -666,7 +662,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
 
         ## test clipboard formats
         f = natlinkclipboard.Clipboard.get_clipboard_formats()
-        print 'formats: %s'% f
+        print('formats: %s'% f)
         
 
         # natlink.recognitionMimic(["list", "windows", "for", "Windows", "Explorer"])
@@ -675,32 +671,32 @@ TT { font-family: lucidatypewriter, lucida console, courier }
         # test klik with variations:
         # test (klik|dubbelklik|shiftklik|controlklik)
         if words[-1] == 'klik':
-            print words, 'single click'
+            print(words, 'single click')
             natut.buttonClick()
         elif words[-1] == 'dubbelklik':
-            print words, 'double click'
+            print(words, 'double click')
             natut.buttonClick(1,2)
         elif words[-1] == 'trippelklik':
-            print words, 'triple click'
+            print(words, 'triple click')
             natut.buttonClick(1,3)
         elif words[-1] == 'shiftklik':
-            print words, 'shift click'
+            print(words, 'shift click')
             natut.buttonClick(1,1,"shift")
         elif words[-1] == 'controlklik':
-            print words, 'control click'
+            print(words, 'control click')
             natut.buttonClick(1,1,"ctrl")
         elif words[-1] == 'rechtsklik':
-            print words, 'right click'
+            print(words, 'right click')
             natut.buttonClick(2,1)
         elif words[-1] == 'combinedklik':
-            print words, 'combined click'
+            print(words, 'combined click')
             natut.buttonClick(1,1,"shift+ctrl")
             # natut.buttonClick(1,1,["shift", "ctrl"])
         elif words[-1] == 'foutklik':
-            print words, 'fout click'
+            print(words, 'fout click')
             natut.buttonClick("long")
         else:
-            print words, "test klik no valid last word:", words[-1]
+            print(words, "test klik no valid last word:", words[-1])
         
 
         #action('SCLIP hallo, dit is een, test')
@@ -771,27 +767,27 @@ TT { font-family: lucidatypewriter, lucida console, courier }
         t5 = time.time()
         result = natqh.getClipboard()
         t6 = time.time()
-        print 'timing getPrevNext program: %s\nclear clipboard: %.4f, left: %.4f, shiftright2: %.4f, copy: %.4f, left: %.4f, getcl: %.4f'% (
-            prog, t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5)
+        print('timing getPrevNext program: %s\nclear clipboard: %.4f, left: %.4f, shiftright2: %.4f, copy: %.4f, left: %.4f, getcl: %.4f'% (
+            prog, t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5))
         if len(result) == 2:
             return result[0], result[1]
         elif result == '\n':
-            print 'getPrevNext, assume at end of file...'
+            print('getPrevNext, assume at end of file...')
             # assume at end of file, could also be begin of file, but too rare too handle
             playString("{right}")
             return result, result
         else:
-            print 'getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result))
+            print('getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result)))
             return "", result
 
 ##        
     def gotResults_reload(self,words,fullResults):
-        print "reloading natlink...."
+        print("reloading natlink....")
         natqh.switchToWindowWithTitle("Messages from Python Macros")
         natqh.Wait()
         natlink.setMicState("off")
         natqh.Wait()
-        print "do it yourself..."
+        print("do it yourself...")
     
    # deze regel print de naam van de huidige module in het debug-venster
     def gotResults_info(self,words,fullResults):
@@ -878,31 +874,31 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             s = '\n'.join(TT)
             
         actions.Message(s)
-        print s
-        print
+        print(s)
+        print()
         for e in extra:
-            print e
+            print(e)
 
     def gotResults_variable(self,words,fullResults):
         vartrick = self.getFromInifile(words[0], 'formatvariable', '');
-        print 'vartrick: %s'% vartrick
+        print('vartrick: %s'% vartrick)
         if vartrick:
             self.gotVariable = vartrick
         else:
-            print 'no vartrick found, return'
+            print('no vartrick found, return')
         # 
         c = self.getNumberFromSpoken(words[-1])
         
         if not c:
-            print 'vartrick %s wait for dgndictation'% vartrick
+            print('vartrick %s wait for dgndictation'% vartrick)
             return
         keystroke('{Shift+Ctrl+Left %s}' % c)
         keystroke('{ctrl+x}')
-        print 'here comes the copy paste trick %s words'% c
+        print('here comes the copy paste trick %s words'% c)
         natqh.Wait(0.5)
         t = natlink.getClipboard()
         tList = t.split()
-        print 'tList: %s'% tList
+        print('tList: %s'% tList)
         natqh.Wait(0.5)
         funcName = 'format_%s'% vartrick
         # print 'funcName: %s'% funcNameyour 
@@ -910,7 +906,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             func = getattr(self, funcName)
             # print 'func: %s'% func
         except AttributeError:
-            print 'no formatfunction for variable trick: %s'% vartrick
+            print('no formatfunction for variable trick: %s'% vartrick)
             return
 
         result = func(tList)
@@ -1005,7 +1001,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
         """
         mode = self.hasCommon(words, modes)
         if not mode:
-            print 'modes, invalid mode: %s'% words
+            print('modes, invalid mode: %s'% words)
             return
         if mode in ['normal', 'normale']:
             M = 0
@@ -1018,7 +1014,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
         elif mode in ['spell', 'spel']:
             M = 4
         else:
-            print 'no valid mode: %s'% mode
+            print('no valid mode: %s'% mode)
             return
 
         self.setMode(M)
@@ -1070,13 +1066,13 @@ TT { font-family: lucidatypewriter, lucida console, courier }
                     return
         if self.hasCommon(words, ['naam', 'Name']):
             result = namelist.namelistUnimacro(t, ini=self.ini)
-            print 'result of namelistUnimacro function: %s'% result
+            print('result of namelistUnimacro function: %s'% result)
             for r in result:
-                print 'adding part: %s'% r
+                print('adding part: %s'% r)
                 natqh.addWordIfNecessary(t)
             keystroke(r)
         else: # zonder naam in words, a normal phrase:
-            print 'adding phrase %s'% t
+            print('adding phrase %s'% t)
             natqh.addWordIfNecessary(t)
             keystroke(t)
         action("CLIPRESTORE")
@@ -1139,11 +1135,11 @@ TT { font-family: lucidatypewriter, lucida console, courier }
         # 
     def gotResults_openuser(self,words,fullResults):
         user = self.getFromInifile(words[-1], 'users')
-        print 'user: %s'% user
+        print('user: %s'% user)
         try:
             natlink.openUser(user)
         except natlink.UnknownName:
-            print 'cannot open user "%s", unknown name'% user
+            print('cannot open user "%s", unknown name'% user)
             
     def gotResults(self,words,fullResults):
         if self.highlight:
@@ -1157,7 +1153,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
                 keystroke(self.text)
                 action("<<searchgo>>")    
             else:
-                print 'no text to highlight'
+                print('no text to highlight')
             return
             #keystroke("{ctrl+f}")
             #t = self.text
@@ -1196,13 +1192,13 @@ TT { font-family: lucidatypewriter, lucida console, courier }
                 return
             elif self.search ==  'go back':
             # go back, return to origin
-                print "search go back"
+                print("search go back")
                 self.searchGoBack(progInfo=progInfo)
                 return
             elif self.search in ('for', 'before','after'):
                 # new search with text
                 self.direc = 'down'
-                print 'new leap to text: %s'% self.text
+                print('new leap to text: %s'% self.text)
                 self.searchMarkSpot(progInfo=progInfo)
                 res = self.searchForText(self.direc, self.text, progInfo=progInfo, beforeafter=self.search)
             elif self.search == 'extend':
@@ -1210,14 +1206,14 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             elif self.search == 'insert':
                 res = self.searchForText(self.direc, self.text, progInfo=progInfo, insert=1)
             else:
-                print 'invalid search code: %s'% self.search
+                print('invalid search code: %s'% self.search)
                 self.DisplayMessage('search, invalid search code: %s'% self.search)
                 return
             if res == -2:
             # search failed, did cancel mode
                 return 
             natqh.visibleWait()
-            print 'calling stop search'
+            print('calling stop search')
             self.stopSearch(progInfo=progInfo)
 
     def searchOn(self, count, progInfo=None):

@@ -6,12 +6,12 @@
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 import actions
-reload(actions)
 actions.debugActions(1)
 
 import unittest
 import UnimacroTestHelpers
-import time, sys
+import time
+import sys
 
 ##class UnimacroBasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
 class SearchTest(UnimacroTestHelpers.UnimacroTestHelpers):

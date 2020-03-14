@@ -7,17 +7,17 @@ import wx
 import time
 import inivars
 
-prompt = u"""Remember in Unimacro _folders grammar"""  # readable text
-text = u"""Remember website for future calling?
+prompt = """Remember in Unimacro _folders grammar"""  # readable text
+text = """Remember website for future calling?
 
 - https://sourceforge.net -
 
 Please give a spoken form for this website and choose OK; or Cancel..."""          # input text, the key of the 
-inifile = u"C:/Users/Gebruiker/Documents/unimacro_qh/enx_inifiles/_folders.ini"
-section = u"websites"
-value = u"https://sourceforge.net"
-title = u"test"
-default = u"sourceforge"
+inifile = "C:/Users/Gebruiker/Documents/unimacro_qh/enx_inifiles/_folders.ini"
+section = "websites"
+value = "https://sourceforge.net"
+title = "test"
+default = "sourceforge"
 pausetime = 3  # should be replaced by 0 or a positive int value
 
 
@@ -41,10 +41,10 @@ if __name__ == "__main__":
         ini = inivars.IniVars(inifile)
         ini.set(section, key, value)
         ini.write()
-        print 'Wrote "%s = %s" to inifile'% (key, value)
-        print 'Call "edit folders" to edit or delete'
+        print('Wrote "%s = %s" to inifile'% (key, value))
+        print('Call "edit folders" to edit or delete')
     else:
-        print "Action canceled, no change of ini file"
+        print("Action canceled, no change of ini file")
     # if pausetime is given, launch as .py, otherwise launch as .pyw:
     if pausetime:
         # print "sleep: %s"% pausetime
