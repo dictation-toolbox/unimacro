@@ -219,7 +219,7 @@ checkForChanges = 0
 iniFileDate = 0
 
 def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
-             progInfo=None, sectionList=None, comment='', comingFrom=None):
+             progInfo=None, modInfo=None, sectionList=None, comment='', comingFrom=None):
     global pendingMessage, checkForChanges
     topLevel = 0
     if comingFrom and comingFrom.interrupted:
@@ -243,9 +243,19 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         if not ini:
             D('no valid inifile for actions')
             return
-        if progInfo == None:
-            progInfo = natqh.getProgInfo()
-            #D('new progInfo: %s'% repr(progInfo))
+        if modInfo is None:
+            try:
+                modInfo = natlink.getCurrentModule()
+                # print("modInfo through natlink: %s"% repr(modInfo))
+            except:
+                modInfo = autohotkeyactions.getModInfo()
+                # print("modInfo through AHK: %s"% repr(modInfo))
+           
+        progNew = natqh.getProgName(modInfo)    
+
+        if progInfo is None:
+            progInfo = natqh.getProgInfo(modInfo=modInfo)
+        #D('new progInfo: %s'% repr(progInfo))
         prog, title, topchild, windowHandle = progInfo
         if sectionList == None:
             sectionList = getSectionList(progInfo)
@@ -281,7 +291,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
             if not a: continue
             result = doAction(a, completeAction=completeAction,
                          pauseBA=pauseBA, pauseBK=pauseBK,
-                         progInfo=progInfo, sectionList=sectionList,
+                         progInfo=progInfo, modInfo=None, sectionList=sectionList,
                          comment=comment, comingFrom=comingFrom)
             if not result: return
             if debug > 2:D('pause between actions: %s'% pauseBA)
@@ -347,26 +357,19 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     if 'do_'+com in globals():
         funcName = 'do_'+com
         args = convertToPythonArgs(rest)
-
+        kw = {}
+        kw['progInfo'] = progInfo
         if com in ('WWT', 'WTC'):
-            kw = dict(comingFrom=comingFrom) 
-        else:
-            kw = None
+            kw = kw['comingFrom'] - comingFrom
         func = globals()[funcName]
         if not type(func) == types.FunctionType:
             raise UnimacroError('appears to be not a function: %s (%s)'% (funcName, func))
         if debug > 5: D('doing USC command: |%s|, with args: %s and kw: %s'% (com, repr(args), kw))
         if debug > 1: do_W(debug*0.2)
         if args:
-            if kw:
-                result = func(*args, **kw)
-            else:
-                result = func(*args)
+            result = func(*args, **kw)
         else:
-            if kw:
-                result = func(**kw)
-            else:
-                result = func()
+            result = func(**kw)
                 
         if debug > 5: print('did it, result: %s'% result)
         if debug > 1: do_W(debug*0.2)
@@ -888,7 +891,7 @@ def getPosition(name, prog=None):
     return ini.getInt(section, name) or 0
 # -----------------------------------------------------------
 
-def do_TEST(*args):
+def do_TEST(*args, **kw):
     # x, y = natqh.testmonitorinfo(args[0], args[1])
     # print 'in do_test: ', x, y
     import ctypes
@@ -906,7 +909,7 @@ def do_TEST(*args):
     print('kbLayout: %s'% kbLayout)
 
 
-def do_AHK(script):
+def do_AHK(script, **kw):
     """try autohotkey integration
     """
     result = autohotkeyactions.do_ahk_script(script)
@@ -916,7 +919,7 @@ def do_AHK(script):
     return result
 
 # HeardWord (recognition mimic), convert arguments to list:
-def do_HW(*args):
+def do_HW(*args, **kw):
     words = list(args)
     origWords = copy.copy(words)
 ##    print 'origWords for HW(recognitionMimic): |%s| (length: %s)'% (origWords, len(origWords))
@@ -946,7 +949,7 @@ def do_HW(*args):
             return
     return 1
 
-def do_MP(scrorwind, x, y, mouse='left', nClick=1):
+def do_MP(scrorwind, x, y, mouse='left', nClick=1, **kw):
     # Mouse position and click.
     # first parameter 0, absolute
     # new 2017: 3 = relative to active monitor
@@ -957,7 +960,7 @@ def do_MP(scrorwind, x, y, mouse='left', nClick=1):
     natqh.doMouse(0,scrorwind,x,y,mouse,nClick)  # abs, rel to window, x, y, click
     return 1
 
-def do_CLICK(mouse='left', nClick=1):
+def do_CLICK(mouse='left', nClick=1, **kw):
     scrorwind = 2
     x, y, = 0, 0
     # click at current position:
@@ -965,23 +968,23 @@ def do_CLICK(mouse='left', nClick=1):
     return 1
 
 
-def do_ENDMOUSE():
+def do_ENDMOUSE(**kw):
     natqh.endMouse()
     return 1
     
-def do_CANCELMOUSE():
+def do_CANCELMOUSE(**kw):
     natqh.cancelMouse()
     return 1
 
-def do_MDOWN(button='left'):
+def do_MDOWN(button='left', **kw):
     natqh.mousePushDown(button)
     return 1
 
-def do_RM():
+def do_RM(**kw):
     natqh.rememberMouse()
     return 1
  
-def do_MOUSEISMOVING():
+def do_MOUSEISMOVING(**kw):
     xold, yold = natlink.getCursorPos()
     time.sleep(0.05)
     for i in range(2):
@@ -992,7 +995,7 @@ def do_MOUSEISMOVING():
     return 0
     
 
-def do_WAITMOUSEMOVE():
+def do_WAITMOUSEMOVE(**kw):
     """wait for the mouse start moving
     
     cancel after 2 seconds
@@ -1007,7 +1010,7 @@ def do_WAITMOUSEMOVE():
         print('no mouse move detected, cancel action')
         return 0  # no result
 
-def do_WAITMOUSESTOP():
+def do_WAITMOUSESTOP(**kw):
     """wait for the mouse stops moving
     
     you get 2 seconds for stopping the movement.
@@ -1042,7 +1045,7 @@ def do_WAITMOUSESTOP():
             print('user canceled WAITMOUSESTOP by switching on microphone')
             return
 
-def do_CHECKMOUSESTEADY():
+def do_CHECKMOUSESTEADY(**kw):
     """returns 1 if the mouse is steady
     
     for 2.5 seconds
@@ -1065,7 +1068,7 @@ def do_CHECKMOUSESTEADY():
 
 
 
-def do_CLICKIFSTEADY(mouse='left', nClick=1):
+def do_CLICKIFSTEADY(mouse='left', nClick=1, **kw):
     """clicks only if mouse is steady,
     
     beeps if it was moving before, if it is steady just click
@@ -1075,7 +1078,7 @@ def do_CLICKIFSTEADY(mouse='left', nClick=1):
     return 1
 
 
-def do_RMP(scrorwind, x, y, mouse='left', nClick=1):
+def do_RMP(scrorwind, x, y, mouse='left', nClick=1, **kw):
     # relative mouse position and click
     # new 2017: 3 = relative to active monitor
     if not scrorwind in [0,1,3,5]:
@@ -1084,25 +1087,25 @@ def do_RMP(scrorwind, x, y, mouse='left', nClick=1):
     natqh.doMouse(1,scrorwind,x,y,mouse,nClick)  # relative, rel to window, x, y,click
     return 1
     
-def do_PRMP(all=0):
+def do_PRMP(all=0, **kw):
     # print relative mouse position
     natqh.printMousePosition(1,all)  # relative
     return 1
     
 
-def do_PMP(all=0):
+def do_PMP(all=0, **kw):
     # print absolute mouse position
     natqh.printMousePosition(0,all)  # absolute
     return 1
 
-def do_PALLMP():
+def do_PALLMP(**kw):
     # print all mouse positions
     natqh.printMousePosition(0,1)  # absolute
     natqh.printMousePosition(1,1)  # relative
     
 
 # Get the NatSpeak main menu:
-def do_NSM():
+def do_NSM(**kw):
     modInfo = natlink.getCurrentModule()
     prog = natqh.getProgName(modInfo)
     if prog == 'natspeak':
@@ -1114,11 +1117,11 @@ def do_NSM():
 
 
 # shorthand for sendsystemkeys:
-def do_SSK(s):
+def do_SSK(s, **kw):
     natut.playString(s, natut.hook_f_systemkeys)
     return 1
 
-def do_S(s):
+def do_S(s, **kw):
     """do a simple keystroke
     temporarily with {shift} in front because of bugworkaround (Frank)
     """
@@ -1126,7 +1129,7 @@ def do_S(s):
     return 1
 
 
-def do_ALTNUM(s):
+def do_ALTNUM(s, **kw):
     """send keystrokes with alt and numkey inserted
     
     werkt niet!!
@@ -1152,7 +1155,7 @@ def do_ALTNUM(s):
     sequence.append(altup)
     natlink.playEvents(sequence)
     
-def do_SCLIP(*s):
+def do_SCLIP(*s, **kw):
     """send keystrokes through the clipboard
     """
     natqh.saveClipboard()
@@ -1162,7 +1165,7 @@ def do_SCLIP(*s):
     ## assume , = ", "
     ## also assume {enter} = newline. No {enter 2}  etc recognised
     # print 's: %s type: %s'% (s, type(s))
-    total = ', '.join(utilsqh.convertToUnicode(part) for part in s)
+    total = ', '.join(str(part) for part in s)
     #if len(s) > 1:
     #    for i, t in enumerate(s):
     #        print "SCLIP:", i, t
@@ -1176,20 +1179,20 @@ def do_SCLIP(*s):
     natqh.restoreClipboard() 
 
 
-def do_RW():
+def do_RW(**kw):
     natqh.rememberWindow()
     return 1
 
-def do_CW():
+def do_CW(**kw):
     """obsolete..."""
     natqh.clearWindowHandle()
     return 1
 
-def do_RTW():
+def do_RTW(**kw):
     natqh.returnToWindow()
     return 1
 
-def do_SELECTWORD(count=1, direction=None):
+def do_SELECTWORD(count=1, direction=None, **kw):
     """select the word under the cursor"""
     print('try to select %s word(s) under cursor (direction: %s)'% (count, direction))
     natqh.saveClipboard()
@@ -1231,22 +1234,22 @@ def do_SELECTWORD(count=1, direction=None):
 # (so default = 1 second)
 # for a new window title, if no title is given
 # wait for a change
-def do_WTC(nWait=20, waitingTime=0.05, **args):
+def do_WTC(nWait=20, waitingTime=0.05, **kw):
     """wait for a change in window title, on succes return 1
     
     after found, check also if title is stable
     """
-    return natqh.waitForNewWindow(nWait, waitingTime, **args)
+    return natqh.waitForNewWindow(nWait, waitingTime, **kw)
 ##    natqh.ForceGotBegin()
 
 # wait for Window Title
-def do_WWT(titleName, nWait=20, waitingTime=0.05, **args):
+def do_WWT(titleName, nWait=20, waitingTime=0.05, **kw):
     """wait for specified window title, on succes return 1
     """
-    return natqh.waitForWindowTitle(titleName, nWait, waitingTime, **args)
+    return natqh.waitForWindowTitle(titleName, nWait, waitingTime, **kw)
   
 # waiting function:
-def do_W(t=None):
+def do_W(t=None, **kw):
     t = t or 0.1
     if debug > 7: D('waiting: %s'%t)
     elif debug and t > 2: D('waiting: %s'%t)
@@ -1255,35 +1258,35 @@ def do_W(t=None):
         
 do_WAIT = do_W
 # Long Wait:
-def do_LW():
+def do_LW(**kw):
     natqh.longWait()
     return 1
 do_LONGWAIT = do_LW
 # Visible Wait:
-def do_VW():
+def do_VW(**kw):
     natqh.visibleWait()
     return 1
 do_VISIBLEWAIT = do_VW
 
 # Short Wait:
-def do_SW():
+def do_SW(**kw):
     natqh.shortWait()
     return 1
 do_SHORTWAIT = do_SW
 
-def do_KW(action1=None, action2=None):
+def do_KW(action1=None, action2=None, **kw):
     """kill window
 
     """
     if action1:
         if action2:
 ##        print 'KW with: %s'% action1
-            killWindow(action1, action2)
+            killWindow(action1, action2, **kw)
         else:
-            killWindow(action1)
+            killWindow(action1, **kw)
     else:
 ##        print 'KW without action 1'
-        killWindow()
+        killWindow(**kw)
     return 1
 
 ## def do_RS():
@@ -1300,7 +1303,7 @@ def do_KW(action1=None, action2=None):
 ##     else:
 ##         print 'reformat selection (RS) requires a selection first'
 
-def do_DATE(Format=None, Action=None):
+def do_DATE(Format=None, Action=None, **kw):
     """give today's date
 
     format maybe adapted, default = "%d/%m"    
@@ -1331,7 +1334,7 @@ def do_DATE(Format=None, Action=None):
         print('invalid Action for DATE: %s'% Action)
     return 1
 
-def do_TIME(Format=None, Action=None):
+def do_TIME(Format=None, Action=None, **kw):
     """give current time
 
     Format maybe adapted, default = "%H:%M"    
@@ -1361,18 +1364,18 @@ def do_TIME(Format=None, Action=None):
 
 Date = do_DATE
 
-def do_SPEAK(t):
+def do_SPEAK(t, **kw):
     """speak text through TTSPlayString
     """
     command = 'TTSPlayString "%s"'% t
     natlink.execScript(command)
 
-def do_PRINT(t):
+def do_PRINT(t, **kw):
     """print text to Messages of Python Macros window
     """
     print(t)
 
-def do_PRINTALLENVVARIABLES():
+def do_PRINTALLENVVARIABLES(**kw):
     """print all environment variables to the messages window
     """
     print('-'*40)
@@ -1380,7 +1383,7 @@ def do_PRINTALLENVVARIABLES():
     natlinkcorefunctions.printAllEnvVariables()
     print('-'*40)
 
-def do_PRINTNATLINKENVVARIABLES():
+def do_PRINTNATLINKENVVARIABLES(**kw):
     """print all environment variables to the messages window
     """
     natlinkEnvVariables = natlinkstatus.AddNatlinkEnvironmentVariables()
@@ -1390,15 +1393,15 @@ def do_PRINTNATLINKENVVARIABLES():
         print("%s\t%s"% (k, natlinkEnvVariables[k]))
     print('-'*40)
     
-def do_T():
+def do_T(**kw):
     """return true only"""
     return 1
 
-def do_F():
+def do_F(**kw):
     """return false only (empty action will do as well)"""
     return 
 
-def do_A(n):
+def do_A(n, **kw):
     """print ascii code
 
     A 208 prints the ETH character
@@ -1408,7 +1411,7 @@ def do_A(n):
     doKeystroke(chr(n))
     return 1
 
-def do_U(n):
+def do_U(n, **kw):
     """print unicode code
     U Delta
     U 00cb  (Euml)
@@ -1455,7 +1458,7 @@ def do_MSG(*args, **kw):
     t = ', '.join(args)
     return Message(t, **kw)
 
-def do_DOCUMENT(number=None):
+def do_DOCUMENT(number=None, **kw):
     """switch to document (program specific) with number"""
 ##    print 'action: goto task: %s'% number
     prog, title, topchild, windowHandle = natqh.getProgInfo()
@@ -1494,10 +1497,10 @@ def do_DOCUMENT(number=None):
     return 1
 
     
-def do_TASK(number=None):
+def do_TASK(number=None, **kw):
     """switch to task with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, windowHandle = natqh.getProgInfo()
+    prog, title, topchild, windowHandle = lkw['progInfo']
     if prog == 'explorer' and not title:
         doKeystroke('{esc}')
         natqh.shortWait()
@@ -1531,7 +1534,7 @@ def do_TASK(number=None):
         print('call action TASK with a number!')
     return 1
 
-def do_TOCLOCK(click=None):
+def do_TOCLOCK(click=None, **kw):
     """position mouse on clock, which gives taskbar menu
     """
     x = ini.get('positions', 'clockx')
@@ -1548,17 +1551,17 @@ def do_TOCLOCK(click=None):
         print('invalid mouse position for clock, do "task position clock" from grammar _general')
     return 1
  
-def do_CLIPSAVE():
+def do_CLIPSAVE(**kw):
     """saves and empties the clipboard"""
     natqh.saveClipboard()
     return 1
 
-def do_CLIPRESTORE():
+def do_CLIPRESTORE(**kw):
     """saves and empties the clipboard"""
     natqh.restoreClipboard()
     return 1
 
-def do_CLIPISNOTEMPTY():
+def do_CLIPISNOTEMPTY(**kw):
     """returns 1 if clipboard is not empty
 
     should be done after a CLIPEMPTY
@@ -1570,18 +1573,18 @@ def do_CLIPISNOTEMPTY():
     D('empty clipboard found, restore and return')
     natqh.restoreClipboard()
     
-def do_GETCLIPBOARD():
+def do_GETCLIPBOARD(**kw):
     """returns the contents of the clipboars"""
     return natqh.getClipboard()
    
-def do_COPYNAME():
+def do_COPYNAME(**kw):
     """returns the name of a file or folder if windows explorer or #32770
     """
     print('abacadabra')
     return 'abacadabra'
 
     
-def do_IFWT(title, action):
+def do_IFWT(title, action, **kw):
     """unimacro shorthand command IfWindowTitleDoAction
     insert a standard wait in order to let the previous action be performed...
     """
@@ -1589,7 +1592,7 @@ def do_IFWT(title, action):
     do_W()
     return IfWindowTitleDoAction(title, action)
 
-def IfWindowTitleDoAction(title, action):
+def IfWindowTitleDoAction(title, action, **kw):
     """do an action only if the title matches the window title
     """
     if natqh.matchTitle(title):
@@ -1599,7 +1602,7 @@ def IfWindowTitleDoAction(title, action):
         # print 'title: %s, does not match'% title
     return 1
     
-def killWindow(action1='<<windowclose>>', action2='<<killletter>>'):
+def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
     """Closes a window and asks automatically for confirmation
 
     The default action 1 is "{alt+f4}",
@@ -1609,25 +1612,39 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>'):
     command
  
     """
-    modInfo = natlink.getCurrentModule()
-    prog = natqh.getProgName(modInfo)
+    if kw['progInfo']:
+        prog, title, topchild, windowHandle = kw['progInfo']
+    else:
+        prog, title, topchild, windowHandle = 'unknown', 'unknown', 'top', 0
+        
     progNew = prog
-    prevHandle = modInfo[2]
-    doAction(action1)
+    prevHandle = windowHandle
+    doAction(action1, **kw)
     natqh.shortWait()
     count = 0
     while count < 20:
         count += 1
-        modInfo = natlink.getCurrentModule()
+        try:
+            modInfo = natlink.getCurrentModule()
+            print("modinfo through natlink: %s"% repr(modInfo))
+        except:
+            modInfo = autohotkeyactions.getModInfo()
+            print("modinfo through AHK: %s"% repr(modInfo))
         progNew = natqh.getProgName(modInfo)
+            
         if progNew != prog: break
         handle = modInfo[2]
         if handle != prevHandle:
+            kw = {}
+            kw['modInfo'] = modInfo
+
             if not natqh.isTopWindow(handle):
                 # child:
-                doAction(action2)
+                print('do action2: %s'% action2)
+                doAction(action2, **kw)
             elif topWindowBehavesLikeChild(modInfo):
-                doAction(action2)
+                print('topWindowBehavesLikeChild action2: %s'% action2)
+                doAction(action2, **kw)
             break
         
         natqh.shortWait()
@@ -1650,8 +1667,13 @@ def topWindowBehavesLikeChild(modInfo):
         #print 'topchildDict: %s'% topchildDict
     if topchildDict == {}:
         return
-    prog, title, dummy, handle = natqh.getProgInfo(modInfo)
-    return matchProgTitleWithDict(prog, title, topchildDict, matchPart=1)
+    prog, title, dummy, hndle = natqh.getProgInfo(modInfo)
+    result = matchProgTitleWithDict(prog, title, topchildDict, matchPart=1)
+    if result: return result
+    className = win32gui.GetClassName(hndle)
+    # print('className: %s'% className)
+    if className in ["MozillaDialogClass"]:
+        return True
             
 def childWindowBehavesLikeTop(modInfo):
     """return the result of the ini file dict
@@ -1689,7 +1711,7 @@ def matchProgTitleWithDict(prog, title, Dict, matchPart=None):
             return 1
 
 
-def do_ALERT(alert=1):
+def do_ALERT(alert=1, **kw):
     micState = natlink.getMicState()
     if micState in ['on', 'sleeping']:
         natlink.setMicState('off')
@@ -1707,7 +1729,7 @@ def do_ALERT(alert=1):
 
 Alert = do_ALERT
 
-def do_WINKEY(letter=None):
+def do_WINKEY(letter=None, **kw):
     """call the winkeys.dll with one letter
     
     if a number is taken, this number is converted into a string"""
@@ -1733,7 +1755,7 @@ def do_WINKEY(letter=None):
 
 Winkey = do_WINKEY        
 
-def do_TASKTOSCREEN(screennumber, winHndle=None):
+def do_TASKTOSCREEN(screennumber, winHndle=None, **kw):
     """call the monitorfunctions to put task to screen 0, 1, ... depending on the number of screens"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
@@ -1768,19 +1790,19 @@ def do_TASKOD(winHndle=None):
     monitorfunctions.move_to_monitor(winHndle, otherMon, mon, resize)
     return 1
 
-def do_TASKMAX(winHndle=None):
+def do_TASKMAX(winHndle=None, **kw):
     """call the monitorfunctions maximize task"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
     monitorfunctions.maximize_window(winHndle)
     return 1
-def do_TASKMIN(winHndle=None):
+def do_TASKMIN(winHndle=None, **kw):
     """call the monitorfunctions to minimize task"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
     monitorfunctions.minimize_window(winHndle)
     return 1
-def do_TASKRESTORE(winHndle=None, keepinside=1):
+def do_TASKRESTORE(winHndle=None, keepinside=1, **kw):
     """call the monitorfunctions to restore task, keep inside monitor by default"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
@@ -1791,7 +1813,7 @@ TaskOtherDisplay = do_TASKOD
 
 
 # do emacs command:
-def do_EMACS(*args):
+def do_EMACS(*args, **kw):
     """do emacs command in minibuffer"""
     doAction("{alt+x}")
     do_W()
@@ -1980,7 +2002,7 @@ bringups = {}
 # special:
 voicecodeApp = 'emacs'
 
-def UnimacroBringUp(app, filepath=None):
+def UnimacroBringUp(app, filepath=None, title=None, extra=None):
     """get a running copy of app in the foreground
 
     the full path can be set in section [bringup app], key path
@@ -2004,6 +2026,94 @@ def UnimacroBringUp(app, filepath=None):
     if checkForChanges:
         doCheckForChanges() # resetting the ini file if changes were made
 
+    if autohotkeyactions.ahk_is_active():
+        scriptFolder = autohotkeyactions.GetAhkScriptFolder()
+        if not os.path.isdir(scriptFolder):
+            raise IOError('no scriptfolder for AHK: %s'%s)
+        WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
+
+        if ((app and app.lower() == "winword") or
+            (filepath and (filepath.endswith(".docx") or filepath.endswith('.doc')))):
+            script = autohotkeyactions.GetRunWinwordScript(filepath, WinInfoFile)
+            result = autohotkeyactions.do_ahk_script(script)
+
+        elif app and title:
+            ## start eg thunderbird.exe this way
+            ## can also give additional startup instructions in extra
+            extra = extra or ""
+            script = '''SetTitleMatchMode, 2
+Process, Exist, ##basename##
+if !ErrorLevel = 0
+{
+    IfWinNotActive, ##title##,
+    WinActivate, ##title##, 
+    WinWaitActive, ##title##,
+}
+else
+{
+    Run, ##app##
+    WinWait, ##title##
+}
+##extra##
+WinGet pPath, ProcessPath, A
+WinGetTitle, Title, A
+WinGet wHndle, ID, A
+FileDelete, ##WININFOfile##
+FileAppend, %pPath%`n, ##WININFOfile##
+FileAppend, %Title%`n, ##WININFOfile##
+FileAppend, %wHndle%, ##WININFOfile##
+
+'''
+            basename = os.path.basename(app)
+            script = script.replace('##extra##', extra)
+            script = script.replace('##app##', app)
+            script = script.replace('##basename##', basename)
+            script = script.replace('##title##', title)
+            script = script.replace('##WININFOfile##', WinInfoFile)
+            result = autohotkeyactions.do_ahk_script(script)
+                
+        else:
+            ## other programs:
+            if app and filepath:
+                script = ["Run, %s, %s,,NewPID"% (app, filepath)]
+            elif filepath:
+                script = ["Run, %s,,, NewPID"% filepath]
+            elif app:
+                script = ["Run, %s,,, NewPID"% app]
+        
+            script.append("WinWait, ahk_pid %NewPID%")
+        
+            script.append("WinGet, pPath, ProcessPath, ahk_pid %NewPID%")
+            script.append("WinGetTitle, Title, A")  ##, ID, ahk_pid %NewPID%")
+            script.append("WinGet, wHndle, ID, ahk_pid %NewPID%")
+            script.append('FileDelete, ' + WinInfoFile)
+            script.append('FileAppend, %pPath%`n, ' + WinInfoFile)
+            script.append('FileAppend, %Title%`n, ' + WinInfoFile)
+            script.append('FileAppend, %wHndle%, ' + WinInfoFile)
+            script = '\n'.join(script)
+        
+            result = autohotkeyactions.do_ahk_script(script)
+
+        ## collect the wHndle:
+        if result == 1:
+            winInfo = open(WinInfoFile, 'r').read().split('\n')
+            if len(winInfo) == 3:
+                # make hndle decimal number:
+                pPath, wTitle, hndle = winInfo
+                hndle = int(hndle, 16)
+                print('extracted pPath: %s, wTitle: %s and hndle: %s'% (pPath, wTitle, hndle))
+                return pPath, wTitle, hndle
+            else:
+                if natlink.isNatSpeakRunning():
+                    mess = "Result of ahk_script should be a 3 item list (pPath, wTitle, hndle), not: %s"% repr(winInfo)
+                    do_MSG(str(mess))
+                print(str())
+                return 0
+        else:
+            if natlink.isNatSpeakRunning():
+                do_MSG(str(result))
+            print(str(result))
+            return 0
     # intermediate app and special treatment:
     # for voicecode (which you can call with BRINGUP voicecode) you need
     # voicecodeApp ('emacs') and (optional, but in this case) function voicecodeBringUp
@@ -2153,6 +2263,8 @@ def UnimacroBringUp(app, filepath=None):
 #                    'now in window %s, title %s, handle: %s'%
 #                    (app, appName, appPath, prog, title, hndle))
 #    # else fail, return None
+
+## was:
 
 def getAppPath(app):
     """use from openFileDefault, get path of application or None

@@ -204,7 +204,7 @@ class ThisGrammar(ancestor):
     def getInputcontrol(self):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
-        natqh.Wait()   ## longer: natqh.Wait(visiblePause)
+        natqh.Wait(visiblePause)  # need this visible pause
         
     def doOption(self, option):
         """after the inputcontrol is focussed, do the command"""

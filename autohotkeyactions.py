@@ -101,6 +101,34 @@ def do_ahk_script(script, hndle=None):
         return 'AHK error: %s'% result
     else:
         return 1
+
+def getModInfo():
+    """get the module info, like natlink.getCurrentModule
+    """
+    scriptFolder = GetAhkScriptFolder()
+    WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
+    script = """; put module info of current window in file. 
+
+WinGet pPath, ProcessPath, A
+WinGetTitle, Title, A
+WinGet wHndle, ID, A
+FileDelete, ##WININFOfile##
+FileAppend, %pPath%`n, ##WININFOfile##
+FileAppend, %Title%`n, ##WININFOfile##
+FileAppend, %wHndle%, ##WININFOfile##
+"""
+    script = script.replace('##WININFOfile##', WinInfoFile)
+    result = do_ahk_script(script)
+
+    if result == 1:
+        winInfo = open(WinInfoFile, 'r').read().split('\n')
+        if len(winInfo) == 3:
+            # make hndle decimal number:
+            pPath, wTitle, hndle = winInfo
+            hndle = int(hndle, 16)
+            # print('extracted pPath: %s, wTitle: %s and hndle: %s'% (pPath, wTitle, hndle))
+            return pPath, wTitle, hndle
+    raise ValueError('ahk script getModInfo did not return correct result: %s'% result)
     
 def GetAhkExe():
     """try to get executable of autohotkey.exe, if not there, empty string is put in ahkexe
@@ -136,6 +164,8 @@ def GetAhkExe():
     else:
         ahkexe = ""
         #print 'AutoHotkey not found on this computer (%s)'% ahkexe
+
+
     
 def GetAhkScriptFolder():
     """try to get AutoHotkey folder as subdirectory of PERSONAL
@@ -145,15 +175,20 @@ def GetAhkScriptFolder():
     """
     global ahkscriptfolder
 
+    if not ahkscriptfolder is None:
+        ## for repeated use:
+        return ahkscriptfolder
+
     scriptfolder = status.getAhkUserDir()
     if scriptfolder:
         if os.path.isdir(scriptfolder):
             ahkscriptfolder = scriptfolder
             copySampleAhkScripts(sampleAhkDirectory, ahkscriptfolder)
-            return
+            return scriptfolder
         else:
             print('warning: AhkUserDir set in natlinkstatus.ini, but no valid directory: %s'% scriptfolder)
             print('take default in subfolder AutoHotkey from your PERSONAL directory')
+            return
     # not proceed with PERSONAL:
 
     personal = natlinkcorefunctions.getExtendedEnv("PERSONAL")
@@ -163,12 +198,12 @@ def GetAhkScriptFolder():
     ahkscriptfolder = os.path.join(personal, "AutoHotkey")
     if os.path.isdir(ahkscriptfolder):
         copySampleAhkScripts(sampleAhkDirectory, ahkscriptfolder)
-        return
+        return ahkscriptfolder
     print('try to create the folder %s'% ahkscriptfolder)
     os.mkdir(ahkscriptfolder)
     if os.path.isdir(ahkscriptfolder):
         copySampleAhkScripts(sampleAhkDirectory, ahkscriptfolder)
-        return
+        return ahkscriptfolder
     raise IOError("GetAhkScriptFolder, cannot create AutoHotkey scripts folder: %s\nPlease try to do so yourself."% ahkscriptfolder)
 
 
@@ -220,7 +255,27 @@ def copySampleAhkScripts(fromFolder, toFolder):
                     print('AutoHotkey script "%s" has been changed in "sample_ahk", copy to "%s"\n(keep backup in %s)'% (filename, toFolder, oldCopy))
                     shutil.copyfile(outputFile, oldCopy)
             shutil.copyfile(inputFile, outputFile)
-            
+          
+def GetRunWinwordScript(filepath, HNDLEfile):
+    """construct script than opens a word document
+    
+    filepath is the Word document to open.
+    HNDLEfile is a complete path to a file that will hold the windows handle after the script has run
+    The Bringup script can retrieve the handle from this file (for the moment see actions.UnimacroBringup)
+    
+    """
+    script = '''Word := ComObjCreate("Word.Application")
+Word.Visible := True
+Word.Documents.Open("%s")
+Word.Visible := 1
+Word.Activate
+WinGet, hWnd, ID, A
+FileDelete, %s
+FileAppend, %%hWnd%%, %s
+'''% (filepath, HNDLEfile, HNDLEfile)
+    return script
+
+
 def getFileDate(modName):
     try: return os.stat(modName)[stat.ST_MTIME]
     except OSError: return 0        # file not found
@@ -246,4 +301,6 @@ def compare_f2f(f1, f2):
         fp1.close()
 
 
-        
+if __name__ ==  "__main__":
+    result = getModInfo()
+    print('result of getModInfo: ', repr(result))

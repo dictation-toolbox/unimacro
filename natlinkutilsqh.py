@@ -1554,8 +1554,7 @@ def debugPrint(t):
 def GetForegroundWindow():
     """return the handle of the current foreground window
     """
-    curMod = getCurrentModuleSafe()
-    return curMod[2]
+    return win32gui.GetForegroundWindow()
     
 
 def SetForegroundWindow(h, waitingTime=0.1, nWait=3, debug=None):
@@ -1584,7 +1583,8 @@ def SetForegroundWindow(h, waitingTime=0.1, nWait=3, debug=None):
         autohotkeyactions.do_ahk_script(script)
         curHndle = win32gui.GetForegroundWindow()
         if curHndle == h:
-            # print("autohotkey WinActivate succeeded: %s"% h)
+            # print("autohotkey WinActivate succeeded: %s, wait 0.3 more seconds"% h)
+            # time.sleep(0.3)
             return 1
         print("autohotkey did not get in foreground in one shot: %s"% h)
         return
