@@ -5,3 +5,4 @@
 /actionclasses/__pycache__/*.pyc
 *.bak
 __pycache__
+/unimacro_test/testresult.txt
