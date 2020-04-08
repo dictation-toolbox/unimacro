@@ -1,4 +1,3 @@
-__version__ = "$Revision: 608 $, $Date: 2019-07-02 18:36:18 +0200 (di, 02 jul 2019) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -12,8 +11,7 @@ __version__ = "$Revision: 608 $, $Date: 2019-07-02 18:36:18 +0200 (di, 02 jul 20
 # http://www.gnu.org/licenses/gpl.txt
 #
 # "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
+# WITHOUT ANY WARRANTY; See the GNU General Public License details.s
 # "unimacro" makes use of another SourceForge project "natlink",
 # which has the following copyright notice:
 #
@@ -1342,6 +1340,14 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
             pypath = pypath + ';' + x
         os.environ['PYTHONPATH'] = pypath
         natqh.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
+def BrowseShow():
+    """show the grammars as prepared in the function BrowsePrepare
+    """
+    pypath = '.'
+    for x in sys.path:
+        pypath = pypath + ';' + x
+    os.environ['PYTHONPATH'] = pypath
+    natqh.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
 
 
 ###
@@ -3699,3 +3705,10 @@ def splitList(L, n):
     if O:
         yield O
 
+if __name__ == "__main__":
+    try:
+        
+        natlink.natConnect()
+        BrowseShow()
+    finally:
+        natlink.natDisconnect()

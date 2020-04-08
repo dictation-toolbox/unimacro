@@ -35,7 +35,6 @@ from actions import doKeystroke as keystroke
 
 # use extension Click by Voice
 visiblePause = 0.4
-
 language = natqh.getLanguage()
 
 ancestor = natbj.IniGrammar
@@ -199,13 +198,14 @@ class ThisGrammar(ancestor):
             print 'command: %s, commandparts: %s'% (command, commandparts)
         self.doOption(command)
         for additional in commandparts:
-            natqh.Wait(visiblePause)
             keystroke(additional)
+            natqh.Wait(visiblePause)
         
     def getInputcontrol(self):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
-        natqh.Wait()   ## longer: natqh.Wait(visiblePause)
+        # natqh.Wait()   # too short to activate the input window
+        natqh.Wait(visiblePause)
         
     def doOption(self, option):
         """after the inputcontrol is focussed, do the command"""

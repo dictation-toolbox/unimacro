@@ -520,7 +520,7 @@ class ThisGrammar(ancestor):
         if self.justLeft is None:
             self.getPrevNext()
         # print '------hasWhiteSpaceAround: %s, atEndOfLine: %s, hasWhiteSpaceBefore: %s'% (
-            self.hasWhiteSpaceAround, self.atEndOfLine, self.hasWhiteSpaceBefore)
+            # self.hasWhiteSpaceAround, self.atEndOfLine, self.hasWhiteSpaceBefore)
         # print '===newNotes: %s'% self.newNotes
         
         noteOne = self.newNotes[0]
