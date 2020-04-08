@@ -3,7 +3,7 @@
 now works with copy and so getting the wanted contents of text around the cursor.
 
 """
-from actionbases import AllActions
+from .actionbases import AllActions
 import pprint
 import natlinkutils as natut
 import natlinkutilsqh as natqh
@@ -35,7 +35,7 @@ class FrescobaldiActions(AllActions):
             clip = natqh.getClipboard()
             if clip:
                 return clip
-        print 'got nothing on clipboard'
+        print('got nothing on clipboard')
 
 
     def getPrevNext(self, n=1, sleep=0.05):
@@ -53,18 +53,18 @@ class FrescobaldiActions(AllActions):
         time.sleep(sleep)
         natqh.restoreClipboard()
         if not result:
-            print 'nothing on clipboard'
+            print('nothing on clipboard')
             return
        
         if len(result) == n*2:
             return result[:n], result[n:]
         elif result == '\n':
-            print 'getPrevNext, assume at end of file...'
+            print('getPrevNext, assume at end of file...')
             # assume at end of file, could also be begin of file, but too rare too handle
             self.playString("{right}")
             return result, result
         else:
-            print 'getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result))
+            print('getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result)))
             return "", result
         
         
@@ -109,26 +109,26 @@ if __name__ == '__main__':
     for t in tw:
         dw = mf.dumpWindow(t)
         if dw:
-            print 'top: %s, length dump: %s'% (t, len(dw))
+            print('top: %s, length dump: %s'% (t, len(dw)))
             for subwindow in dw:
-                print 'sub: %s'% subwindow
+                print('sub: %s'% subwindow)
                 hndle = subwindow[0]
                 subhndle = subwindow[-1][0]
                 try:
                     numl = mf.getNumberOfLines(hndle, classname='Scintilla')
-                    print 'hndle: %s, subhndle: %s, numlines: %s'% (hndle, subhndle, numl)
+                    print('hndle: %s, subhndle: %s, numlines: %s'% (hndle, subhndle, numl))
                 except TypeError:
-                    print 'wrong hndle: %s'% subhndle
+                    print('wrong hndle: %s'% subhndle)
         else:
-            print 'try topwindow'
+            print('try topwindow')
             hndle = t
             try:
                 numl = mf.getNumberOfLines(hndle, classname='Scintilla')
-                print 'top hndle: %s, numlines: %s'% (hndle, numl)
+                print('top hndle: %s, numlines: %s'% (hndle, numl))
             except TypeError:
-                print 'wrong hndle: %s'% subhndle
+                print('wrong hndle: %s'% subhndle)
             
-            print 'top: %s, mp dumpwindow'% t
+            print('top: %s, mp dumpwindow'% t)
         # pprint.pprint( mf.dumpWindow(t) )
     ## get correct window handle with "give window info" (_general grammar)
     progInfo = ('frescobaldi', 'naamloos', 'top', 396616)
@@ -139,8 +139,8 @@ if __name__ == '__main__':
         for i in range(10):
             result = fa.getPrevNext(j)
             if result:
-                print result, len(result)
+                print(result, len(result))
             else:
-                print 'no result'
+                print('no result')
             fa.playString("{left 3}")
         

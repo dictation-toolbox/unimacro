@@ -16,5 +16,5 @@ def InputBox(text, prompt="Unimacro Input", default=""):
 
 if __name__ == "__main__":
     result = InputBox("just testing")
-    print result, repr(result), type(result)
+    print(result, repr(result))
     

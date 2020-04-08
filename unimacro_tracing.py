@@ -1,11 +1,9 @@
-__version__ = "$Revision: 29 $, $Date: 2006-07-24 17:41:36 +0200 (ma, 24 jul 2006) $, $Author: quintijn $"
 #Copyright Ben Staniford (ben@staniford.net)
 #I do not know status of this presently (Quintijn)
 import natlink
 from natlinkutils import *
 
 import re
-import string
 
 #globally sets trace level, (0=Off, 1=Info, 2=Warnings, 3=tracing, 4=everything/method entry/exit)
 global_tracing = 4

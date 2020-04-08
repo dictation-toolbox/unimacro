@@ -2,8 +2,10 @@
 
 see http://www.gena01.com/win32pad/, the only select and say notepad like window with line numbers
 """
-import messagefunctions as mf
-from actionbases import MessageActions
+import messagefunctions
+import as
+import mf
+from .actionbases import MessageActions
 import pprint
 
 class Win32padActions(MessageActions):

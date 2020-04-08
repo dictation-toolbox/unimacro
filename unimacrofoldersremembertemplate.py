@@ -7,13 +7,13 @@ import wx
 import time
 import inivars
 
-prompt = u"""$prompt$"""  # readable text
-text = u"""$text$"""          # input text, the key of the 
-inifile = u"$inifile$"
-section = u"$section$"
-value = u"$value$"
-title = u"test"
-default = u"$default$"
+prompt = """$prompt$"""  # readable text
+text = """$text$"""          # input text, the key of the 
+inifile = "$inifile$"
+section = "$section$"
+value = "$value$"
+title = "test"
+default = "$default$"
 pausetime = "$pausetime$"  # should be replaced by 0 or a positive int value
 
 
@@ -37,10 +37,10 @@ if __name__ == "__main__":
         ini = inivars.IniVars(inifile)
         ini.set(section, key, value)
         ini.write()
-        print 'Wrote "%s = %s" to inifile'% (key, value)
-        print 'Call "edit folders" to edit or delete'
+        print('Wrote "%s = %s" to inifile'% (key, value))
+        print('Call "edit folders" to edit or delete')
     else:
-        print "Action canceled, no change of ini file"
+        print("Action canceled, no change of ini file")
     # if pausetime is given, launch as .py, otherwise launch as .pyw:
     if pausetime:
         # print "sleep: %s"% pausetime

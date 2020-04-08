@@ -1,4 +1,3 @@
-__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -40,9 +39,12 @@ This file is called when doing the command "Show All Grammars" from the
 grammar "_control".
 
 """
-import sys,cPickle
-
-import win32ui,win32con,win32api,commctrl
+import sys
+import pickle
+import win32ui
+import win32con
+import win32api
+import commctrl
 from pywin.mfc import dialog
 from pywin.tools import hierlist
 from pywin.framework import dlgappcore
@@ -50,11 +52,11 @@ from pywin.framework import dlgappcore
 import natlink
 from natlinkutils import *
 from natlinkutilsbj import SetMic,GrammarFileName
-
+from operator import methodcaller
 # hopelijk: QH
 from natlinkutilsqh import getUnimacroDirectory
 baseDirectory = getUnimacroDirectory()
-print 'baseDirectory: %s'% baseDirectory
+print('baseDirectory: %s'% baseDirectory)
 
 from BrowseGrammar import *
 from listdialogs import ListDialog
@@ -113,7 +115,7 @@ class GramHierList(hierlist.HierList):
 
     def GetHandleOf(self,item):
         HandlesFor=InverseDict(self.itemHandleMap)
-        if HandlesFor.has_key(item):
+        if item in HandlesFor:
             return HandlesFor[item]
         else:
             return None
@@ -186,7 +188,7 @@ class GrammarDialog(dialog.Dialog):
         Item=self.items[ItemNr]
         Name=Item[0]
         State=self.Syntax.GetItemState(ItemNr,commctrl.LVIS_SELECTED)        
-        if (Name!='<SpokenForm>') and (Name!='<Syntax>') and (State<>0):
+        if (Name!='<SpokenForm>') and (Name!='<Syntax>') and (State!=0):
             # force parent Tree item to expand, adding the sublist to the itemHandle map
             hItem=self.hierList.GetSelectedItem()
             oItem=self.hierList.ItemFromHandle(hItem)            
@@ -222,9 +224,9 @@ class GrammarDialog(dialog.Dialog):
 
     def SyntaxItemChange(self,std, extra):
         (hwndFrom, idFrom, code), (itemNotify, sub, newState, oldState, change, point, lparam) = std, extra
-        oldSel = (oldState & commctrl.LVIS_SELECTED)<>0
-        newSel = (newState & commctrl.LVIS_SELECTED)<>0
-        if oldSel <> newSel:
+        oldSel = (oldState & commctrl.LVIS_SELECTED)!=0
+        newSel = (newState & commctrl.LVIS_SELECTED)!=0
+        if oldSel != newSel:
             self.SyntaxItem=itemNotify
 
 
@@ -246,12 +248,12 @@ class GrammarDialog(dialog.Dialog):
     def SetAlternativesItems(self,Rule,InnerRules):
         Items=[]
         Alternatives=Rule.Included
-        Alternatives.sort(caseIndependentSort)
+        Alternatives.sort(key=str.lower)
         IgnoreBracketsParen=re.compile('\[|\]|\(|\)')        
         for a in Alternatives:
             s=a.strip()
             s=IgnoreBracketsParen.sub('',s)
-            if Rule.AlternativesDict.has_key(s):
+            if s in Rule.AlternativesDict:
                 Items.append((s,Rule.AlternativesDict[s],Rule,1))
             else:
                 Items.append((s,'',Rule,1))
@@ -261,9 +263,9 @@ class GrammarDialog(dialog.Dialog):
     def SetListItems(self,Rule):
         Items=[]
         Elements=Rule.Included
-        Elements.sort(caseIndependentSort)
+        Elements.sort(key=str.lower)
         for a in Elements:
-            if Rule.AlternativesDict.has_key(a):
+            if a in Rule.AlternativesDict:
                 Items.append((a,Rule.AlternativesDict[a],Rule,1))
             else:
                 Items.append((a,'',Rule,1))
@@ -404,7 +406,7 @@ class TrainGrammarDialog(GrammarDialog):
         self.GetDlgItem(IDC_EDIT).SendMessage(win32con.EM_SCROLLCARET,0,0)
 
     def LayoutControls(self, w, h):
-        d=w/4
+        d=w//4
         self.Tree.MoveWindow((0,0,d,h-100))
         self.Syntax.MoveWindow((d,0,w,h-100))
         self.Output.MoveWindow((0,h-97,w,h-30))
@@ -429,9 +431,9 @@ class TrainGrammarDialog(GrammarDialog):
 
     def SyntaxItemChange(self,std, extra):
         (hwndFrom, idFrom, code), (itemNotify, sub, newState, oldState, change, point, lparam) = std, extra
-        oldSel = (oldState & commctrl.LVIS_SELECTED)<>0
-        newSel = (newState & commctrl.LVIS_SELECTED)<>0
-        if oldSel <> newSel:
+        oldSel = (oldState & commctrl.LVIS_SELECTED)!=0
+        newSel = (newState & commctrl.LVIS_SELECTED)!=0
+        if oldSel != newSel:
             try:
                 if newSel:
                     self.SelItems.append(itemNotify)
@@ -470,7 +472,7 @@ class TrainGrammarDialog(GrammarDialog):
         InnerRules=Rule.RemoveDuplicates(InnerRules)
         for Rule in InnerRules:
             ToTrain.extend(Rule.GetTextChunks())
-        ToTrain.sort(caseIndependentSort)
+        ToTrain.sort(key=str.lower)
         RemoveDuplicatesOfSortedList(ToTrain)
         if ToTrain[0]=='<imported>': ToTrain.remove('<imported>')
         return ToTrain
@@ -486,8 +488,9 @@ class TrainGrammarDialog(GrammarDialog):
                 self.goTrain(ToTrain)
 
     def onTrainSpecial(self,nID,code):
+        return  ## just disable...
         Names=[]
-        Keys=D_train.SpecialTraining.keys()
+        Keys=list(D_train.SpecialTraining.keys())
         for name in Keys:
             Names.append((name))
         (x,y)=natlink.getScreenSize()
@@ -498,7 +501,7 @@ class TrainGrammarDialog(GrammarDialog):
             ToTrain=[]
             for k in Selection:
                 ToTrain.extend(D_train.SpecialTraining[k])
-            ToTrain.sort(caseIndependentSort)
+            ToTrain.sort(key=str.lower)
             RemoveDuplicatesOfSortedList(ToTrain)
             self.goTrain(ToTrain)
 
@@ -510,7 +513,7 @@ class TrainGrammarDialog(GrammarDialog):
         return
         if (self.LastFocused==IDC_SYNTAX):
             if len(self.SelItems)==1:
-                print self.SelItems[0]
+                print(self.SelItems[0])
                 self.EditControl=self.Syntax.EditLabel(0)
                 #self.Syntax.SetFocus()
                 #self.Syntax.EditLabel(self.SelItems[0])        
@@ -541,7 +544,7 @@ class BrowseDialogApp(dlgappcore.DialogApp):
         win32ui.Enable3dControls()
         self.dlg = self.frame = self.CreateDialog()
         if self.frame is None:
-            raise error, "No dialog was created by CreateDialog()"
+            raise error("No dialog was created by CreateDialog()")
             return
         self.PreDoModal()
         self.dlg.PreDoModal()
@@ -561,10 +564,10 @@ class BrowseDialogApp(dlgappcore.DialogApp):
 
 def CreateBrowseDialog():
     try:
-        GrammarFile=open(GrammarFileName,'r')
+        GrammarFile=open(GrammarFileName,'rb')
     except:
-        GrammarFile=open(baseDirectory+'\\TestGrammar.bin','r')
-    (Grammars,Start,All,Exclusive)=cPickle.load(GrammarFile)
+        GrammarFile=open(baseDirectory+'\\TestGrammar.bin','rb')
+    (Grammars,Start,All,Exclusive)=pickle.load(GrammarFile)
     GrammarFile.close()
     Grammars.Sort()
     if Exclusive: Name='Exclusive Grammars (Active Rules)'
@@ -584,7 +587,7 @@ def demodlg ():
 
 
 def CheckCreateApp():
-    if sys.modules.has_key("pywin.framework.startup"):
+    if "pywin.framework.startup" in sys.modules:
         App=BrowseDialogApp()
 
 

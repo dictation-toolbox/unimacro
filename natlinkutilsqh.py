@@ -1,4 +1,3 @@
-"$Revision: 614 $, $Date: 2019-09-02 15:54:07 +0200 (ma, 02 sep 2019) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -30,15 +29,24 @@
 """a set of utility functions for unimacro natlink system
 
 """
-import six
 #
 import monitorfunctions # elaborated version QH
-import string, time, re, types
-import os, sys, os.path, stat
+import time
+import re
+import types
+import os
+import sys
+import os.path
+import stat
 import natlink
-import inivars, utilsqh
+import inivars
+import utilsqh
 natut = __import__('natlinkutils')
-import win32gui, win32api, win32con, win32clipboard, pywintypes
+import win32gui
+import win32api
+import win32con
+import win32clipboard
+import pywintypes
 import natlinkmain
 import natlinkstatus
 import natlinkcorefunctions
@@ -84,12 +92,12 @@ def isTuple(d):
 def isList(d):
     return type(d) == type([])
 def isString(d):
-    return isinstance(d, six.string_types)
+    return isinstance(d, str)
 
 def ForceGotBegin():
     """should be done with care, reload the context, go through all gotBegin functions explicitly,
     although the getCallbackDepth may be > 1 """
-    print 'function ForceGotBegin does not work'
+    print('function ForceGotBegin does not work')
 ##    natlinkmain.beginCallback(natlink.getCurrentModule(), Force=1)
 
 def getLanguage():
@@ -98,7 +106,7 @@ def getLanguage():
     """
     lang = natlinkstatus.getLanguage()
     if not lang:
-        print "natlinkutilsqh, getLanguage, no language from natlinkstatus found, return 'zyx'"
+        print("natlinkutilsqh, getLanguage, no language from natlinkstatus found, return 'zyx'")
         lang = 'zyx'
     return lang
 
@@ -108,7 +116,7 @@ def getUserLanguage():
     """
     userlang = natlinkstatus.getUserLanguage()
     if not userlang:
-        print "natlinkutilsqh, getUserLanguage, no userLanguage from natlinkstatus found"
+        print("natlinkutilsqh, getUserLanguage, no userLanguage from natlinkstatus found")
         userlang = 'unknown'
     return userlang
 
@@ -167,8 +175,11 @@ def setCheckForGrammarChanges(value):
     natlinkmain.setCheckForGrammarChanges(value)
 
 def getModuleFilename(module):
-    """get filename from natlinkmain, module you get from self.__module__"""
-    return natlinkmain.loadedFiles[module]
+    """get filename from natlinkmain, module you get from self.__module__
+    
+    since 2020-02 loadedFiles hold the (filename, timestamp) tuple of the module
+    """
+    return natlinkmain.loadedFiles[module][0]
 
 def getUserDirectory():
     """return the natlink/natpython user directory,
@@ -178,7 +189,7 @@ def getUserDirectory():
     Special trick: get this directory if userDirectory not valid
 
     """
-    print 'WARNING, should be changed in Unimacro: getUnimacroDirectory'
+    print('WARNING, should be changed in Unimacro: getUnimacroDirectory')
     ud = natlinkmain.userDirectory
     if ud:
         return ud
@@ -209,9 +220,9 @@ def getUnimacroUserDirectory():
 ## matchWindow from natlinkutils:
 ##def matchWindow(moduleInfo, modName, wndText):
 ##    if len(moduleInfo)<3 or not moduleInfo[0]: return None
-##    curName = string.lower( getBaseName(moduleInfo[0]) )
+##    curName = getBaseName(moduleInfo[0].lower() )
 ##    if curName != modName: return None
-##    if -1 == string.find(moduleInfo[1], wndText): return None
+##    if -1 == moduleInfo[1].find(wndText): return None
 ##    return moduleInfo[2]
 
 # A utility function which determines whether modInfo matches a specified
@@ -228,6 +239,9 @@ def getUnimacroUserDirectory():
 def getCurrentModuleSafe(nWait=5, waitingTime=0.01):
     """in case natlink.getCurrentModule returns None, try again a few times...
     default 5 x 0.01 = 0.05 (50 milliseconds)
+    
+    returns the tuple: 
+    (full file name of foreground program, window title, window handle)
     """
     modInfo = natlink.getCurrentModule()
     if modInfo: return modInfo
@@ -236,14 +250,12 @@ def getCurrentModuleSafe(nWait=5, waitingTime=0.01):
         modInfo = natlink.getCurrentModule()
         waited = (i+1)*waitingTime
         if modInfo:
-            print 'getCurrentModuleSafe, found modInfo after %s seconds'% waited
+            print('getCurrentModuleSafe, found modInfo after %s seconds'% waited)
             return modInfo
 
-    print 'getCurrentModuleSafe, could not find modInfo after %s seconds'% modInfo
+    print('getCurrentModuleSafe, could not find modInfo after %s seconds'% modInfo)
         
 def matchModule(modName, wantedTitle = None, modInfo=None, titleExact=0, caseExact=0):
-    if wantedTitle and type(wantedTitle) == six.binary_type:
-        wantedTitle = utilsqh.convertToUnicode(wantedTitle)
     if modInfo == None:
         modInfo = natlink.getCurrentModule()
     if not modInfo[0]:
@@ -311,7 +323,7 @@ def matchTitle(wantedTitle, modInfo=None, titleExact=0, caseExact=0):
         else:
             return False
     else:
-        print "unexpected place for matchTitle (natlinkutilsqh)"
+        print("unexpected place for matchTitle (natlinkutilsqh)")
     pass
 
 # Get basename of file:
@@ -334,20 +346,20 @@ def getProgInfo(modInfo=None):
         prog = getBaseNameLower(modInfo[0])
         title = modInfo[1].lower()
         if isTopWindow(modInfo[2]):
-            toporchild = u'top'
+            toporchild = 'top'
         else:
-            toporchild = u'child'
+            toporchild = 'child'
         return utilsqh.convertToUnicode(prog), utilsqh.convertToUnicode(title), toporchild, utilsqh.convertToUnicode(modInfo[2])
     else:
-        return u'', u'', u'empty', utilsqh.convertToUnicode(modInfo[2])
+        return '', '', 'empty', utilsqh.convertToUnicode(modInfo[2])
 
 def getClassName(modInfo=None):
     """returns the class name of the foreground window
     take modInfo (tuple or int (the handle), or get it here)
     """
-    if type(modInfo) == types.IntType:
+    if type(modInfo) == int:
         hndle = modInfo
-    elif type(modInfo) == types.TupleType:
+    elif type(modInfo) == tuple:
         hndle = modInfo[2]
     else:
         hndle = natlink.getCurrentModule()[2]
@@ -378,8 +390,8 @@ def matchWindow(criteria, modInfo=None, progInfo=None):
 
     """
     #print 'matchwindow(qh): %s'% criteria
-    if type(criteria) != types.DictType:
-        print 'type criteria in matchWindow function should be dict, not: %s'% `criteria`
+    if type(criteria) != dict:
+        print('type criteria in matchWindow function should be dict, not: %s'% repr(criteria))
         return
     
     if 'all' in criteria:
@@ -401,9 +413,9 @@ def matchWindow(criteria, modInfo=None, progInfo=None):
         pot = criteria[prog]  # part of title
         if not pot:
             return 1   # no title given, so all titles match
-        elif type(pot) == types.StringType:
+        elif type(pot) == str:
             return title.find(pot) >= 0   # one part of title given, check this
-        elif type(pot) == types.ListType:
+        elif type(pot) == list:
             for t in pot:
                 if title.find(t) >= 0:    # more possibilities for part of title
                     return 1
@@ -425,7 +437,7 @@ def doPendingBringUps():
             #print 'try to do pending bringup: %s'% p
             natlink.execScript(p)
         except:
-            print 'delayed bringup does not work: %s'% p
+            print('delayed bringup does not work: %s'% p)
     pendingBringUps = []
     
     
@@ -440,7 +452,7 @@ def doPendingExecScripts():
             #print 'try to do pending execScript: %s'% p
             natlink.execScript(p)
         except:
-            print 'does not work (in doPendingExecScripts): %s'% p
+            print('does not work (in doPendingExecScripts): %s'% p)
     pendingExecScripts = []    
 
 def ExecScript(script, callingFrom=None):
@@ -449,16 +461,16 @@ def ExecScript(script, callingFrom=None):
     global pendingExecScripts
     if callingFrom and (getattr(callingFrom, 'status', '') == 'new' or
                         getattr(callingFrom, 'inGotBegin', 0)):
-        print 'pending execScript for %s, %s'% (callingFrom.getName(), script)
+        print('pending execScript for %s, %s'% (callingFrom.getName(), script))
         pendingExecScripts.append(script)
         return
                             
     try:
         natlink.execScript(script)
-    except natlink.NatError, t:
-        print 'error in execScript: %s'% script
-        print 'message: %s'% t
-        print '-------'
+    except natlink.NatError as t:
+        print('error in execScript: %s'% script)
+        print('message: %s'% t)
+        print('-------')
         return
     return 1
 
@@ -472,14 +484,14 @@ def AppBringUp(App, Exec=None, Args=None, windowStyle=None, directory=None, call
     app = App.lower()
     if Args:
         if type(Args)==type([]):
-            args=u' '.join(Args)
+            args=' '.join(Args)
         else:
             args = Args
     else:
         args = None
 
 ##    if (GetOS()!='windows_nt'):
-##        app=string.lower(App)
+##        app=App.lower()
 ##    else:
 ##        app=App
     if not Exec:
@@ -522,11 +534,9 @@ def AppBringUp(App, Exec=None, Args=None, windowStyle=None, directory=None, call
     try:
         ## this is a tricky thing, execScript only recognises str, not unicode!
         ## as default, ascii or cp1252 or latin-1 is taken, the windows defaults.
-        if type(cmdline) == six.text_type:
-            cmdline = utilsqh.convertToBinary(cmdline)
         result = natlink.execScript(cmdline)
         pass
-    except natlink.NatError, t:
+    except natlink.NatError as t:
         #print 'wait for bringup until later: %s'% cmdline
         pendingBringUps.append(cmdline)
         return
@@ -608,7 +618,7 @@ wordFormatting = {
 
 def ListOfProperties(props):
     l = []
-    keyList = wordFormatting.keys()
+    keyList = list(wordFormatting.keys())
     keyList.sort()
     for k in keyList:
         if props & wordFormatting[k]:
@@ -622,10 +632,10 @@ def makeWordProperties(listOfProps):
    in version 8 if word was added by user, add special to it
    in version 9 drop 0x60000000 from any props number
    """
-   props = sys.maxint
+   props = sys.maxsize
    for l in listOfProps:
       props += wordFormatting[l]
-   props = sys.maxint & props
+   props = sys.maxsize & props
 ##   if getDNSVersion() == 8:
 ##      if 'WordWasAddedByTheUser' in listOfProps:
 ##         props += wf_AddedInVersion8
@@ -638,14 +648,14 @@ def makeWordProperties(listOfProps):
 # instead of list another sequence may be given, a list or None is returned
 # with string and sequence a string or none in returned
 def Intersection(one, two):
-    if type(one) == types.StringType:
-        if type(two) == types.StringType:
+    if type(one) == str:
+        if type(two) == str:
             if one == two: return
             return 
         else: # one sequence, two string:
             if one in two: return one
             return
-    elif type(two) == types.StringType:
+    elif type(two) == str:
             if two in one: return two
             return
     else:
@@ -663,7 +673,7 @@ def doCount(t,n):
     #do checking:
     if len(t) == 0:
         return t
-    if isinstance(n, six.string_types):
+    if isinstance(n, str):
         n = int(n)
     if n <= 1:
         return t
@@ -680,7 +690,7 @@ def doCount(t,n):
         return t[:-1] + t[-1] * n
 
 def hasBraces(t):
-    if not (t and isinstance(t, six.string_types)):
+    if not (t and isinstance(t, str)):
         return
     first = '{' in t or '}' in t
     if first:
@@ -711,13 +721,13 @@ def doCaps(t):
 ### see if text "t" is in string or list w:
 ##def textInWords(t,w):
 ##    if type(w) == type([]):
-##        ww = string.join(w)
+##        ww = w.join()
 ##    elif type(w) == type(''):
 ##        ww = w
 ##    else:
 ##        print "textInWords: second argument is not list or string"
 ##        return None
-##    if string.find(ww,t) <> -1:
+##    if ww.find(t) <> -1:
 ##        return 1 
 ##    else:
 ##        return None
@@ -787,7 +797,7 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
     # only 0 (whole screen), 1 (relative to window), 2 (relative to cursorPos)
     # are considered here 5, inside client area
     if screenorwindow not in [0,1,2,3,4,5]:  # only within current window
-        print "doMouse, only screenorwindow 0 ... 5 valid:", screenorwindow
+        print("doMouse, only screenorwindow 0 ... 5 valid:", screenorwindow)
         return
     
     if screenorwindow == 0:
@@ -796,7 +806,7 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
         if hndle:
             rect = win32gui.GetWindowRect(hndle)
         else:
-            print "doMouse, no valid foreground window"
+            print("doMouse, no valid foreground window")
             return
         width, height, xMin, yMin, xMax, yMax = getRectData(rect)
     elif screenorwindow == 3:
@@ -814,7 +824,7 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
             clxold, clyold = win32gui.ScreenToClient(hndle, (xold, yold) )
             rect = win32gui.GetClientRect(hndle)
         else:
-            print "doMouse, no valid foreground window"
+            print("doMouse, no valid foreground window")
             return
         # active window
         width, height, xMin, yMin, xMax, yMax = getRectData(rect)
@@ -837,10 +847,10 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
         # print 'after  get_closest_position: (%s, %s)'% (xp, yp)
     
     if debugMode == -1:
-        print 'Mouse to: %s, %s' % (xp, yp)
+        print('Mouse to: %s, %s' % (xp, yp))
     nclick = 1
     onlyMove = 0
-    if mouse and type(mouse) == types.StringType:
+    if mouse and type(mouse) == str:
         # special variables for vocola combined calls:
         if mouse in ("noclick", "0"):
             nclick = 0
@@ -857,9 +867,9 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
             if not mouse:
                 mouse = 'left'
     if mouse:
-        if type(mouse) == types.StringType:
+        if type(mouse) == str:
             if mouse not in buttons:
-                print 'doMouse warning: invalid value for mouse: %s (taking left button)'% mouse
+                print('doMouse warning: invalid value for mouse: %s (taking left button)'% mouse)
             btn = buttons.get(mouse, 1)
         else:
             btn = mouse
@@ -870,14 +880,14 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
     #nClick = nClick or nclick   # take things from "mouse" if nClick  not used
     #print 'btn: %s, nClick: %s, current mouseState: %s'% (btn, nClick, mouseState)
     if onlyMove:
-        print 'onlyMove to %s, %x'% (xp, yp)
+        print('onlyMove to %s, %x'% (xp, yp))
         natlink.playEvents([(natut.wm_mousemove, xp, yp)])
     elif not mouseState:  # ongecompliceerd
         if nClick > 0:
             natlink.playEvents([(natut.wm_mousemove, xp, yp)])
             if btn:
                 if debugMode == -1:
-                    print 'ButtonClick %s, %s' % (btn, nClick)
+                    print('ButtonClick %s, %s' % (btn, nClick))
                 else:
     ##                Wait()  # before clicking!
                     buttonClick(btn, nClick)
@@ -892,11 +902,11 @@ def doMouse(absorrel, screenorwindow, xpos, ypos, mouse='left', nClick=1, modifi
         elif nClick == -1:
             if btn:
                 if (xold,yold) != (xp, yp):
-                    print 'mousedown at old: %s, %s (%s)'% (xold, yold, repr(mouseDown[btn]))
+                    print('mousedown at old: %s, %s (%s)'% (xold, yold, repr(mouseDown[btn])))
                     natlink.playEvents([(mouseDown[btn], xold, yold)])
 
     ##            Wait()  # before clicking!
-                print 'mousedown at new: %s, %s (%s)'% (xp, yp, repr(mouseDown[btn]))
+                print('mousedown at new: %s, %s (%s)'% (xp, yp, repr(mouseDown[btn])))
                 natlink.playEvents([(mouseDown[btn], xp, yp)])
                 mouseState = btn
     elif btn:  # muis was omlaag!
@@ -966,7 +976,7 @@ def releaseMouse():
     global mouseState
     if mouseState:
         (xp,yp) = natlink.getCursorPos()
-        print 'releasing mouse at %s, %s (%s)'% (xp, yp, repr(mouseUp[mouseState]))
+        print('releasing mouse at %s, %s (%s)'% (xp, yp, repr(mouseUp[mouseState])))
         natlink.playEvents([(mouseUp[mouseState], xp, yp)])
         mouseState = 0
         Wait()
@@ -992,7 +1002,7 @@ def cancelMouse():
     global mouseStartPosition
     if not mouseStartPosition:
         endMouse()
-        print 'cancelMouse, no mouseStartPosition'
+        print('cancelMouse, no mouseStartPosition')
         return
     if mouseState:
         doMouse(0, 0, mouseStartPosition[0], mouseStartPosition[1],
@@ -1083,10 +1093,10 @@ def getMousePositionActionString(absorrel, which, position):
     """
     mousePos = getMousePosition(absorrel, which, position)
     if mousePos is None:
-        print ("current mouse position is invalid for a Unimacro Shorthand Command with parameters:\n"
+        print(("current mouse position is invalid for a Unimacro Shorthand Command with parameters:\n"
               "absorrel: %s (%s), which: %s (%s), corner position: %s (%s)"% (absorrel, absorrelDict[absorrel],
                                              which, whichDict[which],
-                                             position, cornerDict[position]))
+                                             position, cornerDict[position])))
         return ""
     x, y = mousePos
     if absorrel:
@@ -1102,20 +1112,20 @@ def printMousePosition(absorrel, printAll = 0):
     these positions are recognised by the Unimacro Shorthand Commands MP and RMP
     """
     if printAll:
-        print '-'*80
-        cornerRange = range(4)
+        print('-'*80)
+        cornerRange = list(range(4))
     else:
-        cornerRange = range(1)
+        cornerRange = list(range(1))
     if absorrel:  # 1: relative:
-        print 'RELATIVE MOUSE POSITIONS:'
+        print('RELATIVE MOUSE POSITIONS:')
     else:
-        print 'ABSOLUTE MOUSE POSITIONS:'
+        print('ABSOLUTE MOUSE POSITIONS:')
     for which in whichDict:
-        print '---related to %s:'% whichDict[which].upper()
+        print('---related to %s:'% whichDict[which].upper())
         for cornerPos in cornerRange:
-            print "%s: %s"% (cornerDict[cornerPos], getMousePositionActionString(absorrel, which, cornerPos))
+            print("%s: %s"% (cornerDict[cornerPos], getMousePositionActionString(absorrel, which, cornerPos)))
         if printAll:
-            print '-'*20
+            print('-'*20)
 
 def getMousePosition(absorrel=0, which=0, position=0):
     """get the parameters for doMouse
@@ -1155,7 +1165,7 @@ def getMousePosition(absorrel=0, which=0, position=0):
 
     # now test for boundaries and abs or rel:
     if x < xMin or x > xMax or y < yMin or y > yMax:
-        print 'mouse position outside active window'
+        print('mouse position outside active window')
         return 
     if absorrel:  # 1: relative:
         #print 'RELATIVE MOUSE POSITIONS:'
@@ -1271,7 +1281,7 @@ def setTrayIcon(state=None, toolTip=None, comingFrom=None):
         try:
             natlink.setTrayIcon(iconName,toolTip,func)
         except natlink.NatError:
-            print 'cannot set tray icon "%s" (comingFrom: %s, func: %s), try to clear'% (iconName, comingFrom, func)
+            print('cannot set tray icon "%s" (comingFrom: %s, func: %s), try to clear'% (iconName, comingFrom, func))
             natlink.setTrayIcon()
         
 
@@ -1293,7 +1303,7 @@ def rememberWindow(modInfo=None):
     windowTitle = modInfo[1]
 ##    print 'set window to %s'% windowHandle
     if not windowHandle:
-        print 'warning, no window to remember: %s'% windowHandle
+        print('warning, no window to remember: %s'% windowHandle)
     # print 'rememberWindow, %s, %s'% (windowHandle, windowTitle)
     return windowHandle   
 
@@ -1308,14 +1318,14 @@ def waitForWindowTitle(titleName, nWait=10, waitingTime=0.1, comingFrom=None):
 ##        print 'interrupted? %s'% comingFrom.interrupted
         if comingFrom and comingFrom.interrupted:
             clearTrayIcon()
-            print 'waiting canceled'
+            print('waiting canceled')
             return
         
         currentTitleName = natlink.getCurrentModule()[1].lower()
         # if empty (no window active) or matching:
         #print 'checking, currentTitle: %s, wantedTitle: %s'% (currentTitleName, titleName)
         if currentTitleName:
-            if type(titleName) == types.StringType:
+            if type(titleName) == str:
                 if currentTitleName.find(titleName) >= 0:
                     clearTrayIcon()
                     #print 'string test, found'
@@ -1332,28 +1342,28 @@ def waitForWindowTitle(titleName, nWait=10, waitingTime=0.1, comingFrom=None):
         Wait(waitingTime, comingFrom=comingFrom)
     else:
         clearTrayIcon()
-        print 'Waiting for window title "%s" lasts too long, failed\nGot title: %s' % (titleName, currentTitleName)
+        print('Waiting for window title "%s" lasts too long, failed\nGot title: %s' % (titleName, currentTitleName))
         return
 
 # rememberWindow must run before. nWait and waitingTime as suggested above
 def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
     if windowHandle==None:
-        raise NatlinkCommandError, "waitForNewWindow, no valid old windowHandle, do a rememberWindow() first"
+        raise NatlinkCommandError("waitForNewWindow, no valid old windowHandle, do a rememberWindow() first")
     for i in range(nWait):
         if waitingCanceled:
             clearTrayIcon()
-            print 'waiting canceled'
+            print('waiting canceled')
             return
 
         modInfo = getCurrentModuleSafe()
         if not modInfo:
-            print 'waitForNewWindow failed, no modInfo'
+            print('waitForNewWindow failed, no modInfo')
             clearTrayIcon()
             return
         
         stepsToBeStable = max(3, i) # if it took longer to bring window in front, test more steps
         prog, title, hndle = modInfo
-        if hndle <> windowHandle:
+        if hndle != windowHandle:
             # new window, wait for stable situation
             succes = 0
             for j in range(stepsToBeStable*3):
@@ -1368,32 +1378,32 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
                     succes = 0
                     modInfo = newModInfo
             else:
-                print "waitForNewWindow: Found new window, but modInfo was not stable more than %s times"% stepsToBeStable
+                print("waitForNewWindow: Found new window, but modInfo was not stable more than %s times"% stepsToBeStable)
                 clearTrayIcon()
                 return
             if debug and j > stepsToBeStable + 1:
                 extra = j - stepsToBeStable - 1
-                print 'title stable times after %s extra steps'% extra
+                print('title stable times after %s extra steps'% extra)
             clearTrayIcon()
             return 1
         setTrayIcon('waiting')
         Wait(waitingTime)
     else:
         clearTrayIcon()
-        print "waiting for new window lasts too long, fail"
+        print("waiting for new window lasts too long, fail")
         return 
 
 def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
     if windowHandle==None:
-        raise NatlinkCommandError, "waitForNewWindow, no valid old windowHandle, do a rememberWindow() first"
+        raise NatlinkCommandError("waitForNewWindow, no valid old windowHandle, do a rememberWindow() first")
     for i in range(nWait):
         if waitingCanceled:
             clearTrayIcon()
-            print 'waiting canceled'
+            print('waiting canceled')
             return
 
         modInfo = natlink.getCurrentModule()
-        if modInfo[1] and modInfo[1] <> windowTitle:
+        if modInfo[1] and modInfo[1] != windowTitle:
             # changed! reset wait a little and OK:
             Wait(waitingTime)
             clearTrayIcon()
@@ -1402,7 +1412,7 @@ def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
         Wait(waitingTime)
     else:
         clearTrayIcon()
-        print "waiting for new window title lasts too long, fail"
+        print("waiting for new window title lasts too long, fail")
         return 
     
 # return to window that was remembered by rememberWindow.
@@ -1417,10 +1427,10 @@ def returnToWindow(nWait=5, waitingTime=0.05, winHandle=None, winTitle=None):
     winHandle = winHandle or windowHandle
     winTitle = winTitle or windowTitle
     if not winHandle:
-        print 'returnToWindow, no window handle to return to, do nothing'
+        print('returnToWindow, no window handle to return to, do nothing')
         return
     if not win32gui.IsWindow(winHandle):
-        print 'returnToWindow, not a valid window: %s (%s)'% (winHandle, winTitle)
+        print('returnToWindow, not a valid window: %s (%s)'% (winHandle, winTitle))
         return
     # go:
     # print 'returning to window: %s (%s)'% (winHandle, winTitle)
@@ -1466,13 +1476,13 @@ def Wait(tt=None, comingFrom=None):
     """
     t = tt or defaultWaitingTime
     if t > 10:
-        print 'warning, changed waiting time to seconds: %s'%t
+        print('warning, changed waiting time to seconds: %s'%t)
         t = t/1000.0
     elif t >= 5:
-        print 'warning, long waiting time: %s'% t
+        print('warning, long waiting time: %s'% t)
         
     if debugMode == -1:
-        print "Wait %s" % t
+        print("Wait %s" % t)
     elif debugMode:
         t = t*debugMode
     if comingFrom == None:
@@ -1500,7 +1510,7 @@ def addWordIfNecessary(w):
     w = w.strip()
     if not w: return
     if not recharspace.match(w):
-        print 'invalid character in word to add: %s'% w
+        print('invalid character in word to add: %s'% w)
         return
         
     isInVoc = (natlink.getWordInfo(w,1) != None)
@@ -1509,16 +1519,16 @@ def addWordIfNecessary(w):
         return
     try:
         if isInVoc:    # from backup vocabulary:
-            print 'make backup word active:', w
+            print('make backup word active:', w)
             natlink.addWord(w,0)
             add2logfile(w, 'activated words.txt')
         else:
-            print 'adding word ', w
+            print('adding word ', w)
             natlink.addWord(w)
             add2logfile(w, 'new words.txt')
             
     except natlink.InvalidWord:
-        print 'not added to vocabulary, invalid word: %s'% w
+        print('not added to vocabulary, invalid word: %s'% w)
 
 def deleteWordIfNecessary(w):
     if not w:
@@ -1530,21 +1540,27 @@ def deleteWordIfNecessary(w):
 if DEBUG:
     fOutName = 'c:\\DEBUG '+__name__+'.txt'
     debugFile = open(fOutName, 'w')
-    print 'DEBUG uitvoer naar: %s'% fOutName
+    print('DEBUG uitvoer naar: %s'% fOutName)
 
 def debugPrint(t):
     if not DEBUG: return
-    if type(t) == types.StringType:
+    if type(t) == str:
         debugFile.write(t)
     else:
-        debugFile.write(`t`)
+        debugFile.write(repr(t))
     debugFile.write('\n')
     debugFile.flush()
+
+def GetForegroundWindow():
+    """return the handle of the current foreground window
+    """
+    return win32gui.GetForegroundWindow()
+    
 
 def SetForegroundWindow(h, waitingTime=0.1, nWait=3, debug=None):
     """gets the window in front
     
-    Autohotkey is disabled.
+    Autohotkey is used if active!!
     
     When the switch is not made within 3 steps (of default waiting time),
     win+b (giving the system tray) is sent, and then the waiting cycle is done again a few times.
@@ -1555,19 +1571,31 @@ def SetForegroundWindow(h, waitingTime=0.1, nWait=3, debug=None):
         raise UnimacroError("no valid handle given for set foreground window: %s"% h)
     curHndle = win32gui.GetForegroundWindow()
     if curHndle == h:
-        if debug: print 'got it in one shot!! %s'% h
+        if debug: print('got it in one shot!! %s'% h)
         return 1
     
     if not win32gui.IsWindow(h):
-        print 'SetForegroundWindow: not a window: %s'% h
+        print('SetForegroundWindow: not a valid window hndle: %s'% h)
         return
+    
+    if autohotkeyactions.ahk_is_active():
+        script = "WinActivate, ahk_id  %s"% h
+        autohotkeyactions.do_ahk_script(script)
+        curHndle = win32gui.GetForegroundWindow()
+        if curHndle == h:
+            # print("autohotkey WinActivate succeeded: %s, wait 0.3 more seconds"% h)
+            # time.sleep(0.3)
+            return 1
+        print("autohotkey did not get in foreground in one shot: %s"% h)
+        return
+        
     for doKeystroke in [""]:  #  "{win+b}"]: ####, "{win+m}"]:
         result = _setForegroundWindow(h, doKeystroke, waitingTime=waitingTime, nWait=nWait, debug=debug)
         if result:
             if doKeystroke:
-                if debug: print 'SetForegroundWindow to %s success, after keystroke: %s'% (h, doKeystroke)
+                if debug: print('SetForegroundWindow to %s success, after keystroke: %s'% (h, doKeystroke))
             else:
-                if debug: print 'SetForegroundWindow to %s success'% h
+                if debug: print('SetForegroundWindow to %s success'% h)
             return result
         else:
             if doKeystroke:
@@ -1579,26 +1607,26 @@ def _setForegroundWindow(hndle, doKeystroke=None, waitingTime=0.1, nWait=3, debu
     """try to switch to hndle
     """
     if doKeystroke:
-        if debug: print 'try to get %s in foreground with keystroke: %s'% (hndle, doKeystroke)
+        if debug: print('try to get %s in foreground with keystroke: %s'% (hndle, doKeystroke))
         natut.playString(doKeystroke)
     if win32gui.IsIconic(hndle):
-        if debug: print 'window %s is iconic, try to restore...'
+        if debug: print('window %s is iconic, try to restore...')
         monitorfunctions.restore_window(hndle)
         Wait()
         for i in range(nWait):
             if win32gui.IsIconic(hndle):
                 if debug and i:
-                    print 'window is still iconic, wait longer %s'% i
+                    print('window is still iconic, wait longer %s'% i)
                 Wait(waitingTime)
             else:
                 break
         else:
-            if debug: print '_setForegroundWindow, %s is still "Iconic"'% h
+            if debug: print('_setForegroundWindow, %s is still "Iconic"'% h)
             return            
         
     try:
         win32gui.SetForegroundWindow(hndle)
-    except pywintypes.error, details:
+    except pywintypes.error as details:
         if details[0] in [0, 183]:
             pass
             # print 'could not bring to foreground: %s'% hndle
@@ -1610,8 +1638,8 @@ def _setForegroundWindow(hndle, doKeystroke=None, waitingTime=0.1, nWait=3, debu
             Wait()  #extra for safety
             return 1
         if debug and i:
-            print "_setForegroundWindow, waiting %s (for %s, current: %s)"% (i, hndle, newH)
-    if debug: print '_setForegroundWindow, with keystroke %s no result to set foregroundwindow to %s'% (doKeystroke, hndle)
+            print("_setForegroundWindow, waiting %s (for %s, current: %s)"% (i, hndle, newH))
+    if debug: print('_setForegroundWindow, with keystroke %s no result to set foregroundwindow to %s'% (doKeystroke, hndle))
 
 titleHandles = {}
 # switch to window with text in the title:
@@ -1627,10 +1655,10 @@ def switchToWindowWithTitle(wantedTitle, caseExact=0, titleExact=0):
     try:
         lookForFunction = globals()[functionName]
     except KeyError:
-        print "invalid function in switchToWindowWithTitle: %s" % functionName
+        print("invalid function in switchToWindowWithTitle: %s" % functionName)
         return
     if len(titleHandles) > 100: # in case too many different switches
-        print 'clearing switchWindow title handles'
+        print('clearing switchWindow title handles')
         titleHandles.clear()
     tryHandle = titleHandles.get(wantedTitle, 0)
     if tryHandle and not lookForFunction(tryHandle, wantedTitle):
@@ -1680,10 +1708,10 @@ def getFileDate(fileName):
 
 def printListorString(arg):
     if isString(arg):
-        print arg
+        print(arg)
     elif isList(arg) or isTuple(arg):
         for l in arg:
-            print l
+            print(l)
 
       
 #QH13062003  clipboard helper functions--------------------------------------
@@ -1699,8 +1727,9 @@ def saveClipboard():
     No input parameters, no result, the global variable is set
 
     """
-    global previousClipboardText
+    # global previousClipboardText
     t = getClipboard()
+    print('clipboard contents to "previousClipboardText": %s'% t)
     previousClipboardText.append(t)
     for i in range(10):
         try:
@@ -1710,7 +1739,7 @@ def saveClipboard():
             time.sleep(0.1)
             continue
         else:
-            print("could not save clipboard")
+            print("could not open, save and empty the clipboard")
             return
     try:
         win32clipboard.EmptyClipboard()
@@ -1729,7 +1758,7 @@ def clearClipboard():
         try:
             win32clipboard.OpenClipboard()
         except:
-            print 'error opening the clipboard'
+            print('error opening the clipboard')
             shortWait()
         else:
             break
@@ -1745,8 +1774,13 @@ def restoreClipboard():
     No input, no result. The global variable is emptied.
 
     """        
-    global previousClipboardText
-    t = previousClipboardText.pop()
+    # global previousClipboardText
+    if previousClipboardText:
+        t = previousClipboardText.pop()
+    else:
+        print('No "previousClipboardText" available, empty clipboard...')
+        t = None
+        return
     for i in range(10):
         try:
             win32clipboard.OpenClipboard()
@@ -1776,7 +1810,7 @@ def getClipboard():
                 # print ' at try', i
                 break
         except:
-            print 'getClipboard, got no text'
+            print('getClipboard, got no text')
             shortWait()
         else:
             break
@@ -1786,7 +1820,7 @@ def getClipboard():
         t = t.replace('\r', '')
         return t    
     else:
-        # print 'got clipboard, empty'
+        print('getClipboard, got clipboard, but empty')
         return ''
 
 
@@ -1875,6 +1909,6 @@ def add2logfile(word, filename):
     try:
         f = open(os.path.join(logFolder, filename), 'a')
         f.write(word + '\n')
-        print 'written to %s: %s' % (os.path.join(logFolder), filename)
+        print('written to %s: %s' % (os.path.join(logFolder), filename))
     except:
         pass

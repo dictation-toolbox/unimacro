@@ -12,9 +12,10 @@
 #
 #
 # Developed by Quintijn Hoogenboom, q.hoogenboom@antenna.nl /
-# http://qh.antenna.nl/unimacro
-import monitorfunctions as mf
-import sys, os, os.path
+# http://qh.antenna.nl/unimacroß
+import sys
+import os
+import os.path
 
 # trick in order to be sure the unimacro directory is in sys.path:
 thisDir = os.path.dirname(__file__)
@@ -25,8 +26,8 @@ if os.path.isdir(unimacroDir):
 
 import unittest
 import time
-import string
-import win32gui, win32ui
+import win32gui
+import win32ui
 import TestCaseWithHelpers
 class TestError(Exception):pass
 
@@ -507,7 +508,7 @@ class UnittestMonitorfunctions(TestCaseWithHelpers.TestCaseWithHelpers):
         self.doTestGetAngleDistanceReverse(1, 1, 1, 1, 0, 0, "no distance")
         
 def run():
-    print 'starting unittestMonitorfunctions'
+    print('starting unittestMonitorfunctions')
     unittest.main()
     
 

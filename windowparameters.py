@@ -13,7 +13,8 @@ Finding the appropriate window and control is done by
 -aftertext: possibly a space or '\n' or '\r\n' (or os.linesep) after the buffer (RichEdit) 
 -linesep: the line separator. "EDIT" controls seem to expect '\n', "RichEdit" seems to expect '\r\n'
 """
-import os, win32gui
+import os
+import win32gui
 PROGS = dict(notepad={},
          wordpad={},
          komodo={},

@@ -31,25 +31,32 @@ in Unimacro grammars which need numbers
 
 tested with unittestSpokenForms.py (in unimacro_test directory of Unimacro)
 """
-import re, string, os, sys, types, shutil, os.path, copy
+import re
+import os
+import sys
+import types
+import shutil
+import os.path
+import copy
 import operator
 import win32api
 import inivars
 import natlinkstatus
 import utilsqh
-import six
+from functools import reduce
+
 class NumbersError(Exception): pass
 
 # for generateMixedListOfSpokenForms:
-reNonAlphaNumeric = re.compile(ur'[^a-zA-Z0-9]', re.L)
-reNumeric = re.compile(ur'([0-9]+)')
-reNumericUnderscore = re.compile(ur'^([0-9]+[_])')        # so 1_text results in text 
-reNumericBracketsEnd = re.compile(ur'\s*[(][0-9]+[)]\s*$') 
-reLetterUnderscore = re.compile(ur'^([a-zA-z]{1,2}[_])')  # so a_text only results in text, az_text also .
-reVowelQuote = re.compile(ur"([aeiou])'([sn])")
+reNonAlphaNumeric = re.compile(r'\W+')
+reNumeric = re.compile(r'(\d+)')
+reNumericUnderscore = re.compile(r'^([\d+]_+)')        # so 1_text results in text 
+reNumericBracketsEnd = re.compile(r'\s*[(][0-9]+[)]\s*$') 
+reLetterUnderscore = re.compile(r'^([a-zA-z]{1,2}[_])')  # so a_text only results in text, az_text also .
+reVowelQuote = re.compile(r"([aeiou])'([sn])")
 # for A or A. in spoken forms
-reMatchUpperCaseLetter = re.compile(ur'\b[A-Z]\b(?![.])')
-reMatchUpperCaseLetterDot= re.compile(ur'\b[A-Z]\.')
+reMatchUpperCaseLetter = re.compile(r'\b[A-Z]\b(?![.])')
+reMatchUpperCaseLetterDot= re.compile(r'\b[A-Z]\.')
 def addDot( match ):
     """for use in reMatchUpperCaseLetter"""
     return match.group() + '.'
@@ -81,7 +88,7 @@ def fixSingleLetters(spoken, DNSVersion):
 thisBaseDirectory = os.path.split(sys.modules[__name__].__dict__['__file__'])[0]
 
 # special list names to be defined here:
-number1to99stripped = range(1, 20) +  range(20, 91, 10)
+number1to99stripped = list(range(1, 20)) +  list(range(20, 91, 10))
 
 
 #####
@@ -102,7 +109,7 @@ sampleDirectories = [os.path.join(base, 'sample_ini') for base in sampleBases]
 sampleDirectories = [p for p in sampleDirectories if os.path.isdir(p)]
       
 if not sampleDirectories:
-    print '\nNo Unimacro sample directory not found: %s\nCHECK YOUR CONFIGURATION!!!!!!!!!!!!!!!!\n'
+    print('\nNo Unimacro sample directory not found: %s\nCHECK YOUR CONFIGURATION!!!!!!!!!!!!!!!!\n')
 #else:
 #    print 'sample_directories: %s'% sampleDirectories
     
@@ -112,7 +119,7 @@ if not os.path.isdir(userDirectory):
     try:
         os.mkdir(userDirectory)
     except OSError:
-        print 'cannot make inifiles directory: %s'% userDirectory
+        print('cannot make inifiles directory: %s'% userDirectory)
 ####
 
 currentlanguage = None
@@ -138,42 +145,39 @@ def checkSpokenformsInifile(language):
     filename = '%s_spokenforms.ini'% language
     if language == 'test':
         testDirectory = os.path.join(unimacroDirectory, 'unimacro_test', 'test_inifiles')
-        print 'test spokenforms.ini from %s'% testDirectory
+        print('test spokenforms.ini from %s'% testDirectory)
         inifile = os.path.join(testDirectory, '%s_spokenforms.ini'% language)
-        print 'spokenforms, test inifile: %s'% inifile
+        print('spokenforms, test inifile: %s'% inifile)
     else:
         inifile = os.path.join(userDirectory, '%s_spokenforms.ini'% language)
 
     if not os.path.isfile(inifile):
         # now try to copy from the samples:
-        print '---try to find spokenforms.ini file in old version (UserDirectory) or sample_ini directory'
+        print('---try to find spokenforms.ini file in old version (UserDirectory) or sample_ini directory')
         for sample in sampleDirectories:
             sampleinifile = os.path.join(sample, filename)
             if os.path.isfile(sampleinifile):
-                print '---copy spokenforms.ini from\nsamples directory: %s\nto %s\n----'% (sampleinifile, inifile)
+                print('---copy spokenforms.ini from\nsamples directory: %s\nto %s\n----'% (sampleinifile, inifile))
                 shutil.copyfile(sampleinifile, inifile)
                 if os.path.isfile(inifile):
                     break
                 else:
-                    print 'cannot copy sample spokenforms inifile to: "%s"'% inifile
+                    print('cannot copy sample spokenforms inifile to: "%s"'% inifile)
                     inifile = None
                     return
         else:
-            print 'no valid sample "%s" file found in one of %s sample directories:\n|%s|'% \
-                      (filename, len(sampleDirectories), sampleDirectories)
+            print('no valid sample "%s" file found in one of %s sample directories:\n|%s|'% \
+                      (filename, len(sampleDirectories), sampleDirectories))
             return
     # now assume valid inifile:
     try:
         ini = inivars.IniVars(inifile)
     except inivars.IniError:
-        print 'Error in spokenforms inifile: "%s"'% inifile
-        if six.PY2:
-            m = unicode(sys.exc_info()[1])
-        else:
-            m = str(sys.exc_info()[1])
+        print('Error in spokenforms inifile: "%s"'% inifile)
+        m = str(sys.exc_info()[1])
 
-        print 'message: %s'% m
-        print '\n\n===please edit %s (open by hand)'% inifile
+        print('message: %s'% m)
+        print('\n\n===please edit %s (open by hand)'% inifile)
         #win32api.ShellExecute(0, "open", inifile, None , "", 1)    
     else:
         return inifile 
@@ -182,7 +186,7 @@ oldversioninifile = 'spokenforms.ini' # new with language prefix...
 for dir in (userDirectory,): ### baseDirectory):
     old = os.path.join(dir, oldversioninifile)
     if os.path.isfile(old):
-        print 'remove "%s" from directory (obsolete): %s'% (old, dir)
+        print('remove "%s" from directory (obsolete): %s'% (old, dir))
         os.remove(old)
 
 def openInifile(inifilepath):
@@ -193,46 +197,43 @@ def openInifile(inifilepath):
             ini = inivars.IniVars(inifile)
         except inivars.IniError:
             
-            print 'Error in numbers inifile: %s'% inifile
-            if six.PY2:
-                m = unicode(sys.exc_info()[1])
-            else:
-                m = str(sys.exc_info()[1])
-            print 'message: %s'% m
+            print('Error in numbers inifile: %s'% inifile)
+            m = str(sys.exc_info()[1])
+            print('message: %s'% m)
             pendingMessage = 'Please repair spokenforms.ini file\n\n' + m
             ini = None
-            print 'please edit %s (open by hand)'% inifile
+            print('please edit %s (open by hand)'% inifile)
             #win32api.ShellExecute(0, "open", inifile, None , "", 1)
         else:
             return ini
     else:
         ini = inifile = None
-        print 'no inifile spokenforms.ini found. Please repair'
+        print('no inifile spokenforms.ini found. Please repair')
 
 def editSpokenForms(comingFrom=None, name=None, language=None):
     """show the spokenforms.ini file in a editor
     """
     if not language:
-        print 'editSpokenForms: call with language is required!'
+        print('editSpokenForms: call with language is required!')
         return
     
     inifile = checkSpokenformsInifile(language)
     if not inifile:
-        print 'editSpokenForms: no valid spokenforms inifile for language "%s" available'% language
+        print('editSpokenForms: no valid spokenforms inifile for language "%s" available'% language)
         return        
     if comingFrom:
         name=name or ""
         comingFrom.openFileDefault(inifile, name=name)
     else:
-        print 'inifile: ', inifile
-        print 'please edit (open by hand): %s'% inifile
+        print('inifile: ', inifile)
+        print('please edit (open by hand): %s'% inifile)
     #win32api.ShellExecute(0, "open", inifile, None , "", 1)
-    print 'note: you need to restart Dragon after editing the spoken forms inifile.'
+    print('note: you need to restart Dragon after editing the spoken forms inifile.')
     
 
 showSpokenForms = editSpokenForms
 
-class SpokenForms(object):
+class SpokenForms:
     """maintain a (class wide) dict of numbers -> spoken forms and vice versa
     a language is required at __init__ time.
     
@@ -272,20 +273,20 @@ class SpokenForms(object):
         self.n2s.clear()
         self.s2n.clear()
         if ini is None:
-            print 'no inifile for numbers spoken forms'
+            print('no inifile for numbers spoken forms')
             return
         # section in spokenforms.ini file:
         section = "numbers"
         if not section in ini.get():
-            print 'no section in spokenforms.ini for language: %s'% section
+            print('no section in spokenforms.ini for language: %s'% section)
             return
         for k in ini.get(section):
             v = ini.get(section, k)
             try:
                 n = int(k)
             except ValueError:
-                print 'invalid entry in spokenforms.ini for language: %s\n' \
-                      '%s = %s  (key must be a integer)'% (language, k, v)
+                print('invalid entry in spokenforms.ini for language: %s\n' \
+                      '%s = %s  (key must be a integer)'% (language, k, v))
                 continue
             for splitChar in ",;|":
                 if v.find(splitChar) > 0:
@@ -353,9 +354,9 @@ class SpokenForms(object):
             try:
                 v  = ini.get(section, k)
             except inivars.IniError:
-                print 'Error in ["%s"] section of spokenforms.ini files'% section
+                print('Error in ["%s"] section of spokenforms.ini files'% section)
                 m = str(sys.exc_info()[1])
-                print 'message: %s'% m
+                print('message: %s'% m)
                 v = None
                 
             if not v:
@@ -391,7 +392,7 @@ class SpokenForms(object):
         """return a list of strings with either the number or the spoken forms
         """
         if ListOfChars is None:
-            ListOfChars = unicode(string.ascii_lowercase)
+            ListOfChars = utilsqh.ascii_lowercase
         L = []
         for s in ListOfChars:
             if s in self.char2spoken:
@@ -415,11 +416,8 @@ class SpokenForms(object):
                     if not name in self.s2n:
                         self.s2n[name] = i
             else:
-                print 'no spoken forms found for %s'% i
-                if six.PY2:
-                    L.append(unicode(i))
-                else:
-                    L.append(str(i))
+                print('no spoken forms found for %s'% i)
+                L.append(str(i))
         return L
 
     def generateSpokenFormsFromNumber(self, n):
@@ -427,27 +425,21 @@ class SpokenForms(object):
         """
         for i in 100, 1000, 0, 1:
             if not i in self.n2s:
-                print 'spokenforms.ini should have entry or entries for %s'%i
-                if six.PY2:
-                    return [unicode(n)]
-                else:
-                    return [str(n)]
+                print('spokenforms.ini should have entry or entries for %s'%i)
+                return [str(n)]
         hundred = self.n2s[100][0]
         thousand = self.n2s[1000][0]
         oh = self.n2s[0][0]
         one = self.n2s[1][0]
     
-        if six.PY2:
-            s = unicode(n)
-        else:
-            s = str(n)
+        s = str(n)
 
         if n < 100:
-            print 'should not come here for %s, all numbers below 100 should be in ini file'%n
+            print('should not come here for %s, all numbers below 100 should be in ini file'%n)
             return
         if n < 1000:
             if n == 100:
-                print 'should %s take from n2s'% n
+                print('should %s take from n2s'% n)
                 return s
             elif s.endswith('00'):
                 digitstrings = self.n2s[int(s[0])]
@@ -477,7 +469,7 @@ class SpokenForms(object):
                 return spList
         elif n < 10000:
             if n == '1000':
-                print 'should %s take from n2s'% n
+                print('should %s take from n2s'% n)
                 return s
             elif s.endswith('000'):
                 digitstrings = self.n2s[int(s[0])]
@@ -530,10 +522,10 @@ class SpokenForms(object):
         # by recursing this function
         # eg 1_testing and website test (2)
         #
-        s = reVowelQuote.sub(ur'\1\1\2', s)  # no doubling from foto's to fotoos
-        t = reNumericUnderscore.sub(u'', s)
-        t = reNumericBracketsEnd.sub(u'', t)
-        t = reLetterUnderscore.sub(u'', t)
+        s = reVowelQuote.sub(r'\1\1\2', s)  # no doubling from foto's to fotoos
+        t = reNumericUnderscore.sub('', s)
+        t = reNumericBracketsEnd.sub('', t)
+        t = reLetterUnderscore.sub('', t)
 
         if t == s:
             prevResult = None
@@ -558,7 +550,7 @@ class SpokenForms(object):
         # 
         # s = reNonAlphaNumeric.sub(' ', s)
         s = reNumeric.split(s)
-        s = filter(None, s)
+        s = [_f for _f in s if _f]
         for i, phrase in enumerate(s):
             if phrase.find(' ') > 0:
                 phraseList = phrase.split()
@@ -580,7 +572,7 @@ class SpokenForms(object):
                 if spok:
                     result.append(spok)
         for item in result:
-            if type(item) == types.ListType:
+            if type(item) == list:
                 if Result:
                     Result = ['%s %s'% (i,j) for i in Result for j in item]
                 else:
@@ -611,7 +603,7 @@ class SpokenForms(object):
                     if D[key] == v:
                         continue
                     else:
-                        print "warning, double entry %s (%s and %s), take latter"% (key, D[key], v)
+                        print("warning, double entry %s (%s and %s), take latter"% (key, D[key], v))
                 D[key] = v
         return D
     
@@ -646,11 +638,11 @@ class SpokenForms(object):
 
         passing a list of words is handled in natlinkutilsbj.        
         """
-        if type(spoken) == six.binary_type:
+        if type(spoken) == bytes:
             spoken = utilsqh.convertToUnicode(spoken)
         first = self.s2n.get(spoken, None)
         if originalList:
-            orig = map(int, originalList)
+            orig = list(map(int, originalList))
             if first is None:
                 try:
                     first = int(spoken)
@@ -658,19 +650,19 @@ class SpokenForms(object):
                     pass
             if first != None and first in orig:
                 if asStr:
-                    first = str(first) if six.PY3 else unicode(first)
+                    first = str(first)
                 return first
         else:
             # take result anyway:
             if first != None:
                 if asStr:
-                    first = str(first) if six.PY3 else unicode(first)
+                    first = str(first)
                 return first
             # try is spoken represents a int:
             try:
                 n = int(spoken)
                 if asStr:
-                    return str(n) if six.PY3 else unicode(n)
+                    return str(n)
                 else:
                     return n
             except ValueError:
@@ -693,40 +685,25 @@ class SpokenForms(object):
                 self.s2n[t] = 1000
             return
 
-        if six.PY2:
-            snum = unicode(num)
-        else:
-            snum = str(num)
+        snum = str(num)
         self.n2s[num] = [snum]
         self.s2n[snum] = num
         return
         h, rest = num / 100, num%100
         hundred = ini.getList(prefixSection, 'hundred', None) or ['hundred']
         if rest:
-            if six.PY2:
-                srest = unicode(rest)
-            else:
-                srest = str(rest)
+            srest = str(rest)
             restspoken = ini.getList(numbersSection, srest, None)
             if not restspoken:
-                if six.PY2:
-                    snum = unicode(num)
-                else:
-                    snum = str(num)
+                snum = str(num)
                 return [snum]
         else:
             restspoken = ['']
         if num == 100:
-            if six.PY2:
-                s100 = unicode(100)
-            else:
-                s100 = str(100)
+            s100 = str(100)
             hspoken = ini.getList(numbersSection, s100, None) or hundred
         elif h == 1:
-            if six.PY2:
-                s100 = unicode(100)
-            else:
-                s100 = str(100)
+            s100 = str(100)
             hspoken = ini.getList(numbersSection, s100, None) or hundred
         else:
             hundredspoken = hundred[0]
@@ -735,10 +712,7 @@ class SpokenForms(object):
                 # numbers + hundred or numbers:
                 hspoken = [n + ' ' + hundredspoken for n in numspoken] + numspoken
             else:
-                if six.PY2:
-                    return [unicode(num)]
-                else:
-                    return [str(num)]
+                return [str(num)]
         spokenlist = [(a+ ' ' + b).strip() for a in hspoken for b in restspoken]
         self.n2s[num] = spokenlist
         for sp in spokenlist:
@@ -751,7 +725,7 @@ class SpokenForms(object):
         otherwise return only the spoken forms like [ 'one', ...]
         
         If list contains items that do not go back to a number, return None
-        
+        TODOQH ik snap hier niets meer van.
         """
         dec = {}
         for g in grammarsList:
@@ -762,7 +736,7 @@ class SpokenForms(object):
         if valueSpokenDict:
             return dec
         else:
-            return reduce(operator.add, dec.values())
+            return reduce(operator.add, list(dec.values()))
         return []
         
 
@@ -799,23 +773,23 @@ class SpokenForms(object):
         elif '-' in numbersSpec:
             L = numbersSpec.split('-')
         if len(L) != 2:
-            print 'getNumbersList, (1) seems not to be a valid definition of a numbers list: %s'% listName
+            print('getNumbersList, (1) seems not to be a valid definition of a numbers list: %s'% listName)
             return []
         try:  
             n1 = int(L[0])
             n2 = int(L[1])
         except ValueError:
-            print 'getNumbersList, (1) seems not to be a valid definition of a numbers list: %s'% listName
+            print('getNumbersList, (1) seems not to be a valid definition of a numbers list: %s'% listName)
             return []
         
         if n1 == 0 and n2 == 0:
-            print 'getNumbersList, (2) seems not to be a valid definition of a numbers list: %s'% listName
+            print('getNumbersList, (2) seems not to be a valid definition of a numbers list: %s'% listName)
             return []
             
         if n1%10 == 0 and n2%10==0 and (n2 > 100 or n1 >= 10):
-            L = range(n1, n2+1, 10)
+            L = list(range(n1, n2+1, 10))
         else:
-            L = range(n1, n2+1)
+            L = list(range(n1, n2+1))
         #return [str(i) for i in L]
         return L
 

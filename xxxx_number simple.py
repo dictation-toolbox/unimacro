@@ -1,4 +1,3 @@
-__version__ = "$Revision: 356 $, $Date: 2011-02-08 11:14:12 +0100 (di, 08 feb 2011) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)

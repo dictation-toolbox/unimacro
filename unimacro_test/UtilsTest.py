@@ -11,11 +11,11 @@
 #
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
-reload(natqh)
 import actions
 action = actions.doAction
 
-import unittest, types
+import unittest
+import types
 import TestCaseWithHelpers
 
 
@@ -30,10 +30,9 @@ class UtilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
         actions.doAction("BRINGUP dragonpad; KW")
         
     def log(self, mess):
-        if type(mess) == types.StringType:
-            actions.doAction(mess)
-        else:
-            actions.doAction(str(mess))
+        if type(mess) == list:
+            mess = '\n'.join(mess)
+        actions.doAction(str(mess))
 
     def test_Something_in_unimacro(self):
         self.log('testing something')
@@ -49,7 +48,7 @@ class UtilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
          behaviour changed in python version 2.3.4!!
         """        
         progInfo = natqh.getProgInfo()
-        self.log("progInfo: %s"% `progInfo`)
+        self.log("progInfo: %s"% repr(progInfo))
         actions.doAction("LW")
         ## changed in 2013 from 3 to 4 items:
         self.assert_equal(4, len(progInfo), "progInfo should be tuple of 4")

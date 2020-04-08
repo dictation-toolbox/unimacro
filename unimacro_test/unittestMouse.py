@@ -12,11 +12,14 @@
 # todo: more monitors.
 # Quintijn Hoogenboom, july 2012
 
-import sys, os, os.path
-import natlink, math
+import sys
+import os
+import os.path
+import natlink
+import math
 from actions import doAction as action
 import natlinkutilsqh as natqh
-print 'file: %s'% __file__
+print('file: %s'% __file__)
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = r"C:\natlink\unimacro", r"D:\natlink\unimacro"
 for extraPath in extraPaths:
@@ -24,13 +27,15 @@ for extraPath in extraPaths:
         if extraPath not in sys.path:
             sys.path.append(extraPath)
 import natlinkutilsqh
-import sys, unittest
+import sys
+import unittest
 import unittest
 import UnimacroTestHelpers
 
 import os
 import os.path
-import time, pprint
+import time
+import pprint
 import TestCaseWithHelpers
 class TestError(Exception):pass
 
@@ -45,13 +50,13 @@ def getBaseFolder(globalsDict=None):
     baseFolder = ""
     if globalsDictHere['__name__']  == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
+        print('baseFolder from argv: %s'% baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
+        print('baseFolder from __file__: %s'% baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
+        print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
 thisDir = getBaseFolder(globals())
@@ -101,7 +106,7 @@ class UnittestMouse(TestCaseWithHelpers.TestCaseWithHelpers):
         # from xMin (relX positive)
         for x in (20, 200, 500, 800, 900, 990, 999):
             relX = natlinkutilsqh.coordToRel(x, xMin, xMax)
-            self.assert_(relX >=0, "coordToRel, result should be positive (x: %s, xMin, %s, xMax: %s, relX: %.6s"%
+            self.assertTrue(relX >=0, "coordToRel, result should be positive (x: %s, xMin, %s, xMax: %s, relX: %.6s"%
                          (x, xMin, xMax, relX))
             relX = round(relX, 3)
             result = natlinkutilsqh.relToCoord(relX, xMin, xMax)
@@ -111,7 +116,7 @@ class UnittestMouse(TestCaseWithHelpers.TestCaseWithHelpers):
         for x in (20, 200, 500, 800, 900, 990, 999):
             relX = natlinkutilsqh.coordToRel(x, xMin, xMax, side=1)
             relX = round(relX, 3)
-            self.assert_(relX < 0, "coordToRel, result should be negative (x: %s, xMin, %s, xMax: %s, relX: %.6s"%
+            self.assertTrue(relX < 0, "coordToRel, result should be negative (x: %s, xMin, %s, xMax: %s, relX: %.6s"%
                          (x, xMin, xMax, relX))
             result = natlinkutilsqh.relToCoord(relX, xMin, xMax)
             self.assert_equal(x, result, "relative value changes coordinate (from xMax): %s to %s (relX: %.6s"% (x, result, relX), epsilon=0)
@@ -168,7 +173,7 @@ class UnittestMouse(TestCaseWithHelpers.TestCaseWithHelpers):
                     else:
                         epsilon = 0  # absolute, caculations must fit
                     if absorrel == 0 and which == 0 and cornerPos > 0:
-                        print 'invalid combination to test: absorrel: %s, which: %s, cornerPos: %s'% (absorrel, which, cornerPos)
+                        print('invalid combination to test: absorrel: %s, which: %s, cornerPos: %s'% (absorrel, which, cornerPos))
                         continue
                     initialPosition = natlink.getCursorPos()
                         
@@ -197,7 +202,7 @@ def log(t):
     I have no complete insight is this, but checking the logfile afterwards
     always works (QH)
     """
-    print t
+    print(t)
     if logFile:
         logFile.write(t + '\n')
 

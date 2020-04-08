@@ -1,4 +1,3 @@
-__version__ = "$Revision: 57 $, $Date: 2008-01-08 17:14:17 +0100 (di, 08 jan 2008) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)))
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -54,8 +53,14 @@ inside the VoiceDictation instance there is self.dictObj, which is the link to
 the (intercepted) dictation object.
 
 """
-import win32api, win32gui, win32con
-import time, string, os, sys, types, re
+import win32api
+import win32gui
+import win32con
+import time
+import os
+import sys
+import types
+import re
 #print 'sys.path: %s'% sys.path
 import messagefunctions as mess
 try:
@@ -68,7 +73,6 @@ try:
     # testermod is also used by unittestMessagefunctions, which can be used
     # to test the communication with the (off focus) application.
     import testermod
-    reload(testermod)
     tester = testermod.tester
 except ImportError:
     tester = "aligen"   # this is the window of the Kaiser Permanente application.
@@ -88,7 +92,7 @@ natbj = __import__('natlinkutilsbj')
 
 from time import sleep  
 
-class VoiceDictation(object):
+class VoiceDictation:
     dictObj = None
     ctrl = None
     # Initialization.  Create a DictObj instance 
@@ -106,8 +110,8 @@ class VoiceDictation(object):
         # copy the W variables, taken from "windowparameters.py"
         W = windowparameters.PROGS[tester]
         if W:
-            print 'get windowsparamters from tester: %s'% tester
-            for k,v in W.items():
+            print('get windowsparamters from tester: %s'% tester)
+            for k,v in list(W.items()):
                 #print 'W: %s: %s'% (k, v)
                 setattr(self, k, v)
         else:
@@ -137,7 +141,7 @@ class VoiceDictation(object):
         appWindows = mess.findTopWindows(wantedClass=self.windowclass, wantedText=self.windowcaption)
         if len(appWindows):
             if len(appWindows) > 1:
-                print 'warning, more appWindows active! %s'% appWindows
+                print('warning, more appWindows active! %s'% appWindows)
             appHndle = appWindows[0]
             self.__class__.app = appHndle
             return
@@ -158,7 +162,7 @@ class VoiceDictation(object):
             appWindows = mess.findTopWindows(wantedClass=self.windowclass, wantedText=self.windowcaption)
             if appWindows: break
         else:
-            print 'starting %s failed, dumping apps'% self.apppath 
+            print('starting %s failed, dumping apps'% self.apppath) 
             pprint.pprint(dumpTopWindows())
             return
 
@@ -192,7 +196,7 @@ class VoiceDictation(object):
                         editHndle = hndle
                         break
                 else:
-                    print 'did not get valid id for aligen window'
+                    print('did not get valid id for aligen window')
                     return
         else:
             raise ValueError("could not find the editHndle of the control: %s in application: %s"%
@@ -216,9 +220,9 @@ class VoiceDictation(object):
             title.find("kladblok") >= 0 or
             title.find("outlook") >= 0 or
             title.find("komode") >= 0):
-            print 'saveWindow, ignore window of title: %s'% title
+            print('saveWindow, ignore window of title: %s'% title)
             return
-        print 'adding: %s to list: %s'% (hndle, self.nonFocusHndles)
+        print('adding: %s to list: %s'% (hndle, self.nonFocusHndles))
         self.nonFocusHndles.append(hndle)
 
     def acquireFocus(self):
@@ -256,10 +260,10 @@ class VoiceDictation(object):
                 if not(self.nonFocusHndles and self.nonFocusHndles[-1] == hndle):
                     self.nonFocusHndles.append(hndle)
                     
-        print 'loosing focus, hndle: %s'% self.app     
+        print('loosing focus, hndle: %s'% self.app)     
         # now do the work:
         if not self.nonFocusHndles:
-            print 'cannot loose focus, no stack'
+            print('cannot loose focus, no stack')
             #if controlHndle == self.app:
             #    action("SSK {alt+tab}")
             #    self.wait(0.3)
@@ -267,18 +271,18 @@ class VoiceDictation(object):
         while self.nonFocusHndles:
             hndle = self.nonFocusHndles.pop()
             try:
-                print 'loosing focus, to:%s (rest: %s)'% (hndle, self.nonFocusHndles)          
+                print('loosing focus, to:%s (rest: %s)'% (hndle, self.nonFocusHndles))          
                 natqh.SetForegroundWindow(hndle)
                 self.wait()
                 self.nonFocusHndles.append(hndle)
                 return
             except:
-                print 'exception loosing focus to %s, try previous on list'% hndle
+                print('exception loosing focus to %s, try previous on list'% hndle)
                 continue
             raise Exception('could not loose focus an favour of %s'% hndle)
         else:
             if controlHndle == self.app:
-                print 'cannot loose focus, stack exhausted'
+                print('cannot loose focus, stack exhausted')
                 #action("SSK {alt+tab}")
                 #self.wait(0.3)
             
@@ -287,24 +291,24 @@ class VoiceDictation(object):
         """do menu time through mess
         """
         if not self.app:
-            print 'activeMenuItem %s, no control active: %s'% (menuItem,self.app)
+            print('activeMenuItem %s, no control active: %s'% (menuItem,self.app))
         menuToDo = getattr(self, menuItem, None)
         if menuToDo:
             mess.activateMenuItem(self.app, menuToDo)
             self.wait()
         else:
-            print 'no valid menu item in this application: %s'% menuItem
+            print('no valid menu item in this application: %s'% menuItem)
             
     def sendKey(self, keyOrKeys):
         """send key(s) through messagefunctions to control
         """
         if not self.ctrl:
-            print 'sendKey %s, no control active: %s'% (menuItem,self.ctrl)
+            print('sendKey %s, no control active: %s'% (menuItem,self.ctrl))
         if keyOrKeys:
             mess.sendKey(self.ctrl, keyOrKeys)
             self.wait()
         else:
-            print 'sendKey, no keys specified'
+            print('sendKey, no keys specified')
     
     def sendEnterKey(self, numTimes=1):
         t = self.aftertext*numTimes
@@ -375,7 +379,7 @@ class VoiceDictation(object):
             if self.lastSel == (delStart, delEnd):    
                 dct.setText(self.lastSelText, delStart, selEnd)  # empty now
             else:
-                print 'window changed, update again'
+                print('window changed, update again')
                 self.updateState()
             self.insertText(delStart, delEnd, newText)
 
@@ -384,7 +388,7 @@ class VoiceDictation(object):
             # loosing scratch that info:
             self.scratchinfo = []
             if delStart < delEnd:
-                print 'selection to delete: %s, %s'% (delStart, delEnd)
+                print('selection to delete: %s, %s'% (delStart, delEnd))
             if selStart < selEnd:
                 self.setSelection(selStart,selEnd) # only set the window...
             else:
@@ -436,7 +440,7 @@ class VoiceDictation(object):
         if self.scratchinfo:
             info = self.scratchinfo.pop()
         else:
-            print 'scratch that buffer empty'
+            print('scratch that buffer empty')
             return            
         (selStart, selEnd), newText, (delStart, delEnd), prevText = info
                               
@@ -469,11 +473,11 @@ class VoiceDictation(object):
         """
         dct = self.dictObj
         if self.lastSelText == '[x]':
-            print 'field found1'
+            print('field found1')
             newText = self.capitalizeNoSpace(newText)
             return delStart, newText
         elif self.lastSelText.lstrip() == '[x]':
-            print 'field found2'
+            print('field found2')
             newText = ' ' + self.capitalizeNoSpace(newText)
             return delStart, newText
         
@@ -585,7 +589,7 @@ class VoiceDictation(object):
         elif self.linesep == '\r\n':
             t = t.replace('\n', '\r\n')
             t = t.replace('\r\r\n', '\r\n')
-        print 'correctedForNewlines: %s'% repr(t)
+        print('correctedForNewlines: %s'% repr(t))
         return t
 
     def updateState(self, checkField=1):
@@ -621,7 +625,7 @@ class VoiceDictation(object):
 
         if selStart > 0 and self.lastSelText == 'x':
             if text[selStart-1:selStart] == '[' and text[selEnd:selEnd+1] == ']':
-                print 'extend selection'
+                print('extend selection')
                 selStart -= 1
                 selEnd += 1
                 self.setSelection(selStart, selEnd)
@@ -629,19 +633,19 @@ class VoiceDictation(object):
                 self.lastSel = (selStart, selEnd)
                 self.lastSelText = text[selStart:selEnd]
         if self.lastSelText.strip() == '[x]':
-            print 'lastSelText, want to loose focus!!: |%s|'% self.lastSelText
+            print('lastSelText, want to loose focus!!: |%s|'% self.lastSelText)
             
             hndle = win32gui.GetForegroundWindow()
             newHasFocus = (hndle == self.app)
             if newHasFocus != self.hasFocus:
-                print 'focus changed during updateState/gotBegin, now: %s'% newHasFocus
+                print('focus changed during updateState/gotBegin, now: %s'% newHasFocus)
                 self.hasFocus = newHasFocus
             if newHasFocus:
-                print 'loosing focus'
+                print('loosing focus')
                 self.looseFocus()
                 hndle = win32gui.GetForegroundWindow()
                 if hndle == self.app:
-                    print 'could not loose focus!!'
+                    print('could not loose focus!!')
         dct.setLock(0)
             
        
@@ -649,7 +653,7 @@ class VoiceDictation(object):
         """for testing, clear dictobj and current window
         """
         if not self.ctrl:
-            print "no current control active..."
+            print("no current control active...")
         mess.setEditText(self.ctrl, "")
         self.updateState()
         
@@ -770,7 +774,7 @@ class CmdsGrammar(ancestor):
         dct.saveFocus() # loosing the focus...
         # focus changed, so hasFocus state can be changed:
         if not dct.app:
-            print 'no dictation application ready: %s'% dct.app
+            print('no dictation application ready: %s'% dct.app)
             dct.dictObj.deactivate()
             self.activateSet(self.outsidefocusrules)
             return
@@ -780,12 +784,12 @@ class CmdsGrammar(ancestor):
             if dct.hasFocus != 1:
                 self.activateSet(self.alwaysrules, exclusive=0)
                 dct.hasFocus = 1
-                print 'got focus'
+                print('got focus')
                 dct.dictObj.deactivate()
         else:
             if dct.hasFocus != 0:
                 # lost focus now:
-                print "loosing focus"
+                print("loosing focus")
                 self.activateSet(self.outsidefocusrules)
                 dct.hasFocus = 0
                 dct.dictObj.activate(0)
@@ -857,7 +861,7 @@ class CmdsGrammar(ancestor):
             dct.activateMenuItem("commandselectall")
             self.wait()
             if self.hasCommon(words, "clear"):
-                print "clear window"
+                print("clear window")
                 #keystroke("{del}")
                 dct.sendKey("{del}")
             #self.wait(2)
@@ -875,7 +879,7 @@ class CmdsGrammar(ancestor):
             dct.looseFocus(prevFocus)
             hndle = win32gui.GetForegroundWindow()
             if hndle == dct.app:
-                print 'in target application'
+                print('in target application')
                 self.wait(1)
                 dct.sendKey("{backspace}")
                 self.wait()
@@ -890,7 +894,7 @@ class CmdsGrammar(ancestor):
         t = self.getFromInifile(words[-1], 'scratchcounts')
         if t:
             nScratch = int(t)
-            print 'scratch that %s (%s)'% (nScratch, t)
+            print('scratch that %s (%s)'% (nScratch, t))
         dct = self.dictobj
         if dct.app:
             for i in range(nScratch):
@@ -948,12 +952,12 @@ class CmdsGrammar(ancestor):
             # get list of keywords in the inifile:
             tests = self.ini.get('global_tests')
             if tests:
-                print 'testwords: %s'% tests
+                print('testwords: %s'% tests)
                 for lastWord in tests:
                     natlink.recognitionMimic(["global", "dictation", "test", lastWord])
                 return
             else:
-                print 'found no "global dictations tests"'
+                print('found no "global dictations tests"')
                 return 
                 
         if test == "one":
@@ -974,7 +978,7 @@ class CmdsGrammar(ancestor):
                 return
             if not self.assert_equal_strings(beforeText, afterText, "test %s; beforeText, afterText equal test"% test):
                 return
-            print 'test %s OK--'% test
+            print('test %s OK--'% test)
             return 1  # OK
         elif test in ('two', 'three'):
             thirdWord = "second"
@@ -998,7 +1002,7 @@ class CmdsGrammar(ancestor):
                 if not self.assert_equal_strings(beforeText, afterText, "test %s; beforeText, afterText equal test"% test):
                     return
                 if test == 'two':
-                    print 'test %s OK--'% test
+                    print('test %s OK--'% test)
                     return 1
             if test == 'three':
                 # select a word on the third line (second paragraph)
@@ -1013,7 +1017,7 @@ class CmdsGrammar(ancestor):
                     return
                 if not self.assert_equal_strings(expected, messSelection, "test %s; selection from message window "% test):
                     return
-                print 'test %s OK--'% test
+                print('test %s OK--'% test)
                 return 1 # OK
         if test == "four":
             natlink.recognitionMimic(["test", "four", "\\New-Paragraph", "there", "we", "go"])
@@ -1034,7 +1038,7 @@ class CmdsGrammar(ancestor):
                 return
             if not self.assert_equal_strings(expected, messSelection, "test %s; selection from message window "% test):
                 return
-            print 'test %s OK--'% test
+            print('test %s OK--'% test)
             return 1 # OK
         if test == 'five':
             natlink.recognitionMimic(["test", ",\\comma", "five"])
@@ -1052,7 +1056,7 @@ class CmdsGrammar(ancestor):
                 return
             if not self.assert_equal_strings(expected, messText, "test %s; text from window "% test):
                 return
-            print 'test %s OK--'% test
+            print('test %s OK--'% test)
             return 1 # OK
         if test == 'six':
             # try to make a field, and see if next dictate removes the field and caps the first char
@@ -1081,7 +1085,7 @@ class CmdsGrammar(ancestor):
             if not self.assert_equal_strings(expected, messSelection, "test %s; selection from message window (selected field) "% test):
                 return
             
-            print 'test %s OK--'% test
+            print('test %s OK--'% test)
             return 1 # OK
             
         if test == 'seven':
@@ -1104,7 +1108,7 @@ class CmdsGrammar(ancestor):
                 return
             if not self.assert_equal_strings(expected, messText, "test %s; text from window "% test):
                 return
-            print 'test %s OK--'% test
+            print('test %s OK--'% test)
             return 1 # OK
             
             
@@ -1122,47 +1126,47 @@ class CmdsGrammar(ancestor):
         
         if hndle == dct.app:    
             message = 'testing equal strings, focus ON\n-- %s --'% message
-            if type(one) == types.ListType:
+            if type(one) == list:
                 one = one[1] # second alternative on list
         else:
             message = 'testing equal strings, focus OFF (extra space often)' + message
-            if type(one) == types.ListType:
+            if type(one) == list:
                 one = one[0]  # first alternative on list
         if one == two:
             return 1
-        print '\nerror at test'+ message 
+        print('\nerror at test'+ message) 
         
         if len(one) != len(two):
-            print 'unequal lengths: %s, %s'% (len(one), len(two))
+            print('unequal lengths: %s, %s'% (len(one), len(two)))
         for i, (charOne, charTwo) in enumerate(zip(one, two)):
             if charOne != charTwo:
-                print "strings different on pos: %s"% i
-                print "one: %s, two: %s"% (repr(charOne), repr(charTwo))
-                print "command start of string: %s"% repr(one[:i])
-                print "one: %s"% repr(one)
-                print "two: %s"% repr(two)
+                print("strings different on pos: %s"% i)
+                print("one: %s, two: %s"% (repr(charOne), repr(charTwo)))
+                print("command start of string: %s"% repr(one[:i]))
+                print("one: %s"% repr(one))
+                print("two: %s"% repr(two))
                 break
         else:
             # identical start, so tail must be different.
             if len(one) > len(two):
-                print 'one is longer with: |%s|'% repr(one[len(two):])
+                print('one is longer with: |%s|'% repr(one[len(two):]))
             else:
-                print 'two is longer with: %s'% repr(two[len(one):])
+                print('two is longer with: %s'% repr(two[len(one):]))
 
     def assert_equal_selection(self, one, two, message):
-        print 'testing equal selection: %s'% message
+        print('testing equal selection: %s'% message)
         if len(one) != len(two):
-            print 'unequal lengths: %s, %s'% (len(one), len(two))
+            print('unequal lengths: %s, %s'% (len(one), len(two)))
         if one != two:
-            print 'unequal selections: %s, %s'% (`one`, `two`)
+            print('unequal selections: %s, %s'% (repr(one), repr(two)))
             return
-        print 'test OK----------------'
+        print('test OK----------------')
         return 1
         
 # debug print, only if testMode is o
 def D(t):
     if testMode:
-        print t
+        print(t)
 
 # standard stuff Joel:
 cmdsGrammar = CmdsGrammar()
@@ -1199,7 +1203,7 @@ def changeCallback(type,args):
             try:
                 title = win32gui.GetWindowText(messWindow)
                 if title != messTitle:
-                    print 'title does not match: actual: |%s|, wanted: |%s|'% (title, messTitle)
+                    print('title does not match: actual: |%s|, wanted: |%s|'% (title, messTitle))
                     messWindow = None
             except:
                 messWindow = None
@@ -1208,7 +1212,7 @@ def changeCallback(type,args):
             if messWindows:
                 messWindow = messWindows[0]
         if not messWindow:
-            print 'didnt find messages window'
+            print('didnt find messages window')
             return
         #toMin = win32con.SW_MINIMIZE
         toMin = win32con.SW_SHOWMINIMIZED

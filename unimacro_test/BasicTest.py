@@ -7,6 +7,13 @@
 #   NaturallySpeaking should be running with nothing in the editor window
 #   (that you want to preserve) before these tests are run.
 #   performed.
+from pathqh import path
+from pprint import pprint
+import sys
+unimacrodir = path('./..').normpath()
+if unimacrodir not in sys.path:
+    sys.path.append(unimacrodir)
+
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 import actions
@@ -24,7 +31,7 @@ class BasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
         
 
     def test_Something_in_unimacro(self):
-        print 'testing something'
+        print('testing something')
         lang = natqh.getLanguage()
         self.assert_equal("enx", lang, "testing should be done from an English speech profile, not: %s"% lang)
 

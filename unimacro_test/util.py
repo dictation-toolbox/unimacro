@@ -21,7 +21,13 @@
 
 """Various utility functions"""
 
-import getopt, os, re, stat, sys, time, types
+import getopt
+import os
+import re
+import stat
+import sys
+import time
+import types
 import sys
 if sys.platform =='win32':
     global winsound

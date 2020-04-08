@@ -27,7 +27,10 @@
 
 
 """
-import string, os, sys, re, cPickle
+import os
+import sys
+import re
+import pickle
 
 import natlink
 from natlinkutils import *
@@ -41,9 +44,9 @@ try:
     actions = __import__('actions')
 except ImportError:
     actions = None
-    print 'warning: actions module not imported'
+    print('warning: actions module not imported')
 
-tracecount = map(str, range(1, 10))
+tracecount = list(map(str, list(range(1, 10))))
 
 
 
@@ -62,11 +65,11 @@ def ReadFilteredWords(Filename):
         Words[Words.index(w)]=w[:-1]
     freq={}        
     for w in Words:
-        if freq.has_key(w):
+        if w in freq:
             freq[w]=freq[w]+1
         else:
             freq[w]=1
-    Words=freq.keys()
+    Words=list(freq.keys())
     return Words
 
 FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
@@ -95,9 +98,9 @@ if 'VCODE_HOME' in os.environ:
             newFolder = os.path.join(voicecodeHome, subFolder)
             if os.path.isdir(newFolder) and newFolder not in sys.path:
                 sys.path.append(newFolder)
-                print 'appending to sys.path: %s'% newFolder
+                print('appending to sys.path: %s'% newFolder)
     else:
-        print '_control: VCODE_HOME points NOT to a directory: %s'% voicecodeHome
+        print('_control: VCODE_HOME points NOT to a directory: %s'% voicecodeHome)
         voicecodeHome = None
         
 
@@ -160,7 +163,7 @@ class UtilGrammar(ancestor):
         # activate the list for the <ShowTrainGrammar> rule
         if natbj.grammarsChanged:
 ##            print 'new list for control: %s'% natbj.loadedGrammars.keys()
-            self.setList('gramnames', natbj.loadedGrammars.keys())
+            self.setList('gramnames', list(natbj.loadedGrammars.keys()))
             natbj.ClearGrammarsChangedFlag()
         if self.checkForChanges:
             self.checkInifile()
@@ -169,7 +172,7 @@ class UtilGrammar(ancestor):
 
     def gotResultsInit(self,words,fullResults):
         if self.mayBeSwitchedOn == 'exclusive':
-            print 'recog controle, switch off mic: %s'% words
+            print('recog controle, switch off mic: %s'% words)
             natbj.SetMic('off')
         if self.exclusive and self.doMessages:
             self.DisplayMessage('<%s>'% ' '.join(words))
@@ -202,7 +205,7 @@ class UtilGrammar(ancestor):
             if recogType == 'reject':
                 URName = ''
                 exclGram = natbj.exclusiveGrammars
-                exclGramKeys = exclGram.keys()
+                exclGramKeys = list(exclGram.keys())
                 if len(exclGramKeys) > 1 and self.name in exclGramKeys:
                     exclGramKeys.remove(self.name)
                 if len(exclGramKeys) > 1:
@@ -225,7 +228,7 @@ class UtilGrammar(ancestor):
         self.Mode = self.LastMode
         
     def gotResults_trace(self,words,fullResults):
-        print 'control, trace: %s'% words
+        print('control, trace: %s'% words)
         if self.hasCommon(words, 'actions'):
             if self.hasCommon(words, 'show'):
                 actions.debugActionsShow()
@@ -250,13 +253,13 @@ class UtilGrammar(ancestor):
             commandLine = r"%spython.exe %s > D:\foo1.txt >> D:\foo2.txt"% (sys.prefix, wxmed)
             os.system(commandLine)
         else:
-            print 'not a file: %s'% wxmed
+            print('not a file: %s'% wxmed)
             
         
 
         
     def gotResults_switch(self,words,fullResults):
-        print 'control, switch: %s'% words
+        print('control, switch: %s'% words)
         if self.hasCommon(words, 'on'):
             func = 'switchOn'
         elif self.hasCommon(words, 'off'):
@@ -270,16 +273,16 @@ class UtilGrammar(ancestor):
                 self.DisplayMessage(t)
             return
         if self.hasCommon(words, 'all grammars'):
-            print '%s all grammars:'% func
+            print('%s all grammars:'% func)
             natbj.CallAllGrammarObjects(func, ())
-            print "-"*10
+            print("-"*10)
         else:
-            gramname = self.hasCommon(words, natbj.loadedGrammars.keys())
+            gramname = self.hasCommon(words, list(natbj.loadedGrammars.keys()))
             if gramname:
                 gram = natbj.loadedGrammars[gramname]
                 gram.callIfExists(func, ())
             else:
-                print 'no grammar name found: %s'% gramname
+                print('no grammar name found: %s'% gramname)
             
     def gotResults_showexclusive(self,words,fullResults):
         if natbj.exclusiveGrammars:
@@ -295,7 +298,7 @@ class UtilGrammar(ancestor):
             
 
     def gotResults_resetexclusive(self,words,fullResults):
-        print 'reset exclusive'
+        print('reset exclusive')
         if natbj.exclusiveGrammars:
             T = ['exclusive grammars:']
             for e in natbj.exclusiveGrammars:
@@ -333,10 +336,10 @@ class UtilGrammar(ancestor):
             return
         
         if natbj.exclusiveGrammars:
-            print 'exclusive (+ control) are: %s'% ' '.join(natbj.exclusiveGrammars.keys())
+            print('exclusive (+ control) are: %s'% ' '.join(list(natbj.exclusiveGrammars.keys())))
 
         grammars = natbj.loadedGrammars
-        gramNames = grammars.keys()
+        gramNames = list(grammars.keys())
         gramName = self.hasCommon(words, gramNames)
         if gramName:
             grammar = grammars[gramName]
@@ -374,10 +377,10 @@ class UtilGrammar(ancestor):
                 if self.hasCommon(words, ['all', 'active']):
                     name=name[1:]
             if len(name)>0:                
-                Start=(u' '.join(name),[])
+                Start=(' '.join(name),[])
             else:
                 Start=()
-            print 'start browsing with: %s'% All
+            print('start browsing with: %s'% All)
             self.Browse(Start,All)
         
 
@@ -388,7 +391,7 @@ class UtilGrammar(ancestor):
             return
 
         grammars = natbj.loadedGrammars
-        gramNames = grammars.keys()
+        gramNames = list(grammars.keys())
         gramName = self.hasCommon(words[-1:], gramNames)
         if gramName:
             grammar = grammars[gramName]
@@ -408,14 +411,14 @@ class UtilGrammar(ancestor):
                         self.DisplayMessage('grammar "%s" has no method "editInifile"'% gramName)
                     return
         else:
-            print 'no grammar name found'
+            print('no grammar name found')
 
 
     def switchOff(self, **kw):
         """overload, this grammar never switches off
 
         """        
-        print 'remains switched on: %s' % self
+        print('remains switched on: %s' % self)
 
     def switchOn(self, **kw):
         """overload, just switch on
@@ -452,7 +455,7 @@ class MessageDictGrammar(natut.DictGramBase):
         natut.DictGramBase.__init__(self)
 
     def initialize(self):
-        print 'initializing/loading DictGrammar!!'
+        print('initializing/loading DictGrammar!!')
         self.load()
         natbj.RegisterMessageObject(self)
 
@@ -462,13 +465,13 @@ class MessageDictGrammar(natut.DictGramBase):
         
     def gotResults(self, words):
 ##        pass
-        print 'messageDictGrammar: heard dictation:  %s '% words
+        print('messageDictGrammar: heard dictation:  %s '% words)
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 messageDictGrammar = MessageDictGrammar()
 messageDictGrammar.initialize()
-print 'messageDictGrammar initialized'
+print('messageDictGrammar initialized')
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
@@ -476,7 +479,7 @@ utilGrammar = UtilGrammar()
 if utilGrammar.gramSpec:
     utilGrammar.initialize()
 else:
-    print 'grammar _control has no specification for this language---------'
+    print('grammar _control has no specification for this language---------')
     utilGrammar = None
 
 def unload():

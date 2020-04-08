@@ -1,4 +1,3 @@
-__version__ = "$Revision: 610 $, $Date: 2019-09-02 09:47:47 +0200 (ma, 02 sep 2019) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -37,19 +36,29 @@ special functions inside this module, but calling from another file (with
 natlink grammar) is needed to activate these functions by voice.
 
 """
-import six
-import re, string, os, sys, types, shutil, os.path, copy
-import win32api, win32gui, win32con, win32com.client
+import re
+import os
+import sys
+import types
+import shutil
+import os.path
+import copy
+import win32api
+import win32gui
+import win32con
+import win32com.client
 import inivars
-import htmlentitydefs
-import monitorfunctions, messagefunctions
+import html.entities
+import monitorfunctions
+import messagefunctions
 import autohotkeyactions # for AutoHotkey support
 natut = __import__('natlinkutils')
 natqh = __import__('natlinkutilsqh')
 import natlink
 import natlinkcorefunctions # extended environment variables....
 import natlinkstatus
-import time, datetime
+import time
+import datetime
 import subprocess  # for calling a ahk script
 import utilsqh
 
@@ -73,7 +82,7 @@ sampleBase = baseDirectory
 sampleDirectory = os.path.join(baseDirectory, 'sample_ini')
 
 if not os.path.isdir(sampleDirectory):
-    print '\nNo Unimacro sample directory not found: %s\nCHECK YOUR CONFIGURATION!!!!!!!!!!!!!!!!\n'% sampleDirectory
+    print('\nNo Unimacro sample directory not found: %s\nCHECK YOUR CONFIGURATION!!!!!!!!!!!!!!!!\n'% sampleDirectory)
     sampleDirectory = ''
 
 userDirectory = natqh.getUnimacroUserDirectory()
@@ -101,18 +110,18 @@ samples = []
 
 if not os.path.isfile(inifile):
     if userDirectory:  ## Unimacro enabled
-        print '---try to find actions.ini file in old version (UnimacroDirectory) or sample_ini directory'
+        print('---try to find actions.ini file in old version (UnimacroDirectory) or sample_ini directory')
     else:
-        print '---try to find actions.ini file in sample_ini directory'
+        print('---try to find actions.ini file in sample_ini directory')
         
     if os.path.isdir(sampleDirectory):
         sampleini = os.path.join(sampleDirectory, 'actions.ini')
         if os.path.isfile(sampleini):
             samples.append(sampleini)
         else:
-            print "no valid 'actions.ini' file in %s"% sampleDirectory
+            print("no valid 'actions.ini' file in %s"% sampleDirectory)
     else:
-        print "no valid samples directory found for the (Unimacro) 'actions.ini' file: %s"% sampleDirectory
+        print("no valid samples directory found for the (Unimacro) 'actions.ini' file: %s"% sampleDirectory)
 
 
     if userDirectory:       
@@ -123,21 +132,21 @@ if not os.path.isfile(inifile):
         raise IOError("cannot find a valid sample file 'actions.ini'")
     elif utilsqh.IsIdenticalFiles(samples):
         sample = samples[0]            
-        print '----copy actions.ini -----:\nfrom %s\nto new location %s\n---'% (sample, inifile)
+        print('----copy actions.ini -----:\nfrom %s\nto new location %s\n---'% (sample, inifile))
         shutil.copyfile(sample, inifile)
         if oldversioninifile in samples:
-            print '----remove old actions.ini: %s\n---'% (oldversioninifile)
+            print('----remove old actions.ini: %s\n---'% (oldversioninifile))
             os.remove(oldversioninifile)
             if os.path.isfile(oldversioninifile):
-                print '----could not remove: %s'% oldversioninifile
+                print('----could not remove: %s'% oldversioninifile)
     else:
         newest = utilsqh.GetNewestFile(samples)
-        print "Files 'actions.ini' are different,\ncopy newest %s to\nnew location %s\n---"% (newest, inifile)
+        print("Files 'actions.ini' are different,\ncopy newest %s to\nnew location %s\n---"% (newest, inifile))
 
 
 if not os.path.isfile(inifile):
     if userDirectory:
-        print """
+        print("""
 
 -------Cannot find a valid "actions.ini" configuraton file
 
@@ -151,11 +160,11 @@ Copies of this file could not be found in one of the sample directories:
 Also see http://qh.antenna.nl/unimacro/installation/inifilestrategy.html
 ---------
     
-        """% (userDirectory, samples)
+        """% (userDirectory, samples))
         time.sleep(0.2)
         raise ActionError('no inifile found for actions in unimacro or sample_ini')
     else:
-        print """
+        print("""
 
 -------Cannot find a valid "actions.ini" configuraton file
 
@@ -169,12 +178,12 @@ Copies of this file could not be found in one of the sample directories:
 Also see http://qh.antenna.nl/unimacro/installation/inifilestrategy.html
 ---------
     
-        """% (baseDirectory, samples)
+        """% (baseDirectory, samples))
         time.sleep(0.2)
         raise ActionError('no inifile found for actions in unimacro or sample_ini')
 
 if userDirectory and os.path.isfile(oldversioninifile):
-    print 'remove actions.ini from UnimacroDirectory (obsolete): %s\nis now in the UnimacroUserDirectory %s'% (oldversioninifile, userDirectory)
+    print('remove actions.ini from UnimacroDirectory (obsolete): %s\nis now in the UnimacroUserDirectory %s'% (oldversioninifile, userDirectory))
     os.remove(oldversioninifile)
 
 if os.path.isfile(inifile):
@@ -182,9 +191,9 @@ if os.path.isfile(inifile):
         ini = inivars.IniVars(inifile)
     except inivars.IniError:
         
-        print 'Error in actions inifile: %s'% inifile
+        print('Error in actions inifile: %s'% inifile)
         m = str(sys.exc_info()[1])
-        print 'message: %s'% m
+        print('message: %s'% m)
         pendingMessage = 'Please repair action.ini file\n\n' + m
         ini = None
         #win32api.ShellExecute(0, "open", inifile, None , "", 1)
@@ -210,16 +219,12 @@ checkForChanges = 0
 iniFileDate = 0
 
 def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
-             progInfo=None, sectionList=None, comment='', comingFrom=None):
+             progInfo=None, modInfo=None, sectionList=None, comment='', comingFrom=None):
     global pendingMessage, checkForChanges
     topLevel = 0
     if comingFrom and comingFrom.interrupted:
-        print 'command was interrupted'
+        print('command was interrupted')
         return
-    if type(action) == six.text_type:
-        action = utilsqh.convertToBinary(action)
-    if type(action) != six.binary_type:
-        print 'action: %s(%s)'% (action, type(action))
     # at first (nonrecursive) call check for all variables:
     if not completeAction:
         # first (nonrecursive) call,
@@ -238,9 +243,19 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         if not ini:
             D('no valid inifile for actions')
             return
-        if progInfo == None:
-            progInfo = natqh.getProgInfo()
-            #D('new progInfo: %s'% repr(progInfo))
+        if modInfo is None:
+            try:
+                modInfo = natlink.getCurrentModule()
+                # print("modInfo through natlink: %s"% repr(modInfo))
+            except:
+                modInfo = autohotkeyactions.getModInfo()
+                # print("modInfo through AHK: %s"% repr(modInfo))
+           
+        progNew = natqh.getProgName(modInfo)    
+
+        if progInfo is None:
+            progInfo = natqh.getProgInfo(modInfo=modInfo)
+        #D('new progInfo: %s'% repr(progInfo))
         prog, title, topchild, windowHandle = progInfo
         if sectionList == None:
             sectionList = getSectionList(progInfo)
@@ -276,7 +291,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
             if not a: continue
             result = doAction(a, completeAction=completeAction,
                          pauseBA=pauseBA, pauseBK=pauseBK,
-                         progInfo=progInfo, sectionList=sectionList,
+                         progInfo=progInfo, modInfo=None, sectionList=sectionList,
                          comment=comment, comingFrom=comingFrom)
             if not result: return
             if debug > 2:D('pause between actions: %s'% pauseBA)
@@ -287,7 +302,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
 
     if not action:  return
 
-    assert type(action) == six.binary_type
+    assert type(action) == str
 
     # now perform the action
     # check if action consists of several parts:
@@ -297,14 +312,14 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     if metaAction.match(action):  # exactly a meta action, <<....>>
         a = metaAction.match(action).group(1)
         aNew = getMetaAction(a, sectionList, progInfo)
-        if type(aNew) == types.TupleType:
+        if type(aNew) == tuple:
             # found function
             func, number = aNew
             if type(func) in (types.FunctionType, types.UnboundMethodType):
                 func(number)
                 return 1
             else:
-                print 'Error, not a valid action "%s" for "%s" in program "%s"'% (func, action, prog)
+                print('Error, not a valid action "%s" for "%s" in program "%s"'% (func, action, prog))
                 return
         if debug > 5: D('doing meta action: <<%s>>: %s'% (a, aNew))
         if aNew:
@@ -328,7 +343,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
             t = '_actions, no valid meta action: "%s"'% partCom
             if partCom != completeAction:
                 t += '\ncomplete command: "%s"'% completeAction
-            raise ActionError, t
+            raise ActionError(t)
 
     # try qh command:
     if action.find('(') > 0 and action.strip().endswith(')'):
@@ -342,28 +357,21 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     if 'do_'+com in globals():
         funcName = 'do_'+com
         args = convertToPythonArgs(rest)
-
+        kw = {}
+        kw['progInfo'] = progInfo
         if com in ('WWT', 'WTC'):
-            kw = dict(comingFrom=comingFrom) 
-        else:
-            kw = None
+            kw = kw['comingFrom'] - comingFrom
         func = globals()[funcName]
         if not type(func) == types.FunctionType:
             raise UnimacroError('appears to be not a function: %s (%s)'% (funcName, func))
-        if debug > 5: D('doing USC command: |%s|, with args: %s and kw: %s'% (com, `args`, kw))
+        if debug > 5: D('doing USC command: |%s|, with args: %s and kw: %s'% (com, repr(args), kw))
         if debug > 1: do_W(debug*0.2)
         if args:
-            if kw:
-                result = func(*args, **kw)
-            else:
-                result = func(*args)
+            result = func(*args, **kw)
         else:
-            if kw:
-                result = func(**kw)
-            else:
-                result = func()
+            result = func(**kw)
                 
-        if debug > 5: print 'did it, result: %s'% result
+        if debug > 5: print('did it, result: %s'% result)
         if debug > 1: do_W(debug*0.2)
         # skip pause between actions
         #do_W(pauseBA)
@@ -393,7 +401,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         if debug: D('do dvc command: |%s|'% C)
         if debug > 1: do_W(debug*0.2)
         natlink.execScript(com + ' ' + rest)
-        if debug > 5: print 'did it'
+        if debug > 5: print('did it')
         if debug > 1: do_W(debug*0.2)
         # skip pause between actions
         #do_W(pauseBA)
@@ -405,16 +413,16 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     if action:
         doKeystroke(action, pauseBK=pauseBK,
                  progInfo=progInfo, sectionList=sectionList)
-        if debug > 5: print 'did it'
+        if debug > 5: print('did it')
         if debug > 1: do_W(debug*0.2)
         # skip pause between actions
         #do_W(pauseBA)
         if topLevel: # first (nonrecursive) call,
-            print 'end of complete action'
+            print('end of complete action')
         return 1
     else:
         if debug:
-            print 'empty keystrokes'
+            print('empty keystrokes')
          #     
         
 def doKeystroke(action, hardKeys=None, pauseBK=None,
@@ -440,9 +448,7 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
         doCheckForChanges() # resetting the ini file if changes were made
     if not ini:
         D('no valid inifile for keystrokes')
-    if type(hardKeys) == six.text_type:
-        hardKeys = utilsqh.convertToBinary(hardKeys)
-    if type(hardKeys) == six.binary_type:
+    if type(hardKeys) != str:
         hardKeys = [hardKeys]
     elif hardKeys == 1:
         hardKeys = ['all']
@@ -566,8 +572,8 @@ def getMetaAction(a, sectionList=None, progInfo=None):
     
     aNew = setting(A, default=None, sectionList=sectionList)
     if aNew == None:
-        print 'action: not found, meta action for %s: |%s|, searched in sectionList: %s' % \
-              (a, aNew, sectionList)
+        print('action: not found, meta action for %s: |%s|, searched in sectionList: %s' % \
+              (a, aNew, sectionList))
         return 
     if m:
         aNew = metaNumberBack.sub(number, aNew)
@@ -598,7 +604,7 @@ def getSectionList(progInfo=None):
     for item in L2:
         if not item in L:
             L.append(item)
-    L.extend(ini.getSectionsWithPrefix(u'default', topchild)) # catcg default top or default child
+    L.extend(ini.getSectionsWithPrefix('default', topchild)) # catcg default top or default child
     if debug > 5: D('section list with progInfo: %s:\n===== %s' %
                     (progInfo, L))
                     
@@ -609,7 +615,7 @@ def convertToDvcArgs(text):
     if not text:
         return ''
     L = text.split(',')
-    L = map(_convertToDvcArg, L)
+    L = list(map(_convertToDvcArg, L))
     return ', '.join(L)
 
 hasDoubleQuotes = re.compile(r'^".*"$')
@@ -647,14 +653,14 @@ def _convertToDvcArg(t):
 def convertToPythonArgs(text):
     """convert to numbers and strings,
 
-    IF argument is enclosed in " " or ' ' it is kept as a string.    
+    IF argument is enclosed in " " or ' ' it is kept as a string.
 
     """    
     text = text.strip()
     if not text:
         return    # None
     L = text.split(',')
-    L = map(_convertToPythonArg, L)
+    L = list(map(_convertToPythonArg, L))
     return tuple(L)
 
 def _convertToPythonArg(t):
@@ -668,7 +674,7 @@ def _convertToPythonArg(t):
         if t == '0':
             return 0
         if t.startswith('0'):
-            print 'warning convertToPythonArg, could be int, but assume string: %s'% t
+            print('warning convertToPythonArg, could be int, but assume string: %s'% t)
             return '%s'% t
         return i
     except ValueError:
@@ -678,7 +684,7 @@ def _convertToPythonArg(t):
         if t.find(".") >= 0:
             return f
         else:
-            print 'warning convertToPythonArg, can be float, but assume string: %s'% t
+            print('warning convertToPythonArg, can be float, but assume string: %s'% t)
             return '%s'% t
     except ValueError:
         pass
@@ -723,7 +729,7 @@ def get_external_module(prog):
         _temp = __import__('actionclasses', fromlist=[modname])
         mod = getattr(_temp, modname)
         external_actions_modules[prog] = mod
-        print 'get_external_module, found actions module: %s'% modname
+        print('get_external_module, found actions module: %s'% modname)
         return mod
     except AttributeError:
         import traceback
@@ -748,7 +754,7 @@ def get_instance_from_progInfo(progInfo):
     if classRef:
         instance = classRef(progInfo)
         instance.update(progInfo)
-        print 'new instance for actions for prog: %s, handle: %s'% (prog, handle)
+        print('new instance for actions for prog: %s, handle: %s'% (prog, handle))
     else:
         instance = None
     external_action_instances[handle] = instance
@@ -778,15 +784,15 @@ def writeDebug(s):
     if debugSock:
         debugSock.write(s+'\n')
         debugSock.flush()
-        print '_actions: %s' % s
+        print('_actions: %s' % s)
     else:
-        print '_actions debug: %s'% s
+        print('_actions debug: %s'% s)
        
 D =writeDebug
 def debugActions(n, openMode='w'):
     global debug, debugSock
     debug = n
-    print 'setting debug actions: %s'% debug
+    print('setting debug actions: %s'% debug)
     if debugSock:
         debugSock.close()
         debugSock = None
@@ -797,7 +803,7 @@ def debugActions(n, openMode='w'):
 
 
 def debugActionsShow():
-    print 'opening debugFile: %s automatically is disabled.'% debugFile
+    print('opening debugFile: %s automatically is disabled.'% debugFile)
     #win32api.ShellExecute(0, "open", debugFile, None , "", 1)
     
 
@@ -831,8 +837,8 @@ def showActions(progInfo=None, lineLen=60, sort=1, comingFrom=None, name=None):
         name=name or ""
         comingFrom.openFileDefault(whatFile, name=name)
     else:
-        print 'show file: ', whatFile
-        print 'showing actions by ShellExecute crashed NatSpeak, please open by hand above file'
+        print('show file: ', whatFile)
+        print('showing actions by ShellExecute crashed NatSpeak, please open by hand above file')
     #win32api.ShellExecute(0, "open", whatFile, None , "", 1)
 
 def getTranslation(language, Dict):
@@ -854,8 +860,8 @@ def editActions(comingFrom=None, name=None):
         name=name or ""
         comingFrom.openFileDefault(inifile, name=name)
     else:
-        print 'inifile: ', inifile
-        print 'editing actions by ShellExecute crashed NatSpeak, please edit by hand above file'
+        print('inifile: ', inifile)
+        print('editing actions by ShellExecute crashed NatSpeak, please edit by hand above file')
     #win32api.ShellExecute(0, "open", inifile, None , "", 1)
 
 def setPosition(name, pos, prog=None):
@@ -885,7 +891,7 @@ def getPosition(name, prog=None):
     return ini.getInt(section, name) or 0
 # -----------------------------------------------------------
 
-def do_TEST(*args):
+def do_TEST(*args, **kw):
     # x, y = natqh.testmonitorinfo(args[0], args[1])
     # print 'in do_test: ', x, y
     import ctypes
@@ -903,17 +909,17 @@ def do_TEST(*args):
     print('kbLayout: %s'% kbLayout)
 
 
-def do_AHK(script):
+def do_AHK(script, **kw):
     """try autohotkey integration
     """
     result = autohotkeyactions.do_ahk_script(script)
-    if type(result) in (six.binary_type, six.text_type):
+    if type(result) == str:
         do_MSG(result)
         return
     return result
 
 # HeardWord (recognition mimic), convert arguments to list:
-def do_HW(*args):
+def do_HW(*args, **kw):
     words = list(args)
     origWords = copy.copy(words)
 ##    print 'origWords for HW(recognitionMimic): |%s| (length: %s)'% (origWords, len(origWords))
@@ -935,26 +941,26 @@ def do_HW(*args):
                     D('words for HW(recognitionMimic): |%s|'% origWords)
                 natlink.recognitionMimic(origWords)
             except:
-                print "action HW probably has invalid words (splitted: %s) or (glued together: %s)" % \
-                                 (words, origWords)
+                print("action HW probably has invalid words (splitted: %s) or (glued together: %s)" % \
+                                 (words, origWords))
                 return
         else:
-            print"Cannot recognise words, HW probably has invalid words: %s" % words
+            print("Cannot recognise words, HW probably has invalid words: %s" % words)
             return
     return 1
 
-def do_MP(scrorwind, x, y, mouse='left', nClick=1):
+def do_MP(scrorwind, x, y, mouse='left', nClick=1, **kw):
     # Mouse position and click.
     # first parameter 0, absolute
     # new 2017: 3 = relative to active monitor
     # and 4 - relative to work area of active monitor (not considering task bar or dragon bar)
     if not scrorwind in [0,1,2,3,4,5]:
-        raise UnimacroError, 'Mouse action not supported with relativeTo: %s' % scrorwind
+        raise UnimacroError('Mouse action not supported with relativeTo: %s' % scrorwind)
     # first parameter 1: relative:
     natqh.doMouse(0,scrorwind,x,y,mouse,nClick)  # abs, rel to window, x, y, click
     return 1
 
-def do_CLICK(mouse='left', nClick=1):
+def do_CLICK(mouse='left', nClick=1, **kw):
     scrorwind = 2
     x, y, = 0, 0
     # click at current position:
@@ -962,23 +968,23 @@ def do_CLICK(mouse='left', nClick=1):
     return 1
 
 
-def do_ENDMOUSE():
+def do_ENDMOUSE(**kw):
     natqh.endMouse()
     return 1
     
-def do_CANCELMOUSE():
+def do_CANCELMOUSE(**kw):
     natqh.cancelMouse()
     return 1
 
-def do_MDOWN(button='left'):
+def do_MDOWN(button='left', **kw):
     natqh.mousePushDown(button)
     return 1
 
-def do_RM():
+def do_RM(**kw):
     natqh.rememberMouse()
     return 1
  
-def do_MOUSEISMOVING():
+def do_MOUSEISMOVING(**kw):
     xold, yold = natlink.getCursorPos()
     time.sleep(0.05)
     for i in range(2):
@@ -989,7 +995,7 @@ def do_MOUSEISMOVING():
     return 0
     
 
-def do_WAITMOUSEMOVE():
+def do_WAITMOUSEMOVE(**kw):
     """wait for the mouse start moving
     
     cancel after 2 seconds
@@ -1001,10 +1007,10 @@ def do_WAITMOUSEMOVE():
         if x != xold or y != yold:
             return 1
     else:
-        print 'no mouse move detected, cancel action'
+        print('no mouse move detected, cancel action')
         return 0  # no result
 
-def do_WAITMOUSESTOP():
+def do_WAITMOUSESTOP(**kw):
     """wait for the mouse stops moving
     
     you get 2 seconds for stopping the movement.
@@ -1028,18 +1034,18 @@ def do_WAITMOUSESTOP():
                 if x != xold or y != yold:
                     break
             else:
-                print 'mouse stopped moving'
+                print('mouse stopped moving')
                 natlink.setMicState('on')
                 return 1
         if (x-xold)*(x-xold) + (y-yold)*(y-yold) > 100*100:
-            print "user canceled WAITMOUSESTOP canceled by moving mouse more than 100 pixels"
+            print("user canceled WAITMOUSESTOP canceled by moving mouse more than 100 pixels")
             return
         xold, yold = x, y
         if natlink.getMicState() == "on":
-            print 'user canceled WAITMOUSESTOP by switching on microphone'
+            print('user canceled WAITMOUSESTOP by switching on microphone')
             return
 
-def do_CHECKMOUSESTEADY():
+def do_CHECKMOUSESTEADY(**kw):
     """returns 1 if the mouse is steady
     
     for 2.5 seconds
@@ -1056,13 +1062,13 @@ def do_CHECKMOUSESTEADY():
                 if x != xold or y != yold:
                     break
             else:
-                print 'mouse stopped moving'
+                print('mouse stopped moving')
                 natlink.setMicState('on')
                 return 1
 
 
 
-def do_CLICKIFSTEADY(mouse='left', nClick=1):
+def do_CLICKIFSTEADY(mouse='left', nClick=1, **kw):
     """clicks only if mouse is steady,
     
     beeps if it was moving before, if it is steady just click
@@ -1072,34 +1078,34 @@ def do_CLICKIFSTEADY(mouse='left', nClick=1):
     return 1
 
 
-def do_RMP(scrorwind, x, y, mouse='left', nClick=1):
+def do_RMP(scrorwind, x, y, mouse='left', nClick=1, **kw):
     # relative mouse position and click
     # new 2017: 3 = relative to active monitor
     if not scrorwind in [0,1,3,5]:
-        raise UnimacroError, 'Mouse action not supported with relativeTo: %s' % scrorwind
+        raise UnimacroError('Mouse action not supported with relativeTo: %s' % scrorwind)
     # first parameter 1: relative:
     natqh.doMouse(1,scrorwind,x,y,mouse,nClick)  # relative, rel to window, x, y,click
     return 1
     
-def do_PRMP(all=0):
+def do_PRMP(all=0, **kw):
     # print relative mouse position
     natqh.printMousePosition(1,all)  # relative
     return 1
     
 
-def do_PMP(all=0):
+def do_PMP(all=0, **kw):
     # print absolute mouse position
     natqh.printMousePosition(0,all)  # absolute
     return 1
 
-def do_PALLMP():
+def do_PALLMP(**kw):
     # print all mouse positions
     natqh.printMousePosition(0,1)  # absolute
     natqh.printMousePosition(1,1)  # relative
     
 
 # Get the NatSpeak main menu:
-def do_NSM():
+def do_NSM(**kw):
     modInfo = natlink.getCurrentModule()
     prog = natqh.getProgName(modInfo)
     if prog == 'natspeak':
@@ -1111,11 +1117,11 @@ def do_NSM():
 
 
 # shorthand for sendsystemkeys:
-def do_SSK(s):
+def do_SSK(s, **kw):
     natut.playString(s, natut.hook_f_systemkeys)
     return 1
 
-def do_S(s):
+def do_S(s, **kw):
     """do a simple keystroke
     temporarily with {shift} in front because of bugworkaround (Frank)
     """
@@ -1123,12 +1129,12 @@ def do_S(s):
     return 1
 
 
-def do_ALTNUM(s):
+def do_ALTNUM(s, **kw):
     """send keystrokes with alt and numkey inserted
     
     werkt niet!!
     """
-    if type(s) == types.IntType:
+    if type(s) == int:
         s = str(s)
     keydown = natut.wm_syskeydown
     keyup = natut.wm_syskeyup
@@ -1140,7 +1146,7 @@ def do_ALTNUM(s):
     sequence = [altdown]
     for code in s:
         if not code in '0123456789':
-            print 'code should be a digit, not: %s (%s)'% (code, s)
+            print('code should be a digit, not: %s (%s)'% (code, s))
             return
         i = int(s)
         keycode = numkeyzero + int(code)
@@ -1149,7 +1155,7 @@ def do_ALTNUM(s):
     sequence.append(altup)
     natlink.playEvents(sequence)
     
-def do_SCLIP(*s):
+def do_SCLIP(*s, **kw):
     """send keystrokes through the clipboard
     """
     natqh.saveClipboard()
@@ -1159,7 +1165,7 @@ def do_SCLIP(*s):
     ## assume , = ", "
     ## also assume {enter} = newline. No {enter 2}  etc recognised
     # print 's: %s type: %s'% (s, type(s))
-    total = ', '.join(utilsqh.convertToUnicode(part) for part in s)
+    total = ', '.join(str(part) for part in s)
     #if len(s) > 1:
     #    for i, t in enumerate(s):
     #        print "SCLIP:", i, t
@@ -1173,33 +1179,33 @@ def do_SCLIP(*s):
     natqh.restoreClipboard() 
 
 
-def do_RW():
+def do_RW(**kw):
     natqh.rememberWindow()
     return 1
 
-def do_CW():
+def do_CW(**kw):
     """obsolete..."""
     natqh.clearWindowHandle()
     return 1
 
-def do_RTW():
+def do_RTW(**kw):
     natqh.returnToWindow()
     return 1
 
-def do_SELECTWORD(count=1, direction=None):
+def do_SELECTWORD(count=1, direction=None, **kw):
     """select the word under the cursor"""
-    print 'try to select %s word(s) under cursor (direction: %s)'% (count, direction)
+    print('try to select %s word(s) under cursor (direction: %s)'% (count, direction))
     natqh.saveClipboard()
     if not direction in ['left', 'right']:
         # try if at end of word:
         doKeystroke("{extright}{shift+extleft}{ctrl+c}{extright}{extleft}")
         t = natqh.getClipboard()
-        if t in unicode(string.letters):
+        if t in utilsqh.letters:
             direction = 'right'
-            print 'make direction right'
+            print('make direction right')
         else:
             direction = 'left'
-            print 'make direction left'
+            print('make direction left')
     if direction == 'left':
         doKeystroke("{extleft}{ctrl+extright}{shift+ctrl+extleft %s}"% count)
     elif direction == 'right':
@@ -1209,7 +1215,7 @@ def do_SELECTWORD(count=1, direction=None):
     doAction("<<copy>>")
     natqh.visibleWait()
     t = natqh.getClipboard()
-    if len(t) == 1 and t in unicode(string.letters):
+    if len(t) == 1 and t in utilsqh.letters:
         pass
     elif direction == 'left':
         while t and t.startswith(' '):
@@ -1228,58 +1234,59 @@ def do_SELECTWORD(count=1, direction=None):
 # (so default = 1 second)
 # for a new window title, if no title is given
 # wait for a change
-def do_WTC(nWait=20, waitingTime=0.05, **args):
+def do_WTC(nWait=20, waitingTime=0.05, **kw):
     """wait for a change in window title, on succes return 1
     
     after found, check also if title is stable
     """
-    return natqh.waitForNewWindow(nWait, waitingTime, **args)
+    return natqh.waitForNewWindow(nWait, waitingTime, **kw)
 ##    natqh.ForceGotBegin()
 
 # wait for Window Title
-def do_WWT(titleName, nWait=20, waitingTime=0.05, **args):
+def do_WWT(titleName, nWait=20, waitingTime=0.05, **kw):
     """wait for specified window title, on succes return 1
     """
-    return natqh.waitForWindowTitle(titleName, nWait, waitingTime, **args)
+    return natqh.waitForWindowTitle(titleName, nWait, waitingTime, **kw)
   
 # waiting function:
-def do_W(t=None):
+def do_W(t=None, **kw):
+    t = t or 0.1
     if debug > 7: D('waiting: %s'%t)
-    elif debug and t > 2000: D('waiting: %s'%t)
+    elif debug and t > 2: D('waiting: %s'%t)
     natqh.Wait(t)
     return 1
         
 do_WAIT = do_W
 # Long Wait:
-def do_LW():
+def do_LW(**kw):
     natqh.longWait()
     return 1
 do_LONGWAIT = do_LW
 # Visible Wait:
-def do_VW():
+def do_VW(**kw):
     natqh.visibleWait()
     return 1
 do_VISIBLEWAIT = do_VW
 
 # Short Wait:
-def do_SW():
+def do_SW(**kw):
     natqh.shortWait()
     return 1
 do_SHORTWAIT = do_SW
 
-def do_KW(action1=None, action2=None):
+def do_KW(action1=None, action2=None, **kw):
     """kill window
 
     """
     if action1:
         if action2:
 ##        print 'KW with: %s'% action1
-            killWindow(action1, action2)
+            killWindow(action1, action2, **kw)
         else:
-            killWindow(action1)
+            killWindow(action1, **kw)
     else:
 ##        print 'KW without action 1'
-        killWindow()
+        killWindow(**kw)
     return 1
 
 ## def do_RS():
@@ -1296,7 +1303,7 @@ def do_KW(action1=None, action2=None):
 ##     else:
 ##         print 'reformat selection (RS) requires a selection first'
 
-def do_DATE(Format=None, Action=None):
+def do_DATE(Format=None, Action=None, **kw):
     """give today's date
 
     format maybe adapted, default = "%d/%m"    
@@ -1318,16 +1325,16 @@ def do_DATE(Format=None, Action=None):
         if formatStrip:
             fdate = fdate.lstrip('0')
             fdate = fdate.replace('/0', '/')
-            print 'stripped fdate: |%s|'% fdate
+            print('stripped fdate: |%s|'% fdate)
         doKeystroke(fdate)
     elif Action in ['speak']:
         command = 'TTSPlayString "%s"'% fdate
         natlink.execScript(command)
     else:
-        print 'invalid Action for DATE: %s'% Action
+        print('invalid Action for DATE: %s'% Action)
     return 1
 
-def do_TIME(Format=None, Action=None):
+def do_TIME(Format=None, Action=None, **kw):
     """give current time
 
     Format maybe adapted, default = "%H:%M"    
@@ -1351,50 +1358,50 @@ def do_TIME(Format=None, Action=None):
         command = 'TTSPlayString "%s"'% ftime
         natlink.execScript(command)
     else:
-        print 'invalid Action for DATE: %s'% Action
+        print('invalid Action for DATE: %s'% Action)
         
     return 1
 
 Date = do_DATE
 
-def do_SPEAK(t):
+def do_SPEAK(t, **kw):
     """speak text through TTSPlayString
     """
     command = 'TTSPlayString "%s"'% t
     natlink.execScript(command)
 
-def do_PRINT(t):
+def do_PRINT(t, **kw):
     """print text to Messages of Python Macros window
     """
-    print t
+    print(t)
 
-def do_PRINTALLENVVARIABLES():
+def do_PRINTALLENVVARIABLES(**kw):
     """print all environment variables to the messages window
     """
-    print '-'*40
-    print 'These can be used for "expansion", as eg %NATLINKDIRECTORY% in the grammar _folders and other places:'
+    print('-'*40)
+    print('These can be used for "expansion", as eg %NATLINKDIRECTORY% in the grammar _folders and other places:')
     natlinkcorefunctions.printAllEnvVariables()
-    print '-'*40
+    print('-'*40)
 
-def do_PRINTNATLINKENVVARIABLES():
+def do_PRINTNATLINKENVVARIABLES(**kw):
     """print all environment variables to the messages window
     """
     natlinkEnvVariables = natlinkstatus.AddNatlinkEnvironmentVariables()
-    print '-'*40
-    print 'These can be used for "expansion", as eg %NATLINKDIRECTORY% in the grammar _folders and other places:'
+    print('-'*40)
+    print('These can be used for "expansion", as eg %NATLINKDIRECTORY% in the grammar _folders and other places:')
     for k in sorted(natlinkEnvVariables.keys()):
         print("%s\t%s"% (k, natlinkEnvVariables[k]))
-    print '-'*40
+    print('-'*40)
     
-def do_T():
+def do_T(**kw):
     """return true only"""
     return 1
 
-def do_F():
+def do_F(**kw):
     """return false only (empty action will do as well)"""
     return 
 
-def do_A(n):
+def do_A(n, **kw):
     """print ascii code
 
     A 208 prints the ETH character
@@ -1404,7 +1411,7 @@ def do_A(n):
     doKeystroke(chr(n))
     return 1
 
-def do_U(n):
+def do_U(n, **kw):
     """print unicode code
     U Delta
     U 00cb  (Euml)
@@ -1413,18 +1420,16 @@ def do_U(n):
 
 
     """
-    if type(n) == six.text_type:
-        n = utilsqh.convertToBinary(n)
-    if type(n) == six.binary_type:
-        Code = htmlentitydefs.name2codepoint.get(n, n)
-        if type(Code) == types.IntType:
+    if type(n) != str:
+        Code = html.entities.name2codepoint.get(n, n)
+        if type(Code) == int:
             # is in defs
             pass
         else:
             # some 4 letter hexcode:
             # print 'stringlike code: %s, convert to hex number'% Code
             exec("Code = 0x%s"% Code)
-    elif type(n) == types.IntType:
+    elif type(n) == int:
         # intended as hex code, but by unimacro converted into int. 
         # convert to back to hex:
         # print 'numlike code, convert to hex: %s'% n
@@ -1437,7 +1442,7 @@ def do_U(n):
         # print 'do direct, ascii: %s, %s'% (Code, chr(Code))
         natut.playString(chr(Code))
         return
-    u = unichr(Code)
+    u = chr(Code)
     # output through the clipboard with special code:
     natqh.saveClipboard()
     #win32con.CF_UNICODETEXT = 13
@@ -1453,26 +1458,26 @@ def do_MSG(*args, **kw):
     t = ', '.join(args)
     return Message(t, **kw)
 
-def do_DOCUMENT(number=None):
+def do_DOCUMENT(number=None, **kw):
     """switch to document (program specific) with number"""
 ##    print 'action: goto task: %s'% number
     prog, title, topchild, windowHandle = natqh.getProgInfo()
     if not prog:
-        print 'action DOCUMENT, no program in foreground: %s (%S)'% (prog, title)
+        print('action DOCUMENT, no program in foreground: %s (%S)'% (prog, title))
         return
     if number:
         try:
             count = int(number)
         except ValueError:
-            print 'action DOCUMENT, invalid number: %s'% number
+            print('action DOCUMENT, invalid number: %s'% number)
             return
         if not count:
-            print 'action DOCUMENT, invalid number: %s'% number
+            print('action DOCUMENT, invalid number: %s'% number)
             return
 
         section = 'positions %s'% prog
         if not ini.get(section):
-            print 'no mouse positions defined for DOCUMENT action in program: %s'% prog
+            print('no mouse positions defined for DOCUMENT action in program: %s'% prog)
             return
 
         mouseX1 = ini.getInt(section, 'mousex1')
@@ -1487,15 +1492,15 @@ def do_DOCUMENT(number=None):
 ##        natqh.shortWait()
 ##        natqh.buttonClick()
     else:
-        print 'call action DOCUMENT with a number!'
+        print('call action DOCUMENT with a number!')
         return
     return 1
 
     
-def do_TASK(number=None):
+def do_TASK(number=None, **kw):
     """switch to task with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, windowHandle = natqh.getProgInfo()
+    prog, title, topchild, windowHandle = lkw['progInfo']
     if prog == 'explorer' and not title:
         doKeystroke('{esc}')
         natqh.shortWait()
@@ -1503,10 +1508,10 @@ def do_TASK(number=None):
         try:
             count = int(number)
         except ValueError:
-            print 'action TASK, invalid number: %s'% number
+            print('action TASK, invalid number: %s'% number)
             return
         if not count:
-            print 'action TASK, invalid number: %s'% number
+            print('action TASK, invalid number: %s'% number)
             return
 
         # extra to remove focus:        
@@ -1526,10 +1531,10 @@ def do_TASK(number=None):
 ##        natqh.shortWait()
 ##        natqh.buttonClick()
     else:
-        print 'call action TASK with a number!'
+        print('call action TASK with a number!')
     return 1
 
-def do_TOCLOCK(click=None):
+def do_TOCLOCK(click=None, **kw):
     """position mouse on clock, which gives taskbar menu
     """
     x = ini.get('positions', 'clockx')
@@ -1543,20 +1548,20 @@ def do_TOCLOCK(click=None):
         natqh.doMouse(0,0,x,y,click)
         natqh.Wait()
     else:
-        print 'invalid mouse position for clock, do "task position clock" from grammar _general'
+        print('invalid mouse position for clock, do "task position clock" from grammar _general')
     return 1
  
-def do_CLIPSAVE():
+def do_CLIPSAVE(**kw):
     """saves and empties the clipboard"""
     natqh.saveClipboard()
     return 1
 
-def do_CLIPRESTORE():
+def do_CLIPRESTORE(**kw):
     """saves and empties the clipboard"""
     natqh.restoreClipboard()
     return 1
 
-def do_CLIPISNOTEMPTY():
+def do_CLIPISNOTEMPTY(**kw):
     """returns 1 if clipboard is not empty
 
     should be done after a CLIPEMPTY
@@ -1568,26 +1573,26 @@ def do_CLIPISNOTEMPTY():
     D('empty clipboard found, restore and return')
     natqh.restoreClipboard()
     
-def do_GETCLIPBOARD():
+def do_GETCLIPBOARD(**kw):
     """returns the contents of the clipboars"""
     return natqh.getClipboard()
    
-def do_COPYNAME():
+def do_COPYNAME(**kw):
     """returns the name of a file or folder if windows explorer or #32770
     """
-    print 'abacadabra'
+    print('abacadabra')
     return 'abacadabra'
 
     
-def do_IFWT(title, action):
+def do_IFWT(title, action, **kw):
     """unimacro shorthand command IfWindowTitleDoAction
     insert a standard wait in order to let the previous action be performed...
     """
-    print 'do_IFWT, %s, %s'% (title, action)
+    print('do_IFWT, %s, %s'% (title, action))
     do_W()
     return IfWindowTitleDoAction(title, action)
 
-def IfWindowTitleDoAction(title, action):
+def IfWindowTitleDoAction(title, action, **kw):
     """do an action only if the title matches the window title
     """
     if natqh.matchTitle(title):
@@ -1597,7 +1602,7 @@ def IfWindowTitleDoAction(title, action):
         # print 'title: %s, does not match'% title
     return 1
     
-def killWindow(action1='<<windowclose>>', action2='<<killletter>>'):
+def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
     """Closes a window and asks automatically for confirmation
 
     The default action 1 is "{alt+f4}",
@@ -1607,25 +1612,39 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>'):
     command
  
     """
-    modInfo = natlink.getCurrentModule()
-    prog = natqh.getProgName(modInfo)
+    if kw['progInfo']:
+        prog, title, topchild, windowHandle = kw['progInfo']
+    else:
+        prog, title, topchild, windowHandle = 'unknown', 'unknown', 'top', 0
+        
     progNew = prog
-    prevHandle = modInfo[2]
-    doAction(action1)
+    prevHandle = windowHandle
+    doAction(action1, **kw)
     natqh.shortWait()
     count = 0
     while count < 20:
         count += 1
-        modInfo = natlink.getCurrentModule()
+        try:
+            modInfo = natlink.getCurrentModule()
+            print("modinfo through natlink: %s"% repr(modInfo))
+        except:
+            modInfo = autohotkeyactions.getModInfo()
+            print("modinfo through AHK: %s"% repr(modInfo))
         progNew = natqh.getProgName(modInfo)
+            
         if progNew != prog: break
         handle = modInfo[2]
         if handle != prevHandle:
+            kw = {}
+            kw['modInfo'] = modInfo
+
             if not natqh.isTopWindow(handle):
                 # child:
-                doAction(action2)
+                print('do action2: %s'% action2)
+                doAction(action2, **kw)
             elif topWindowBehavesLikeChild(modInfo):
-                doAction(action2)
+                print('topWindowBehavesLikeChild action2: %s'% action2)
+                doAction(action2, **kw)
             break
         
         natqh.shortWait()
@@ -1648,8 +1667,13 @@ def topWindowBehavesLikeChild(modInfo):
         #print 'topchildDict: %s'% topchildDict
     if topchildDict == {}:
         return
-    prog, title, dummy, handle = natqh.getProgInfo(modInfo)
-    return matchProgTitleWithDict(prog, title, topchildDict, matchPart=1)
+    prog, title, dummy, hndle = natqh.getProgInfo(modInfo)
+    result = matchProgTitleWithDict(prog, title, topchildDict, matchPart=1)
+    if result: return result
+    className = win32gui.GetClassName(hndle)
+    # print('className: %s'% className)
+    if className in ["MozillaDialogClass"]:
+        return True
             
 def childWindowBehavesLikeTop(modInfo):
     """return the result of the ini file dict
@@ -1673,7 +1697,7 @@ def matchProgTitleWithDict(prog, title, Dict, matchPart=None):
     if not Dict: return
     if prog in Dict:
         titles = Dict[prog]
-        if type(titles) in (six.binary_type, six.text_type):
+        if type(titles) == str:
             titles = [titles]
         titles = [t.lower() for t in titles]
         title = title.strip().lower()
@@ -1687,7 +1711,7 @@ def matchProgTitleWithDict(prog, title, Dict, matchPart=None):
             return 1
 
 
-def do_ALERT(alert=1):
+def do_ALERT(alert=1, **kw):
     micState = natlink.getMicState()
     if micState in ['on', 'sleeping']:
         natlink.setMicState('off')
@@ -1705,7 +1729,7 @@ def do_ALERT(alert=1):
 
 Alert = do_ALERT
 
-def do_WINKEY(letter=None):
+def do_WINKEY(letter=None, **kw):
     """call the winkeys.dll with one letter
     
     if a number is taken, this number is converted into a string"""
@@ -1714,12 +1738,7 @@ def do_WINKEY(letter=None):
     win32api.keybd_event(winkey, 0, 0, 0)  # key down
     try:
         if not letter is None:
-            if type(letter) == six.text_type:
-                letter == utilsqh.convertToBinary(letter)
-            if type(letter) == six.binary_type:
-                do_SSK(letter)
-            else:
-                do_SSK(str(letter))  # for winkey 1 etc.
+            do_SSK(letter)
     finally:
         win32api.keybd_event(winkey, 0, keyup, 0)  # key up
     return 1
@@ -1736,7 +1755,7 @@ def do_WINKEY(letter=None):
 
 Winkey = do_WINKEY        
 
-def do_TASKTOSCREEN(screennumber, winHndle=None):
+def do_TASKTOSCREEN(screennumber, winHndle=None, **kw):
     """call the monitorfunctions to put task to screen 0, 1, ... depending on the number of screens"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
@@ -1745,10 +1764,10 @@ def do_TASKTOSCREEN(screennumber, winHndle=None):
     try:
         wantedMonitor = allMonitors[screennumber]
     except IndexError:
-        print 'wanted monitor: %s, allMonitors: %s'% (screennumber, allMonitors)
+        print('wanted monitor: %s, allMonitors: %s'% (screennumber, allMonitors))
         return
     if wantedMonitor == mon:
-        print 'already on monitor %s (%s)'% (screennumber, wantedMonitor)
+        print('already on monitor %s (%s)'% (screennumber, wantedMonitor))
         return
     resize = monitorfunctions.window_can_be_resized(winHndle)
     monitorfunctions.move_to_monitor(winHndle, wantedMonitor, mon, resize)
@@ -1761,29 +1780,29 @@ def do_TASKOD(winHndle=None):
     mon = monitorfunctions.get_nearest_monitor_window(winHndle)
     otherMons = monitorfunctions.get_other_monitors(mon)
     if not otherMons:
-        print 'only one monitor found'
+        print('only one monitor found')
         return
     otherMon = otherMons[0]
     if len(otherMons) > 1:
-        print 'more than 1 other monitors found (%s), take first: %s'% \
-                   (otherMons, otherMon)
+        print('more than 1 other monitors found (%s), take first: %s'% \
+                   (otherMons, otherMon))
     resize = monitorfunctions.window_can_be_resized(winHndle)
     monitorfunctions.move_to_monitor(winHndle, otherMon, mon, resize)
     return 1
 
-def do_TASKMAX(winHndle=None):
+def do_TASKMAX(winHndle=None, **kw):
     """call the monitorfunctions maximize task"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
     monitorfunctions.maximize_window(winHndle)
     return 1
-def do_TASKMIN(winHndle=None):
+def do_TASKMIN(winHndle=None, **kw):
     """call the monitorfunctions to minimize task"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
     monitorfunctions.minimize_window(winHndle)
     return 1
-def do_TASKRESTORE(winHndle=None, keepinside=1):
+def do_TASKRESTORE(winHndle=None, keepinside=1, **kw):
     """call the monitorfunctions to restore task, keep inside monitor by default"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
@@ -1794,7 +1813,7 @@ TaskOtherDisplay = do_TASKOD
 
 
 # do emacs command:
-def do_EMACS(*args):
+def do_EMACS(*args, **kw):
     """do emacs command in minibuffer"""
     doAction("{alt+x}")
     do_W()
@@ -1850,14 +1869,10 @@ def Message(t, title=None, icon=64, alert=None, switchOnMic=None):
     """
     if icon in MsgboxConfirmIconDict:
         icon = MsgboxConfirmIconDict[icon]
-    if icon not in MsgboxConfirmIconDict.values():
+    if icon not in list(MsgboxConfirmIconDict.values()):
         raise ValueError("Unimacro actions Message, invalid value for icon: %s"% icon)
-    if type(t) == six.text_type:
-        t = utilsqh.convertToBinary(t)
 
-    if type(t) == six.binary_type:
-        pass
-    else:
+    if type(t) != str:
         t = '\n'.join(t)
 
     tt = checkTextInMessage(t)
@@ -1874,10 +1889,10 @@ def Message(t, title=None, icon=64, alert=None, switchOnMic=None):
     try:
         natlink.execScript('MsgBoxConfirm "%s", %s, "%s"'% (tt, icon, title))
     except SyntaxError:
-        print 'execScript SyntaxError\n' \
+        print('execScript SyntaxError\n' \
               'tt: %s\n' \
               'icon: %s\n' \
-              'title: %s\n'% (tt, icon, title)
+              'title: %s\n'% (tt, icon, title))
     newMicState = natlink.getMicState()
     if switchOnMic and micState != newMicState:
         natlink.setMicState(micState)
@@ -1902,14 +1917,10 @@ def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0):
     """
     if icon in MsgboxConfirmIconDict:
         icon = MsgboxConfirmIconDict[icon]
-    if icon not in MsgboxConfirmIconDict.values():
+    if icon not in list(MsgboxConfirmIconDict.values()):
         raise ValueError("Unimacro actions Message, invalid value for icon: %s"% icon)
 
-    if type(t) == six.text_type:
-        t = utilsqh.convertToBinary(t)
-    if type(t) == six.binary_type:
-        pass
-    else:
+    if type(t) != str:
         t = '\n'.join(t)
     tt = checkTextInMessage(t)
     title = title or "Unimacro Question"
@@ -1917,7 +1928,7 @@ def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0):
 
     if icon in MsgboxConfirmIconDict:
         icon = MsgboxConfirmIconDict[icon]
-    if icon not in MsgboxConfirmIconDict.values():
+    if icon not in list(MsgboxConfirmIconDict.values()):
         raise ValueError("Unimacro actions YesNo, invalid value for icon: %s"% icon)
     icon += 4 # yes no button
     if defaultToSecondButton:
@@ -1941,10 +1952,10 @@ def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0):
             #print 'cmd: %s'% cmd
             natlink.execScript(cmd)
         except natlink.SyntaxError:
-            print 'execScript SyntaxError\n' \
+            print('execScript SyntaxError\n' \
                   'tt: %s\n' \
                   'icon: %s\n' \
-                  'title: %s\n'% (tt, icon, title)
+                  'title: %s\n'% (tt, icon, title))
         natqh.Wait(0.1)
         newMicState = natlink.getMicState()
         result = (newMicState == 'sleeping')
@@ -1983,7 +1994,7 @@ def findCursor():
         doAction("CLIPRESTORE")
         return 1
     else:
-        print 'invalid clipboard: %s'% t
+        print('invalid clipboard: %s'% t)
         doAction("<<paste>>; CLIPRESTORE")
 
 
@@ -1991,7 +2002,7 @@ bringups = {}
 # special:
 voicecodeApp = 'emacs'
 
-def UnimacroBringUp(app, filepath=None):
+def UnimacroBringUp(app, filepath=None, title=None, extra=None):
     """get a running copy of app in the foreground
 
     the full path can be set in section [bringup app], key path
@@ -2015,6 +2026,94 @@ def UnimacroBringUp(app, filepath=None):
     if checkForChanges:
         doCheckForChanges() # resetting the ini file if changes were made
 
+    if autohotkeyactions.ahk_is_active():
+        scriptFolder = autohotkeyactions.GetAhkScriptFolder()
+        if not os.path.isdir(scriptFolder):
+            raise IOError('no scriptfolder for AHK: %s'%s)
+        WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
+
+        if ((app and app.lower() == "winword") or
+            (filepath and (filepath.endswith(".docx") or filepath.endswith('.doc')))):
+            script = autohotkeyactions.GetRunWinwordScript(filepath, WinInfoFile)
+            result = autohotkeyactions.do_ahk_script(script)
+
+        elif app and title:
+            ## start eg thunderbird.exe this way
+            ## can also give additional startup instructions in extra
+            extra = extra or ""
+            script = '''SetTitleMatchMode, 2
+Process, Exist, ##basename##
+if !ErrorLevel = 0
+{
+    IfWinNotActive, ##title##,
+    WinActivate, ##title##, 
+    WinWaitActive, ##title##,
+}
+else
+{
+    Run, ##app##
+    WinWait, ##title##
+}
+##extra##
+WinGet pPath, ProcessPath, A
+WinGetTitle, Title, A
+WinGet wHndle, ID, A
+FileDelete, ##WININFOfile##
+FileAppend, %pPath%`n, ##WININFOfile##
+FileAppend, %Title%`n, ##WININFOfile##
+FileAppend, %wHndle%, ##WININFOfile##
+
+'''
+            basename = os.path.basename(app)
+            script = script.replace('##extra##', extra)
+            script = script.replace('##app##', app)
+            script = script.replace('##basename##', basename)
+            script = script.replace('##title##', title)
+            script = script.replace('##WININFOfile##', WinInfoFile)
+            result = autohotkeyactions.do_ahk_script(script)
+                
+        else:
+            ## other programs:
+            if app and filepath:
+                script = ["Run, %s, %s,,NewPID"% (app, filepath)]
+            elif filepath:
+                script = ["Run, %s,,, NewPID"% filepath]
+            elif app:
+                script = ["Run, %s,,, NewPID"% app]
+        
+            script.append("WinWait, ahk_pid %NewPID%")
+        
+            script.append("WinGet, pPath, ProcessPath, ahk_pid %NewPID%")
+            script.append("WinGetTitle, Title, A")  ##, ID, ahk_pid %NewPID%")
+            script.append("WinGet, wHndle, ID, ahk_pid %NewPID%")
+            script.append('FileDelete, ' + WinInfoFile)
+            script.append('FileAppend, %pPath%`n, ' + WinInfoFile)
+            script.append('FileAppend, %Title%`n, ' + WinInfoFile)
+            script.append('FileAppend, %wHndle%, ' + WinInfoFile)
+            script = '\n'.join(script)
+        
+            result = autohotkeyactions.do_ahk_script(script)
+
+        ## collect the wHndle:
+        if result == 1:
+            winInfo = open(WinInfoFile, 'r').read().split('\n')
+            if len(winInfo) == 3:
+                # make hndle decimal number:
+                pPath, wTitle, hndle = winInfo
+                hndle = int(hndle, 16)
+                print('extracted pPath: %s, wTitle: %s and hndle: %s'% (pPath, wTitle, hndle))
+                return pPath, wTitle, hndle
+            else:
+                if natlink.isNatSpeakRunning():
+                    mess = "Result of ahk_script should be a 3 item list (pPath, wTitle, hndle), not: %s"% repr(winInfo)
+                    do_MSG(str(mess))
+                print(str())
+                return 0
+        else:
+            if natlink.isNatSpeakRunning():
+                do_MSG(str(result))
+            print(str(result))
+            return 0
     # intermediate app and special treatment:
     # for voicecode (which you can call with BRINGUP voicecode) you need
     # voicecodeApp ('emacs') and (optional, but in this case) function voicecodeBringUp
@@ -2113,7 +2212,7 @@ def UnimacroBringUp(app, filepath=None):
                 hndle = bringups[app][2]
                 if debug: D('hndle to switch to: %s'% hndle)
                 if not natqh.SetForegroundWindow(hndle):
-                    print 'could not bring to foreground: %s, exit action'% hndle
+                    print('could not bring to foreground: %s, exit action'% hndle)
                     
                 if do_WTC():
                     prog, title, topOrChild, handle = natqh.getProgInfo()
@@ -2165,6 +2264,8 @@ def UnimacroBringUp(app, filepath=None):
 #                    (app, appName, appPath, prog, title, hndle))
 #    # else fail, return None
 
+## was:
+
 def getAppPath(app):
     """use from openFileDefault, get path of application or None
     """
@@ -2195,9 +2296,9 @@ def dragonpadBringUp():
         if windowCorrespondsToApp('dragonpad', 'natspeak', prog, title):
             break
         do_W(0.1)
-        print 'try to check for DP: %s'% prog
+        print('try to check for DP: %s'% prog)
     else:
-        print 'could not bringup DragonPad'
+        print('could not bringup DragonPad')
         return
     return 1
         
@@ -2226,13 +2327,13 @@ def voicecodeBringUp():
     if startVoiceCoder():
         return checkUser('VoiceCode')
     if not startMediator():
-        print 'could not bringup Mediator in cmd window, but try again to start voicecoder in emacs'
+        print('could not bringup Mediator in cmd window, but try again to start voicecoder in emacs')
     # could be left in another app, so:
     if not UnimacroBringUp('emacs'):
-        print 'could not bringup emacs after starting the Mediator window'
+        print('could not bringup emacs after starting the Mediator window')
         return
     if not startVoiceCoder():
-        print 'could not start voicecoder in emacs window'
+        print('could not start voicecoder in emacs window')
         return
     # check user:
     return checkUser('VoiceCode')
@@ -2261,7 +2362,7 @@ def startVoiceCoder(nTrie=2):
     """
     prog, title, topOrChild, handle = natqh.getProgInfo()
     if prog != voicecodeApp:
-        print 'startVoiceCoder needs correct app first: %s, not: %s'% (voicecodeApp, prog)
+        print('startVoiceCoder needs correct app first: %s, not: %s'% (voicecodeApp, prog))
         return
     if title.find("(yak ") >= 0:
         if debug: D('found voicecoder right away')
@@ -2282,7 +2383,7 @@ def startMediator():
     """start the mediator  for voicecoder"""
     natlink.setMicState("off")
     if not UnimacroBringUp("cmd"):
-        print 'could not BringUp "cmd"'
+        print('could not BringUp "cmd"')
         return
     vcode_home = os.environ["VCODE_HOME"]
     if debug > 2: D('vcode_home: %s'% vcode_home)
@@ -2363,15 +2464,15 @@ def getPathOfOpenFile():
         if os.path.isfile(fileName):
             return fileName
         else:
-            print 'not a valid fileName: %s'% fileName
+            print('not a valid fileName: %s'% fileName)
     else:
-        print 'no filename found for program: %s'% prog
+        print('no filename found for program: %s'% prog)
 
 if debug:
     try:
         debugSock = open(debugFile, 'w')
     except IOError:
-        print '_actions, IOError, cannot write debug statements to: %s'% debugFile
+        print('_actions, IOError, cannot write debug statements to: %s'% debugFile)
 else:
     try:
         os.remove(debugFile)

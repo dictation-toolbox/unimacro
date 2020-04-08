@@ -8,7 +8,9 @@
 #   the site mechanism (of Qh private) in which modules of a website generating program
 #   are tested specifically
 #
-import sys, unittest, types
+import sys
+import unittest
+import types
 import os
 import os.path
 import TestCaseWithHelpers
@@ -25,13 +27,13 @@ def getBaseFolder(globalsDict=None):
     baseFolder = ""
     if globalsDictHere['__name__']  == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print 'baseFolder from argv: %s'% baseFolder
+        print('baseFolder from argv: %s'% baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print 'baseFolder from __file__: %s'% baseFolder
+        print('baseFolder from __file__: %s'% baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print 'baseFolder was empty, take wd: %s'% baseFolder
+        print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
 thisDir = getBaseFolder(globals())
@@ -59,9 +61,9 @@ class UnittestFolders(TestCaseWithHelpers.TestCaseWithHelpers):
         a way to get in with the debugger of Komodo:
         """
         func = self.grammarInstance.getSiteInstance
-        print 'func: %s'% func
+        print('func: %s'% func)
         result = func('sg')
-        print 'result: %s'% result
+        print('result: %s'% result)
 
     def tttestGetActiveExplorer(self):
         """test the connecting of an active explorer
@@ -72,9 +74,9 @@ class UnittestFolders(TestCaseWithHelpers.TestCaseWithHelpers):
         # fill here the windows hndle... (give window info from _general)
         hndle = 788422  # #32770, 
         hndle = 265916  # explorer, 
-        print 'func: %s'% func
+        print('func: %s'% func)
         result = func(hndle)
-        print 'result: %s'% result
+        print('result: %s'% result)
     
     def tttestGet_current_directory(self):
         """test getting the current directory
@@ -87,7 +89,7 @@ class UnittestFolders(TestCaseWithHelpers.TestCaseWithHelpers):
         func = self.grammarInstance.get_current_directory
         # fill here the windows hndle... (give window info from _general)
         result = func(hndle)
-        print 'result: %s'% result
+        print('result: %s'% result)
 
     def testToPartOfRecognition(self):
         """test getting hasCommon function in remember rule
@@ -101,12 +103,12 @@ class UnittestFolders(TestCaseWithHelpers.TestCaseWithHelpers):
         self.grammarInstance.nextRule = "dgndictation"
         # fill here the windows hndle... (give window info from _general)
         result = func(['deze', 'folder', 'onthoud', 'als'], {})
-        print 'result: %s'% result
+        print('result: %s'% result)
     
     
             
 def log(t):
-    print t
+    print(t)
 
 def run():
     log('starting unittestFolders')
@@ -117,6 +119,6 @@ def run():
     suite = unittest.makeSuite(UnittestFolders, 'test')
 ##    natconnectOption = 0 # no threading has most chances to pass...
     result = unittest.TextTestRunner().run(suite)
-    print result
+    print(result)
 if __name__ == "__main__":
     run()

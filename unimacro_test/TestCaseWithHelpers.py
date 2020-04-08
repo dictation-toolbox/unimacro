@@ -1,4 +1,4 @@
-from __future__ import unicode_literals, print_function
+
 ################################################################################
 # IIPyhonUtils
 #
@@ -13,13 +13,12 @@ from __future__ import unicode_literals, print_function
 ################################################################################
 import os
 import re
-import string
 import types
 import unittest
 from pprint import pformat
 import filecmp
-import six
 import itertools
+import readwritefile
 
 class AssertStringEqualsFailed(AssertionError):
     def __init__(self, exp_string, got_string, first_diff, orig_message):
@@ -79,6 +78,8 @@ class TestCaseWithHelpers(unittest.TestCase):
                 mess = mess + "\nExpected:\n   %s\nGot:\n   %s" % (expected, got)
 
                 self.fail(mess)
+        if type(expected) is None and type(got) is None:
+            return
 
         if (self.issequence(expected)):
             self.assert_equal_sequence(expected, got, mess, epsilon)
@@ -105,7 +106,7 @@ class TestCaseWithHelpers(unittest.TestCase):
     def assert_equal_string(self, exp_string, got_string, message=''):
         if self.isbinary(got_string):
             mess = "WARNING, got binary string expectied str, %s "% got_string
-            got_string = unicode(got_string)
+            got_string = str(got_string)
         first_diff = self.find_first_diff_char(got_string, exp_string)
 
         if first_diff != None:
@@ -163,11 +164,11 @@ class TestCaseWithHelpers(unittest.TestCase):
     def assert_equal_objects(self, expected, got, mess, epsilon=0):
         self.assert_equal(self.what_class(expected), self.what_class(got),
                            mess + "\n----\nThe two objects were not of the same class or type.")
-
-        self.assert_equal(expected.__dict__, got.__dict__,
-                           mess + "\n----\nAttributes of the two objects differed."
-                                + "\nExpected:\n   %s\nGot:\n   %s" % (expected.__dict__, got.__dict__),
-                           epsilon)
+        
+        result = expected == got
+        self.assert_equal(True, result,
+                           mess + "\n----\nObjects differ"
+                                + "\nExpected:\n   %s\nGot:\n   %s" % (repr(expected), repr(got)))
 
     def check_for_infinite_recursion_error(self, err):
         if (isinstance(err, RuntimeError) and
@@ -185,7 +186,7 @@ class TestCaseWithHelpers(unittest.TestCase):
             self.fail(mess)
 
     def assert_string_contains(self, pattern, the_string, mess=''):
-        self.assertTrue(string.find(the_string, pattern) != -1,
+        self.assertTrue(the_string.find(pattern) != -1,
                      mess + "\nSubstring: '%s' was not found in string: '%s'" % (pattern, the_string))
 
     def assert_sequences_have_same_length(self, expected, got, mess):
@@ -204,21 +205,33 @@ class TestCaseWithHelpers(unittest.TestCase):
 
         """
         trunk, ext = os.path.splitext(str(expected_file))
-        if ext in [".html", ".htm", ".txt"]:
-            for i, k, l in zip(itertools.count(1),
-                                          open(expected_file),
-                                          open(actual_file)):
+        if ext in [".html", ".htm", ".txt", ".js", ".css", ".ini", ".log"]:
+            encodingexp, bomexp, contentexp = readwritefile.readAnything(expected_file)
+            encodinggot, bomgot, contentgot = readwritefile.readAnything(actual_file)
+            if encodinggot != encodingexp:
+                print("warning: different encoding found\n---exp: %s: %s\n+++got: %s: %s"%
+                                  (expected_file, encodingexp, actual_file, encodinggot))
+            if bomgot != bomexp:
+                print("warning: different bom found\n---exp: %s: %s\n+++got: %s: %s"%
+                                  (expected_file, bomexp, actual_file, bomgot))
+            # 
+            # 
+            # with open(expected_file) as k:
+            #     with open(actual_file) as l:
+            gotlines = contentgot.split('\n')
+            explines = contentexp.split('\n')
+            for i, (kline, lline) in enumerate(zip(gotlines, explines)):
                 if ext in [".html", ".htm"] and \
-                    k.find('class="copyright"') >= 0 and \
-                    l.find('class="copyright"') >= 0:
-                    continue  # dates can differ, is expected and accepted
-                self.assert_equal(k,l,mess + '\nthe two files------------\n%s\nand\n %s should have been equal\nThey differ in line %s'%
-                                    (expected_file, actual_file, i))
+                        kline.find('class="copyright"') >= 0 and \
+                        lline.find('class="copyright"') >= 0:
+                    continue
+                self.assert_equal(kline, lline, mess + '\nthe two files------------\n%s\nand\n %s should have been equal\nThey differ in line %s'%
+                            (expected_file, actual_file, i+1))
         else:
             if not filecmp.cmp(expected_file, actual_file):
                 message = mess + '\nthe two files------------\n%s\nand\n%s should have been equal\n--- comparison with filecmp.cmp ---'% \
                                     (expected_file, actual_file)
-                self.fail(message)
+            self.fail(message)
 
     def assert_dicts_have_same_keys(self, expected_dict, got_dict, mess):
         expected_keys = list(expected_dict.keys())
@@ -321,7 +334,7 @@ class TestCaseWithHelpers(unittest.TestCase):
             #
             is_class = type(instance)
 
-        return is_class
+        return str(is_class)
 
     def isnumber(self, instance):
         return isinstance(instance, int) or isinstance(instance, float)
@@ -338,15 +351,12 @@ class TestCaseWithHelpers(unittest.TestCase):
 
     # new QH, conversion python 2 to python 3:
     def isstring(self, instance):
-        return type(instance) == six.text_type
+        return type(instance) == str
     def isbinary(self, instance):
-        return type(instance) == six.binary_type
+        return type(instance) == bytes
 
     def isstringlike(self, instance):
-        if six.PY2:
-            return type(instance) == six.text_type or type(instance) == six.binary_type
-        else:
-            return type(instance) == six.text_type
+        return type(instance) == str
 
 
     def isbasetype(self, instance):
@@ -532,15 +542,12 @@ def isdictionary(instance):
 
 # new QH, conversion python 2 to python 3:
 def isstring(instance):
-    return type(instance) == six.text_type
+    return type(instance) == str
 def isbinary(instance):
-    return type(instance) == six.binary_type
+    return type(instance) == bytes
 
 def isstringlike(instance):
-    if six.PY2:
-        return type(instance) == six.text_type or type(instance) == six.binary_type
-    else:
-        return type(instance) == six.text_type
+    return type(instance) == str
 
 def what_class(instance):
     """Returns a string describing the class of an instance.
@@ -562,8 +569,11 @@ def what_class(instance):
     return is_class
 
 if __name__ == "__main__":
-   # print(assert_equal("hello", "helloo"))
-   # assert_equal([1,2,3], [1,2,4])
-   d1 = dict(a=1, b=2, c=3)
-   d2 = dict(a=1, b=2, c=4)
-   assert_equal(d1, d2)
+    import sys
+    print("version", sys.version)
+    print("test expects to go wrong!!!!!")
+    # print(assert_equal("hello", "helloo"))
+    # assert_equal([1,2,3], [1,2,4])
+    d1 = dict(a=1, b=2, c=3)
+    d2 = dict(a=1, b=2, c=4)
+    assert_equal(d1, d2)

@@ -1,6 +1,4 @@
-__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 #probably not used anymore (Quintijn)
-import string
 import os.path
 
 def convertTo83Path(fullPath,removeSpacesOnly=0):
@@ -8,7 +6,7 @@ def convertTo83Path(fullPath,removeSpacesOnly=0):
 
     """
     if fullPath.find('-') >= 0:
-        print 'found "-", dos83 ignore: %s'% fullPath
+        print('found "-", dos83 ignore: %s'% fullPath)
         return fullPath
     # only possible if fullPath exists.
     # no garantee that the converted path refers to the same location
@@ -16,16 +14,16 @@ def convertTo83Path(fullPath,removeSpacesOnly=0):
     # nor do I know how to compare equivalence: os.path.samefile is not available in Win
     # Are there any winApi calls?
     if not os.path.exists(fullPath):
-        print 'Path conversion failed. This is not a valid path:'
-        print fullPath
+        print('Path conversion failed. This is not a valid path:')
+        print(fullPath)
         return ''
     # go try convert
     (name,ext)=os.path.splitext (fullPath)
-    splitPath=name.split(u'\\')
+    splitPath=name.split('\\')
     splitPath83=splitPath[:]
     for subPath in splitPath:
         concatPath=''.join(subPath.split())
-        if (concatPath<>subPath) or ((not removeSpacesOnly) and (len(subPath)>8)):
+        if (concatPath!=subPath) or ((not removeSpacesOnly) and (len(subPath)>8)):
             # convert subpath to Dos 8.3 convention
             concatPath=concatPath[0:min(6,len(concatPath))]
             i=splitPath.index(subPath)
@@ -41,14 +39,14 @@ def convertTo83Path(fullPath,removeSpacesOnly=0):
                 splitPath83[i]=altConcatPath[0]
             elif len(altConcatPath)>1:
                 splitPath83[i]=altConcatPath[0]
-                print 'Warning. Non unique Path conversion.'
+                print('Warning. Non unique Path conversion.')
             else:
                 splitPath83[i]=concatPath+'??'
-                print 'Warning. Insufficient rule for conversion.'
+                print('Warning. Insufficient rule for conversion.')
     Path83=' '.join(splitPath83,'\\')+ext
     if not os.path.exists(Path83):
-        print 'Path conversion failed. This is not a valid Dos 8.3 path:'
-        print Path83
+        print('Path conversion failed. This is not a valid Dos 8.3 path:')
+        print(Path83)
         return ''
     else:    
         return Path83
@@ -56,4 +54,4 @@ def convertTo83Path(fullPath,removeSpacesOnly=0):
 def convertSpacedSubPaths(fullPath):
     return convertTo83Path(fullPath,removeSpacesOnly=1)
 
-print convertTo83Path('C:\Program Files')#print convertTo83Path('C:\Program Files\Common Files\Microsoft Shared\MSCREATE.DIR')#print convertTo83Path('C:\Program Files\ArrayVisualizer\SAMPLES\SAMPLES.HTM')#print convertSpacedSubPaths('C:\Program Files\ArrayVisualizer\SAMPLES\SAMPLES.HTM')
+print(convertTo83Path('C:\Program Files'))#print convertTo83Path('C:\Program Files\Common Files\Microsoft Shared\MSCREATE.DIR')#print convertTo83Path('C:\Program Files\ArrayVisualizer\SAMPLES\SAMPLES.HTM')#print convertSpacedSubPaths('C:\Program Files\ArrayVisualizer\SAMPLES\SAMPLES.HTM')

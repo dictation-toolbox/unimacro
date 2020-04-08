@@ -1,4 +1,3 @@
-__version__ = "$Revision: 417 $, $Date: 2011-03-13 17:14:04 +0100 (zo, 13 mrt 2011) $, $Author: quintijn $"
 #
 # frescobaldi.py
 #

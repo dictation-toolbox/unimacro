@@ -2,7 +2,6 @@
 import re
 import sys
 import copy
-import six
 import utilsqh
 
 reNote = re.compile(r"""([a-g](?:as|es|is|s|f)?)  # the notename also with flat (bf == b flat, english)
@@ -24,7 +23,7 @@ reIsWhiteSpace = re.compile(r'\s')
 
 
 
-class LyNote(object):
+class LyNote
     def __init__(self, s):
         self.originalInput = s
         self.setVariables(s)
@@ -58,7 +57,7 @@ class LyNote(object):
         else:
             # can be incomplete, add fake note in front and do again
             if recursive:
-                print 'recursive call of setVariables failed, s: %s'% s
+                print('recursive call of setVariables failed, s: %s'% s)
                 return
             # print 'try recursive call of incomplete note: %s'% s
             sFake = 'c' + s
@@ -130,7 +129,7 @@ class LyNote(object):
     
     
     def updateNote(self, note):
-        if type(note) in (six.binary_type, six.text_type):
+        if type(note) in (bytes, str):
             note = LyNote(note)
         
         for attr in ['note', 'duration']:
@@ -160,7 +159,7 @@ def analyseString(S):
     return wordsList, notesIndexes, both being a list. the length of notesIndexes gives the number
     of notes found.
     """
-    wordsList = filter(None, reSplitInWords.split(S))
+    wordsList = [_f for _f in reSplitInWords.split(S) if _f]
     outputWords = []
     notesIndexes = []
     lyn = None
@@ -172,7 +171,7 @@ def analyseString(S):
         if w == "%":
             comment = [w]
             while peekwords.peek() != '\n':
-                comment.append(peekwords.next())
+                comment.append(next(peekwords))
             outputWords.append(''.join(comment))
             index += 1
         
@@ -185,7 +184,7 @@ def analyseString(S):
                 outputWords.append(lyn2)
                 index += 1
             else:
-                print 'not a note: %s'% w
+                print('not a note: %s'% w)
         elif w and w[0].strip():
             outputWords.append(w)
             index += 1
@@ -206,7 +205,7 @@ def analyseString(S):
                     break
                 # else:
                 #     print 'strange: peekword: %s'% repr(peekword)
-                w = peekwords.next()
+                w = next(peekwords)
 
                 
     return outputWords, notesIndexes
@@ -283,7 +282,7 @@ def join(Input, separator=''):
     """
     if len(Input) == 0:
         return ''
-    if type(Input) in (six.binary_type, six.text_type):
+    if type(Input) in (bytes, str):
         return Input
     else:
         return separator.join(str(i) for i in Input)
@@ -304,18 +303,18 @@ if __name__ == '__main__':
     #    print 'note updated to a: %s'% lyn
     #    lyn.updateNote(r"c8.\(")
     #    print 'note updated to c 8. and \\(: %s'% lyn
-    print 'melisma: ============================================='
+    print('melisma: =============================================')
     for s in ["r2", r"g,8.\melisma", r"a\melisma"]:
         lyn = LyNote(s)
-        print 'note: "%s", elevation: "%s", duration: "%s", additions: "%s"'% (lyn.note, lyn.elevation, lyn.duration, lyn.additions)
-        print 'input: "%s", str: "%s", repr: "%s"'% (s, lyn, repr(lyn))
+        print('note: "%s", elevation: "%s", duration: "%s", additions: "%s"'% (lyn.note, lyn.elevation, lyn.duration, lyn.additions))
+        print('input: "%s", str: "%s", repr: "%s"'% (s, lyn, repr(lyn)))
         lyn.updateNote("a")
-        print 'note updated to a: %s'% lyn
+        print('note updated to a: %s'% lyn)
         lyn.updateNote(r"c8.\(")
-        print 'note updated to c 8. and \\(: %s'% lyn
+        print('note updated to c 8. and \\(: %s'% lyn)
         lyn = LyNote(s)
         
         # join tests:
-        print join('abc')
-        print join(['a', 'a', 'c'])
-        print join(['a', 'b'], separator='xxx')
+        print(join('abc'))
+        print(join(['a', 'a', 'c']))
+        print(join(['a', 'b'], separator='xxx'))

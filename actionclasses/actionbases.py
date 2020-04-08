@@ -2,7 +2,7 @@
 import messagefunctions as mess
 import natlinkutilsqh as natqh
 
-class AllActions(object):
+class AllActions:
     def __init__(self, progInfo):
         self.reset(progInfo=progInfo)
 
@@ -18,7 +18,7 @@ class AllActions(object):
             newProgInfo = natqh.getProgInfo()
         if newProgInfo == self.progInfo:
             return
-        print 'allactions: new prog info, overload for your specific program: %s'% self.prog
+        print('allactions: new prog info, overload for your specific program: %s'% self.prog)
         self.progInfo = newProgInfo
         self.prog, self.topTitle, self.topOrChild, self.topHandle = newProgInfo
         
@@ -41,10 +41,10 @@ class MessageActions(AllActions):
         self.ctrl = self.handle = self.getInnerHandle(self.topHandle)
         if not self.handle:
             if progInfo and progInfo[2] == 'top':
-                print 'no handle found for (top) edit control for program: %s'% self.prog
+                print('no handle found for (top) edit control for program: %s'% self.prog)
             return
         self.progInfo = progInfo
-        print 'updated program info: %s, edit control handle: %s'% (repr(self.progInfo), self.handle) 
+        print('updated program info: %s, edit control handle: %s'% (repr(self.progInfo), self.handle)) 
         return self.handle  # None if no valid handle        
 
     def getCurrentLineNumber(self, handle=None):

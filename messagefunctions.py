@@ -143,7 +143,7 @@ def findTopWindows(wantedText=None, wantedClass=None, selectionFunction=None, ch
         try:
             win32gui.EnumWindows(_windowEnumerationHandler, topWindows)
         except win32gui.error:
-            print 'got error in EnumWindows, try again: %s'% i
+            print('got error in EnumWindows, try again: %s'% i)
         else:
             break
     if checkI:
@@ -161,7 +161,7 @@ def findTopWindows(wantedText=None, wantedClass=None, selectionFunction=None, ch
         if type(result) == types.TupleType and len(result) == 3:
             hwnd, windowText, windowClass = result
         else:
-            print 'invalid entry'
+            print('invalid entry')
             continue
         if wantedText and \
            _normaliseText(windowText).find(wantedText) == -1:
@@ -187,7 +187,7 @@ def dumpTopWindows(all=None):
     try:
         win32gui.EnumWindows(_windowEnumerationHandler, topWindows)
     except win32gui.error:
-        print 'got error enumerating windows'
+        print('got error enumerating windows')
         
     if all:
         return topWindows
@@ -216,7 +216,7 @@ def dumpWindow(hwnd):
     windows = []
     try:
         win32gui.EnumChildWindows(hwnd, _windowEnumerationHandler, windows)
-    except win32gui.error, details:
+    except win32gui.error:
         # No child windows
         return
     windows = [list(window) for window in windows]
@@ -413,7 +413,7 @@ def findControls(topHwnd,
 
             if wantedText:
                 if not windowText: continue
-                #print 'wanted: %s, window: %s'% (wantedText, windowText)
+                #print('wanted: %s, window: %s'% (wantedText, windowText)
                 if _normaliseText(windowText).find(wantedText) == -1:
                     continue
             if wantedClass and \
@@ -432,11 +432,8 @@ def findControls(topHwnd,
     hlist=searchChildWindows(topHwnd)
     
     if hlist:
-        # deduplicate the list:
-        hdict={}
-        for h in hlist:
-            hdict[h]=''
-        return hdict.keys()  
+        ## remove duplicates
+        return list(set(hlist))
     else:
         return hlist
     
@@ -488,7 +485,7 @@ def findAdditionalControls(controls,
 
             if wantedText:
                 if not windowText: continue
-                #print 'wanted: %s, window: %s'% (wantedText, windowText)
+                #print('wanted: %s, window: %s'% (wantedText, windowText)
                 if _normaliseText(windowText).find(wantedText) == -1:
                     continue
             if wantedClass and \
@@ -554,7 +551,7 @@ def getFolderFromDialog(hndle, className):
     
     """
     if className == '#32770':
-        controls = findControls(hndle, selectionFunction=selFuncExplorerAddress)
+        controls = list(findControls(hndle, selectionFunction=selFuncExplorerAddress))
         if controls:
             hndle = controls[0]
             text = getwindowtext(hndle)
@@ -943,12 +940,12 @@ def setEditText(hwnd, text, append=False, classname=None):
                     If appending lines of text, you may wish to pass in an
                     empty string as the 1st element of the 'text' argument.
 
-    Usage example:  print "Enter various bits of text."
+    Usage example:  print("Enter various bits of text."
                     setEditText(editArea, "Hello, again!")
                     setEditText(editArea, "You still there?")
                     setEditText(editArea, ["Here come", "two lines!"])
                     
-                    print "Add some..."
+                    print("Add some..."
                     setEditText(editArea, ["", "And a 3rd one!"], append=True)
     '''
 
@@ -1098,10 +1095,11 @@ def getNumberOfLines(hndle, classname=None):
 
 # length and buffer for receiving 1 line of text. If text length exceeds the
 # LINE_BUFFER_LENGTH, it is doubled.
+## 'c' naar 'b'  TODOQH
 LINE_BUFFER_LENGTH = 256
-LINE_TEXT_BUFFER = array.array('c', ' ' * (LINE_BUFFER_LENGTH))
+LINE_TEXT_BUFFER = array.array('b', b' ' * (LINE_BUFFER_LENGTH))
 bufferlength  = struct.pack('i', LINE_BUFFER_LENGTH) # This is a C style int.
-LINE_TEXT_BUFFER = array.array('c', bufferlength + ' ' * LINE_BUFFER_LENGTH)
+LINE_TEXT_BUFFER = array.array('b', bufferlength + b' ' * LINE_BUFFER_LENGTH)
 
 def getTextLine(hndle, lineNum, classname=None):
     """get a line of text from buffer, with line number lineNum
@@ -1124,8 +1122,8 @@ def getTextLine(hndle, lineNum, classname=None):
     if (LINE_BUFFER_LENGTH - lenReceived) < 10:
         LINE_BUFFER_LENGTH *= 2
         bufferlength  = struct.pack('i', LINE_BUFFER_LENGTH) # This is a C style int.
-        LINE_TEXT_BUFFER = array.array('c', bufferlength + ' ' * LINE_BUFFER_LENGTH)
-        print 'line too small, double to %s'% LINE_BUFFER_LENGTH
+        LINE_TEXT_BUFFER = array.array('b', bufferlength + b' ' * LINE_BUFFER_LENGTH)
+        print('line too small, double to %s'% LINE_BUFFER_LENGTH)
         return getTextLine(hndle, lineNum)
 
     return LINE_TEXT_BUFFER.tostring()[:lenReceived]
@@ -1204,13 +1202,12 @@ def waitForForegroundWindow(className=None, nWait=50, waitingTime=0.5):
     if type(className) == types.StringType:
         className = [className]
     elif className is None:
-        print 'waitForForegroundWindow: no classname given'
+        print('waitForForegroundWindow: no classname given')
         return
     for i in range(nWait):
         hndle = getForegroundWindow()
         if hndle:
             currentClass = win32gui.GetClassName(hndle)
-            #print 'foreground window: %s, wanted: %s'% (currentClass, className)
             if currentClass in className:
                 return hndle
         time.sleep(waitingTime)
@@ -1257,7 +1254,7 @@ def quitProgram(hwnd):
 
 # buffer and length for one stroke get window text:
 BUFFER_LENGTH = 1024
-TEXT_BUFFER = array.array('c', ' ' * (BUFFER_LENGTH))
+TEXT_BUFFER = array.array('b', b' ' * (BUFFER_LENGTH))
 def getWindowTextAll(hwnd, rawLength=None):
     """get the buffer of a edit control in one stroke
     
@@ -1268,15 +1265,14 @@ def getWindowTextAll(hwnd, rawLength=None):
         rawLength = BUFFER_LENGTH 
     if rawLength > BUFFER_LENGTH:
         BUFFER_LENGTH = rawLength + 1000   # take a little extra!
-        TEXT_BUFFER = array.array('c', ' ' * BUFFER_LENGTH)
-        #print 'new buffer length: %s'% BUFFER_LENGTH
+        TEXT_BUFFER = array.array('b', b' ' * BUFFER_LENGTH)
     valueLength = win32gui.SendMessage(hwnd, win32con.WM_GETTEXT,
                                             BUFFER_LENGTH, TEXT_BUFFER)
     if not valueLength:
         return '', 0
     
     if (BUFFER_LENGTH - valueLength) <= 10:
-        print 'probably too small buffer for this control: %s'% valueLength
+        print('probably too small buffer for this control: %s'% valueLength)
         rawLength = getRawTextLength(hwnd) + 1000
         return getWindowTextAll(hwnd, rawLength=rawLength)
         
@@ -1323,13 +1319,13 @@ def _windowEnumerationHandler(hwnd, resultList):
     stop enumeration, if checkI(mmediate) is set and contents match 
     '''
     if hwnd == 0:
-        print '_windowEnumerationHandler, hwnd == 0, skip'
+        print('_windowEnumerationHandler, hwnd == 0, skip')
         return
         try:
             testHndle = win32gui.GetWindow(hwnd, 0)
-        except pywintypes.error, details:
+        except pywintypes.error:
             if details[0] == 1400:
-                print 'caught 1400 error, skip this window: %s'% hwnd
+                print('caught 1400 error, skip this window: %s'% hwnd)
                 return
             else:
                 raise
@@ -1377,13 +1373,13 @@ def _sendNotifyMessage(hwnd, notifyMessage):
                          hwnd)
 
 def _normaliseText(controlText):
-    '''Remove '&' characters, and lower case.
+    '''Remove '&' characters, but keep the case
     
     leave None or '' unchanged
     
     Useful for matching control text.'''
-    if controlText:
-        return controlText.lower().replace('&', '')
+    if controlText and controlText.find("&"):
+        return controlText.replace('&', '')
     else:
         return controlText
 
@@ -1431,21 +1427,21 @@ class WinGuiAutoError(Exception):
     pass
 
 def self_test():
-    #print "Let's see what top windows we have at the 'mo:"
+    #print("Let's see what top windows we have at the 'mo:")
     #pprint.pprint(dumpTopWindows())
     #x=raw_input('->')
-    print "Open and locate Notepad"
+    print("Open and locate Notepad")
     os.startfile('notepad')
     notepadWindow = findTopWindow(wantedClass='Notepad')
     x=raw_input('->')
-    print "Locate the 'find' edit box"
+    print("Locate the 'find' edit box")
     findValue = findControls(notepadWindow, wantedClass="Edit")[0]
     x=raw_input('->')                               
-    print "Enter some text - and wait long enough for it to be seen"
+    print("Enter some text - and wait long enough for it to be seen")
     setEditText(findValue, "Hello, mate!")
     time.sleep(.5)
     x=raw_input('->')
-    print "Locate notepad's edit area, and enter various bits of text."
+    print("Locate notepad's edit area, and enter various bits of text.")
     editArea = findControl(notepadWindow,wantedClass="Edit")
     setEditText(editArea, "Hello, again!")
     time.sleep(.5)
@@ -1455,19 +1451,19 @@ def self_test():
     time.sleep(.5)
     x=raw_input('->')
     
-    print "Add some..."
+    print("Add some...")
     setEditText(editArea, ["", "And a 3rd one!"], append=True)
     time.sleep(.5)
     
-    print "See what's there now:"
+    print("See what's there now:")
     pprint.pprint(getEditText(editArea))
     x=raw_input('->')
     
-    print "Exit notepad"
+    print("Exit notepad")
     activateMenuItem(notepadWindow, ('bestand', 'afsluiten'))  # was 'file', 'exit'
     time.sleep(.5)
     
-    print "Don't save."
+    print("Don't save.")
     saveDialog = findTopWindow(selectionFunction=lambda hwnd:
                                                  win32gui.GetWindowText(hwnd)=='Notepad')
     noButton = findControl(saveDialog,wantedClass="Button", wantedText="nee")  # was 'no'
@@ -1483,9 +1479,9 @@ def test_with_aligen1():
 #W["testcloseapp"] = 0
 #W["editcontrol"] = "RichEdit20A"     # name of the control where the text goes in
     aligenWindow = findTopWindow(wantedText="compose report")
-    print 'aligenWindow: %s'% aligenWindow
+    print('aligenWindow: %s'% aligenWindow)
     ctrls = findControls(aligenWindow, wantedClass="RichEdit20A")
-    #print 'editHndle set to: %s'% editHndle
+    #print('editHndle set to: %s'% editHndle)
     if len(ctrls) > 1: 
         for hndle in ctrls:
             id = win32gui.GetDlgCtrlID(hndle)
@@ -1493,13 +1489,13 @@ def test_with_aligen1():
                 editHndle = hndle
                 break
         else:
-            print 'did not get valid id for aligen window'
+            print('did not get valid id for aligen window')
             return
     else:
-        print 'expected more edit handles for aligen, found: %s'% ctrls
-    print 'editHndle: %s'% editHndle
+        print('expected more edit handles for aligen, found: %s'% ctrls)
+    print('editHndle: %s'% editHndle)
     findValue = editHndle
-    print 'findValue: %s'% findValue
+    print('findValue: %s'% findValue)
     if not findValue: return
     if setText:
         setEditText(findValue, "Hello, mate!")
@@ -1508,11 +1504,11 @@ def test_with_aligen1():
 
 def test_with_dragonpad1(setText=1):
     dragonpadWindow = findTopWindow(wantedClass='TalkpadClass')
-    print 'dragonpadWindow: %s'% dragonpadWindow
+    print('dragonpadWindow: %s'% dragonpadWindow)
     findValues = findControls(dragonpadWindow, wantedClass="RichEdit20A")
     if not findValues: return
     findValue = findValues[0]
-    print 'findValue: %s'% findValue
+    print('findValue: %s'% findValue)
     if setText:
         setEditText(findValue, "Hello, mate!")
     return findValue
@@ -1533,10 +1529,10 @@ def test_with_dragonpad1(setText=1):
 
 def test_with_notepad1(setText=1):
     notepadWindow = findTopWindow(wantedClass='Notepad')
-    print 'notepadWindow: %s'% notepadWindow
+    print('notepadWindow: %s'% notepadWindow)
     if not notepadWindow: return
     findValue = findControls(notepadWindow, wantedClass="Edit")[0]
-    print 'findValue: %s'% findValue
+    print('findValue: %s'% findValue)
     if setText:
         setEditText(findValue, "Hello, mate!")
     return findValue
@@ -1546,9 +1542,9 @@ def test_with_notepad1(setText=1):
 
 def test_with_wordpad1():
     wordpadWindow = findTopWindow(wantedClass='WordPadClass')
-    print 'wordpadWindow: %s'% wordpadWindow
+    print('wordpadWindow: %s'% wordpadWindow)
     findValue = findControls(wordpadWindow, wantedClass="RICHEDIT50W")[0]
-    print 'findValue: %s'% findValue
+    print('findValue: %s'% findValue)
     if not findValue: return
     if setText:
         setEditText(findValue, "Hello, mate!")
@@ -1560,7 +1556,7 @@ def test_with_wordpad1():
 def test_with_excel():
     excelWindows = findTopWindows(wantedClass='XLMAIN')
     for xl in excelWindows:
-        print "xl: %s"% xl
+        print("xl: %s"% xl)
         contents = dumpWindow(xl)
         pprint.pprint(contents)
         
@@ -1573,7 +1569,7 @@ def test_with_pythonwin(topHwnd):
     import windowparameters
     selFunc = windowparameters.getPythonwinEditControl
     controls = findControls(topHwnd, selectionFunction=selFunc)
-    print 'controls pythonwin: %s'% controls
+    print('controls pythonwin: %s'% controls)
 
     contents = dumpWindow(topHwnd)
     pprint.pprint(contents)
@@ -1590,7 +1586,7 @@ def test_with_komodo_messages():
     for ko in komodoWindows:
         contents = dumpWindow(ko)
         if contents:
-            print "ko: %s"% ko
+            print("ko: %s"% ko)
             pprint.pprint(contents)
         
     # do "switch to wordpad" and dictate "this is a test"
@@ -1634,7 +1630,7 @@ def hotshot_test_selection(editArea, selStart, selEnd):
     time.sleep(1)
     t = getEditText(editArea)
     time.sleep(1)
-    print 'selection at: %s, %s'% (selStart, selEnd)
+    print('selection at: %s, %s'% (selStart, selEnd))
 
 def doHotshotTestOutsideField(editControl):
     """do some testing on control.
@@ -1670,7 +1666,7 @@ def hotshot_test(editArea, nTests):
     result = getEditText(editArea)
     lines = len(result)
     lenresult = len(''.join(result))
-    print '***number of tests: %s, lines: %s, characters: %s  ***'% (nTests, lines, lenresult)
+    print('***number of tests: %s, lines: %s, characters: %s  ***'% (nTests, lines, lenresult))
 
 def findPythonwinControl(topHwnd):
     """pass the top handle"""
@@ -1680,7 +1676,7 @@ def findPythonwinControl(topHwnd):
     controls1 = findControls(topHwnd,wantedText=wantedText)
     if controls1:
         result.append(findAdditionalControls(controls1, wantedClass="Scintilla"))
-    print 'pythonwin: %s'% result        
+    print('pythonwin: %s'% result)
     
 
 
@@ -1712,7 +1708,7 @@ if __name__ == '__main__':
     #editArea = test_with_notepad1()
     #editArea = test_with_wordpad1()
     #if not editArea:
-    #    print 'did not find the correct control, ensure your application is on!!'
+    #    print('did not find the correct control, ensure your application is on!!'
     #else:
     #    #doHotshotTest(editArea, 6)
     #    doHotshotTestField(editArea)
@@ -1727,7 +1723,7 @@ if __name__ == '__main__':
     
     # view settings explorer (this one fails!)
     # testExplorerViews(986418)
-    # g = getFolderFromCabinetWClass(1179842)
-    g = getFolderFromDialog(331470, '#32770')
-    # print(g, type(g))
+    g = getFolderFromCabinetWClass(853938)
+    # g = getFolderFromDialog(132792, '#32770')
+    print(g, type(g))
     pass

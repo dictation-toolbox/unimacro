@@ -1,6 +1,4 @@
-__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 # -*- coding: latin-1 -*-
-import string
 
 Digits = ['0','1','2','3','4','5','6','7','8','9','10']
 Counts = ['1','2','3','4','5','6','7','8','9','10','11','12','13',
@@ -42,54 +40,6 @@ Extensions={
         "selected":             "sel",
         "project":              "prj",
 }
-
-Directories={
-       "Abstracts":          "D:\\Data\\Txt\\AbstractsSheets",
-       "b j":                "D:\\Data\\Txt\\Misc\\Bj",
-       "Bib":                "D:\\Data\\Txt\\Bib",
-       "Declarations":       "D:\\Data\\Txt\\Declaraties",
-       "DP partitioning":    "D:\\Data\\Txt\\Papers\\DPPart",
-       "fortran":            "D:\\Data\\Fortran",
-       "datasets":           "D:\\Data\\sets",
-       "papers":             "D:\\Data\\Txt\\Papers",       
-       "heuristic":          "D:\\Data\\Txt\\Papers\\Heuristic",
-       "D. P. H. C.":        "D:\\Data\\Txt\\Papers\\DPHC",
-       "miscellaneous":      "D:\\Data\\Txt\\Misc",
-       "notes":              "D:\\Data\\Txt\\Notities",
-       "partitioning":       "D:\\Data\\Fortran\\part",
-       "pioneer":            "D:\\Data\\Txt\\Pioneer",
-       "receive":            "C:\\Comm\\Receive",
-       "spell":              "D:\\Data\\Txt\\Misc\\Spell",
-       "tasks":              "D:\\Data\\Txt\\Taken",
-       "text":               "D:\\Data\\Txt",
-       "fortran clus var":   "D:\\Data\\Fortran\\part\\ClusVar",
-       "clus var":           "D:\\Data\\Txt\\Papers\\ClusVar",       
-       "thesis":             "D:\\Data\\Txt\\Thesis",
-       "trees":              "D:\\Data\\Txt\\Papers\\Trees",
-       "receive":            "D:\\Shared App\\Receive",
-       "macros":             "D:\\Shared App\\Macros",
-       "NatLink":            "D:\\Shared App\\NatLink\\MacroSystem",
-       "natlink macros":     "D:\\Shared App\\NatLink\\MacroSystem",
-       "results":            "D:\\Data\\Fortran\\part\\ClusVar\\Results",
-       "debug":              "D:\\Data\\Fortran\\part\\ClusVar\\Debug",
-       "release":            "D:\\Data\\Fortran\\part\\ClusVar\\Release",
-       "data":               "D:\\Data",
-       "Python":             "D:\\Data\\Python",
-       "source":             "D:\\Data\\Fortran\\part\\ClusVar\\Source",
-       "MDS test":           "D:\\Data\\Fortran\\part\\ClusVar\\Results\\MDSTest",
-       "libraries":          "D:\\Data\\Fortran\\Libraries",
-       "random":             "D:\\Data\\Fortran\\Libraries\\Random",
-       "Review":             "D:\\Data\\Txt\\Review",
-}
-
-ExcelExe = ("EXCEL","C:\\Program Files\\Microsoft Office\\Office\\EXCEL.EXE")
-TextpadExe = ("TEXTPAD","C:\\Program Files\\TextPad 4\\TextPad.exe")
-Documents = {
-        "Expenses":         ("D:\Data\Txt\Notities\Uit2001.xls",ExcelExe),
-        "Hierarchical":     ("D:\DATA\TXT\Papers\DPHC\DPHC.tex",TextpadExe),
-        "Workspace Hierarchical":     ("D:\DATA\TXT\Papers\DPHC\DPHC.tws",TextpadExe),
-        "Current Tasks":     ("D:\DATA\TXT\Taken\ToDo201101.txt",TextpadExe),
-        }
 
 def BuildICDict(ICAlphabet):
     ICDict={}

@@ -39,6 +39,7 @@ Usage as module:
         print "  Correct IBAN: %s >> %s %s %s %s" % (iban, code, checksum,
                                                      bank, account)
 """
+from functools import reduce
 
 __all__ = ["create_iban", "check_iban", "IBANError"]
 
@@ -197,7 +198,7 @@ def strcmp(s1, s2):
 
 def country_index_table():
     """Create an index table of the iban_data list sorted by country names."""
-    tab = range(len(iban_data))
+    tab = list(range(len(iban_data)))
     for i in range(len(tab) - 1, 0, -1):
         for j in range(i):
             if strcmp(iban_data[tab[j]].name, iban_data[tab[j+1]].name) > 0:
@@ -338,50 +339,50 @@ def print_new_iban(code, bank, account):
     """Check the input, calculate the checksum, assemble and print the IBAN."""
     try:
         iban = create_iban(code, bank, account)
-    except IBANError, err:
-        print err
+    except IBANError as err:
+        print(err)
         return ""
-    print "  Correct IBAN: %s << %s ?? %s %s" % (iban, code, bank, account)
+    print("  Correct IBAN: %s << %s ?? %s %s" % (iban, code, bank, account))
     return iban
 
 def print_iban_parts(iban):
     """Check the syntax and the checksum of an IBAN and print the parts."""
     try:
         code, checksum, bank, account = check_iban(iban)
-    except IBANError, err:
-        print err
+    except IBANError as err:
+        print(err)
         return ()
-    print "  Correct IBAN: %s >> %s %s %s %s" % (iban, code, checksum,
-                                                 bank, account)
+    print("  Correct IBAN: %s >> %s %s %s %s" % (iban, code, checksum,
+                                                 bank, account))
     return code, checksum, bank, account
 
 def print_format():
     """Print a table with the country specific iban format."""
-    print "IBAN-Format (a = A-Z, n = 0-9, c = A-Z/a-z/0-9):"
-    print "                    | Bank/Branch-Code      | Account Number"
-    print " Country       Code | check1  bank  branch  |" + \
-          " check2 number check3"
-    print "--------------------|-----------------------|" + \
-          "---------------------"
+    print("IBAN-Format (a = A-Z, n = 0-9, c = A-Z/a-z/0-9):")
+    print("                    | Bank/Branch-Code      | Account Number")
+    print(" Country       Code | check1  bank  branch  |" + \
+          " check2 number check3")
+    print("--------------------|-----------------------|" + \
+          "---------------------")
     for idx in country_index_table():
         country = iban_data[idx]
         if len(country.name) <= 14:
-            print country.name.ljust(14), "|", country.code, "|",
+            print(country.name.ljust(14), "|", country.code, "|", end=' ')
         else:
-            print country.name
-            print "               |", country.code, "|",
+            print(country.name)
+            print("               |", country.code, "|", end=' ')
         for lng, typ in country.bank:
             if lng:
-                print str(lng).rjust(3), typ.ljust(2),
+                print(str(lng).rjust(3), typ.ljust(2), end=' ')
             else:
-                print "  -   ",
-        print " |",
+                print("  -   ", end=' ')
+        print(" |", end=' ')
         for lng, typ in country.acc:
             if lng:
-                print str(lng).rjust(3), typ.ljust(2),
+                print(str(lng).rjust(3), typ.ljust(2), end=' ')
             else:
-                print "  -   ",
-        print
+                print("  -   ", end=' ')
+        print()
 
 def print_test_data(*data):
     """Print a table with iban test data."""
@@ -393,12 +394,12 @@ def print_test_data(*data):
             print_iban_parts(iban)
             if iban != created_iban:
                 if iban == create_iban(code, bank, account, 1):
-                    print "  Alternative IBAN"
+                    print("  Alternative IBAN")
                 else:
-                    print "  Changed IBAN"
+                    print("  Changed IBAN")
 
 def print_examples():
-    print "IBAN-Examples:"
+    print("IBAN-Examples:")
     print_test_data(("AD", "00012030",    "200359100100",         "12"),
                     ("AL", "21211009",    "0000000235698741",     "47"),
                     ("AT", "19043",       "00234573201",          "61"),
@@ -454,7 +455,7 @@ def print_examples():
                     ("TR", "00061",       "00519786457841326",    "33"))
 
 def print_test():
-    print "IBAN-Test:"
+    print("IBAN-Test:")
     print_test_data(("XY", "1",           "2",                    "33"),
                     ("AD", "11112222",    "C3C3C3C3C3C3",         "11"),
                     ("AD", "1111222",     "C3C3C3C3C3C3",         "11"),
@@ -876,4 +877,4 @@ if __name__ == "__main__":
     elif "-t" in sys.argv[1:2]:
         print_test()
     else:
-        print usage
+        print(usage)

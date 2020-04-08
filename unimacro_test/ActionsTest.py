@@ -3,6 +3,12 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
+from pathqh import path
+from pprint import pprint
+import sys
+unimacrodir = path('./..').normpath()
+if unimacrodir not in sys.path:
+    sys.path.append(unimacrodir)
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 import natlink

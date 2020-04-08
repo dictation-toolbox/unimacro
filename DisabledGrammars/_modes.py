@@ -1,4 +1,3 @@
-__version__ = "$Revision: 57 $, $Date: 2008-01-08 17:14:17 +0100 (di, 08 jan 2008) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -31,7 +30,11 @@ __version__ = "$Revision: 57 $, $Date: 2008-01-08 17:14:17 +0100 (di, 08 jan 200
 
 """
 
-import time, string, os, sys, types, re
+import time
+import os
+import sys
+import types
+import re
 import natlink
 
 natut = __import__('natlinkutils')
@@ -133,7 +136,7 @@ class ThisGrammar(ancestor):
 
         for mode in self.modes:
             if self.hasCommon(words, mode):
-                print 'want mode %s (%s)'% (mode, words)
+                print('want mode %s (%s)'% (mode, words))
                 self.setMode(mode)
                 return
 
@@ -172,7 +175,7 @@ class ThisGrammar(ancestor):
                     result = results[-1]
             result = self.doFunc('greekletter%s'% self.currentMode.capitalize(), result)
                     
-            print "w: %s, greekletter:   %s" % (w, result)
+            print("w: %s, greekletter:   %s" % (w, result))
             self.keystroke(result)
             
     def gotResults_operator(self,words,fullResults):
@@ -187,7 +190,7 @@ class ThisGrammar(ancestor):
         for w in words:
             result = self.getFromInifile(w, 'operator')
             result = self.doFunc('operator%s'% self.currentMode.capitalize(), result)
-            print "w: %s, results:    %s" % (w, result)
+            print("w: %s, results:    %s" % (w, result))
             self.keystroke(result)
             
     def gotResults_beginenddirective(self,words,fullResults):
@@ -248,7 +251,7 @@ class ThisGrammar(ancestor):
         the relevant rules are activated
         if silent fals, also DisplayMessage in recognition window...
         """
-        print '--- currentmode: %s'% self.currentMode
+        print('--- currentmode: %s'% self.currentMode)
         if mode == 'normal':
             if self.currentMode != 'normal':
                 self.doFunc('end%sMode'% self.currentMode.capitalize())
@@ -266,7 +269,7 @@ class ThisGrammar(ancestor):
         else:
             message = "<modes: no rules for mode %s>"% mode
         if silent:
-            print message
+            print(message)
         else:
             self.DisplayMessage(message)
 
@@ -312,17 +315,17 @@ class ThisGrammar(ancestor):
         """
         func = getattr(self, funcName, '')
         if func:
-            print 'mode: %s, func: %s'% (self.currentMode, funcName)
+            print('mode: %s, func: %s'% (self.currentMode, funcName))
             if args:
                 return func(*args)
             else:
                 func()
         else:
             if args:
-                print 'mode: %s, func: %s not present'% (self.currentMode, funcName)
+                print('mode: %s, func: %s not present'% (self.currentMode, funcName))
                 return args[0]
             else:
-                print 'modes, function not present: %s'% funcName
+                print('modes, function not present: %s'% funcName)
             
 
     def keystroke(self, keys):

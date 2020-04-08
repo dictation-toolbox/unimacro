@@ -11,7 +11,8 @@
 #------------------------------------------------------------------------------
 #
 
-import natlink, nsformat
+import natlink
+import nsformat
 import wx
 # import natlink and unimacro stuff:
 natut = __import__('natlinkutils')
@@ -59,7 +60,7 @@ class ThisGrammar(ancestor):
         moduleName = self.currentModule
         self.locationsList = self.ini.get(moduleName)
         if self.locationsList:
-            print 'list of mouse locations (%s): %s'% (moduleName, self.locationsList)
+            print('list of mouse locations (%s): %s'% (moduleName, self.locationsList))
             self.setList('locations', self.locationsList)
         else:
             self.emptyList('locations')
@@ -77,14 +78,14 @@ class ThisGrammar(ancestor):
         self.ini.set(self.currentModule, dictated, clickaction)
         self.ini.write()
         self.loadMouseClickCommands()
-        print 'set click command: %s to: %s'% (dictated, clickaction)
+        print('set click command: %s to: %s'% (dictated, clickaction))
 
     def gotResults_clicklocation(self, words, fullResults):
         locationWord = words[-1]
-        print 'clicklocation: %s'% locationWord
+        print('clicklocation: %s'% locationWord)
         clicklocation = self.ini.get(self.currentModule, locationWord, "")
         if not clicklocation:
-            print 'oops, no clicklocation found for %s'% locationWord
+            print('oops, no clicklocation found for %s'% locationWord)
             return
         action(clicklocation)
 
@@ -94,7 +95,7 @@ class ThisGrammar(ancestor):
 
     def gotResults_deletelocation(self, words, fullResults):
         locationWord = words[-1]
-        print 'deleting click location: %s for module: %s'% (locationWord, self.currentModule)
+        print('deleting click location: %s for module: %s'% (locationWord, self.currentModule))
         self.ini.delete(self.currentModule, locationWord)
         self.ini.write()
         self.loadMouseClickCommands()
@@ -105,7 +106,7 @@ class ThisGrammar(ancestor):
         self.ini.set(self.currentModule, locationWord, clickaction)
         self.ini.write()
         self.loadMouseClickCommands()
-        print 'changed click location: %s for module: %s to: %s'% (locationWord, self.currentModule, clickaction)
+        print('changed click location: %s for module: %s to: %s'% (locationWord, self.currentModule, clickaction))
 
 
 thisGrammar = ThisGrammar()

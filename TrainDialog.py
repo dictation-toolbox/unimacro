@@ -1,4 +1,3 @@
-__version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -26,7 +25,7 @@ __version__ = "$Revision: 606 $, $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 20
 
 """
 
-import string,sys,cPickle
+import string,sys,pickle
 
 import win32ui,win32con,win32api,commctrl
 from pywin.mfc import dialog
@@ -113,15 +112,15 @@ class TrainDialogGrammar(GrammarBase):
 # This processes the results within the training mode
     def gotResultsTraining(self,recogType,resObj):
         if recogType == 'reject':
-            print 'rejected'
+            print('rejected')
         else:
             results= convertResults(resObj.getResults(0))
-            rule=results.keys()[0]
+            rule=list(results.keys())[0]
             #print results.keys()
             if (rule<=2):
                 self.dlg.trainedPhrases.append((resObj,self.dlg.phrase))
-                results=u' '.join(resObj.getWords(0))
-                print results
+                results=' '.join(resObj.getWords(0))
+                print(results)
 
                 #go next or repeat
                 lowResults=results.lower()
@@ -246,10 +245,10 @@ class TrainDialog(dialog.Dialog):
 
     def changeCallback(self,what,param):
         if what == 'user':
-            print 'User changed.  New user is', param[0]
+            print('User changed.  New user is', param[0])
             self.onStop(0,0)
         elif what == 'mic':
-            print 'Microphone is ', param
+            print('Microphone is ', param)
             if param=='off':
                 self.onStop(0,0)
 
@@ -284,9 +283,9 @@ class TrainDialog(dialog.Dialog):
 
     def OnListItemChange(self,std, extra):
         (hwndFrom, idFrom, code), (itemNotify, sub, newState, oldState, change, point, lparam) = std, extra
-        oldSel = (oldState & commctrl.LVIS_SELECTED)<>0
-        newSel = (newState & commctrl.LVIS_SELECTED)<>0
-        if oldSel <> newSel:
+        oldSel = (oldState & commctrl.LVIS_SELECTED)!=0
+        newSel = (newState & commctrl.LVIS_SELECTED)!=0
+        if oldSel != newSel:
             try:
                 if newSel:
                     self.CurItem=itemNotify
@@ -313,15 +312,15 @@ class TrainDialog(dialog.Dialog):
 
                         
     def onStart(self,nID,code):
-        print 'training started'
+        print('training started')
         self.AreTraining=1
         if TrainInBatchMode:
             if not self.Batch:
                 natlink.startTraining('batchadapt')
                 self.Batch=1
-                print 'batch training started'
+                print('batch training started')
             else:
-                print 'wat'
+                print('wat')
         self.butOK.EnableWindow(1) 
         self.butStop.EnableWindow(1) 
         self.butStart.EnableWindow(0)
@@ -330,7 +329,7 @@ class TrainDialog(dialog.Dialog):
         self.nextWord()
 
     def onStop(self,nID,code):
-        print 'training stopped'
+        print('training stopped')
         self.AreTraining=0
         self.butStop.EnableWindow(0) 
         self.butStart.EnableWindow(1)
@@ -339,14 +338,14 @@ class TrainDialog(dialog.Dialog):
 
     def correctResults(self):
         if len(self.trainedPhrases)>0:
-            print 'correcting results'
+            print('correcting results')
             for (resObj,phrase) in self.trainedPhrases:
-                results=u' '.join(resObj.getWords(0))
+                results=' '.join(resObj.getWords(0))
                 if not resObj.correction(phrase):
                     if resObj.correction(phrase.lower()):
-                        print 'correcting %s by lowercase %s.' % (results,phrase)
+                        print('correcting %s by lowercase %s.' % (results,phrase))
                     else:
-                        print 'correcting %s by %s rejected.' % (results,phrase)
+                        print('correcting %s by %s rejected.' % (results,phrase))
             self.trainedPhrases=[]        
         
 
@@ -354,15 +353,15 @@ class TrainDialog(dialog.Dialog):
         self.onStop(0,0)
         self.correctResults()
         if TrainInBatchMode and self.Batch:
-            print 'batch processing results'
+            print('batch processing results')
             try:
                 natlink.finishTraining()
-                print 'results processed'
+                print('results processed')
             except:
-                print 'results processing not possible'
+                print('results processing not possible')
             self.Batch=0
         else:
-            print 'Done'
+            print('Done')
         #self._obj_.OnOK()
 
 
@@ -370,7 +369,7 @@ class TrainDialog(dialog.Dialog):
         self.trainedPhrases=[]
         if TrainInBatchMode and self.Batch:       
             natlink.finishTraining(0)
-            print 'results not processed'
+            print('results not processed')
         self._obj_.EndDialog(rc)
         return
 

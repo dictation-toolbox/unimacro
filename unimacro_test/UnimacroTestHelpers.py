@@ -7,12 +7,19 @@
 #   NaturallySpeaking should be running with nothing in the editor window
 #   (that you want to preserve) before these tests are run.
 #   performed.
+from pathqh import path
+from pprint import pprint
+import sys
+unimacrodir = path('./..').normpath()
+if unimacrodir not in sys.path:
+    sys.path.append(unimacrodir)
 import actions
 import unittest
 import TestCaseWithHelpers
-import re, types
+import re
+import types
 import natlink
-natqh = __import__('natlinkutilsqh')#<CURSOR
+natqh = __import__('natlinkutilsqh')   
 natut = __import__('natlinkutils')
 
 import natlinkutils
@@ -33,7 +40,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
             exec(command, globals(),localVars)
         except exceptionType:
             return
-        raise TestError,'Expecting an exception to be raised calling '+command
+        raise TestError('Expecting an exception to be raised calling '+command)
 
     def assert_mod_partoftitle(self, expMod, expPartOfTitle=None, text=''):
         """check module and optional part of the window title with the actual
@@ -76,7 +83,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
 
     #---------------------------------------------------------------------------
     # This utility subroutine will returns the contents of the NatSpeak window as
-    # a string.  It works by using playString to select the contents of the 
+    # a string.  It works by using playString to select the contents of the
     # window and copy it to the clipboard.  We have to also add the character 'x'
     # to the end of the window to handle the case that the window is empty.
 
@@ -121,7 +128,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
             testText = 'Contents of window did not match expected text, testing %s'% testName
         else:
             testText = 'Contents of window did not match expected text'
-        if type(expected) == types.ListType:
+        if type(expected) == list:
             for e in expected:
                 if e == contents: return
 
@@ -137,7 +144,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
     def doTestFuncReturn(self, expected,command,localVars={}):
         actual = eval(command,globals(),localVars)
         if actual != expected:
-            raise TestError,"Function call: %s\n  returned: %s\n  expected %s"%(command,repr(actual),repr(expected))
+            raise TestError("Function call: %s\n  returned: %s\n  expected %s"%(command,repr(actual),repr(expected)))
 
     #---------------------------------------------------------------------------
     # This types the keysequence {alt+esc}.  Since this is a sequence trapped
@@ -157,17 +164,17 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
 
         try: natlink.execScript('AppBringUp "NatSpeak"')
         except natlink.NatError:
-            raise TestError,'The NatSpeak user interface is not running'
+            raise TestError('The NatSpeak user interface is not running')
         try: natlink.execScript('Start "DragonPad"')
         except natlink.NatError:
-            raise TestError,'The DragonPad window cannot be started'
+            raise TestError('The DragonPad window cannot be started')
         
         # This will make sure that the NatSpeak window is empty.  If the NatSpeak
         # window is not empty we raise an exception to avoid possibily screwing 
         # up the users work.
 
         if self.getWindowContents():
-            raise TestError,'The NatSpeak/DragonPad window is not empty'
+            raise TestError('The NatSpeak/DragonPad window is not empty')
         mod, title, hndle = natlink.getCurrentModule()
         self.DragonPadMod = mod
         self.DragonPadHndle = hndle
