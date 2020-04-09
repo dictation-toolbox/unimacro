@@ -437,7 +437,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             pass
     
             # select all
-            action("{ctrl+a}")
+            action("{ctrl+home}{shift+ctrl+end}")
             expText = "Hello WORLD\nHow are you going?\nIn this Corona world?"
             # if self.testHndle == self.thundHndle:
             #     expText += "\n"
