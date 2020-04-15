@@ -15,15 +15,10 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 #
 #
 import natlink
-import win32event
-import pywintypes
-import win32api
+import win32event, pywintypes, win32api
 
 import monitorfunctions # for get_taskbar_position
-import time
-import os
-import os.path
-import sys
+import time, os, os.path, sys
 from actions import doAction as action
 natut = __import__('natlinkutils')
 natqh = __import__('natlinkutilsqh')
@@ -66,7 +61,7 @@ class ThisGrammar(ancestor):
             #print '%s switched on'% self.name
         else:
             self.SNPActive = 0
-            print('Show Numbers Plus! is not running, grammar "%s" not activated'% self.name)
+            print 'Show Numbers Plus! is not running, grammar "%s" not activated'% self.name
 
     def switchOff(self, skipCancelMode=None):
         """SNP overload, switches grammar off, deactivates all rules
@@ -81,7 +76,7 @@ class ThisGrammar(ancestor):
         """
         if self.SNPActive and self.SNPIsRunning() and self.prevHndle:
             if self.debug:
-                print('SNP cancelMode')
+                print 'SNP cancelMode'
             self.command('HIDENUMBERS')
             self.command('HIDENUMBERSTASKBAR')
         self.mode = ''
@@ -100,7 +95,7 @@ class ThisGrammar(ancestor):
             return
         
         # if module changes, reset mode:
-        prog, title, toporchild, windowHandle = natqh.getProgInfo(moduleInfo)
+        prog, title, toporchild, hndle = natqh.getProgInfo(moduleInfo)
         if toporchild == 'child':
             self.prevTopHndle = self.prevHndle
         elif self.prevTopHndle != moduleInfo[2]:
@@ -121,7 +116,7 @@ class ThisGrammar(ancestor):
         self.debug = self.ini.get('general', 'debug', '')
         self.taskbarPosition = self.ini.get('general', 'taskbar position', 'bottom')
         if self.debug:
-            print('shownumbersplus grammar, taskbar position: %s'% self.taskbarPosition)
+            print 'shownumbersplus grammar, taskbar position: %s'% self.taskbarPosition
 
     def rule_showhidenumbers(self, words):
         """#commands for switching on or off the numbers
@@ -131,7 +126,7 @@ class ThisGrammar(ancestor):
         hide = self.hasCommon(words, 'hide')
         continuous = self.hasCommon(words, 'continuous')
         if self.debug:
-            print('continuous: %s'% continuous)
+            print 'continuous: %s'% continuous
         if show and hide:
             raise ValueError('shownumbersplus, got both show and hide: %s'% words)
         elif not (show or hide):
@@ -191,7 +186,7 @@ class ThisGrammar(ancestor):
         """
         self.collectNumber()
         if self.debug:
-            print('collected: %s'% self.inwindow)
+            print 'collected: %s'% self.inwindow
         #
         if self.taskbar:
             #asked for a taskbar number...
@@ -202,7 +197,7 @@ class ThisGrammar(ancestor):
             #print 'className: %s'% className
             if className == "TaskListThumbnailWnd":
                 if self.debug:
-                    print('stacked taskbar, display numbers again')
+                    print 'stacked taskbar, display numbers again'
                 cmd = 'SHOWNUMBERS'
                 self.command(cmd)
                 natqh.visibleWait()
@@ -217,17 +212,17 @@ class ThisGrammar(ancestor):
             else:
                 cmd = 'DOACTIONSHOWNUMBERS=(%s, %s)'% (self.inwindow, self.clicktype)
                 if self.debug:
-                    print('inwindow cmd: %s'% cmd)
+                    print 'inwindow cmd: %s'% cmd
                 self.command(cmd)
         if self.action:
             action("VW") # visible wait
             if self.debug:
-                print('shownumbers plus action: %s'% self.action)
+                print 'shownumbers plus action: %s'% self.action
             action(self.action)
 
         if self.centerMouse:
             if self.debug:
-                print('center mouse')
+                print 'center mouse'
             natqh.Wait()
             natqh.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
         # must check this:
@@ -237,7 +232,7 @@ class ThisGrammar(ancestor):
                 self.mode = '' # new window
                 return
             if self.debug:
-                print('continuous, show numbers again')
+                print 'continuous, show numbers again'
             action("VW")
             cmd = 'SHOWNUMBERS'
             self.command(cmd)
@@ -249,11 +244,11 @@ class ThisGrammar(ancestor):
         """
         if not self.SNPActive:
             if self.debug:
-                print('SNP not running, call "switch on %s" to restar grammar, after you started SNP! again'% self.name)
+                print 'SNP not running, call "switch on %s" to restar grammar, after you started SNP! again'% self.name
             return
         
         if self.inGotBegin or self.status == 'new':
-            print('SNP command not executed (initializing or gotbegin): %s'% cmd)
+            print 'SNP command not executed (initializing or gotbegin): %s'% cmd
             return
         
         
@@ -261,7 +256,7 @@ class ThisGrammar(ancestor):
         if hndle:
             script = 'DdeExecute "ShowNumbersPlus", "CONTROL", "[%s]"'% cmd
             if self.debug:
-                print('SNP: %s'% cmd)
+                print 'SNP: %s'% cmd
             try:
                 natlink.execScript(script)
             except:
@@ -273,8 +268,8 @@ class ThisGrammar(ancestor):
             else:
                 self.closeMutex()
         else:
-            print('''No DdeExecute to shownumbersplus: "%s".
-Because SNP seems to be not running.'''% cmd)
+            print '''No DdeExecute to shownumbersplus: "%s".
+Because SNP seems to be not running.'''% cmd
             self.switchOff()
 
             
@@ -294,7 +289,7 @@ Because SNP seems to be not running.'''% cmd)
                 initial = initialKeys[taskbarPosition]
                 scrollKey = scrollKeys[taskbarPosition]
             except KeyError:
-                print('key not found "taskbarPosition": %s'% taskbarPosition)
+                print 'key not found "taskbarPosition": %s'% taskbarPosition
                 return
             # go to first of popup windows (depending on taskbar location)
             action(initial)
@@ -302,14 +297,14 @@ Because SNP seems to be not running.'''% cmd)
                 action('{%s %s}'% (scrollKey, num))
             action('{enter}')
         else:
-            print('should not call doAlternativeClick for className: %s'% className)
+            print 'should not call doAlternativeClick for className: %s'% className
       
     def SNPIsRunning(self, onlyShow=None):
         MutexName = "ShowNumbersPlusGMUTEX"
         MUTEX_ALL_ACCESS = 0X1F0001
         try:
             SingleAppHandle = win32event.OpenMutex(MUTEX_ALL_ACCESS, 0, MutexName)
-        except pywintypes.error as details:
+        except pywintypes.error, details:
             if details[0] == 2:
                 self.MutexHndle = None
                 return

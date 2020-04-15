@@ -19,6 +19,7 @@ natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
 from actions import doAction as action
 from actions import doKeystroke as keystroke
+import string
 import nsformat
 
 language = natqh.getLanguage()        
@@ -36,7 +37,7 @@ class ThisGrammar(ancestor):
 
     def initialize(self):
         if not self.language:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
+            print "no valid language in grammar "+__name__+" grammar not initialized"
             return
 
         self.load(self.gramSpec)
@@ -57,7 +58,7 @@ class ThisGrammar(ancestor):
     def gotResults_tags(self,words,fullResults):
         self.letters = self.getFromInifile(words, 'tagname', noWarning=1)
         if not self.letters:
-            print('_tags, no valid tagname found: %s'% words)
+            print '_tags, no valid tagname found: %s'% words
             return
         for w in words:
             char = self.getCharacterFromSpoken(w)
@@ -177,11 +178,11 @@ class ThisGrammar(ancestor):
                 'script':  'script'
             }
         else:
-            print('-----filling ini file %s , invalid language: "%s"! '% \
-                  (self.__module__, self.language))
+            print '-----filling ini file %s , invalid language: "%s"! '% \
+                  (self.__module__, self.language)
             ini.set('general', 'error', 'invalid language')
             return
-        for k, v in list(tagNames.items()):
+        for k, v in tagNames.items():
             ini.set('tagname', k, v)
         # by default switch off initially:
         ini.set('general', 'initial on', '0')

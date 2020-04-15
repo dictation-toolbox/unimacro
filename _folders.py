@@ -1762,11 +1762,11 @@ class ThisGrammar(ancestor):
         upn = self.getNumberFromSpoken(words[-1])
         #print 'folderup: %s'% upn
         m = natlink.getCurrentModule()
-        prog, title, topchild, windowHandle = natqh.getProgInfo(modInfo=m)
+        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
         hndle = m[2]
         Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
-        IamChild32770 = topchild, windowHandle == 'child' and win32gui.GetClassName(hndle) == '#32770'
+        IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         if IamChild32770:
             self.className = '#32770'
         browser = prog in ['iexplore', 'firefox','opera', 'netscp']
@@ -1982,7 +1982,7 @@ class ThisGrammar(ancestor):
             self.DisplayMessage('file does not exist: %s'% f)
             return
         m = natlink.getCurrentModule()
-        prog, title, topchild, windowHandle = natqh.getProgInfo(modInfo=m)
+        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
         mode = openWith = None
         
         # istop logic, with functions from action.py module, settings from:
@@ -2186,7 +2186,7 @@ class ThisGrammar(ancestor):
         
         m = natlink.getCurrentModule()
         istop = self.getTopOrChild( m, childClass="#32770" )
-        prog, title, topchild, windowHandle = natqh.getProgInfo(modInfo=m)
+        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
 
         Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
@@ -2222,7 +2222,7 @@ class ThisGrammar(ancestor):
         hndle = thisHandle = m[2]
         if not hndle:
             print('_folders, gotoFolder: no window handle found, return')
-        # prog, title, topchild, windowHandle = natqh.getProgInfo(modInfo=m)
+        # prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
         Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
         IamChild32770 = (not istop) and win32gui.GetClassName(hndle) == '#32770'

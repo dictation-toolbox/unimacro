@@ -17,12 +17,7 @@ keystrokes can be defined, that can be used in combination with all the
 others continuously.
 
 """
-import time
-import os
-import sys
-import inivars
-import types
-import copy
+import time, string, os, sys, inivars, types, copy
 import natlink
 import nsformat
 from actions import doAction as action
@@ -103,8 +98,8 @@ class ThisGrammar(ancestor):
         # call for extra spoken form with difficult numbers
         # needs self.stripSpokenForm in gotResults... function!!!
         #self.addSpokenFormNumbers(self.taskCounts)
-        self.countList = list(range(1, self.maxCount+1))
-        self.effCountList = list(range(1, self.maxEffCount+1))  
+        self.countList = range(1, self.maxCount+1)
+        self.effCountList = range(1, self.maxEffCount+1)  
         self.setNumbersList('count', self.countList)
         self.setNumbersList('effcount', self.effCountList)
 
@@ -145,7 +140,7 @@ class ThisGrammar(ancestor):
         ini = self.ini
         #print 'do keystrokes for mode: %s'% repr(mode)
         if mode == 'inactive':
-            print('%s: deactivate: %s'% (self.GetName(), mode))
+            print '%s: deactivate: %s'% (self.GetName(), mode)
             self.deactivateAll()
             self.cancelMode()
             self.resetAllVars()
@@ -161,7 +156,7 @@ class ThisGrammar(ancestor):
             # self.modeSet is set of modestrings being active:
             wantExclusive = self.modeSet & self.exclusiveModes  # both a set
             if wantExclusive:
-                print('make keystokes mode exclusive: %s'% wantExclusive)
+                print 'make keystokes mode exclusive: %s'% wantExclusive
                 self.setExclusive(1)
             #if 
             repkeySections = self.ini.getSectionsWithPrefix('repkey', mode)
@@ -195,7 +190,7 @@ class ThisGrammar(ancestor):
     def gotResults_before(self, words, fullResults):
         """optional for here or keystroke multiple words even allowed"""
         if not self.hasCommon(words, 'here'):
-            print('got words in "before" rule, but not "here": %s'% words)
+            print 'got words in "before" rule, but not "here": %s'% words
             return
         # do a click, or (if next rule == contextmenu) a right click.
         button, nClick = 'left', 1
@@ -221,7 +216,7 @@ class ThisGrammar(ancestor):
     #    print 'dgnletters: %s'% words
     #    for w in words:
     #        self.flush()
-    #        posSlash = w.find('\\')
+    #        posSlash = string.find(w, '\\')
     #        if posSlash > 0:
     #            self.key = w[:posSlash]
     #        elif w[:4] in ['\\spa']:
@@ -233,7 +228,7 @@ class ThisGrammar(ancestor):
     #        else: # 
     #            
     def gotResults_dgndictation(self, words, fullResults):
-        print('words of dgndictation: %s'% words)
+        print 'words of dgndictation: %s'% words
         formattedOutput, self.dictateOutputState = nsformat.formatWords(words, state=self.dictateOutputState)
         self.key = formattedOutput
         self.flush()
@@ -257,13 +252,13 @@ class ThisGrammar(ancestor):
             if self.repkeySections:
                 res = self.ini.get(self.repkeySections, w)
             else:
-                print('_keystrokes, no repkeySections for this mode: %s'% repr(self.prevMode))
+                print '_keystrokes, no repkeySections for this mode: %s'% repr(self.prevMode)
                 return
             if res:
                 self.key = res
             else:
-                print('rep, found character or something else: %s'% w)
-                posSlash = w.find('\\')
+                print 'rep, found character or something else: %s'% w
+                posSlash = w.find(u'\\')
                 if posSlash > 0:
                     self.key = w[:posSlash]
                 else:
@@ -299,7 +294,7 @@ class ThisGrammar(ancestor):
                     if self.repkeySections:
                         res = self.ini.get(self.norepkeySections, w)
                     else:
-                        print('_keystrokes, no norepkeySections for this mode: %s'% self.prevMode)
+                        print '_keystrokes, no norepkeySections for this mode: %s'% self.prevMode
                         return
                     res = self.ini.get(self.norepkeySections, w)
                     if not res:
@@ -339,35 +334,35 @@ class ThisGrammar(ancestor):
             self.flushAll()
         if self.prevRule is None or self.prevRule in ['startrule', 'modifiers']:
             if not self.doWaitForMouseToStop():
-                print('_keystrokes, click, cancel command')
+                print '_keystrokes, click, cancel command'
                 return
         else:
             if not self.doMouseMoveStopClick():
-                print("you should move the mouse a bit at least!")
+                print "you should move the mouse a bit at least!"
                 return
         possibleButtons = natqh.joelsButtons
         possibleClicks = ['1', '2', '3']
         clickrules = self.getFromInifile(words[0], 'click')
         #print 'clickrules: %s'% clickrules
         if not clickrules:
-            print('_keystrokes: no valid clickrule')
+            print '_keystrokes: no valid clickrule'
             return
         parts = [s.strip() for s in clickrules.split(',')]
         button = parts[0]
         if not button in possibleButtons:
-            print('button should be one of %s'% possibleButtons)
+            print 'button should be one of %s'% possibleButtons
             return
         if len(parts) > 1:
             
             if parts[1] not in possibleClicks:
-                print('number of clicks (%s) should be one of %s'% (parts[1], possibleClicks))
+                print 'number of clicks (%s) should be one of %s'% (parts[1], possibleClicks)
                 return
             nClick = int(parts[1])
         else:
             nClick = 1
     
         if len(parts) > 2:
-            print('currently only (button, clicks) allowed in clickrule, not: %s'% clickrules)
+            print 'currently only (button, clicks) allowed in clickrule, not: %s'% clickrules
             return
     
         if self.nextRule == 'contextmenu' and nClick == 1:
@@ -435,8 +430,8 @@ class ThisGrammar(ancestor):
         if self.count != 1:
             self.key = natqh.doCount(self.key, self.count)
        
-        if type(self.key) == list:
-            print('_keystrokes, flush: warning, self.key is list: %s'% self.key)
+        if type(self.key) == types.ListType:
+            print '_keystrokes, flush: warning, self.key is list: %s'% self.key
             self.buf.extend(self.key)
         else:
             self.buf.append(self.key)
@@ -447,7 +442,7 @@ class ThisGrammar(ancestor):
             try:
                 buf = ''.join(self.buf)
             except TypeError:
-                print("---TypeError in flushAll of _keystrokes: %s"% repr(self.buf))
+                print "---TypeError in flushAll of _keystrokes: %s"% repr(self.buf)
                 raise
             
             #print 'flushAll: %s'% buf  
@@ -509,7 +504,7 @@ class ThisGrammar(ancestor):
                     postfix=None, lineLen=60, sort=1):
         body = []
         if self.modes:
-            if type(self.prevMode) in (list, tuple):
+            if type(self.prevMode) in (types.ListType, types.TupleType):
                 modesString = ', '.join(self.prevMode)
             else:
                 modesString = str(self.prevMode)
@@ -586,12 +581,12 @@ class ThisGrammar(ancestor):
             self.exclusiveModes = set(self.ini.getList('general', 'exclusive modes', []))
             for m in self.exclusiveModes:
                 if m not in self.modes:
-                    print('warning, exclusive mode "%s" not in defined modes: %s'% (repr(m), list(self.modes.keys())))
+                    print 'warning, exclusive mode "%s" not in defined modes: %s'% (repr(m), self.modes.keys())
             
                     
         except inivars.IniError:
-            print('IniError while initialising ini variables in _keystrokes')
-            print('message: %s'% sys.exc_info()[1])
+            print 'IniError while initialising ini variables in _keystrokes'
+            print 'message: %s'% sys.exc_info()[1]
             return
         
     def cleanAsterixes(self, Dict):

@@ -54,15 +54,13 @@ turned on.
 
 import natlink
 import win32gui
-import utilsqh
+import utilsqh  
 natut = __import__('natlinkutils')
 natqh = __import__('natlinkutilsqh')
 natbj = __import__('natlinkutilsbj')
 import time
 import copy
-import sys
-import os
-import operator
+import string, sys, os, operator
 logHour = -1
 logFile = ''
 
@@ -73,7 +71,7 @@ UUDirectory = natqh.getUnimacroUserDirectory()
 # print 'version: %s (%s)'% (version, type(version))
 # print 'getUnimacroUserDirectory: %s (%s)'% (UUDirectory, type(UUDirectory))
 logFolder = os.path.join(UUDirectory, language + "_log", natqh.getUser())
-print('_oops, logfolder: %s'% logFolder)
+print '_oops, logfolder: %s'% logFolder
  
 def getLogFileName():
     """get name with date and time, record hour in logHour"""
@@ -149,8 +147,8 @@ else:
     WordCommand = 'commando'
     WordDictate = 'dictate'
 
-if len(list(FORMATS.keys())) != len(list(FormatComments.keys())):
-    print('warning _oops: FORMATS and FormatComments do not match')
+if len(FORMATS.keys()) != len(FormatComments.keys()):
+    print 'warning _oops: FORMATS and FormatComments do not match'
     DoFormatting = 0
 else:
     DoFormatting = 1
@@ -173,16 +171,16 @@ class ThisGrammar(ancestor):
         self.messageHndle = 0
         self.setList('chooselist', ChooseList)
         if language == 'nld':
-            print('Grammatica _oops ge-initialiseerd')
+            print 'Grammatica _oops ge-initialiseerd'
         else:
-            print('Grammar _oops initialized')
+            print 'Grammar _oops initialized'
         self.cancelMode()
         self.prevModinfo = None
         self.switchOnOrOff(activateRule='oops')
         if self.logging:
-            print('_oops, logging of utterances to dir:\n\t%s'% logFolder)
+            print '_oops, logging of utterances to dir:\n\t%s'% logFolder
         else:
-            print('_oops, NO logging of utterances')
+            print '_oops, NO logging of utterances'
 
     def fillInstanceVariables(self):
         """fills the necessary instance variables
@@ -287,7 +285,7 @@ class ThisGrammar(ancestor):
 ##            print 'new handle for message window: %s'% self.messageHndle
 ##        print 'time to switch:', time.time() - t0
         if not self.lastResObj:
-            print('no object to Oops')
+            print 'no object to Oops'
             natqh.Wait(0.1)
             natqh.returnFromMessagesWindow()
             return
@@ -305,11 +303,11 @@ class ThisGrammar(ancestor):
                 wordInfo = self.lastResObj.getWordInfo(i)
 ##                pron = []
 ##                if wordInfo:
-##                    pron = map(lambda x: x[6].join(wordInfo))
+##                    pron = string.join(map(lambda x: x[6], wordInfo))
                 if resCode:
-                    print("%s:\t[%s]  (%s %s)" % (i+1,  repr(words), WordCommand,resCode))
+                    print "%s:\t[%s]  (%s %s)" % (i+1,  repr(words), WordCommand,resCode)
                 else:
-                    print("%s:\t%s  (%s)" % (i+1, repr(words), WordDictate))
+                    print "%s:\t%s  (%s)" % (i+1, repr(words), WordDictate)
                     if i == 0:
                         self.FirstIsDictate = 1
                     if len(words) == 1:
@@ -321,13 +319,13 @@ class ThisGrammar(ancestor):
         else:
             i = 10
         if language == 'nld':
-            print("OK, Annuleren, of Kies 1, ..., Kies %s [middel|sterk]" % i)
+            print "OK, Annuleren, of Kies 1, ..., Kies %s [middel|sterk]" % i
             if SingleWord:
-                print("of Format #, Verwijder # of Eigenschappen #  (# = 1, ..., %s)" % i)
+                print "of Format #, Verwijder # of Eigenschappen #  (# = 1, ..., %s)" % i
         else:
-            print("OK, Cancel, or Choose 1, ..., Choose %s [Medium|Strong]" % i)
+            print "OK, Cancel, or Choose 1, ..., Choose %s [Medium|Strong]" % i
             if SingleWord:
-                print("or Format #, Delete # or Properties # (# = 1, ..., %s)" %i)
+                print "or Format #, Delete # or Properties # (# = 1, ..., %s)" %i
 
         self.oopsFlag = 3
         self.activateSet(['inoops'],exclusive=1)
@@ -345,14 +343,14 @@ class ThisGrammar(ancestor):
             texts = dict(nld='oeps geannuleerd')
             t = texts.get(self.language, 'oops canceled')
             self.DisplayMessage(t)
-            print('cancelling exclusive oops mode')
+            print 'cancelling exclusive oops mode'
             natqh.Wait()
             self.cancelMode()
             natqh.returnFromMessagesWindow()
             return
         choice = 0
         if self.hasCommon(words, 'OK'):
-            print('OK')
+            print 'OK'
             self.hadChoice = 1
             #ww = []
             
@@ -373,7 +371,7 @@ class ThisGrammar(ancestor):
         if words[-1] in ChooseList:
             choice = int(words[-1])
         if not choice:
-            print('no valid choice given')
+            print 'no valid choice given'
             natqh.Wait(0.2)
             self.cancelMode()
             natqh.returnFromMessagesWindow()
@@ -382,7 +380,7 @@ class ThisGrammar(ancestor):
             newWords = self.lastResObj.getWords(choice-1)
         except natlink.OutOfRange:
             i = choice-1
-            print('_oops, choose %s, no result number %s'% (i,i))
+            print '_oops, choose %s, no result number %s'% (i,i)
             return
         res = self.lastResObj.getResults(choice-1)
         resCode = res[0][1]
@@ -390,37 +388,37 @@ class ThisGrammar(ancestor):
         # formatting:===========================================
         if 'Format' in words:
             if not DoFormatting:
-                print('formatting options invalid!')
+                print 'formatting options invalid!'
                 return
             
             if resCode:
-                print('no formatting can be done on a command!')
+                print 'no formatting can be done on a command!'
                 time.sleep(1.5)
             elif len(newWords) > 1:
-                print('no formatting can be done on a list of words')
+                print 'no formatting can be done on a list of words'
                 time.sleep(1.5)
             else:
                 self.newWord = newWords[0]
-                fKeys = list(FORMATS.keys())
+                fKeys = FORMATS.keys()
                 fKeys.sort()
-                fcKeys = list(FormatComments.keys())
+                fcKeys = FormatComments.keys()
                 fcKeys.sort()
                 if fKeys != fcKeys:
-                    print('keys of FORMATS and FormatComments do not match')
+                    print 'keys of FORMATS and FormatComments do not match'
                     return
                 numChoices = len(fKeys)
                 if language == 'nld':
-                    print('Formatteren van: %s'% self.newWord)
-                    print('Kies Format 1, ..., %i of zeg "Annuleren"' %numChoices)
+                    print 'Formatteren van: %s'% self.newWord
+                    print 'Kies Format 1, ..., %i of zeg "Annuleren"' %numChoices
                 elif language == 'enx':
-                    print('Formating: %s'% self.newWord)
-                    print('Choose Format 1, ..., %i, or say "Cancel"' % numChoices)
+                    print 'Formating: %s'% self.newWord
+                    print 'Choose Format 1, ..., %i, or say "Cancel"' % numChoices
                 else:
-                    print('invalid language, skip this')
+                    print 'invalid language, skip this'
                     self.cancelMode()
                     return
                 for n in range(numChoices):
-                    print('%s:\t%s'%(n+1, FormatComments[n+1]))
+                    print '%s:\t%s'%(n+1, FormatComments[n+1])
                     
                 #  Entered the new exclusive grammar rules, for the right
                 #    format to be chosen
@@ -430,42 +428,42 @@ class ThisGrammar(ancestor):
         # deleting:===========================================
         elif self.hasCommon(words, ['Delete',  'Verwijder']):
             if resCode:
-                print('no delete of a command!')
+                print 'no delete of a command!'
                 time.sleep(1.5)
             elif len(newWords) > 1:
-                print('no delete on a list of words')
+                print 'no delete on a list of words'
                 time.sleep(1.5)
             else:
                 natlink.deleteWord(newWords[0])
-                print('deleted: %s' % newWords[0])
+                print 'deleted: %s' % newWords[0]
         elif self.hasCommon(words, ['Properties','Eigenschappen']):
             if resCode:
-                print('no properties on a command!')
+                print 'no properties on a command!'
                 time.sleep(1.0)
             elif len(newWords) > 1:
-                print('no properties of a list of words')
+                print 'no properties of a list of words'
                 time.sleep(1.0)
             else:
                 self.newWord = newWords[0]
                 props = natlink.getWordInfo(self.newWord)
-                print('properties of %s: %x' % (self.newWord, props))
+                print 'properties of %s: %x' % (self.newWord, props)
                 p = natqh.ListOfProperties(props)
                 if p:
                     for pp in p:
-                        print(pp)
+                        print pp
                     time.sleep(4.0)
         elif self.hasCommon(words, ['Choose', 'Kies', 'OK']):
             hadChoose = 1
-            print('correcting: %s (%s times)'%(newWords,self.nChoice))
+            print 'correcting: %s (%s times)'%(newWords,self.nChoice)
             for i in range(self.nChoice):
                 result = self.lastResObj.correction(newWords)
                 if not result:
-                    print('correction failed')
+                    print 'correction failed'
                     break
             else:
-                print('corrected %s times'% self.nChoice)
+                print 'corrected %s times'% self.nChoice
         else:
-            print('invalid word in command: %s' % repr(words))
+            print 'invalid word in command: %s' % `words`
             time.sleep(2.0)
         time.sleep(1.0)
         self.cancelMode()
@@ -474,9 +472,9 @@ class ThisGrammar(ancestor):
         #    dictate word, the last phrase is scratched and replaced by the new
         #    text or the new command.
         if hadChoose and self.FirstIsDictate:
-            print('mimic first: %s'% ScratchThatCommand)
+            print 'mimic first: %s'% ScratchThatCommand
             natlink.recognitionMimic(ScratchThatCommand)
-            print('now mimic: %s'% newWords)
+            print 'now mimic: %s'% newWords
             natlink.recognitionMimic(newWords)
 
     def gotResults_inoops2(self,words,fullResults):
@@ -491,18 +489,18 @@ class ThisGrammar(ancestor):
                 fNum = int(words[-1])
             except ValuerError:
                 fNum = ''
-            # fNum = int(words[-1])
-            if fNum in list(FORMATS.keys()):
+            # fNum = string.atoi(words[-1])
+            if fNum in FORMATS.keys():
                 fstring = FORMATS[fNum]
             else:
-                print('invalid paramter choosen: %s' % repr(words))
+                print 'invalid paramter choosen: %s' % `words`
                 fstring = ''
             if fstring and self.newWord:
                 oldFormat = natlink.getWordInfo(self.newWord)
                 if fstring == oldFormat:
-                    print('format of %s is already: %x' % (self.newWord, fstring))
+                    print 'format of %s is already: %x' % (self.newWord, fstring)
                 else:
-                    print('formatting word: %s from hex %x to hex: %x'%(self.newWord, oldFormat, fstring))
+                    print 'formatting word: %s from hex %x to hex: %x'%(self.newWord, oldFormat, fstring)
                     natlink.setWordInfo(self.newWord, fstring)
             self.newWord = ""
         time.sleep(1.0)
@@ -514,7 +512,7 @@ class ThisGrammar(ancestor):
 ##        print 'resetting oops grammar'
         # isActive = self.isActive()
         if self.isExclusive():
-            print('oops, cancel exclusive mode')
+            print 'oops, cancel exclusive mode'
             self.activateSet(['oops'], exclusive = 0)
         self.newWord = ''
 
@@ -531,7 +529,7 @@ def logToFile(line):
     if not logFile:
         getLogFileName()
     if not logFile:
-        print('_oops, logging: cannot find valid name for logFile')
+        print '_oops, logging: cannot find valid name for logFile'
         return
     sock = open(logFile, 'a')
     if not line.endswith('\n'):

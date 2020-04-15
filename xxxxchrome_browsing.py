@@ -1,14 +1,17 @@
+__version__ = "$Rev: 429 $ on $Date: 2011-05-31 16:21:03 +0200 (di, 31 mei 2011) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
 #
-# Mouseless Browsing extension from Rudolf Noe (mode = "mlb") is discarded
+# chrome, numbers mode
 #
-# only clickbyvoice, which is present in all browsers that are chromium compatible
-# chrome, safari, brave, edge (Microsoft Edge) etc.
+# assumes Hint-a-Hint extension from Pekka Sillanpaa (mode = "hah" )
+# Or
+# Mouseless Browsing extension from Rudolf Noe (mode = "mlb")
 #
-# 
+# set in line 61 below================================================
+#
 #
 # written by: Quintijn Hoogenboom (QH software, training & advies)
 #
@@ -18,9 +21,6 @@
 #
 """
 This commands grammar allows clicking by voice
-
-It is a global grammar, that is activated as soon as one of the chromium browsers is
-in the foreground 
 
 """
 
@@ -47,9 +47,9 @@ class ThisGrammar(ancestor):
         numberGram = natbj.numberGrammarTill999['enx']
         
     if language == "nld":
-        name = 'Click by voice'
+        name = 'Chroom brouwsen'
     else:
-        name = 'Click by voice'
+        name = 'Chrome Browsing'
 
     gramSpec = """
 <shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
@@ -79,32 +79,21 @@ class ThisGrammar(ancestor):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        progInfo = natqh.getProgInfo(moduleInfo)
-        print('progInfo: %s'% repr(progInfo))
-        prog = progInfo.prog
-        chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
-        if prog in chromiumBrowsers:
-            if progInfo.toporchild == 'child':
-                print('in child window, the clickbyvoice window?')
+        if natqh.matchModule('chrome', modInfo=moduleInfo):
+            # print 'activate %s winHandle %s'% (self.name, winHandle)
             if self.checkForChanges:
-                print('_clickbyvoice (%s), prog: %s, checking the inifile'% (self.name, prog))
+                print('chrome browsing (%s), checking the inifile'% self.name)
                 self.checkInifile()
             self.switchOnOrOff(window=winHandle)
-            if not self.isActive == winHandle:
-                print("activate _clickbyvoice, %s, %s"% (prog, winHandle))
-                self.activateAll(window=winHandle)
-                self.isActive = winHandle
-        else:
-            if self.isActive:
-                print("deactivate _clickbyvoice")
-                self.deactivateAll()
-                self.isActive = False
-                
+        # elif self.isActive():
+        #     #print 'deactivate chrome %s mode'% mode
+        #     self.deactivateAll()
+        # self.showNumbers = ":+o" # get from inifile, 'general', 'show numbers'...
 
     def gotResultsInit(self,words,fullResults):
         """at start of actions"""
         self.number = ''
-        self.navOption = ''   # eg left or right (s or o)hallo
+        self.navOption = ''   # eg left or right (s or o)
         self.hadPick = False
 
     def gotResults_picknumber(self, words, fullResults):
@@ -216,19 +205,6 @@ class ThisGrammar(ancestor):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
         natqh.Wait()   ## longer: natqh.Wait(visiblePause)
-        for i in range(10):
-            progInfo = natqh.getProgInfo()
-            if progInfo.toporchild == 'child':
-                if i: print('found input window after %s steps'% i)
-                break
-            natqh.Wait()
-        else:
-            print("_clickbyvoice failed to reach input window")
-        print("found input window of clickbyvoice")
-        natqh.visibleWait()
-        natqh.visibleWait()
-        natqh.visibleWait()
-        
         
     def doOption(self, option):
         """after the inputcontrol is focussed, do the command"""
