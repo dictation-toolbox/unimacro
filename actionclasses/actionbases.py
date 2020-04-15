@@ -10,7 +10,7 @@ class AllActions:
     def reset(self, progInfo=None):
         if progInfo is None:
             progInfo = natqh.getProgInfo()
-        self.prog, self.topTitle, self.topOrChild, self.topHandle = progInfo
+        self.prog, self.topTitle, self.topchild, self.topHandle = progInfo
         self.progInfo = None
         
     def update(self, newProgInfo=None):
@@ -20,7 +20,7 @@ class AllActions:
             return
         print('allactions: new prog info, overload for your specific program: %s'% self.prog)
         self.progInfo = newProgInfo
-        self.prog, self.topTitle, self.topOrChild, self.topHandle = newProgInfo
+        self.prog, self.topTitle, self.topchild, self.topHandle = newProgInfo
         
     def getCurrentLineNumber(self):
         pass

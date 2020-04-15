@@ -256,7 +256,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         if progInfo is None:
             progInfo = natqh.getProgInfo(modInfo=modInfo)
         #D('new progInfo: %s'% repr(progInfo))
-        prog, title, topchild, windowHandle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         if sectionList == None:
             sectionList = getSectionList(progInfo)
         if pauseBA == None:
@@ -307,7 +307,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     # now perform the action
     # check if action consists of several parts:
     # assume progInfo is now available:
-    prog, title, topchild, windowHandle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     
     if metaAction.match(action):  # exactly a meta action, <<....>>
         a = metaAction.match(action).group(1)
@@ -593,7 +593,7 @@ natspeakCommands = ['ActiveControlPick', 'ActiveMenuPick', 'AppBringUp', 'AppSwa
 def getSectionList(progInfo=None):
     if not progInfo:
         progInfo = natqh.getProgInfo()
-    prog, title, topchild, windowHandle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     if debug > 5:
         D('search for prog: %s and title: %s' % (prog, title))
         D('type prog: %s, type title: %s'% (type(prog), type(title)))
@@ -708,7 +708,7 @@ def getFromIni(keyword, default='',
         return ''
     if sectionList == None:
         if progInfo == None: progInfo = natqh.getProgInfo()
-        prog, title, topchild, windowHandle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         sectionList = ini.getSectionsWithPrefix(prog, title) + \
                       ini.getSectionsWithPrefix('default', title)
         if debug > 5: D('getFromIni, sectionList: |%s|' % sectionList)
@@ -739,7 +739,7 @@ def get_external_module(prog):
 def get_instance_from_progInfo(progInfo):
     """return the correct intances for progInfo
     """
-    prog, title, topOrChild, handle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     prog = str(prog)
     if handle in external_action_instances:
         instance = external_action_instances[handle]
@@ -1461,7 +1461,7 @@ def do_MSG(*args, **kw):
 def do_DOCUMENT(number=None, **kw):
     """switch to document (program specific) with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, windowHandle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if not prog:
         print('action DOCUMENT, no program in foreground: %s (%S)'% (prog, title))
         return
@@ -1500,7 +1500,7 @@ def do_DOCUMENT(number=None, **kw):
 def do_TASK(number=None, **kw):
     """switch to task with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, windowHandle = lkw['progInfo']
+    prog, title, topchild, classname, hndle = lkw['progInfo']
     if prog == 'explorer' and not title:
         doKeystroke('{esc}')
         natqh.shortWait()
@@ -1613,9 +1613,9 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
  
     """
     if kw['progInfo']:
-        prog, title, topchild, windowHandle = kw['progInfo']
+        prog, title, topchild, classname, hndle = kw['progInfo']
     else:
-        prog, title, topchild, windowHandle = 'unknown', 'unknown', 'top', 0
+        prog, title, topchild, classname, hndle = 'unknown', 'unknown', 'top', 0
         
     progNew = prog
     prevHandle = windowHandle
@@ -1667,7 +1667,7 @@ def topWindowBehavesLikeChild(modInfo):
         #print 'topchildDict: %s'% topchildDict
     if topchildDict == {}:
         return
-    prog, title, dummy, hndle = natqh.getProgInfo(modInfo)
+    prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo)
     result = matchProgTitleWithDict(prog, title, topchildDict, matchPart=1)
     if result: return result
     className = win32gui.GetClassName(hndle)
@@ -1687,7 +1687,7 @@ def childWindowBehavesLikeTop(modInfo):
         #print 'childtopDict: %s'% childtopDict
     if childtopDict == {}:
         return
-    prog, title, dummy, handle = natqh.getProgInfo(modInfo)
+    prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo)
     return matchProgTitleWithDict(prog, title, childtopDict, matchPart=1)
 
 def matchProgTitleWithDict(prog, title, Dict, matchPart=None):
@@ -1985,7 +1985,7 @@ def putCursor():
 def findCursor():
     """find the previous entered cursor text"""
     doAction('<<startsearch>>; "%s"; VW; <<searchgo>>'% cursorText)
-    prog, title, dummy, handle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if prog == 'emacs':
         doAction("{shift+left %s}"% len(cursorText))
     doAction("CLIPSAVE; <<cut>>")
@@ -2195,8 +2195,8 @@ FileAppend, %wHndle%, ##WININFOfile##
         # for attaching to a running instance:
         appTitle = ini.get("bringup %s"% app, "title") or None
         appClass = ini.get("bringup %s"% app, "class") or None
-    
-        prog, title, topOrChild, handle = natqh.getProgInfo()
+        ## TODOQH
+        prog, title, topchild, classname, hndle = natqh.getProgInfo()
         progFull, titleFull, hndle = natlink.getCurrentModule()
     
         if windowCorrespondsToApp(app, appName, prog, title):
@@ -2215,7 +2215,7 @@ FileAppend, %wHndle%, ##WININFOfile##
                     print('could not bring to foreground: %s, exit action'% hndle)
                     
                 if do_WTC():
-                    prog, title, topOrChild, handle = natqh.getProgInfo()
+                    prog, title, topchild, classname, hndle = natqh.getProgInfo()
                     if prog == appName:
                         return 1
             except:
@@ -2235,7 +2235,7 @@ FileAppend, %wHndle%, ##WININFOfile##
     #                print 'get window %s to foreground failed'% hndle
     #                
     #            natqh.Wait(0.1)
-    #            prog, title, topOrChild, handle = natqh.getProgInfo()
+    #            prog, title, topchild, classname, hndle = natqh.getProgInfo()
     #            progFull, titleFull, hndle2 = natlink.getCurrentModule()
     #            if hndle == hndle2:
     #                #print 'OK, setting |%s|, currentModule: %s'% (app, repr(natlink.getCurrentModule()))
@@ -2248,7 +2248,7 @@ FileAppend, %wHndle%, ##WININFOfile##
     #print 'unimacrobringup: name: %s, app: %s, args: %s (filepath: %s)'% (appName, appPath, appArgs, filepath)
     return natqh.AppBringUp(appName, appPath, appArgs, appWindowStyle, appDirectory)
 #    if do_WTC():
-#        prog, title, topOrChild, handle = natqh.getProgInfo()
+#        prog, title, topchild, classname, hndle = natqh.getProgInfo()
 #        progFull, titleFull, hndle = natlink.getCurrentModule()
 ###        print 'app: %s, appName: %s, got prog: %s'% (app, appName, prog)
 #        if prog == appName:
@@ -2292,7 +2292,7 @@ def dragonpadBringUp():
     natlink.recognitionMimic(["Start", "DragonPad"])
     while i < 10:
         i += 1
-        prog, title, topOrChild, handle = natqh.getProgInfo()
+        prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if windowCorrespondsToApp('dragonpad', 'natspeak', prog, title):
             break
         do_W(0.1)
@@ -2319,7 +2319,7 @@ def voicecodeBringUp():
     """assume emacs is in front, check the other necessary things"""
     if debug: D('starting special: voicecodeBringUp')
 
-    prog, title, topOrChild, handle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if prog != voicecodeApp:
         if not UnimacroBringUp(voicecodeApp):
             D('did not bringup voicecodeApp: %s'% voicecodeApp)
@@ -2360,7 +2360,7 @@ def startVoiceCoder(nTrie=2):
 
     identified by "(yak" (case insensitive)
     """
-    prog, title, topOrChild, handle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if prog != voicecodeApp:
         print('startVoiceCoder needs correct app first: %s, not: %s'% (voicecodeApp, prog))
         return
@@ -2372,7 +2372,7 @@ def startVoiceCoder(nTrie=2):
         if debug: D('Try to get vcode-mode: %s'% i)
         doAction("EMACS vcode-mode")
         do_W(0.5)
-        prog, title, topOrChild, handle = natqh.getProgInfo()
+        prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if title.find("(yak ") >= 0:
             if debug: D('found voicecoder')
             return 1
@@ -2423,7 +2423,7 @@ def getPathOfOpenFile():
     used for switching from eg pythonwin to emacs and back
     """
     fileName = None
-    prog, title, topOrChild, windowHandle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if prog == 'pythonwin':
         doKeystroke("{ctrl+r}")
         doAction("W")

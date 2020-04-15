@@ -337,10 +337,10 @@ def getProgName(modInfo=None):
         modInfo = natlink.getCurrentModule()
     return utilsqh.convertToUnicode(getBaseNameLower(modInfo[0]))
 
-ProgInfo = collections.namedtuple('ProgInfo', 'prog title toporchild classname hndle'.split(' '))
+ProgInfo = collections.namedtuple('ProgInfo', 'prog title topchild classname hndle'.split(' '))
 
 def getProgInfo(modInfo=None):
-    """returns program info as tuple (prog, title, toporchild, classname, hndle)
+    """returns program info as tuple (prog, title, topchild, classname, hndle)
 
     now length 5, including the classname, but also a named tuple!!
 
@@ -348,25 +348,29 @@ def getProgInfo(modInfo=None):
     
     title now with capital letters.
 
-    toporchild 'top' or 'child', or '' if no valid window
+    topchild 'top' or 'child', or '' if no valid window
     
     """
-    modInfo = modInfo or natlink.getCurrentModule()
+    try:
+        a = 1/0
+        modInfo = modInfo or natlink.getCurrentModule()
+    except:
+        modInfo = autohotkeyactions.getModInfo()
     hndle = modInfo[2]
     if not hndle:
         return 
     prog = getBaseNameLower(modInfo[0])
     title = modInfo[1]
     if isTopWindow(modInfo[2]):
-        toporchild = 'top'
+        topchild = 'top'
     else:
-        toporchild = 'child'
+        topchild = 'child'
          
     hndle = modInfo[2]
          
     classname = win32gui.GetClassName(hndle)
 
-    return ProgInfo(prog, title, toporchild, classname, hndle)
+    return ProgInfo(prog, title, topchild, classname, hndle)
             
 def getClassName(modInfo=None):
     """returns the class name of the foreground window
@@ -393,10 +397,10 @@ def matchWindow(criteria, modInfo=None, progInfo=None):
     'none'  (nothing matches)
     'empty' (matches when no valid progInfo is found)
 
-    progInfo is a tuple: (prog, title, toporchild, hndle),
+    progInfo is a tuple: (prog, title, topchild, hndle),
     prog being the lower case name of the programme
     title being the lower case converted title
-    toporchild being 'top' if top window, 'child' if child window,
+    topchild being 'top' if top window, 'child' if child window,
                         if no valid module info
 
     progInfo may be omitted as well as modInfo.
@@ -415,14 +419,14 @@ def matchWindow(criteria, modInfo=None, progInfo=None):
         return
 
 
-    prog, title, toporchild, classname, hndle = progInfo or getProgInfo(modInfo)
+    prog, title, topchild, classname, hndle = progInfo or getProgInfo(modInfo)
     prog = utilsqh.convertToUnicode(prog)
     title = utilsqh.convertToUnicode(title)
     if 'empty' in criteria and prog == '':
         return 1
-    if 'top' in criteria and toporchild != 'top':
+    if 'top' in criteria and topchild != 'top':
         return
-    if 'child' in criteria and toporchild != 'child':
+    if 'child' in criteria and topchild != 'child':
         return
     if prog in criteria:
         pot = criteria[prog]  # part of title
@@ -1927,3 +1931,7 @@ def add2logfile(word, filename):
         print('written to %s: %s' % (os.path.join(logFolder), filename))
     except:
         pass
+if __name__ == "__main__":
+    progInfo = getProgInfo()
+    print("progInfo: %s"% repr(progInfo))
+    pass

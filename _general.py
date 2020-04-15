@@ -801,17 +801,17 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             m = natlink.getCurrentModule()
             hwnd = m[2]
             p = natqh.getProgInfo(m)
-            toporchild = p[2] == 'top'
+            topchild = p[2] == 'top'
             T.append('---from natqh.getProgInfo:')
             T.append('0 program: %s'% p[0])
             T.append('1 window title: %s'% p[1])
-            T.append('2 toporchild: %s'% p[2])
+            T.append('2 topchild: %s'% p[2])
             childClass = "#32770"
             overruleIsTop = self.getTopOrChild(m, childClass=childClass)
                 
             T.append('3 window handle: %s'% p[3])
 
-            if toporchild != overruleIsTop:
+            if topchild != overruleIsTop:
                 T.append('')
                 if overruleIsTop:
                     T.append("**** treat as TOP window although it is a child window")

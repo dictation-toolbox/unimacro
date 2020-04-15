@@ -108,7 +108,7 @@ class VoiceDictation:
                 dct = self.dictObj
                 dct.deactivate()
                 self.dctactive = 0
-            prog, title, toporchild, hndle = natqh.getProgInfo(moduleInfo)
+            prog, title, topchild, hndle = natqh.getProgInfo(moduleInfo)
             print('changing app to: "%s", %s'% (prog, hndle))
             self.app, self.ctrl = None, None
             if prog in self.WindowsParameters:

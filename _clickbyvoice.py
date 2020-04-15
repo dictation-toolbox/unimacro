@@ -84,7 +84,7 @@ class ThisGrammar(ancestor):
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
         if prog in chromiumBrowsers:
-            if progInfo.toporchild == 'child':
+            if progInfo.topchild == 'child':
                 print('in child window, the clickbyvoice window?')
             if self.checkForChanges:
                 print('_clickbyvoice (%s), prog: %s, checking the inifile'% (self.name, prog))
@@ -218,7 +218,7 @@ class ThisGrammar(ancestor):
         natqh.Wait()   ## longer: natqh.Wait(visiblePause)
         for i in range(10):
             progInfo = natqh.getProgInfo()
-            if progInfo.toporchild == 'child':
+            if progInfo.topchild == 'child':
                 if i: print('found input window after %s steps'% i)
                 break
             natqh.Wait()
