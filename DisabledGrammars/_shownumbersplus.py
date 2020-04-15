@@ -95,7 +95,7 @@ class ThisGrammar(ancestor):
             return
         
         # if module changes, reset mode:
-        prog, title, toporchild, windowHandle = natqh.getProgInfo(moduleInfo)
+        prog, title, toporchild, hndle = natqh.getProgInfo(moduleInfo)
         if toporchild == 'child':
             self.prevTopHndle = self.prevHndle
         elif self.prevTopHndle != moduleInfo[2]:

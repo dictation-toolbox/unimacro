@@ -246,7 +246,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         if progInfo == None:
             progInfo = natqh.getProgInfo()
             #D('new progInfo: %s'% repr(progInfo))
-        prog, title, topchild, windowHandle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         if sectionList == None:
             sectionList = getSectionList(progInfo)
         if pauseBA == None:
@@ -297,7 +297,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     # now perform the action
     # check if action consists of several parts:
     # assume progInfo is now available:
-    prog, title, topchild, windowHandle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     
     if metaAction.match(action):  # exactly a meta action, <<....>>
         a = metaAction.match(action).group(1)
@@ -590,7 +590,7 @@ natspeakCommands = ['ActiveControlPick', 'ActiveMenuPick', 'AppBringUp', 'AppSwa
 def getSectionList(progInfo=None):
     if not progInfo:
         progInfo = natqh.getProgInfo()
-    prog, title, topchild, windowHandle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     if debug > 5:
         D('search for prog: %s and title: %s' % (prog, title))
         D('type prog: %s, type title: %s'% (type(prog), type(title)))
@@ -705,7 +705,7 @@ def getFromIni(keyword, default='',
         return ''
     if sectionList == None:
         if progInfo == None: progInfo = natqh.getProgInfo()
-        prog, title, topchild, windowHandle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         sectionList = ini.getSectionsWithPrefix(prog, title) + \
                       ini.getSectionsWithPrefix('default', title)
         if debug > 5: D('getFromIni, sectionList: |%s|' % sectionList)
@@ -811,7 +811,7 @@ def showActions(progInfo=None, lineLen=60, sort=1, comingFrom=None, name=None):
     
     sectionList = getSectionList(progInfo)
 
-    l = ['actions for program: %s\n\twindow title: %s (topchild: %s, windowHandle: %s)'% progInfo,
+    l = ['actions for program: %s\n\twindow title: %s (topchild: %s, hndle: %s)'% progInfo,
          '\tsection list: %s'% sectionList,
          '']
     l.append(ini.formatKeysOrderedFromSections(sectionList,
@@ -1458,7 +1458,7 @@ def do_MSG(*args, **kw):
 def do_DOCUMENT(number=None):
     """switch to document (program specific) with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, windowHandle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if not prog:
         print('action DOCUMENT, no program in foreground: %s (%S)'% (prog, title))
         return
@@ -1497,7 +1497,7 @@ def do_DOCUMENT(number=None):
 def do_TASK(number=None):
     """switch to task with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, windowHandle = natqh.getProgInfo()
+    prog, title, topchild, classname, hndle = natqh.getProgInfo()
     if prog == 'explorer' and not title:
         doKeystroke('{esc}')
         natqh.shortWait()
@@ -1650,7 +1650,7 @@ def topWindowBehavesLikeChild(modInfo):
         #print 'topchildDict: %s'% topchildDict
     if topchildDict == {}:
         return
-    prog, title, dummy, handle = natqh.getProgInfo(modInfo)
+    prog, title, toporchild, classname, handle = natqh.getProgInfo(modInfo)
     return matchProgTitleWithDict(prog, title, topchildDict, matchPart=1)
             
 def childWindowBehavesLikeTop(modInfo):
@@ -1665,7 +1665,7 @@ def childWindowBehavesLikeTop(modInfo):
         #print 'childtopDict: %s'% childtopDict
     if childtopDict == {}:
         return
-    prog, title, dummy, handle = natqh.getProgInfo(modInfo)
+    prog, title, dummy, classname, handle = natqh.getProgInfo(modInfo)
     return matchProgTitleWithDict(prog, title, childtopDict, matchPart=1)
 
 def matchProgTitleWithDict(prog, title, Dict, matchPart=None):
@@ -1963,7 +1963,7 @@ def putCursor():
 def findCursor():
     """find the previous entered cursor text"""
     doAction('<<startsearch>>; "%s"; VW; <<searchgo>>'% cursorText)
-    prog, title, dummy, handle = natqh.getProgInfo()
+    prog, title, dummy, classname, handle = natqh.getProgInfo()
     if prog == 'emacs':
         doAction("{shift+left %s}"% len(cursorText))
     doAction("CLIPSAVE; <<cut>>")
@@ -2311,7 +2311,7 @@ def getPathOfOpenFile():
     used for switching from eg pythonwin to emacs and back
     """
     fileName = None
-    prog, title, topOrChild, windowHandle = natqh.getProgInfo()
+    prog, title, topOrChild, hndle = natqh.getProgInfo()
     if prog == 'pythonwin':
         doKeystroke("{ctrl+r}")
         doAction("W")

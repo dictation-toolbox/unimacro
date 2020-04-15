@@ -38,6 +38,7 @@ import os
 import sys
 import os.path
 import stat
+import collections
 import natlink
 import inivars
 import utilsqh
@@ -336,23 +337,37 @@ def getProgName(modInfo=None):
         modInfo = natlink.getCurrentModule()
     return utilsqh.convertToUnicode(getBaseNameLower(modInfo[0]))
 
-def getProgInfo(modInfo=None):
-    """returns program info as tuple (prog, title, toporchild, windowHandle)
+ProgInfo = collections.namedtuple('ProgInfo', 'prog title toporchild classname hndle'.split(' '))
 
-    all lowercase, toporchild 'top' or 'child', or '' if no valid window    
+def getProgInfo(modInfo=None):
+    """returns program info as tuple (prog, title, toporchild, classname, hndle)
+
+    now length 5, including the classname, but also a named tuple!!
+
+    prog always lowercase
+    
+    title now with capital letters.
+
+    toporchild 'top' or 'child', or '' if no valid window
+    
     """
     modInfo = modInfo or natlink.getCurrentModule()
-    if modInfo[0]:
-        prog = getBaseNameLower(modInfo[0])
-        title = modInfo[1].lower()
-        if isTopWindow(modInfo[2]):
-            toporchild = 'top'
-        else:
-            toporchild = 'child'
-        return utilsqh.convertToUnicode(prog), utilsqh.convertToUnicode(title), toporchild, utilsqh.convertToUnicode(modInfo[2])
+    hndle = modInfo[2]
+    if not hndle:
+        return 
+    prog = getBaseNameLower(modInfo[0])
+    title = modInfo[1]
+    if isTopWindow(modInfo[2]):
+        toporchild = 'top'
     else:
-        return '', '', 'empty', utilsqh.convertToUnicode(modInfo[2])
+        toporchild = 'child'
+         
+    hndle = modInfo[2]
+         
+    classname = win32gui.GetClassName(hndle)
 
+    return ProgInfo(prog, title, toporchild, classname, hndle)
+            
 def getClassName(modInfo=None):
     """returns the class name of the foreground window
     take modInfo (tuple or int (the handle), or get it here)
@@ -378,7 +393,7 @@ def matchWindow(criteria, modInfo=None, progInfo=None):
     'none'  (nothing matches)
     'empty' (matches when no valid progInfo is found)
 
-    progInfo is a tuple: (prog, title, toporchild, windowHandle),
+    progInfo is a tuple: (prog, title, toporchild, hndle),
     prog being the lower case name of the programme
     title being the lower case converted title
     toporchild being 'top' if top window, 'child' if child window,
@@ -400,7 +415,7 @@ def matchWindow(criteria, modInfo=None, progInfo=None):
         return
 
 
-    prog, title, toporchild, windowHandle = progInfo or getProgInfo(modInfo)
+    prog, title, toporchild, classname, hndle = progInfo or getProgInfo(modInfo)
     prog = utilsqh.convertToUnicode(prog)
     title = utilsqh.convertToUnicode(title)
     if 'empty' in criteria and prog == '':
@@ -1211,12 +1226,12 @@ def isTopWindow(hndle):
 
 # remember the current window, needed before waitForTitleChange can be done
 # modInfo can be left away
-windowHandle = None
+hndle = None
 windowTitle = ""
 def clearWindowHandle():
     """set to 0"""
-    global windowHandle
-    windowHandle = None
+    global hndle
+    hndle = None
 
 # This is called if the user clicks on the tray icon.  We simply cancel
 # movement in all cases.
@@ -1293,19 +1308,19 @@ def clearTrayIcon():
 
 
 def rememberWindow(modInfo=None):
-    global windowHandle, waitingCanceled, windowTitle
-    # if not windowHandle true, then raised in error, because
+    global hndle, waitingCanceled, windowTitle
+    # if not hndle true, then raised in error, because
     # rememberWindow is called before and not finished correct
     waitingCanceled = 0
     iconState = 0
     modInfo = modInfo or getCurrentModuleSafe()
-    windowHandle = modInfo[2]
+    hndle = modInfo[2]
     windowTitle = modInfo[1]
-##    print 'set window to %s'% windowHandle
-    if not windowHandle:
-        print('warning, no window to remember: %s'% windowHandle)
-    # print 'rememberWindow, %s, %s'% (windowHandle, windowTitle)
-    return windowHandle   
+##    print 'set window to %s'% hndle
+    if not hndle:
+        print('warning, no window to remember: %s'% hndle)
+    # print 'rememberWindow, %s, %s'% (hndle, windowTitle)
+    return hndle   
 
 # waiting for a specific window title (word from...)
 # all lowercase...
@@ -1347,8 +1362,8 @@ def waitForWindowTitle(titleName, nWait=10, waitingTime=0.1, comingFrom=None):
 
 # rememberWindow must run before. nWait and waitingTime as suggested above
 def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
-    if windowHandle==None:
-        raise NatlinkCommandError("waitForNewWindow, no valid old windowHandle, do a rememberWindow() first")
+    if hndle==None:
+        raise NatlinkCommandError("waitForNewWindow, no valid old hndle, do a rememberWindow() first")
     for i in range(nWait):
         if waitingCanceled:
             clearTrayIcon()
@@ -1363,7 +1378,7 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
         
         stepsToBeStable = max(3, i) # if it took longer to bring window in front, test more steps
         prog, title, hndle = modInfo
-        if hndle != windowHandle:
+        if hndle != hndle:
             # new window, wait for stable situation
             succes = 0
             for j in range(stepsToBeStable*3):
@@ -1394,8 +1409,8 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
         return 
 
 def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
-    if windowHandle==None:
-        raise NatlinkCommandError("waitForNewWindow, no valid old windowHandle, do a rememberWindow() first")
+    if hndle==None:
+        raise NatlinkCommandError("waitForNewWindow, no valid old hndle, do a rememberWindow() first")
     for i in range(nWait):
         if waitingCanceled:
             clearTrayIcon()
@@ -1421,10 +1436,10 @@ def returnToWindow(nWait=5, waitingTime=0.05, winHandle=None, winTitle=None):
     """return to previous remembered window
     
     mostly do not specify winHandle and winTitle, as it is set as global
-    variables windowHandle and windowTitle
+    variables hndle and windowTitle
     
     """
-    winHandle = winHandle or windowHandle
+    winHandle = winHandle or hndle
     winTitle = winTitle or windowTitle
     if not winHandle:
         print('returnToWindow, no window handle to return to, do nothing')

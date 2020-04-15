@@ -182,7 +182,7 @@ class ThisGrammar(ancestor):
         result = self.gotoTask(countOrApp)
         
         if result:
-            prog, title, topchild, windowHandle = natqh.getProgInfo()
+            prog, title, topchild, classname, hndle = natqh.getProgInfo()
             if prog == 'explorer' and not title:
                 return # no centermouse!
             if self.centerMouse and not self.nextRule:
@@ -228,7 +228,7 @@ class ThisGrammar(ancestor):
                     natqh.Wait()
                     natqh.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
             else:
-                prog, title, topchild, windowHandle = natqh.getProgInfo()
+                prog, title, topchild, classname, hndle = natqh.getProgInfo()
                 print '_tasks, could not switch to document: %s (program: %s)'% (count, prog)
             
             if words[1] == words[-1]:
@@ -318,7 +318,7 @@ class ThisGrammar(ancestor):
         print 'result after taskswitch: %s'% repr(result)
         t2 = time.time() 
 
-        prog, title, topchild, windowHandle = progInfo = result
+        prog, title, topchild, classname, hndle = progInfo = result
         #print 'switched to "%s" (%.2f)'%  (prog, t2-t1)
 
 
@@ -388,7 +388,7 @@ class ThisGrammar(ancestor):
         else:
             print 'thistask in _general, no valid action', words
 
-        prog, title, topchild, windowHandle = natqh.getProgInfo()
+        prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if prog == 'explorer' and not title:
             return # no centermouse!
         
@@ -483,7 +483,7 @@ class ThisGrammar(ancestor):
                     action('TASK %s'% countBack)
                 for i in range(30):
                     # 40 x 0.1: 4 seconds...
-                    prog, title, topchild, windowHandle = natqh.getProgInfo()
+                    prog, title, topchild, classname, hndle = natqh.getProgInfo()
                     if prog == appName: break
                     className = natqh.getClassName()
                     if className == "TaskListThumbnailWnd": return 1  # more items already available
@@ -507,7 +507,7 @@ class ThisGrammar(ancestor):
     def goto_task_winkey(self, number):
         """switch to task with number, via the windows key"""
     ##    print 'action: goto task: %s'% number
-        prog, title, topchild, windowHandle = natqh.getProgInfo()
+        prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if prog == 'explorer' and not title:
             keystroke('{esc}')
             natqh.shortWait()
@@ -696,7 +696,7 @@ class ThisGrammar(ancestor):
         # getting the task positions (use with 1 and with another number)
         # position mouse on task number or clock and speak the command
         # first time only, or after changes of taskbar position
-        prog, title, topchild, windowHandle = natqh.getProgInfo()
+        prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if not prog:
             print '%s, no valid program for setting document position: %s (title:%s)'% (self.name, prog, title)
             return

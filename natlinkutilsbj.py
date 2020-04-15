@@ -428,7 +428,7 @@ def RegisterGrammarObject(GrammarObject):
     value is the instance object itself
     """    
     global loadedGrammars, grammarsChanged
-##    print 'registering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject)
+    print('registering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
     loadedGrammars[GrammarObject.GetName()] = GrammarObject
     grammarsChanged = 1
 
@@ -443,7 +443,7 @@ def UnRegisterGrammarObject(GrammarObject):
     for k, v in list(loadedGrammars.items()):
         if v is GrammarObject:
             del loadedGrammars[k]
-            #print 'UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject)
+            print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
             grammarsChanged = 1
             break
     else:
@@ -2510,7 +2510,7 @@ noot mies
                     print('translated: %s'% translated)
                     print('previous: %s'% previousGramSpec)
                     self.gramSpec = translated
-                    fullPath = natlinkmain.loadedFiles[self.__module__]
+                    fullPath = natlinkmain.loadedFiles[self.__module__][0]
                     natqh.setCheckForGrammarChanges(1)
                     print('going to reload grammar %s (full path: %s)'% (self.name, fullPath))
                     os.utime(fullPath, None)
@@ -2982,7 +2982,7 @@ noot mies
         # pass progInfo to the actions, to keep them from changing inside the stuff:
         if progInfo == None:
             progInfo = natqh.getProgInfo(modInfo)
-        prog, title, toporchild, windowHandle = progInfo
+        prog, title, toporchild, hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
         elif prog == 'winword':
@@ -3083,7 +3083,7 @@ noot mies
         if not progInfo:
             return # no information
         # old info:
-        prog, title, toporchild, windowHandle = progInfo
+        prog, title, toporchild, hndle = progInfo
         nprogInfo = natqh.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
@@ -3101,7 +3101,7 @@ noot mies
         global comingFrom
         if progInfo == None:
             progInfo = natqh.getProgInfo()
-        prog, title, toporchild, windowHandle = progInfo
+        prog, title, toporchild, hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
             ac = app.ActiveCell
@@ -3116,7 +3116,7 @@ noot mies
         """go back to previous place, excel or word"""
         if progInfo == None:
             progInfo = natqh.getProgInfo()
-        prog, title, toporchild, windowHandle = progInfo
+        prog, title, toporchild, hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
         elif prog == 'winword':
@@ -3145,13 +3145,13 @@ noot mies
         """
         if modInfo is None:
             modInfo = natlink.getCurrentModule()
-        prog, title, topchild, windowHandle = natqh.getProgInfo(modInfo=modInfo)
+        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=modInfo)
         
         istop = (topchild == 'top')
         if istop:
             if topWindowBehavesLikeChild( modInfo ):
                 istop = False
-            elif childClass and win32gui.GetClassName(windowHandle) == childClass:
+            elif childClass and win32gui.GetClassName(hndle) == childClass:
                 if childWindowBehavesLikeTop( modInfo ):
                     if self.debug:
                         print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
@@ -3160,7 +3160,7 @@ noot mies
                     if self.debug:
                         print('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
-                    # IamChild32770 = topchild, windowHandle == 'child' and win32gui.GetClassName(hndle) == '#32770'
+                    # IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         else:
             if childWindowBehavesLikeTop( modInfo ):
                 if self.debug:
@@ -3535,7 +3535,7 @@ numberGrammarFourDigits = {}
 def connectExcel(progInfo):
     """connect to excel and leave parameters in global vars"""
     global app, appProgram, sheet
-    prog, title, toporchild, windowHandle = progInfo
+    prog, title, toporchild, hndle = progInfo
     
     if prog == 'excel':
         if appProgram != 'excel' or not app:
@@ -3555,7 +3555,7 @@ def connectExcel(progInfo):
 def connectWinword(progInfo):
     """connect to word and leave parameters in global vars"""
     global app, appProgram, doc   
-    prog, title, toporchild, windowHandle = progInfo
+    prog, title, toporchild, hndle = progInfo
     
     if prog == 'winword':
         if appProgram != 'winword' or not app:
