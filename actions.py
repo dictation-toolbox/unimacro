@@ -63,7 +63,7 @@ import subprocess  # for calling a ahk script
 import utilsqh
 
 external_actions_modules = {}  # the modules, None if not available (for prog)
-external_action_instances = {} # the instances, None if not available (for handle)
+external_action_instances = {} # the instances, None if not available (for hndle)
      
 class ActionError(Exception): pass
 class KeystrokeError(Exception): pass
@@ -741,8 +741,8 @@ def get_instance_from_progInfo(progInfo):
     """
     prog, title, topchild, classname, hndle = progInfo
     prog = str(prog)
-    if handle in external_action_instances:
-        instance = external_action_instances[handle]
+    if hndle in external_action_instances:
+        instance = external_action_instances[hndle]
         instance.update(progInfo)
         return instance
     
@@ -754,10 +754,10 @@ def get_instance_from_progInfo(progInfo):
     if classRef:
         instance = classRef(progInfo)
         instance.update(progInfo)
-        print('new instance for actions for prog: %s, handle: %s'% (prog, handle))
+        print('new instance for actions for prog: %s, hndle: %s'% (prog, hndle))
     else:
         instance = None
-    external_action_instances[handle] = instance
+    external_action_instances[hndle] = instance
 
     return instance
 
@@ -1633,12 +1633,12 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
         progNew = natqh.getProgName(modInfo)
             
         if progNew != prog: break
-        handle = modInfo[2]
-        if handle != prevHandle:
+        hndle = modInfo[2]
+        if hndle != prevHandle:
             kw = {}
             kw['modInfo'] = modInfo
 
-            if not natqh.isTopWindow(handle):
+            if not natqh.isTopWindow(hndle):
                 # child:
                 print('do action2: %s'% action2)
                 doAction(action2, **kw)
@@ -1678,7 +1678,7 @@ def topWindowBehavesLikeChild(modInfo):
 def childWindowBehavesLikeTop(modInfo):
     """return the result of the ini file dict
     
-    input: modInfo (module info: (progpath, windowTitle, handle) )
+    input: modInfo (module info: (progpath, windowTitle, hndle) )
     cache the contents in childtopDict
     """
     global childtopDict
@@ -1827,7 +1827,7 @@ def do_EMACS(*args, **kw):
 
 # put quotes around text and escape quotes inside text.
 def checkTextInMessage(t):
-    """change " \n and \r so execScript can handle it
+    """change " \n and \r so execScript can hndle it
 
     especially for the test in a MessageBoxConfirm
     """
@@ -2031,6 +2031,25 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None):
         if not os.path.isdir(scriptFolder):
             raise IOError('no scriptfolder for AHK: %s'%s)
         WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
+        
+        ## treat mode = open or edit, finding a app in actions.ini:
+        if filepath:
+            app2 = None
+            while app in ['open', 'edit']:
+                if app == app2: break   #open = open...
+                dummy, ext = os.path.splitext(filepath)
+                section = 'bringup %s'% app
+                ext = ext.strip('.')
+                app2 = ini.get(section, ext)
+                if app2:
+                    print("UnimacroBringUp, set app to: %s"% app2)
+                    apppath = ini.get(section, "path")
+                    print("UnimacroBringUp, set app to: %s"% apppath)
+                    app = apppath
+                    
+                else:
+                    print("UnimacroBringUp, set app to None")
+                    app = None
 
         if ((app and app.lower() == "winword") or
             (filepath and (filepath.endswith(".docx") or filepath.endswith('.doc')))):
@@ -2260,7 +2279,7 @@ FileAppend, %wHndle%, ##WININFOfile##
 #    if app in bringups:
 #        del bringups[app]       
 #        if debug: D('fail to bringup %s, current appName: %s, path asked for: %s\n'
-#                    'now in window %s, title %s, handle: %s'%
+#                    'now in window %s, title %s, hndle: %s'%
 #                    (app, appName, appPath, prog, title, hndle))
 #    # else fail, return None
 
@@ -2479,7 +2498,9 @@ else:
     except OSError:
         pass
 
-
 if __name__ == '__main__':
-    s = [551345646373737373]
-    do_SCLIP()
+    s = 551345646373737373
+    do_SCLIP(s)
+    
+    
+    
