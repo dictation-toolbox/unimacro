@@ -2002,7 +2002,7 @@ bringups = {}
 # special:
 voicecodeApp = 'emacs'
 
-def UnimacroBringUp(app, filepath=None, title=None, extra=None):
+def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, progInfo=None):
     """get a running copy of app in the foreground
 
     the full path can be set in section [bringup app], key path
@@ -2026,31 +2026,13 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None):
     if checkForChanges:
         doCheckForChanges() # resetting the ini file if changes were made
 
-    if autohotkeyactions.ahk_is_active():
+    if autohotkeyactions.ahk_is_active() and not(app and app in ("edit", "open")):
         scriptFolder = autohotkeyactions.GetAhkScriptFolder()
         if not os.path.isdir(scriptFolder):
             raise IOError('no scriptfolder for AHK: %s'%s)
         WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
         
         ## treat mode = open or edit, finding a app in actions.ini:
-        if filepath:
-            app2 = None
-            while app in ['open', 'edit']:
-                if app == app2: break   #open = open...
-                dummy, ext = os.path.splitext(filepath)
-                section = 'bringup %s'% app
-                ext = ext.strip('.')
-                app2 = ini.get(section, ext)
-                if app2:
-                    print("UnimacroBringUp, set app to: %s"% app2)
-                    apppath = ini.get(section, "path")
-                    print("UnimacroBringUp, set app to: %s"% apppath)
-                    app = apppath
-                    
-                else:
-                    print("UnimacroBringUp, set app to None")
-                    app = None
-
         if ((app and app.lower() == "winword") or
             (filepath and (filepath.endswith(".docx") or filepath.endswith('.doc')))):
             script = autohotkeyactions.GetRunWinwordScript(filepath, WinInfoFile)
@@ -2066,12 +2048,19 @@ if !ErrorLevel = 0
 {
     IfWinNotActive, ##title##,
     WinActivate, ##title##, 
-    WinWaitActive, ##title##,
+    WinWaitActive, ##title##,,1
+    if ErrorLevel {
+        return
+    }
 }
 else
 {
     Run, ##app##
-    WinWait, ##title##
+    WinWait, ##title##,,5
+    if ErrorLevel {
+        MsgBox, AutoHotkey, WinWait for running ##basename## timed out
+        return
+    }
 }
 ##extra##
 WinGet pPath, ProcessPath, A
@@ -2499,8 +2488,8 @@ else:
         pass
 
 if __name__ == '__main__':
-    s = 551345646373737373
-    do_SCLIP(s)
-    
+    # s = 551345646373737373
+    # do_SCLIP(s)
+    UnimacroBringUp("edit", r"C:\NatlinkGIT3\Unimacro\_lines.py")
     
     

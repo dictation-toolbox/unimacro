@@ -354,8 +354,9 @@ def getProgInfo(modInfo=None):
     try:
         modInfo = modInfo or natlink.getCurrentModule()
     except:
+        print("===get modInfo via autohotkeyactions.getModInfo")
         modInfo = autohotkeyactions.getModInfo()
-        print("modInfo from AutoHotkey: ", repr(modInfo))
+        print("===modInfo via autohotkeyactions: ", repr(modInfo))
     hndle = modInfo[2]
     if not hndle:
         return 

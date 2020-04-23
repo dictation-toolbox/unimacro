@@ -80,7 +80,7 @@ class ThisGrammar(ancestor):
             return
         self.prevHandle = winHandle
         progInfo = natqh.getProgInfo(moduleInfo)
-        print('progInfo: %s'% repr(progInfo))
+        # print('progInfo: %s'% repr(progInfo))
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
         if prog in chromiumBrowsers:
@@ -141,11 +141,12 @@ class ThisGrammar(ancestor):
             print('%s: showNumbers command: %s, set as new default for the current session.'% (self.name, showNumbers))
             # set new chosen string:
             # self.setInInifile("general", "show numbers", showNumbers)
-            self.showNumbers = showNumbers
 
-        showNumbers = self.showNumbers
+        self.showNumbers = showNumbers
         self.getInputcontrol()
         self.doOption(showNumbers)
+        self.finishInputControl()
+        
 
     def gotResults_hidenumbers(self, words, fullResults):
         """hide the numbers
@@ -153,6 +154,7 @@ class ThisGrammar(ancestor):
         """
         self.getInputcontrol()
         self.doOption(self.hideNumbers)
+        self.finishInputControl()
 
     def gotResults_navigatepages(self,words,fullResults):
         """go to next or previous page(s) and refresh possibly"""
@@ -211,6 +213,9 @@ class ThisGrammar(ancestor):
         for additional in commandparts:
             natqh.Wait(visiblePause)
             keystroke(additional)
+        self.finishInputControl()
+        
+        
         
     def getInputcontrol(self):
         """get the Click by Voice input control"""
@@ -224,17 +229,18 @@ class ThisGrammar(ancestor):
             natqh.Wait()
         else:
             print("_clickbyvoice failed to reach input window")
-        print("found input window of clickbyvoice")
-        natqh.visibleWait()
-        natqh.visibleWait()
-        natqh.visibleWait()
+        # print("found input window of clickbyvoice")
+        # natqh.visibleWait()
         
         
     def doOption(self, option):
         """after the inputcontrol is focussed, do the command"""
         keystroke(option)
-        natqh.Wait()  # longer: natqh.Wait(visiblePause)
-        natqh.Wait(visiblePause)
+
+    def finishInputControl(self):
+        """press enter, after a little bit of waiting
+        """
+        natqh.visibleWait()
         keystroke("{enter}")
         
     def fillInstanceVariables(self):

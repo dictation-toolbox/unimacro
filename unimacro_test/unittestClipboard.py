@@ -371,7 +371,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         # self.setupTextFiles()
         
         
-        for i in range(1, 2, 5):
+        for i in range(1, 21, 5):
             waitTime = 0.001/i
 
             t0 = time.time()

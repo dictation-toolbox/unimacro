@@ -23,6 +23,7 @@ import natlinkmain
 import natlinkstatus
 from actions import doAction as action
 from actions import doKeystroke as keystroke
+from pathqh import path
 import actions
 
 status = natlinkstatus.NatlinkStatus()
@@ -56,12 +57,17 @@ def getBaseFolder(globalsDict=None):
         print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
-thisDir = getBaseFolder(globals())
+thisDir = path(getBaseFolder(globals()))
 
 natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
                      # with spurious error (if set to 1), missing gotBegin and all that...
 logFileName = os.path.join(thisDir, "testresult.txt")
 
+testFilesDir = path(thisDir)/'test_clipboardfiles'
+if testFilesDir.isdir():
+    print("test files for Bringup: %s"% testFilesDir)
+else:
+    raise IOError("no valid directory for test files: %s"% testFilesDir)
 #---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
 # no reopen user at each test anymore..
@@ -69,21 +75,22 @@ logFileName = os.path.join(thisDir, "testresult.txt")
 # default .ini files pop up when you first run this test. just ignore them.
 class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
-        if not natlink.isNatSpeakRunning():
-            raise TestError('NatSpeak is not currently running')
-        self.connect()
-        self.user = natlink.getCurrentUser()[0]
-        self.setMicState = "off"
+        # if not natlink.isNatSpeakRunning():
+        #     raise TestError('NatSpeak is not currently running')
+        # self.connect()
+        # self.user = natlink.getCurrentUser()[0]
+        # self.setMicState = "off"
+        pass
 
     def tearDown(self):
-        try:
-            # give message:
-            self.setMicState = "off"
-            # kill things
-            self.clearTestFiles()
-        finally:
-            self.disconnect()
-
+        # try:
+        #     # give message:
+        #     self.setMicState = "off"
+        #     # kill things
+        #     self.clearTestFiles()
+        # finally:
+        #     self.disconnect()
+        pass
         
     def connect(self):
         # start with 1 for thread safety when run from pythonwin:
@@ -136,8 +143,8 @@ class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
         log("test keystroke in the foreground window")
         # this one works, no ini file needed for the "hard key"
         keystroke("aaa{left 3}{del 3}")
-        keystroke("{shift+home}", hardKeys="{home}")
-        keystroke("{shift+home}", hardKeys=["{home}"])
+        # keystroke("{shift+home}", hardKeys="{home}")
+        # keystroke("{shift+home}", hardKeys=["{home}"])
         keystroke("xyz{shift+left 3}{ctrl+x}")
         
 
@@ -149,7 +156,7 @@ class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
         # 
 
 
-    def testGetSectionList(self):
+    def tttestGetSectionList(self):
         """test with fake program info for sections to be selected
         """
         progInfo = ("notepad", "title of notepad window", "child", 12345)
@@ -158,20 +165,22 @@ class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
         
         
 
-    # def testAutoHotKey(self):
-    #     """test ahk scripts
-    #     """
-    #     #action("AHK showmessageswindow.ahk")
-    # 
-    #     action("AHK runcontrolget.ahk")
-    #     
-    #     #action("AHK send hello")
+    def testAutoHotKey(self):
+        """test ahk scripts
+        """
+        #action("AHK showmessageswindow.ahk")
+    
+        # action("AHK runcontrolget.ahk")
+        
+        action("AHK send hello")  ###h
+        action("AHK send {backspace 4}")
+        #
 
-
-    # def testUnimacroBringup(self):
-    #     """test ahk scripts
-    #     """
-    #     action("BRINGUP xplorer2")
+    def testUnimacroBringup(self):
+        """test ahk scripts
+        """
+        notepadFile = testFilesDir/"testempty.txt"
+        action("BRINGUP %s"% notepadFile)
         
 #action("AHK send hello")
         

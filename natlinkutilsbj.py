@@ -2982,7 +2982,7 @@ noot mies
         # pass progInfo to the actions, to keep them from changing inside the stuff:
         if progInfo == None:
             progInfo = natqh.getProgInfo(modInfo)
-        prog, title, topchild, hndle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
         elif prog == 'winword':
@@ -3083,7 +3083,7 @@ noot mies
         if not progInfo:
             return # no information
         # old info:
-        prog, title, topchild, hndle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         nprogInfo = natqh.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
@@ -3101,7 +3101,7 @@ noot mies
         global comingFrom
         if progInfo == None:
             progInfo = natqh.getProgInfo()
-        prog, title, topchild, hndle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
             ac = app.ActiveCell
@@ -3116,7 +3116,7 @@ noot mies
         """go back to previous place, excel or word"""
         if progInfo == None:
             progInfo = natqh.getProgInfo()
-        prog, title, topchild, hndle = progInfo
+        prog, title, topchild, classname, hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
         elif prog == 'winword':
@@ -3145,13 +3145,14 @@ noot mies
         """
         if modInfo is None:
             modInfo = natlink.getCurrentModule()
-        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=modInfo)
+        progInfo = natqh.getProgInfo(modInfo=modInfo)
+
         
-        istop = (topchild == 'top')
+        istop = (progInfo.topchild == 'top')
         if istop:
             if topWindowBehavesLikeChild( modInfo ):
                 istop = False
-            elif childClass and win32gui.GetClassName(hndle) == childClass:
+            elif childClass and progInfo.classname == childClass:
                 if childWindowBehavesLikeTop( modInfo ):
                     if self.debug:
                         print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
@@ -3535,7 +3536,7 @@ numberGrammarFourDigits = {}
 def connectExcel(progInfo):
     """connect to excel and leave parameters in global vars"""
     global app, appProgram, sheet
-    prog, title, topchild, hndle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     
     if prog == 'excel':
         if appProgram != 'excel' or not app:
@@ -3555,7 +3556,7 @@ def connectExcel(progInfo):
 def connectWinword(progInfo):
     """connect to word and leave parameters in global vars"""
     global app, appProgram, doc   
-    prog, title, topchild, hndle = progInfo
+    prog, title, topchild, classname, hndle = progInfo
     
     if prog == 'winword':
         if appProgram != 'winword' or not app:
