@@ -1,0 +1,9 @@
+Dragonfly
+
+Dragonfly is a package, that connects with Natlink, in order to make command grammars for Dragon.
+
+But Dragonfly offers a wider possibility of connectiong to Speech Recognition (SR) programs.
+
+With Dragonfly as basis other packages, like Caster and Mathfly are developed.
+
+...

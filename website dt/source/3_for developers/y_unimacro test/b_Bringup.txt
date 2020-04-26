@@ -1,0 +1,25 @@
+Testing the BRINGUP Unimacro shorthand command
+
+*BRINGUP* is a powerful USC that can switch to several predefined programs as well.  Also can be used in task switching.
+
+As a side effect the *KW* (Kill Window) USC is used and therefore tested.
+
+The different tests can be configured.  See the source. 
+
+
+Each of the tests are protected with a *YesNo* dialog box, so you can refuse each of the tests individually.
+
+For example when you do not use *voicecode* you can skip these tests.
+
+Programs that are brought up also killed again in the test, except for the ones that are specifically mentioned in the YesNo dialog box.
+
+
+ VoiceCode bringup
+ 
+This one is more involved: it can be brought up (cmd, the mediator, emacs, the correct user). 
+
+After VoiceCode has been brought up the next test checks the user switching.  So if the user is different from *VoiceCode* again this BringUp command switches back to the user *VoiceCode*.
+
+Call this test with *Unimacro test bringup*.
+
+

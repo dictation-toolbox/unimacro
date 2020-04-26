@@ -1,0 +1,5 @@
+Natlink
+
+Natlink makes contact between the OpenSource projects in the Dictation toolbox, and other User defined grammar files, all written in python, with the leading but commercial Speech Recognition program "Dragon" possible. In order to use Natlink and packages that rely on Natlink (Vocola, Dragonfly, Caster, Unimacro) you need a license of Dragon.
+
+

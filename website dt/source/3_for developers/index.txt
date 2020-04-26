@@ -1,0 +1,11 @@
+For developers
+
+Developers can clone dt-projects, projects from the Dictation Toolbox.
+
+In Windows, a good strategy could be, to make a common directory which can hold each project as a separate subdirectory.
+
+Each of the DT repositories can be cloned in such a subdirectory.
+
+So... go to link(https://github.com/dictation-toolbox), and choose the project you want to clone.
+
+(As a demo of the layered structure of the "left" menu, I keep a few pages of the old Unimacro website in here)

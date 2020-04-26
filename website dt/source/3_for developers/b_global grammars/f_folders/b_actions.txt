@@ -1,0 +1,17 @@
+Actions used in this grammar
+
+For a dialog window part link("/features/actions/index.html", "*two actions*") are used:
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:action
+:COL:comment
+
+:ROW:filename&nbsp;enter
+:COL:The (most often) keystroke action to reach the filename textbox in the window. Most often "*&#123;alt+n&#125;*", but for some programs this action must be changed (office programs in some versions or languages, winzip32).
+
+:ROW:filename&nbsp;exit
+:COL:to leave the filename textbox.  Needs some adjustment sometimes in Office programs
+
+
+Please study the actions ini file (call with the command *Edit actions*)

@@ -1,0 +1,31 @@
+unittest Unimacro
+
+The grammar *_unimacro_test.py* provides calls to unittest scripts, which do testing of part of Unimacro functionality.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:action
+
+:ROW: Unimacro test all
+:COL: do all the tests, but prompt for each test
+
+:ROW: Unimacro test {tests}
+:COL: do one of the tests, do not prompt.
+::
+
+If necessary the tests ask you relevant questions.  
+
+The result of the tests is written into *testresult.txt" in the *unimacro_test* folder. This is a subfolder of the Unimacro folder, which also holds the tests.
+
+ Writing new tests
+ 
+If you want to make new tests put them in the subfolder "unimacro_test" of the Unimacro full.  Give them the name *XyzTest.py* and make the class that contains the tests the same name: *Xyztest*.
+
+Restart NaturallySpeaking before you can call this new test.
+
+The current test names are presented in the pages below.
+
+
+
+
+

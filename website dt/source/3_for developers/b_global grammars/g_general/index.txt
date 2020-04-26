@@ -1,0 +1,68 @@
+Description of the _general grammar
+
+In this grammar a lot of miscellaneous commands, (including some test commands) are brought together.
+
+ Searching for characters
+ 
+For starting a search, or a discrete continuation, this command can be used.  
+
+The commands work together with the continuous  search  commands as described in 
+link("/grammars/globalgrammars/repeat/searching.html", "repeat/searching"). See there for more information!
+
+This is a vulnerable mechanism, should be investigated more.
+
+ Highlight
+
+:CODE:
+highlight <dgndictation>
+::
+
+Searches for the dictated text. Started as a one shot application for Shane Delmore. Should be fine tuned for some application, see link(/features/actions/metaactions.html, *meta actions*), example at the bottom.
+
+ Task switching
+ 
+Is now moved to the link("/grammars/globalgrammars/tasks/index.html", "grammar *_tasks*")
+
+ extracting information
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: command
+:COL: gives
+
+
+
+:ROW:give window info|information
+:COL: this information about the active window
+
+
+:ROW:give user info|information
+:COL: gives information about the current user, including BaseModel and BaseTopic
+
+:ROW:give Unimacro info|information
+:COL: gives information about Unimacro, version, base directory
+
+::
+
+ Hyphenate phrase (capitalized)
+ 
+You can turn the last spoken phrase (or selected text), the last word or the last several words into all-capped hyphen separated text:
+(command will be inserted in release 3.7foxtrot, and 3.8)
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: command
+:COL: gives
+
+
+
+:ROW:Hyphenate phrase
+:COL:Hyphenates the last spoken phrase OR the selected text
+:ROW:Hyphenate last (word | (2..5) words)
+:COL:Hyphenates the last word or the last several words
+::
+
+Example:
+:CODE:
+John Smith becomes John Smith J-O-H-N S-M-I-T-H
+::
+
+Note:
+The clipboard is used by this macro, but previous contents are saved at the beginning of the macro and at the end restored again.

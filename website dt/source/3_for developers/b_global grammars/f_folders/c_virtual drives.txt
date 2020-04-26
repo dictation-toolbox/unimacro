@@ -1,0 +1,20 @@
+Virtual drives
+
+Like "drive letters" (_C_, _D_, etc), with this grammar also virtual drives can be defined, which have two or more lower case letters as name.
+
+If for example your program files folder is _C:\program files_, you can define virtual drive _pf_ pointing to that folder.  For subfolders in the definition of folders (and also for definition of *files*) you can use such a *virtual drive* name.
+
+For more consistency on different computers now also environment variables can be used, like *%HOME%* and *%PROGRAMFILES%*. So using virtual drive _pf_ is identical to using *%PROGRAMFILES%*. See 
+link("environmentvariables.html", "the page about these environment variables"). 
+
+Other examples are *md* pointing to your my documents folder (also *%HOME%*), *nl* pointing to the NatLink folder etc.
+
+You can define these virtual drives in the section _virtualdrives_ in the file _folders.ini_  (call _edit folders_).
+
+When having different computers with analogous folder names, but different root folders, the folders inifile only has to be adapted for these virtual drives.
+
+A new more powerful advantage of these virtual drives is the possibility to link(/grammars/globalgrammars/folders/details.html, include all files or folders of a subdirectory).
+
+ On letter trick
+When you have different computers on a network with equivalent folder structures on some drives, you can make a network connection to such a remote drive and use the *on letter* option.  See link("details.html", "detail page").
+

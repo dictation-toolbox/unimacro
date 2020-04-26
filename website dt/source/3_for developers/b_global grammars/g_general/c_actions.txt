@@ -1,0 +1,18 @@
+Actions used by grammar_general
+
+The *search* rule uses link("/features/actions/index.html", "actions"), 
+ which can be specialised for different programs.
+
+The basic action is SEARCH, which must be called with a direction ('up' or 'down') and an optional text.  The rule in the grammar _general uses the form with a text.
+
+The following meta actions are used inside the action SEARCH (with text):
+
+:CODE:
+start search  (default {ctrl+f})
+start back search (default not there, not in use yet)
+
+search go (after filling in the characters to search for, default {enter}
+::
+
+
+

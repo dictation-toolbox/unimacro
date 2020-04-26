@@ -1,0 +1,27 @@
+Make a donation
+
+With the release of the new python3 version of Natlink, including Vocola and Unimacro, and adding these projects to the Dictation Toolbox, donations will now be spent to cover necessary actions for making this website possible.
+
+If you want to make a donation work all this work, you can do so via one of the buttons below. I (Quintijn Hoogenboom) will, for the time being, keep track of the gifts, and possibly support developers who need it.
+
+
+:TABLE align=center, width=50%:
+:HEADER width=50%:Euro's, Dutch interface:
+:COL:Dollars, English interface:
+
+:ROW align=center:<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="K4EWZNFGFWS9U">
+<input type="image" src="https://www.paypalobjects.com/nl_NL/NL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal, de veilige en complete manier van online betalen.">
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+:COL align=center:<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="QL8EZN7JR5STL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+</form>
+::
+
+ Thank you in advance...
