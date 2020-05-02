@@ -6,3 +6,4 @@
 *.bak
 __pycache__
 /unimacro_test/testresult.txt
+/_number extended.py

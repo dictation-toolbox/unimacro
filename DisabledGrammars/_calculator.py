@@ -1,5 +1,4 @@
-from __future__ import division
-__version__ = "$Revision: 356 $, $Date: 2011-02-08 11:14:12 +0100 (di, 08 feb 2011) $, $Author: quintijn $"
+
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -68,7 +67,7 @@ class ThisGrammar(ancestor):
   
     def initialize(self):
         if not self.language:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
         # if switching on fillInstanceVariables also fill numbers lists like {n1-9} or {number1to99}
@@ -103,18 +102,18 @@ class ThisGrammar(ancestor):
                     self.activeSet = copy.copy(self.continueRules)
                     self.exclusive = 1
                     self.activateSet(self.activeSet, exclusive=self.exclusive)
-                    print "calculation, exclusiveRules activated"
+                    print("calculation, exclusiveRules activated")
         else:
             if self.prog == 'calc':
                 if not self.activeSet == self.calcRules:
                     self.activeSet = copy.copy(self.calcRules)
                     self.exclusive = 1
                     self.activateSet(self.activeSet, exclusive=self.exclusive)
-                    print "calc, exclusive rules activated"
+                    print("calc, exclusive rules activated")
             else:
                 if not self.activeSet == self.normalRules:
                     if self.activeSet:
-                        print "calculation, activate normalRules again"
+                        print("calculation, activate normalRules again")
                     self.activeSet = copy.copy(self.normalRules)
                     self.exclusive = 0
                     self.activateSet(self.activeSet, exclusive=self.exclusive)
@@ -132,7 +131,7 @@ class ThisGrammar(ancestor):
             self.hadNumber = self.hadOperator = False
 
         if self.exclusive:
-            print 'calculation exclusive, wait for number'
+            print('calculation exclusive, wait for number')
             self.waitForNumber('number')
         # starting with no lastresult:
         self.startwithLastResult = False
@@ -158,7 +157,7 @@ class ThisGrammar(ancestor):
         # print 'calcnormal or calccalc'
         if self.hasCommon(words, 'calculate'):
             if self.prog == 'calc':
-                print 'calculate, clear previous calculation'
+                print('calculate, clear previous calculation')
                 keystroke("{esc}")
             self.waitForNumber('number')
             self.minus = False
@@ -189,7 +188,7 @@ class ThisGrammar(ancestor):
        
     def gotResults_number(self, words, fullResults):
         # this rule only catches with the word "minus"
-        print 'calculator: rule number, %s'% words
+        print('calculator: rule number, %s'% words)
         # self.waitForNumber('number')
         self.minus = not self.minus
 
@@ -201,7 +200,7 @@ class ThisGrammar(ancestor):
         
         for w in words:
             self.collectNumberAddToCalculation()
-            print 'rule operator, hadOperator: %s, hadNumber %s'% (self.hadOperator, self.hadNumber)
+            print('rule operator, hadOperator: %s, hadNumber %s'% (self.hadOperator, self.hadNumber))
             operator = self.getFromInifile(w, 'operator')
             operatorStripped = operator.strip()
     
@@ -215,7 +214,7 @@ class ThisGrammar(ancestor):
                 elif possiblyDual or not unaryLeft:
                     self.hadNumber = False  # just set now
                 else:
-                    print 'no unaryLeft operator expected: %s'% w
+                    print('no unaryLeft operator expected: %s'% w)
                     continue
             else:
                 if unaryLeft and not possiblyDual:
@@ -239,11 +238,11 @@ class ThisGrammar(ancestor):
         self.collectNumberAddToCalculation() # setting self.number, see self.waitForNumber above
         if self.calculation:
             if self.prog == 'calc':
-                print 'calculation sofar (calc): %s'% ''.join(self.calculation)
+                print('calculation sofar (calc): %s'% ''.join(self.calculation))
                 self.doCalculation()
             else:
-                print 'continue calculation or finish with "equals" (or "cancel")'
-                print 'calculation sofar: %s'% ''.join(self.calculation)
+                print('continue calculation or finish with "equals" (or "cancel")')
+                print('calculation sofar: %s'% ''.join(self.calculation))
                 
  
 
@@ -268,10 +267,10 @@ class ThisGrammar(ancestor):
                       
     def doCalculation(self):
         if not self.calculation:
-            print 'doCalculation, no calculation ready'
+            print('doCalculation, no calculation ready')
             return
         if not self.inCalculation and self.prog != 'calc':
-            print 'not in a calculation'
+            print('not in a calculation')
             return
 
         if self.startwithLastResult:
@@ -287,18 +286,18 @@ class ThisGrammar(ancestor):
         if self.prog in ['calc']:
             if self.startwithLastResult:
                 del self.calculation[0]  # take memory from calculator, not from this list...
-                print 'in calc, continuation of calculation, expect lastResult: %s'% self.lastResult
+                print('in calc, continuation of calculation, expect lastResult: %s'% self.lastResult)
             for c in self.calculation:
                 keystroke(c.strip())
 
         elif self.prog in ['natspeak']:  # DragonPad
-            print '%s = %s'% (calculationpython, result)
+            print('%s = %s'% (calculationpython, result))
         elif self.prog in ['excel']:
             calculationExcel = [c.strip() for c in self.calculation if c != "="]
             calculationExcel = '=' + ''.join(calculationExcel) + "{tab}"
             keystroke(calculationExcel)
         else:
-            print "calc: %s = %s"% (calculationpython, result)
+            print("calc: %s = %s"% (calculationpython, result))
             keystroke('%s'% result )
             
         self.inCalculation = False
@@ -308,7 +307,7 @@ class ThisGrammar(ancestor):
         #print "end of oops exclusive mode", also called when microphone is toggled.
 ##        print 'resetting oops grammar'
         if self.inCalculation:
-            print '%s, cancel exclusive mode'% self.name
+            print('%s, cancel exclusive mode'% self.name)
             self.activeSet = None
             self.deactivateAll()
             self.inCalculation = False

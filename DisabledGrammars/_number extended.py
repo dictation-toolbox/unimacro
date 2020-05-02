@@ -1,4 +1,3 @@
-__version__ = "$Revision: 356 $, $Date: 2011-02-08 11:14:12 +0100 (di, 08 feb 2011) $, $Author: quintijn $"
 # (unimacro - natlink macro wrapper/extensions)
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
@@ -54,7 +53,7 @@ natut = __import__('natlinkutils')
 natqh = __import__('natlinkutilsqh')
 natbj = __import__('natlinkutilsbj')
 import iban  # special module for banknumber (European mainly I think)
-import types 
+import types
 
 # Note: lists number1to99 and number1to9 and n1-9 and n20-90 etc. are taken from function getNumberList in natlinkutilsbj
 
@@ -67,7 +66,7 @@ class ThisGrammar(ancestor):
     try:
         number_rules = natbj.numberGrammarTill999[language]
     except KeyError:
-        print 'take number grammar from "enx"'
+        print('take number grammar from "enx"')
         number_rules = natbj.numberGrammarTill999['enx']
     
     #number_rules = natbj.numberGrammarTill999999[language] # including thousands
@@ -89,7 +88,7 @@ class ThisGrammar(ancestor):
     try:
         integer999 = natbj.numberGrammarTill999[language]
     except KeyError:
-        print 'take number grammar from "enx"'
+        print('take number grammar from "enx"')
         integer999 = natbj.numberGrammarTill999['enx']
     ##  345567;345567
     ## these are special rules for making numbers of specific length.
@@ -124,7 +123,7 @@ class ThisGrammar(ancestor):
         didBeforeRules = ['__2to9before']
         doInAfterRules = ['__1to99after', '__1to9after']
     
-        print '__hundredslimited, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words)
+        print('__hundredslimited, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words))
         lenw = len(words)
         for i in range(lenw):
             if i == 0 and self.prevRule in didBeforeRules:
@@ -168,7 +167,7 @@ class ThisGrammar(ancestor):
         """
         didBeforeRules = ['__hundredslimited', '__thousandslimited']
 
-        print '__1to99after, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words)
+        print('__1to99after, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words))
         if len(words) > 1:
             raise ValueError("rule __1to99after, expect only one word, got %s: %s"% (len(words), words))
         numWords = self.getNumbersFromSpoken(words)
@@ -182,9 +181,9 @@ class ThisGrammar(ancestor):
             self._sofar += str(self._thousands)
             self._thousands = 0
         else:
-            print '__1to99after, no valid rule, got: %s, expected one of: %s'% (self.prevRule, didBeforeRules)
+            print('__1to99after, no valid rule, got: %s, expected one of: %s'% (self.prevRule, didBeforeRules))
             self._sofar += str(num)
-            print '_sofar: %s'% self._sofar
+            print('_sofar: %s'% self._sofar)
 
     def gotResults___1to9after(self, words, fullResults):
         """should be after __hundredslimited or __thousandslimited
@@ -195,7 +194,7 @@ class ThisGrammar(ancestor):
         """
         didBeforeRules = ['__hundredslimited', '__thousandslimited']
 
-        print '__1to99after, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words)
+        print('__1to99after, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words))
         if len(words) > 1:
             raise ValueError("rule __1to99after, expect only one word, got %s: %s"% (len(words), words))
         numWords = self.getNumbersFromSpoken(words)
@@ -209,9 +208,9 @@ class ThisGrammar(ancestor):
             self._sofar += str(self._thousands)
             self._thousands = 0
         else:
-            print '__1to99after, no valid rule, got: %s, expected one of: %s'% (self.prevRule, didBeforeRules)
+            print('__1to99after, no valid rule, got: %s, expected one of: %s'% (self.prevRule, didBeforeRules))
             self._sofar += str(num)
-            print '_sofar: %s'% self._sofar
+            print('_sofar: %s'% self._sofar)
 
 
     def gotResults___2to9before(self, words, fullResults):
@@ -232,9 +231,9 @@ class ThisGrammar(ancestor):
         if self.nextRule == '__thousandslimited':
             self._thousands = num * 1000
         else:
-            print '__2to9before, nextRule is NOT __hundredslimited of __thousandslimited'
+            print('__2to9before, nextRule is NOT __hundredslimited of __thousandslimited')
             self._sofar += numStr
-            print '_sofar: %s'% self._sofar
+            print('_sofar: %s'% self._sofar)
     
 
 ##8640  8600
@@ -258,7 +257,7 @@ class ThisGrammar(ancestor):
   
     def initialize(self):
         if not self.language:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
         # if switching on fillInstanceVariables also fill numbers lists like {n1-9} or {number1to99}
@@ -321,7 +320,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, 'through'):
             self.waitForNumber('through')
         else:
-            raise NumberError, 'invalid user input in grammar %s: %s'%(__name__, words)
+            raise NumberError('invalid user input in grammar %s: %s'%(__name__, words))
 
     def gotResults_spacingnumber(self, words, fullResults):
         self.collectNumber()
@@ -347,7 +346,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, 'through'):
             self.waitForNumber('through')
         else:
-            raise NumberError, 'invalid words in pagenumber rule in grammar %s: %s'%(__name__, words)
+            raise NumberError('invalid words in pagenumber rule in grammar %s: %s'%(__name__, words))
 
     def gotResults_filenamelastpage(self, words, fullResults):
         # additional command, compose filename with the last called page number(s).
@@ -363,12 +362,12 @@ class ThisGrammar(ancestor):
             else:
                 pagePart = self.lastPage
         else:
-            print 'numbers extended: no page numbers command issued yet, skip command'
+            print('numbers extended: no page numbers command issued yet, skip command')
             return
         if not self.filenamePagenumbersPrefix:
-            print '%s: command "%s", please specify "filename page numbers prefix" in section [general] of inifile'% (' '.join(words), self.name)
+            print('%s: command "%s", please specify "filename page numbers prefix" in section [general] of inifile'% (' '.join(words), self.name))
         if not self.filenamePagenumbersPostfix:
-            print '%s: command "%s", please specify "filename page numbers postfix" in section [general] of inifile'% (' '.join(words), self.name)
+            print('%s: command "%s", please specify "filename page numbers postfix" in section [general] of inifile'% (' '.join(words), self.name))
         if self.filenamePagenumbersPrefix and self.filenamePagenumbersPostfix:
             fName = self.filenamePagenumbersPrefix + pagePart + self.filenamePagenumbersPostfix
             action("SCLIP %s"% fName)
@@ -444,10 +443,10 @@ class ThisGrammar(ancestor):
         if self.totalNumber:
             # multiple numbers, AmsterdamZuid
             self.totalNumber += self.number
-            print 'gotResults totalNumber: ', self.totalNumber
+            print('gotResults totalNumber: ', self.totalNumber)
             if self.message:
-                print 'Error collecting the number, do NOT output the number...'
-                print self.message
+                print('Error collecting the number, do NOT output the number...')
+                print(self.message)
             else:
                 self.outputNumber(self.totalNumber)
             if len(self.totalNumber) == 13 and self.totalNumber[-5] == '.':
@@ -460,14 +459,14 @@ class ThisGrammar(ancestor):
         if self.page:
             ## page numbers rule (for child windows, adobe [acrord32] of pdf24.)
             self.lastPage, self.lastThroug = self.page, self.through
-            print 'setting lastPage and lastThroug: %s, %s'% (self.lastPage, self.lastThroug)
+            print('setting lastPage and lastThroug: %s, %s'% (self.lastPage, self.lastThroug))
             isTop = (self.progInfo[2] == 'top')
             if isTop:
                 out = ' page %s'% self.page
             else:
                 ma = getMetaAction('pagestart', progInfo=self.progInfo)
                 if not ma:
-                    print 'no metaactions defined for pagestart, stop command %s'% self.progInfo[0]
+                    print('no metaactions defined for pagestart, stop command %s'% self.progInfo[0])
                     return
                 action("<<pagestart>>")
                 keystroke(self.page)
@@ -493,7 +492,7 @@ class ThisGrammar(ancestor):
             
         elif self.pair:
             self.pair = self.doMinus('pair', 'minus')
-            print "(%s, %s) "% (self.number, self.pair)
+            print("(%s, %s) "% (self.number, self.pair))
             
           
         #elif self.listtupleargument:
@@ -522,13 +521,13 @@ class ThisGrammar(ancestor):
             try:
                 # print 'ibanheader: %s, number: %s'% (self.ibanHeader, self.number)
                 result = Iban = iban.create_iban(self.ibanHeader[:2], self.ibanHeader[2:], self.number)
-            except iban.IBANError, err:
-                print 'invalid iban %s, %s (%s)'% (self.ibanHeader, self.number, err)
+            except iban.IBANError as err:
+                print('invalid iban %s, %s (%s)'% (self.ibanHeader, self.number, err))
                 return
             if result[2:4] == str(self.ibanCheck):
                 keystroke(result)
             else:
-                print 'invalid check: %s (%s) '% (self.ibanCheck, result)
+                print('invalid check: %s (%s) '% (self.ibanCheck, result))
 
         elif self.number:
             # last part if all others failed:
@@ -537,7 +536,7 @@ class ThisGrammar(ancestor):
 
                       
     def outputNumber(self, number):
-        if type(number) in [types.IntType, types.FloatType]:
+        if type(number) in [int, float]:
             number = str(number)
 
         keystroke(number)

@@ -3,6 +3,8 @@
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
 #
+# from April 2020 in GitHub Dictation-toolbox Unimacro
+#
 # Mouseless Browsing extension from Rudolf Noe (mode = "mlb") is discarded
 #
 # only clickbyvoice, which is present in all browsers that are chromium compatible
@@ -230,7 +232,7 @@ class ThisGrammar(ancestor):
         else:
             print("_clickbyvoice failed to reach input window")
         # print("found input window of clickbyvoice")
-        # natqh.visibleWait()
+        natqh.visibleWait()
         
         
     def doOption(self, option):
@@ -240,6 +242,7 @@ class ThisGrammar(ancestor):
     def finishInputControl(self):
         """press enter, after a little bit of waiting
         """
+        natqh.visibleWait()
         natqh.visibleWait()
         keystroke("{enter}")
         
