@@ -2026,102 +2026,6 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, pr
     if checkForChanges:
         doCheckForChanges() # resetting the ini file if changes were made
 
-    if autohotkeyactions.ahk_is_active() and not(app and app in ("edit", "open")):
-        scriptFolder = autohotkeyactions.GetAhkScriptFolder()
-        if not os.path.isdir(scriptFolder):
-            raise IOError('no scriptfolder for AHK: %s'%s)
-        WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
-        
-        ## treat mode = open or edit, finding a app in actions.ini:
-        if ((app and app.lower() == "winword") or
-            (filepath and (filepath.endswith(".docx") or filepath.endswith('.doc')))):
-            script = autohotkeyactions.GetRunWinwordScript(filepath, WinInfoFile)
-            result = autohotkeyactions.do_ahk_script(script)
-
-        elif app and title:
-            ## start eg thunderbird.exe this way
-            ## can also give additional startup instructions in extra
-            extra = extra or ""
-            script = '''SetTitleMatchMode, 2
-Process, Exist, ##basename##
-if !ErrorLevel = 0
-{
-    IfWinNotActive, ##title##,
-    WinActivate, ##title##, 
-    WinWaitActive, ##title##,,1
-    if ErrorLevel {
-        return
-    }
-}
-else
-{
-    Run, ##app##
-    WinWait, ##title##,,5
-    if ErrorLevel {
-        MsgBox, AutoHotkey, WinWait for running ##basename## timed out
-        return
-    }
-}
-##extra##
-WinGet pPath, ProcessPath, A
-WinGetTitle, Title, A
-WinGet wHndle, ID, A
-FileDelete, ##WININFOfile##
-FileAppend, %pPath%`n, ##WININFOfile##
-FileAppend, %Title%`n, ##WININFOfile##
-FileAppend, %wHndle%, ##WININFOfile##
-
-'''
-            basename = os.path.basename(app)
-            script = script.replace('##extra##', extra)
-            script = script.replace('##app##', app)
-            script = script.replace('##basename##', basename)
-            script = script.replace('##title##', title)
-            script = script.replace('##WININFOfile##', WinInfoFile)
-            result = autohotkeyactions.do_ahk_script(script)
-                
-        else:
-            ## other programs:
-            if app and filepath:
-                script = ["Run, %s, %s,,NewPID"% (app, filepath)]
-            elif filepath:
-                script = ["Run, %s,,, NewPID"% filepath]
-            elif app:
-                script = ["Run, %s,,, NewPID"% app]
-        
-            script.append("WinWait, ahk_pid %NewPID%")
-        
-            script.append("WinGet, pPath, ProcessPath, ahk_pid %NewPID%")
-            script.append("WinGetTitle, Title, A")  ##, ID, ahk_pid %NewPID%")
-            script.append("WinGet, wHndle, ID, ahk_pid %NewPID%")
-            script.append('FileDelete, ' + WinInfoFile)
-            script.append('FileAppend, %pPath%`n, ' + WinInfoFile)
-            script.append('FileAppend, %Title%`n, ' + WinInfoFile)
-            script.append('FileAppend, %wHndle%, ' + WinInfoFile)
-            script = '\n'.join(script)
-        
-            result = autohotkeyactions.do_ahk_script(script)
-
-        ## collect the wHndle:
-        if result == 1:
-            winInfo = open(WinInfoFile, 'r').read().split('\n')
-            if len(winInfo) == 3:
-                # make hndle decimal number:
-                pPath, wTitle, hndle = winInfo
-                hndle = int(hndle, 16)
-                print('extracted pPath: %s, wTitle: %s and hndle: %s'% (pPath, wTitle, hndle))
-                return pPath, wTitle, hndle
-            else:
-                if natlink.isNatSpeakRunning():
-                    mess = "Result of ahk_script should be a 3 item list (pPath, wTitle, hndle), not: %s"% repr(winInfo)
-                    do_MSG(str(mess))
-                print(str())
-                return 0
-        else:
-            if natlink.isNatSpeakRunning():
-                do_MSG(str(result))
-            print(str(result))
-            return 0
     # intermediate app and special treatment:
     # for voicecode (which you can call with BRINGUP voicecode) you need
     # voicecodeApp ('emacs') and (optional, but in this case) function voicecodeBringUp
@@ -2254,7 +2158,12 @@ FileAppend, %wHndle%, ##WININFOfile##
     #                #print 'currentModedule: %s'% repr(natlink.getCurrentModule())
     ##do_RW()
     #print 'unimacrobringup: name: %s, app: %s, args: %s (filepath: %s)'% (appName, appPath, appArgs, filepath)
-    return natqh.AppBringUp(appName, appPath, appArgs, appWindowStyle, appDirectory)
+    result = natqh.AppBringUp(appName, appPath, appArgs, appWindowStyle, appDirectory)
+    print("result of UnimacroBringUp:", result)
+    if extra:
+        doAction(extra)
+        
+    return result
 #    if do_WTC():
 #        prog, title, topchild, classname, hndle = natqh.getProgInfo()
 #        progFull, titleFull, hndle = natlink.getCurrentModule()
@@ -2271,6 +2180,113 @@ FileAppend, %wHndle%, ##WININFOfile##
 #                    'now in window %s, title %s, hndle: %s'%
 #                    (app, appName, appPath, prog, title, hndle))
 #    # else fail, return None
+
+def AutoHotkeyBringUp(app, filepath=None, title=None, extra=None, modInfo=None, progInfo=None):
+    """start a program, folder, file, with AutoHotkey
+    
+    This functions is related to UnimacroBringup, which works with AppBringup from Dragon,
+    but sometimes fails.
+    
+    Besides, this function can also work without Dragon being on, not relying on natlink.
+    So better fit for debugging purposes.
+    
+    """
+    scriptFolder = autohotkeyactions.GetAhkScriptFolder()
+    if not os.path.isdir(scriptFolder):
+        raise IOError('no scriptfolder for AHK: %s'%s)
+    WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
+    
+    ## treat mode = open or edit, finding a app in actions.ini:
+    if ((app and app.lower() == "winword") or
+        (filepath and (filepath.endswith(".docx") or filepath.endswith('.doc')))):
+        script = autohotkeyactions.GetRunWinwordScript(filepath, WinInfoFile)
+        result = autohotkeyactions.do_ahk_script(script)
+
+    elif app and title:
+        ## start eg thunderbird.exe this way
+        ## can also give additional startup instructions in extra
+        extra = extra or ""
+        script = '''SetTitleMatchMode, 2
+Process, Exist, ##basename##
+if !ErrorLevel = 0
+{
+IfWinNotActive, ##title##,
+WinActivate, ##title##, 
+WinWaitActive, ##title##,,1
+if ErrorLevel {
+    return
+}
+}
+else
+{
+Run, ##app##
+WinWait, ##title##,,5
+if ErrorLevel {
+    MsgBox, AutoHotkey, WinWait for running ##basename## timed out
+    return
+}
+}
+##extra##
+WinGet pPath, ProcessPath, A
+WinGetTitle, Title, A
+WinGet wHndle, ID, A
+FileDelete, ##WININFOfile##
+FileAppend, %pPath%`n, ##WININFOfile##
+FileAppend, %Title%`n, ##WININFOfile##
+FileAppend, %wHndle%, ##WININFOfile##
+
+'''
+        basename = os.path.basename(app)
+        script = script.replace('##extra##', extra)
+        script = script.replace('##app##', app)
+        script = script.replace('##basename##', basename)
+        script = script.replace('##title##', title)
+        script = script.replace('##WININFOfile##', WinInfoFile)
+        result = autohotkeyactions.do_ahk_script(script)
+            
+    else:
+        ## other programs:
+        if app and filepath:
+            script = ["Run, %s, %s,,NewPID"% (app, filepath)]
+        elif filepath:
+            script = ["Run, %s,,, NewPID"% filepath]
+        elif app:
+            script = ["Run, %s,,, NewPID"% app]
+    
+        script.append("WinWait, ahk_pid %NewPID%")
+    
+        script.append("WinGet, pPath, ProcessPath, ahk_pid %NewPID%")
+        script.append("WinGetTitle, Title, A")  ##, ID, ahk_pid %NewPID%")
+        script.append("WinGet, wHndle, ID, ahk_pid %NewPID%")
+        script.append('FileDelete, ' + WinInfoFile)
+        script.append('FileAppend, %pPath%`n, ' + WinInfoFile)
+        script.append('FileAppend, %Title%`n, ' + WinInfoFile)
+        script.append('FileAppend, %wHndle%, ' + WinInfoFile)
+        script = '\n'.join(script)
+
+        result = autohotkeyactions.do_ahk_script(script)
+
+    ## collect the wHndle:
+    if result == 1:
+        winInfo = open(WinInfoFile, 'r').read().split('\n')
+        if len(winInfo) == 3:
+            # make hndle decimal number:
+            pPath, wTitle, hndle = winInfo
+            hndle = int(hndle, 16)
+            print('extracted pPath: %s, wTitle: %s and hndle: %s'% (pPath, wTitle, hndle))
+            return pPath, wTitle, hndle
+        else:
+            if natlink.isNatSpeakRunning():
+                mess = "Result of ahk_script should be a 3 item list (pPath, wTitle, hndle), not: %s"% repr(winInfo)
+                do_MSG(str(mess))
+            print(str())
+            return 0
+    else:
+        if natlink.isNatSpeakRunning():
+            do_MSG(str(result))
+        print(str(result))
+        return 0
+
 
 ## was:
 
