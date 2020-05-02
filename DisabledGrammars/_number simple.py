@@ -69,7 +69,7 @@ class ThisGrammar(ancestor):
   
     def initialize(self):
         if not self.language:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
         # if switching on fillInstanceVariables also fill numbers lists like {n1-9} or {number1to99}
@@ -96,7 +96,7 @@ class ThisGrammar(ancestor):
     def gotResults(self,words,fullResults):
         # step 4, in gotResults collect the number (as a string):
         self.collectNumber() # setting self.number, see self.waitForNumber above
-        print 'number from the _number simple grammar: %s'% self.number
+        print('number from the _number simple grammar: %s'% self.number)
         if self.minus:
             self.number = '-' + self.number
         # disable when testing through unittestIniGrammar.py (in unimacro_test directory):

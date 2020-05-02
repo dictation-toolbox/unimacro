@@ -13,13 +13,13 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 # March 2011
 #
 
-import natlink, nsformat
+import natlink
+import nsformat
 natqh = __import__('natlinkutilsqh')
 natut = __import__('natlinkutils')
 natbj = __import__('natlinkutilsbj')
 from actions import doAction as action
 from actions import doKeystroke as keystroke
-import string
 
 language = natqh.getLanguage()        
 ICAlphabet = natbj.getICAlphabet(language=language)
@@ -46,7 +46,7 @@ class ThisGrammar(ancestor):
 
     def initialize(self):
         if not self.language:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
             return
 
         self.load(self.gramSpec)
@@ -78,7 +78,7 @@ class ThisGrammar(ancestor):
     def gotResults_command(self, words, fullResults):
         initial=self.getFromInifile(words, 'commands', noWarning=1)
         pos = initial.find('{')
-        print pos
+        print(pos)
         contents =''
         if self.hasCommon(words, ['arguments']):
             if pos > 0:
@@ -87,7 +87,7 @@ class ThisGrammar(ancestor):
                 Cmd = initial+'{'
             args  = self.getFromInifile(words, 'arguments', noWarning=1)
             Cmd = Cmd+args + '}'
-            print Cmd
+            print(Cmd)
         else:
             Cmd = initial
         if self.hasCommon(words, ['that']):
@@ -178,7 +178,7 @@ class ThisGrammar(ancestor):
             floatingString = '\\end{%s}'% self.floating
             stringpaste(floatingString)
             keystroke('{up}')
-            print 'floating: %s'% self.floating
+            print('floating: %s'% self.floating)
         if self.reference:
             stringpaste ('\\ref{%s}' % (self.makes_label(self.reference, self.dictation)))
         if self.namereference:
@@ -191,9 +191,9 @@ class ThisGrammar(ancestor):
 
     def gotResults_dgndictation(self, words, fullResults):
         """do with nsformat functions"""
-        print 'got dgndictation: %s'% words
+        print('got dgndictation: %s'% words)
         self.dictation, dummy = nsformat.formatWords(words)  # state not needed in call
-        print '   result of nsformat:  %s'% `self.dictation`
+        print('   result of nsformat:  %s'% repr(self.dictation))
 
 
     def get_selection_that(self, line = 0):
@@ -206,13 +206,13 @@ class ThisGrammar(ancestor):
         contents = natlink.getClipboard().strip().replace('\r', '')
         if len(contents) == 0:
             if line:
-                print '_latex, empty line'
+                print('_latex, empty line')
                 return ""
             action('HW select that')
             action('<<cut>>')
             contents = natlink.getClipboard().strip().replace('\r', '')
             if len(contents) == 0:
-                print '_latex, empty contents, no last dicatate utterance available'
+                print('_latex, empty contents, no last dicatate utterance available')
                 
         natqh.restoreClipboard()
         return contents
@@ -222,7 +222,7 @@ class ThisGrammar(ancestor):
         keystroke('{ctrl+c}')
         contents = natlink.getClipboard()
         if len(contents) == 0:
-            print 'no_space_by_existing selection'
+            print('no_space_by_existing selection')
             keystroke('{end}{shift+home}')
             keystroke('{ctrl+c}')
             contents = natlink.getClipboard()

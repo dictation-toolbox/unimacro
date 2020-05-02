@@ -1,4 +1,3 @@
-__version__ = "$Rev: 610 $ on $Date: 2019-09-02 09:47:47 +0200 (ma, 02 sep 2019) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
 # https://unimacro.SourceForge.net and https://qh.antenna.nl/unimacro
 # (c) copyright 2003 see https://qh.antenna.nl/unimacro/aboutunimacro.html
@@ -7,7 +6,7 @@ __version__ = "$Rev: 610 $ on $Date: 2019-09-02 09:47:47 +0200 (ma, 02 sep 2019)
 #  grammar: _folders.py
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
-#
+# moved to the GitHub/Dictation-toolbox April 2020
 """with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
 can be called directly by name if they are in the foreground.
@@ -47,8 +46,8 @@ The strategy for "New" and "Explorer" (when you say "new", "nieuw",
 The site part is only used if you enter a valid folder in siteRoot below.
 With this command you can quickly enter a complicated set of there we go agains.
 
-The subversion additional commands are only valid if you specify a valid subversion
-client in the ini file general section. (subversion executable, I (Quintijn) use TortoiseSvn)
+The subversion additional commands are removed
+
 The git additional commands are only valid if you specify a valid git client in the ini file general section
 (git executable) (I (Quintijn) take git, although I use TortoiseGit manually)
 
@@ -136,9 +135,9 @@ class ThisGrammar(ancestor):
     
     # commands with special status, must correspond to a right hand side
     # of a ini file entry (section foldercommands or filecommands)
-    # remote, subversion, openwith have hardcoded details.
-    optionalfoldercommands = ['new', 'explorer', 'paste', 'copy', 'remote', 'subversion', 'git']
-    optionalfilecommands = ['copy', 'paste', 'edit', 'paste', 'remote', 'subversion', 'openwith', 'git']
+    # remote, openwith have hardcoded details.
+    optionalfoldercommands = ['new', 'explorer', 'paste', 'copy', 'remote', 'git']
+    optionalfilecommands = ['copy', 'paste', 'edit', 'paste', 'remote', 'openwith', 'git']
 
     # only used if siteRoot is a valid folder
     optionalsitecommands = ['input', 'output', 'local', 'online']
@@ -149,7 +148,6 @@ class ThisGrammar(ancestor):
 <disc> exported = drive {letters} [<foldercommands>];  # add + later again
 <thisfolder> exported = ((this|here) folder) (<foldercommands>|<remember>);
 <foldercommands> = {foldercommands}| on ({letters}|{virtualdrivesspoken}) |
-                    (subversion) {subversionfoldercommands}|
                     (git) {gitfoldercommands}|
                     <namepathcopy>;
                    
@@ -158,7 +156,6 @@ class ThisGrammar(ancestor):
 <thisfile> exported = ((here|this) file) (<filecommands>|<remember>); 
 <filecommands> = {filecommands}| on ({letters}|{virtualdrivesspoken}) |
                 ('open with') {fileopenprograms}|
-                (subversion) {subversionfilecommands}|
                 (git) {gitfilecommands}|
                 <namepathcopy>;
 
@@ -384,14 +381,6 @@ class ThisGrammar(ancestor):
         windowsVersion = natqh.getWindowsVersion()
         if (self.trackAutoFiles or self.trackAutoFolders) and  windowsVersion in ('XP', '2000', 'NT4', 'NT351', '98'):
             print('_folders: the options for "automatic track files" and "automatic track folders" of a directory probably do not work for this Windows version: %s'% windowsVersion)
-            
-        self.doSubversion = self.ini.get('general', 'subversion executable')
-        if self.doSubversion:
-            if not os.path.isfile(self.doSubversion):
-                print('not a valid path to subversion executable: %s, ignore'% self.doSubversion)
-                self.doSubversion = None
-        if not self.doSubversion:
-            self.iniIgnoreGrammarLists.extend(['subversionfoldercommands', 'subversionfilecommands'])
             
         self.doGit = self.ini.get('general', 'git executable')
         if self.doGit:
@@ -1112,7 +1101,6 @@ class ThisGrammar(ancestor):
             self.manageRecentFolders(folderWord, folder)
         if not self.nextRule:
             # do action straight away:
-            # self.gotoFolder(folder)folder Natlink Subversion export
             self.gotoInThisComputer(folder)
             self.wantedFolder = None
         elif self.nextRule in ["remember", "foldercommands"]:
@@ -1343,10 +1331,6 @@ class ThisGrammar(ancestor):
                 print('_folders: no valid drive or virtualdrive for remote options, words: %s'% repr(words))
                 return 
         print('foldercommands: %s'% words)
-        # Subversion, svnIndex = self.hasCommon(words, ['subversion'], withIndex=1)
-        # if Subversion:
-        #     svnCommand = self.getFromInifile(words[svnIndex+1], 'subversionfoldercommands')
-        #     kw['subversion'] = svnCommand
         Git, gitIndex = self.hasCommon(words, ['git'], withIndex=1)
         if Git:
             gitCommand = self.getFromInifile(words[gitIndex+1], 'gitfoldercommands')
@@ -1642,9 +1626,6 @@ class ThisGrammar(ancestor):
             if opt:
                 if opt in self.optionalfilecommands:
                     kw[opt] = opt
-                # elif opt.startswith('subversion '):
-                #     opt = opt[11:]
-                #     kw['subversion'] = opt
                     
                 else:
                     kw[w] = opt
@@ -1672,11 +1653,6 @@ class ThisGrammar(ancestor):
             print('openwith: %s'% OpenWith)
             kw["openwith"] = OpenWith
         
-        Subversion, svnIndex = self.hasCommon(words, ['subversion'], withIndex=1)
-        if Subversion:
-            svnCommand = self.getFromInifile(words[svnIndex+1], 'subversionfilecommands')
-            print('subversion file command: %s'% svnCommand)
-            kw['subversion'] = svnCommand
         self.gotoFile(self.wantedFile, **kw)
         
     # methods gotResults_info and gotResults_onoroff are
@@ -1894,14 +1870,6 @@ class ThisGrammar(ancestor):
                 return os.path.join(start, rest)
         return filename  
 
-    def checkSubversionFolder(self, f):
-        """return True if f is a valid subversion folder
-        """
-        svnsubdir = os.path.join(f, '.svn')
-        if os.path.exists(svnsubdir) and os.path.isdir(svnsubdir):
-            return True
-        
-
     def getSpokenFormsDict(self, List, extensions=None):
         """make speakable forms, leave out extensions if extensions = 1
         
@@ -1962,8 +1930,9 @@ class ThisGrammar(ancestor):
             if fnmatch.fnmatch(item, pat):
                 return
         return 1
-    
-    def gotoFile(self, f, **kw):
+
+    def gotoFile(self, f, Copy=None, Paste=None, Edit=None, Openwith=None,
+                   Remote=None, Git=None, **additionalOptions):
         """goto the file f"""
         if self.citrixApps:
             prog = natqh.getProgInfo()[0]
@@ -1991,19 +1960,7 @@ class ThisGrammar(ancestor):
         # in actions.ini:
 
         istop = self.getTopOrChild( m, childClass="#32770") # True if top
-
-        for opt in self.optionalfilecommands:
-            exec("%s = None"% opt.capitalize())
-        additionalOptions = []
-        for k, v in list(kw.items()):
-            if k in self.optionalfilecommands:
-                print('setting option %s to %s'% (k, v))
-                exec("%s = '%s'"% (k.capitalize(), v))
-            else:
-                additionalOptions.append(v)
-        # if additionalOptions:                
-        #     print 'additional options: %s'% additionalOptions
-        
+    
         if Remote:
             print('Remote: %s'% Remote)
         if Remote:
@@ -2012,10 +1969,6 @@ class ThisGrammar(ancestor):
             if not f:
                 return
             
-        if Subversion:
-            print('subversion command "%s" for file "%s"'% (Subversion, f))
-            self.doSubversionCommand(Subversion, f)
-            return
         if Git:
             print('git command "%s" for file "%s"'% (Git, f))
             self.doGitCommand(Git, f)
@@ -2135,8 +2088,8 @@ class ThisGrammar(ancestor):
                     else:
                         if part of path is common, switch to that and goto folder
 
-        ## only if subversion executable and/or git executable are defined in section [general]
-        subversion, git
+        ## remove subversion support,
+        ## git support if git executable isdefined in section [general]
                         
         """
         if self.citrixApps:
@@ -2446,16 +2399,6 @@ class ThisGrammar(ancestor):
         #     print('got results, start timer callback')
          
 
-    def doSubversionCommand(self, command, path):
-        """launch subversion with command and path
-        """
-        args = '/command:%s /path:""%s""'% (command, path)
-        
-        # Construct arguments and spawn TortoiseSVN.
-        name = "subversion %s %s"% (command, path)
-        print('subversion %s'% name)
-        natqh.AppBringUp(name, self.doSubversion, args)
-        
     def doGitCommand(self, command, path):
         """launch git with command and path
         """

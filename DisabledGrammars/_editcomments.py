@@ -33,7 +33,8 @@ natbj = __import__('natlinkutilsbj')
 import utilsqh
 import win32gui
 import time
-import re, string, os
+import re
+import os
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 import actions
@@ -94,11 +95,11 @@ class EditGrammar(ancestor):
 
     def gotResultsInit(self,words,fullResults):
         """This is a new docstring"""
-        self.fullText = u' '.join(words)
+        self.fullText = ' '.join(words)
 
     def gotResults_edit(self,words,fullResults):
         global sourceHandle
-        print '---------------------edit: %s'% words
+        print('---------------------edit: %s'% words)
         modInfo = natlink.getCurrentModule()
         progInfo = natqh.getProgInfo()
         if progInfo[0] == self.startProgram.lower() or \
@@ -137,7 +138,7 @@ class EditGrammar(ancestor):
                 self.endsWithNewline = 0
 
         if self.comment:
-            print 'self.comment: %s'% self.comment
+            print('self.comment: %s'% self.comment)
             if self.comment in ['doc string']:
                 try:
                     exec("com2text = self."+self.progName+"Docstring2text")
@@ -163,14 +164,14 @@ class EditGrammar(ancestor):
                 self.emacsFile = r'C:/emacsCCcode.c'
             else:
                 raise EditError('%s: invalid program code in command: %s'% (self.name, words))
-            print 'wanting to start emacs'         
+            print('wanting to start emacs')         
             self.targetProg = "emacs"
             if self.startEditProgram(prog=self.targetProg):
-                print 'found emacs, fill in with file: %s'% self.emacsFile
+                print('found emacs, fill in with file: %s'% self.emacsFile)
                 self.fillAndFindEmacsFile(inputText)
                 self.activateSet(editset)
             else:
-                print 'error with "edit that code command: %s"'% words
+                print('error with "edit that code command: %s"'% words)
                 return
 	elif self.latex:
 	    
@@ -180,21 +181,21 @@ class EditGrammar(ancestor):
 	    print(buf.value)
 
             self.wordFile = buf.value + r'\wordlatextemp.tex'
-            print 'wanting to start WinWord'         
+            print('wanting to start WinWord')         
             self.targetProg = "winword"
             if self.startEditProgram(prog=self.targetProg):
-                print 'found WinWord, fill in with file: %s'% self.wordFile
+                print('found WinWord, fill in with file: %s'% self.wordFile)
                 self.fillAndFindWordFile(inputText)
                 self.activateSet(editset)
             else:
-                print 'error with "edit that code command: %s"'% words
+                print('error with "edit that code command: %s"'% words)
                 return
         else:
             self.targetProg = None
             if self.startEditProgram():
                 action('<<selectall>>;')
             else:
-                print '%s: problem with finding targetProg: %s'% (self.name, self.targetProg)
+                print('%s: problem with finding targetProg: %s'% (self.name, self.targetProg))
                 return
             if inputText:
                 natut.playString(inputText)
@@ -225,7 +226,7 @@ class EditGrammar(ancestor):
         elif (self.hasCommon(words, ['cut'])):
             action('<<cut>>')
         else:
-            print 'no copy or cut in words: %s'% words
+            print('no copy or cut in words: %s'% words)
             return
         natqh.rememberWindow()
         if self.startEditProgram():
@@ -240,14 +241,14 @@ class EditGrammar(ancestor):
         action("<<filesave>>")
         fileName =actions.getPathOfOpenFile()
         if fileName:
-            print 'fileName: %s'% fileName
+            print('fileName: %s'% fileName)
         else:
-            print 'no filename found'
+            print('no filename found')
             return
-        print "closing and return to: %s"% fileName
+        print("closing and return to: %s"% fileName)
         action("<<documentclose>>")
         if not self.startEditProgram(prog=toProg):
-            print 'did not find emacs'
+            print('did not find emacs')
             return
 
         action("<<fileopen>>")
@@ -398,18 +399,18 @@ class EditGrammar(ancestor):
         """
         open(self.wordFile, 'w').write(text)
 	natqh.waitForWindowTitle ('Microsoft Word')
-	print "found Microsoft Word"
+	print("found Microsoft Word")
         while 1:
             action('<<fileopen>>')
             if natqh.waitForWindowTitle ('Open') == 1:
-                print "got window title open"
+                print("got window title open")
                 progInfo = natqh.getProgInfo()
                 if progInfo[2] == 'child':
                     break
                 else:
-                    print "not a child"
+                    print("not a child")
 
-	print "open file"
+	print("open file")
         natqh.Wait()
         keystroke(self.wordFile)
         natqh.Wait()
@@ -552,7 +553,7 @@ class EditGrammar(ancestor):
             else:
                 return t
         else:
-            raise utilsqh.QHerror, 'not a valid python comment, try again'
+            raise utilsqh.QHerror('not a valid python comment, try again')
         
 
 #
@@ -657,7 +658,7 @@ def stripPrefix(Text, prefix):
         elif EmptyLines.match(t):
             yield ''
         else:
-            raise EditError, 'stripPrefix: not a prefix: %s' % t
+            raise EditError('stripPrefix: not a prefix: %s' % t)
 
 def pythonwinList(L):
     """left strips lines that are indented by pythonwin
@@ -681,8 +682,8 @@ def pythonwinList(L):
 
 
 def logToFileNow(folderName, fileNameBase, append=1):
-    print 'start log to file now: folderName: %s, fileNameBase: %s, append: %s'% \
-          (folderName, fileNameBase, append)
+    print('start log to file now: folderName: %s, fileNameBase: %s, append: %s'% \
+          (folderName, fileNameBase, append))
     t = natqh.getClipboard()
     if t:
         utilsqh.createFolderIfNotExistent(folderName)
@@ -698,7 +699,7 @@ def logToFileNow(folderName, fileNameBase, append=1):
                 if name:
                     fout = open(name, 'w')
                 else:
-                    print 'cannot find valid logfile'
+                    print('cannot find valid logfile')
                     return
 
             fout.write(t)
@@ -706,9 +707,9 @@ def logToFileNow(folderName, fileNameBase, append=1):
             fout.close()
             return name
         except IOError:
-            print 'Grammar _editcomments: cannot log to file: %s:::%s'% (folderName, fileName)
+            print('Grammar _editcomments: cannot log to file: %s:::%s'% (folderName, fileName))
     else:
-        print 'nothing to log'
+        print('nothing to log')
 
 def findNewFile(folderName, baseName,digits=2):
     """find an unexisting file

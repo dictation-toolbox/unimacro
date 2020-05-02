@@ -9,7 +9,14 @@ __version__ = "$Rev: 571 $ on $Date: 2017-02-13 14:17:09 +0100 (ma, 13 feb 2017)
 # august 2003, revision october 2011
 """ unimacro grammar that puts brackets, braces etc.
 
-imported rule "dgndictation" used. Unfortunately the other "imported rules"
+import rule
+import "dgndictation"
+import used.
+import Unfortunately
+import the
+import other
+import "imported
+import rules"
 (dgnletters and dgnwords) do not
 work any more in Dragon 11
 
@@ -24,11 +31,11 @@ dictate again and
    correct then if needed.
 
 """
-import natlink, nsformat
+import natlink
+import nsformat
 natqh = __import__('natlinkutilsqh')
 natbj = __import__('natlinkutilsbj')
 natut = __import__('natlinkutils')
-import string
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 
@@ -41,7 +48,7 @@ class BracketsGrammar(ancestor):
 
     def initialize(self):
         if not self.language:
-            print "no valid language in grammar "+__name__+" grammar not initialized"
+            print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
         self.switchOnOrOff()
@@ -57,7 +64,7 @@ class BracketsGrammar(ancestor):
         self.pleft = self.pright = '' # the left and right parts of the brackets
 
         if self.mayBeSwitchedOn == 'exclusive':
-            print 'recog brackets, switch off mic: %s'% words
+            print('recog brackets, switch off mic: %s'% words)
             natbj.SetMic('off')
 
     def importedrule_dgndictation(self, words):
@@ -71,7 +78,7 @@ class BracketsGrammar(ancestor):
 
             p = self.getFromInifile(w, 'brackets')
             if not p:
-                print 'no valid brackets found for word: "%s"'% w
+                print('no valid brackets found for word: "%s"'% w)
                 continue
             #print 'brackets, found: %s, %s'% (w, p)
             if len(p) > 2 and p.find("|") > 0:
