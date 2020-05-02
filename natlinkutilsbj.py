@@ -905,6 +905,8 @@ class GrammarX(GrammarXAncestor):
     def DisplayMessage(self, MessageText, pauseAfter=0, alert=None, alsoPrint=1):
         #if natqh.getDNSVersion >= 12:
         #    return # silently ignore this in Dragon 12
+        print("DisplayMessage for the time being:\n%s"% MessageText)
+        return
         if self.inGotBegin:
 ##            print 'message from gotBegin not allowed: %s'% MessageText
             SetPendingMessage(MessageText)

@@ -47,6 +47,7 @@ import os.path
 import sys
 import time         # for clock
 import natlink
+import natlinktimer
 import types
 
 DEBUG = 0
@@ -261,7 +262,7 @@ class ThisGrammar(ancestor):
         natlink.setTrayIcon()
 
         if self.inTimer: 
-            natlink.setTimerCallback(None,0)
+            natlinktimer.setTimerCallback(self.onTimer,0)
             self.inTimer = 0
             if self.drag:
                 debugPrint('switch of dragging')
@@ -328,7 +329,7 @@ class ThisGrammar(ancestor):
         k = self.state + self.minorState
         s = self.curSpeed + 2  # very slow =2 -->> 0
         if self.waiting:
-            natlink.setTimerCallback(self.onTimer, waitingSpeed)
+            natlinktimer.setTimerCallback(self.onTimer, waitingSpeed)
         elif k == 'mousing' or self.state == 'dragging':
             speed = SPEED[k][s]
             steps = defaultMousePixels
@@ -343,14 +344,14 @@ class ThisGrammar(ancestor):
             else:
                 speed = s
             debugPrint('mouse starting with speed: %s, steps: %s'% (speed, steps))
-            natlink.setTimerCallback(self.onTimer, speed)
+            natlinktimer.setTimerCallback(self.onTimer, speed)
             self.mouseSteps = steps
         elif k in SPEED:
             debugPrint('starting with speed: %s'% SPEED[k][s])
-            natlink.setTimerCallback(self.onTimer, SPEED[k][s])
+            natlinktimer.setTimerCallback(self.onTimer, SPEED[k][s], debug=1)
         else:
             debugPrint("timer starting with unknown speed for state/minorstate: %s"%k)
-            natlink.setTimerCallback(self.onTimer, defaultSpeed)
+            natlinktimer.setTimerCallback(self.onTimer, defaultSpeed)
             
         self.inTimer = 1
         
@@ -428,7 +429,7 @@ class ThisGrammar(ancestor):
         else:
             return
 
-        self.lastClock = time.clock()
+        self.lastClock = time.time()
         return 1 # good exit
 
     def gotBegin(self,moduleInfo):
@@ -913,7 +914,7 @@ def findKeyWord(list1,list2):
             return word
     return None
 
-startTime = time.clock()
+startTime = time.time()
 if DEBUG:
     fOutName = 'c:\\DEBUG '+__name__+'.txt'
     debugFile = open(fOutName, 'w')

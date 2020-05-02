@@ -133,8 +133,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         cb = natlinkclipboard.Clipboard(save_clear=True, debug=1)
         waitTime = 0.001
       
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        natlinkutilsqh.SetForegroundWindow(self.testHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.testHndle)
         
         ## first try if there is a selection:
         action("{ctrl+c}")
@@ -148,8 +148,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         # now try text left of selection:
         action("{ctrl+shift+home}{ctrl+c}")
      
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        natlinkutilsqh.SetForegroundWindow(self.testHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.testHndle)
      
      
         before = cb.get_text(waitTime)
@@ -159,8 +159,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         else:
             print("at start of document")
 
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        natlinkutilsqh.SetForegroundWindow(self.testHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.testHndle)
 
         text = before + selection
         selStart = len(before)
@@ -170,9 +170,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         if selection:
             action("{right %s}"% len(selection))
 
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        natlinkutilsqh.SetForegroundWindow(self.testHndle)
-
+        # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.testHndle)
         
         if text:
             # now select to end:
@@ -212,8 +211,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             lensel = len(selection)
             # select from left to right;
             
-            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-            natlinkutilsqh.SetForegroundWindow(self.testHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.testHndle)
             
             action("{left %s}{shift+right %s}"% (lensel, lensel))
 
@@ -238,7 +237,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         self.thisHndle = natlinkutilsqh.GetForegroundWindow()
 
         dirWindows = "C:\\windows"
-        result = actions.UnimacroBringUp(app="explore", filepath=dirWindows)
+        result = actions.AutoHotkeyBringUp(app="explore", filepath=dirWindows)
         if not result:
             print('no result for %s'% dirWindows)
             return
@@ -254,11 +253,11 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         docxPath2 = os.path.normpath( os.path.join(testFilesDir, docxFile2))
         if not os.path.isfile(docxPath2):
             raise IOError('file does not exist: %s'% docxPath2)
-        result = actions.UnimacroBringUp(app=None, filepath=docxPath2)
+        result = actions.AutoHotkeyBringUp(app=None, filepath=docxPath2)
         if result:
             pPath, wTitle, hndle = result
         else:
-            raise TestError("UnimacroBringUp of Word gives no result: %s"% result)
+            raise TestError("AutoHotkeyBringUp of Word gives no result: %s"% result)
         self.tempFileHndles.append(hndle)
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
         print('testempty.docx (docx2Hndle): %s'% result)
@@ -271,7 +270,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         textFile0 = "testempty.txt"
         textPath0 = os.path.join(testFilesDir, textFile0)
         open(textPath0, 'w')
-        result = actions.UnimacroBringUp(app=None, filepath=textPath0)
+        result = actions.AutoHotkeyBringUp(app=None, filepath=textPath0)
         pPath, wTitle, hndle = result
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
         print('testempty (text0Hndle): %s'% hndle)
@@ -282,7 +281,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         textPath1 = os.path.join(testFilesDir, textFile1)
         self.text1Txt = "small abacadabra\n"*2
         open(textPath1, 'w').write(self.text1Txt)
-        result = actions.UnimacroBringUp(app=None, filepath=textPath1)
+        result = actions.AutoHotkeyBringUp(app=None, filepath=textPath1)
         pPath, wTitle, hndle = result
         self.tempFileHndles.append(hndle)
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
@@ -294,7 +293,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         textPath2 = os.path.join(testFilesDir, textFile2)
         self.text2Txt = "large abacadabra\n"*1000
         open(textPath2, 'w').write(self.text2Txt)
-        result = actions.UnimacroBringUp(app=None, filepath=textPath2)
+        result = actions.AutoHotkeyBringUp(app=None, filepath=textPath2)
         pPath, wTitle, hndle = result
         self.tempFileHndles.append(hndle)
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
@@ -308,11 +307,13 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         at shutdown do not kill this window 
         """
         ## this extraaow, and goes to the message pane:
-        extra = '\n'.join(['Send, ^n', 
+        extra = '\n'.join(['Send, ^n',
+                'SetTitleMatchMode, 2',
                 'WinWaitNotActive, ##title##',
-                'Send, {tab 2}']) 
+                'Sleep, 100',
+                'Send, {tab 2}'])     # note SetTitleMatchMode and Sleep, apparently necessary
 
-        result = actions.UnimacroBringUp(app="thunderbird.exe", title="Mozilla Thunderbird", extra=extra)
+        result = actions.AutoHotkeyBringUp(app="thunderbird.exe", title="Mozilla Thunderbird", extra=extra)
         pPath, wTitle, hndle = result
         self.tempFileHndles.append(hndle)
         self.thundHndle = hndle
@@ -328,7 +329,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         ## this extra makes an empty window, and goes to the message pane:
         extra = '\n'.join(["Sleep, 100", 'Send, ^n', "Sleep, 100"])
 
-        result = actions.UnimacroBringUp(app=r"C:\Program Files (x86)\Frescobaldi\frescobaldi.exe", title="Frescobaldi", extra=extra)
+        result = actions.AutoHotkeyBringUp(app=r"C:\Program Files (x86)\Frescobaldi\frescobaldi.exe", title="Frescobaldi", extra=extra)
         pPath, wTitle, hndle = result
         action("Frescobaldi abacadabra")
         self.tempFileHndles.append(hndle)
@@ -336,7 +337,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         self.killActions[hndle] = "KW({ctrl+w}, {right}{enter})"
         self.modInfos[hndle] = result
 
-    def tttestEmpty(self):
+    def testEmpty(self):
         """only testing the setup and teardown
         
         implicitly testing actions (via autohotkey, AHK) like starting a process and switching to a window handle
@@ -349,13 +350,13 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         self.setupTextFiles()
         # self.setupDocxFile()
         # self.setupWindows()
-        self.setupThunderbirdNewWindow()
+        # self.setupThunderbirdNewWindow()
         # self.setupFrescobaldiNewPane()
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-        print("Frescobaldi handle: ", self.frescHndle)
-        natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+        # print("Frescobaldi handle: ", self.frescHndle)
+        # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
                 
-    def testCopyClipboardGetSetText(self):
+    def tttestCopyClipboardGetSetText(self):
         """use the clipboard for getting and the window text
         
         Run with one target at a time
@@ -371,7 +372,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         # self.setupTextFiles()
         
         
-        for i in range(1, 21, 5):
+        for i in range(1, 21, 10):
             waitTime = 0.001/i
 
             t0 = time.time()
@@ -386,9 +387,11 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             self.assert_equal(expPosTuple, (startSel, endSel, cursorPos), "positions not as expected")
             
             action("Hello world")
-    
-            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-            natlinkutilsqh.SetForegroundWindow(self.testHndle)
+
+            # these pair of lines provide the possibility to debug the tests
+            # put the breakpoint at the second line...
+            # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.testHndle)
     
     
             text, startSel, endSel, cursorPos = self.getTextViaClipboard(waitTime)
@@ -402,8 +405,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             # now select word world
             action("{shift+ctrl+left}")
     
-            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-            natlinkutilsqh.SetForegroundWindow(self.testHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.testHndle)
 
     
             text, startSel, endSel, cursorPos = self.getTextViaClipboard(waitTime)
@@ -416,10 +419,9 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             text, startSel, endSel, cursorPos = self.getTextViaClipboard(waitTime)
             self.assert_equal(expText, text, "text not as expected")
             self.assert_equal(expPosTuple, (startSel, endSel, cursorPos), "positions not as expected")
-            pass
     
-            natlinkutilsqh.SetForegroundWindow(self.thisHndle)
-            natlinkutilsqh.SetForegroundWindow(self.testHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.thisHndle)
+            # natlinkutilsqh.SetForegroundWindow(self.testHndle)
     
             # now replace the word world, and make a second line
             action('SCLIP(WORLD{enter}How are you going?{enter}In this Corona world?)')
@@ -434,7 +436,6 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             text, startSel, endSel, cursorPos = self.getTextViaClipboard(waitTime)
             self.assert_equal(expText, text, "text not as expected")
             self.assert_equal(expPosTuple, (startSel, endSel, cursorPos), "positions not as expected")
-            pass
     
             # select all
             action("{ctrl+home}{shift+ctrl+end}")
@@ -451,7 +452,6 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             expPosTuple = (0, len(expText), len(expText))  # startSel, endSel, cursorPos
             self.assert_equal(expText, text, "text not as expected")
             self.assert_equal(expPosTuple, (startSel, endSel, cursorPos), "positions not as expected")
-            pass
 
             # select "are you"
             action("{ctrl+home}{down}{right 4}{shift+right 7}")
@@ -470,7 +470,6 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             self.assert_equal(expText, text, "text not as expected")
             self.assert_equal(expPosTuple, (startSel, endSel, cursorPos), "positions not as expected")
 
-            pass
 
             t1 = time.time()
             elapsed = t1 - t0
