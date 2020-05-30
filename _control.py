@@ -10,10 +10,14 @@
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003
 
-import string,os,sys,re # cPickle
+import string
+import os
+import sys
+import re # cPickle
 import natlink
 from natlinkutils import *
-from natlinkmain import loadedFiles, unloadModule, loadModule
+import natlinkmain
+# from natlinkmain import loadedFiles, unloadModule, loadModule
 import utilsqh
 natbj = __import__('natlinkutilsbj')
 natut = __import__('natlinkutils')
@@ -60,6 +64,7 @@ FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
                  'if', 'its', 'is', 'this', 'booth', 'on', 'with',"'s"]
 #(taken from natlinkmain, to prevent import:)
 baseDirectory = natqh.getUnimacroUserDirectory()
+unimacroDirectory = natqh.getUnimacroDirectory()
 FilterFileName=baseDirectory+'\\filtered.txt'
 FilteredWords=natbj.Union(FilteredWords, ReadFilteredWords(FilterFileName))
 
@@ -147,13 +152,13 @@ class UtilGrammar(ancestor):
     Repeat = 0
 
     def initialize(self):
-        global loadedNames
         # temp set allResults to 0, disabling the messages trick:
         if not self.load(self.gramSpec, allResults=showAll):
             return None
         natbj.RegisterControlObject(self)
         self.emptyList('message')
-        self.setList('gramnames', list(natbj.loadedGrammars.keys()))
+        allGramNames = self.getUnimacroGrammarNames()
+        self.setList('gramnames', allGramNames)
         self.setNumbersList('tracecount', tracecount)
         
         self.activateAll()
@@ -349,10 +354,9 @@ class UtilGrammar(ancestor):
             gramname = self.hasCommon(words, list(natbj.loadedGrammars.keys()))
             if gramname:
                 gram = natbj.loadedGrammars[gramname]
-                if gram == self:
-                    print('No %s of grammar _control needed or allowed!'% funcName)
-                else:
+                if gram != self:
                     self.switch(gram, gramname, funcName)
+                    # self never needs switching on
             else:
                 print('_control switch, no valid grammar found, command: %s'% words)
 
@@ -375,8 +379,8 @@ class UtilGrammar(ancestor):
                 print('reload grammar "%s"'% gram.getName())
                 
             modName = gram.__module__
-            unloadModule(modName)
-            loadModule(modName)
+            natlinkmain.unloadModule(modName)
+            natlinkmain.loadModule(modName)
             #print 'reloaded "%s"'% modName
             return 1
         elif funcName == 'switchOff':
@@ -638,6 +642,19 @@ class UtilGrammar(ancestor):
         else:
             t = t.replace('; ', '\n')
             actions.Message(t)
+
+    def getUnimacroGrammarNames(self):
+        """get all the names of active or wrong Unimacro grammar names
+        """
+        wrongNames = set(natlinkmain.wrongFiles.keys())
+        loadedNames = set(natlinkmain.loadedFiles.keys())
+        print("wrong names: ", wrongNames)
+        print("\nloaded names: ", loadedNames)
+
+        unimacroPyFiles = [f for f in os.listdir(unimacroDirectory) if f.endswith('.py')]
+        print("\n===unimacroPyFiles", unimacroPyFiles)
+        loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
+        return loadedandwrongmodules
 
 class MessageDictGrammar(natut.DictGramBase):
     def __init__(self):

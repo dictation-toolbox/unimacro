@@ -51,12 +51,14 @@ import pywintypes
 import natlinkmain
 import natlinkstatus
 import natlinkcorefunctions
-natlinkstatus = natlinkstatus.NatlinkStatus()
+status = natlinkstatus.NatlinkStatus()
 import RegistryDict  # for emergency get of UserDirectory!
 import autohotkeyactions
 from readwritefile import DecodeEncode
 import utilsqh
 DEBUG = 0
+
+status = natlinkstatus.NatlinkStatus()
 
 # make old Dos style 8.3 filenames: (can be switched off)
 AppBringUpDoExec83 = 0
@@ -105,9 +107,9 @@ def getLanguage():
     """get current language, 3 characters
 
     """
-    lang = natlinkstatus.getLanguage()
+    lang = status.getLanguage()
     if not lang:
-        print("natlinkutilsqh, getLanguage, no language from natlinkstatus found, return 'zyx'")
+        print("natlinkutilsqh, getLanguage, no language from status found, return 'zyx'")
         lang = 'zyx'
     return lang
 
@@ -115,9 +117,9 @@ def getUserLanguage():
     """get current language, long name
 
     """
-    userlang = natlinkstatus.getUserLanguage()
+    userlang = status.getUserLanguage()
     if not userlang:
-        print("natlinkutilsqh, getUserLanguage, no userLanguage from natlinkstatus found")
+        print("natlinkutilsqh, getUserLanguage, no userLanguage from status found")
         userlang = 'unknown'
     return userlang
 
@@ -126,19 +128,19 @@ def getBaseModel():
     """get BaseModel of user
 
     """
-    return natlinkstatus.getBaseModel()
+    return status.getBaseModel()
 
 def getBaseTopic():
     """get BaseTopic of user
 
     """
-    return natlinkstatus.getBaseTopic()
+    return status.getBaseTopic()
 
 def getUserTopic():
     """get userTopic of user (starting DPI15)
 
     """
-    return natlinkstatus.getUserTopic()
+    return status.getUserTopic()
 
 
 def getDNSVersion():
@@ -148,20 +150,20 @@ def getDNSVersion():
     assume to be 5 if not found there, see unimacro version of natlinkmain
 
     """
-    return natlinkstatus.getDNSVersion()
+    return status.getDNSVersion()
 
 def getDNSuserDirectory():
     """get DNSUserFolder from natlinkmain
 
     """
-    return natlinkstatus.getDNSuserDirectory()
+    return status.getDNSuserDirectory()
 
 def getUser():
     """get current user
 
 
     """
-    return natlinkstatus.getUserName()
+    return status.getUserName()
 
 def getWindowsVersion():
     """get windows version
@@ -169,7 +171,7 @@ def getWindowsVersion():
     known are eg. 'Vista', 'XP', '2000', 'NT4', 'NT351', '98'
 
     """
-    return natlinkmain.WindowsVersion
+    return status.getWindowsVersion()
 
 def setCheckForGrammarChanges(value):
     """pass on to natlinkmain, constant checking of grammar changes"""
@@ -190,8 +192,7 @@ def getUserDirectory():
     Special trick: get this directory if userDirectory not valid
 
     """
-    print('WARNING, should be changed in Unimacro: getUnimacroDirectory')
-    ud = natlinkmain.userDirectory
+    ud = status.getUserDirectory()
     if ud:
         return ud
     else:
@@ -203,19 +204,19 @@ def getOriginalUnimacroDirectory(fromGetUserDirectory=None):
     if userDirectory different from unimacro directory, find the one in relation to core
     prevent recursive calling with fromGetUserDirectory variable...
     """
-    return natlinkstatus.getUnimacroDirectory()
+    return status.getUnimacroDirectory()
 
 def getUnimacroDirectory():
-    """just return from natlinkstatus
+    """just return from status
     """
-    return natlinkstatus.getUnimacroDirectory()
+    return status.getUnimacroDirectory()
 
 def getUnimacroUserDirectory():
     """return the unimacro user (ini)files directory,
     the ini files and possibly other things are located here, by language
 
     """
-    return natlinkstatus.getUnimacroUserDirectory()
+    return status.getUnimacroUserDirectory()
 
 # utility functions----------------------------------------
 ## matchWindow from natlinkutils:

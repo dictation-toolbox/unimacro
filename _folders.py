@@ -131,7 +131,9 @@ class ThisGrammar(ancestor):
     """    
     language = natqh.getLanguage()
     name = "folders"
-    iniIgnoreGrammarLists = ['subfolders', 'subfiles', 'recentfolders'] # on the fly in CabinetWCla ss
+    iniIgnoreGrammarLists = ['subfolders', 'subfiles']
+        # 'recentfolders' is filled via self.in inicngingData
+         # subfolders and subfiles are filled on the fly and not saved for future use
     
     # commands with special status, must correspond to a right hand side
     # of a ini file entry (section foldercommands or filecommands)
@@ -178,28 +180,24 @@ class ThisGrammar(ancestor):
 <sitecommands> = {sitecommands} | {sitecommands} (<foldercommands>|<websitecommands>) |
                     <foldercommands> | <websitecommands>;
         """
-        
     if doRecentFolderCommand:
-        gramSpec += """<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|RESET|START|STOP);"""
+        gramSpec += """<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|HIDE|RESET|START|STOP);"""
 
     def initialize(self):
-        if not self.language:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
-            return
-        
-        self.load(self.gramSpec)
-        self.lastSite = None
-        self.switchOnOrOff() # initialises lists from inifile, and switches on
-                             # if all goes well (and variable onOrOff == 1)
         self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
         self.subfiles = self.subfiles = self.activeFolder = None  # for catching on the fly in explorer windows (CabinetClassW)
         self.className = None
-        self.recentFoldersDict = {} # 
         self.dialogWindowTitle = "" # for recent folders dialog, grammar in natspeak.py
         self.dialogNumberRange = [] # ditto
         self.catchRemember = ""
         self.activeFolder = None
         self.previousDisplayRecentFolders = None   # displaying recent folders list
+        if not self.language:
+            print("no valid language in grammar "+__name__+" grammar not initialized")
+            return
+        self.load(self.gramSpec)
+        self.lastSite = None
+        self.switchOnOrOff() # initialises lists from inifile, and switches on
         
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
@@ -293,14 +291,15 @@ class ThisGrammar(ancestor):
                 items = list(self.filesDict.keys())
                 self.setList('files', items)
                 return items
+        elif listName == 'recentfolders':
+            if self.recentFoldersDict:
+                items = list(self.recentFoldersDict.keys())
+                self.setList('recentfolders', items)
+                return items
             else:
-                print('no files to set list to, edit _folders.ini if you wish to call individual files...')
-                self.emptyList('files')
-        # elif listName in ['subversionfilecommands', 'subversionfoldercommands']:
-        #     if self.doSubversion:
-        #         return ancestor.fillList(self, listName)
-        #     else:
-        #         self.emptyList(listName)
+                print('no recentfolders in iniChangingData.ini')
+                self.emptyList('recentfolders')
+
         elif listName in ['gitfilecommands', 'gitfoldercommands']:
             if self.doGit:
                 return ancestor.fillList(self, listName)
@@ -331,19 +330,38 @@ class ThisGrammar(ancestor):
             self.trackFoldersInterval = int(interval*1000)  # give in seconds
         else:
             self.trackFoldersInterval = 4000  # default 5 seconds
-            
+        
+        self.recentFoldersDict = {}  # just to be sure, also if no timer is used...
+        inipath = self.ini.getFilename()
+        if inipath.endswith('.ini'):
+            changingDataIniPath = inipath.replace(".ini", "changingdata.ini")
+            self.iniChangingData = inivars.IniVars(changingDataIniPath)
+        
         ## automatic tracking of recent folders :
         self.trackFoldersHistory = self.ini.getInt('general', 'track folders history')
         if self.trackFoldersHistory:
+            if self.iniChangingData:
+                recentFoldersKeys = self.iniChangingData.get('recentfolders')
+                for key in recentFoldersKeys:
+                    folder = self.iniChangingData.get('recentfolders', key)
+                    self.recentFoldersDict[key] = folder
+                if self.recentFoldersDict:
+                    print("recentfolders, set %s keys from _folderschangingdata.ini"% len(self.recentFoldersDict))
+                else:
+                    print("recentfolder, no previous recentfolders cached in _folderschangindata.ini")
+        
             self.doTrackFoldersHistory = True   # can be started or stopped with command
                                                 # recent [folders] START or recent [folders] STOP
             intervalSeconds = self.trackFoldersInterval/1000
-            print('maintain a list of %s recent folders (Explorer of File Dialog) at every utterance and every %s seconds'% (self.trackFoldersHistory, intervalSeconds))
+            print('maintain a list of %s recent folders (Explorer or File Dialog) at every utterance and every %s seconds'% (self.trackFoldersHistory, intervalSeconds))
             natlink.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # every 5 seconds
         else:
             self.doTrackFoldersHistory = False
-        
-
+        if self.doTrackFoldersHistory:
+            rfList = self.ini.get('recentfolders')
+            for key in rfList:
+                value = self.ini.get('recentfolders', key)
+                self.recentFoldersDict[key] = value
         # extract special variables from ini file:
         self.virtualDriveDict = {}
         wantedVirtualDriveList = self.ini.get('virtualdrives')
@@ -454,6 +472,19 @@ class ThisGrammar(ancestor):
         # save changes if there were any:
         self.ini.writeIfChanged()        
 
+
+    def fillGrammarLists(self, listOfLists=None, ignoreFromIni='general',
+                         ignoreFromGrammar=None):
+        """fills the lists of the grammar with data from inifile
+        
+        extra, the 'recentfolders' list from iniChangingData!!
+        (note: fillList is a specialised function of this grammar)
+
+        """
+        ancestor.fillGrammarLists(self)
+        
+        ## this one is ignored in the` parent class version of this function
+        self.fillList('recentfolders')
     
     def resolveVirtualDrives(self, wantedVirtualDrives):
         """check the virtual drives, possibly recursive
@@ -574,6 +605,7 @@ class ThisGrammar(ancestor):
             nf = os.path.normpath(f)
             # print("getActiveFolder: %s"% nf)
             return nf
+        print("folder in getActiveFolder: %s"% f)
         realFolder = natlinkcorefunctions.getFolderFromLibraryName(f)
         if realFolder:
             # print("getActiveFolder realFolder for %s: %s"% (f, realFolder))
@@ -709,6 +741,7 @@ class ThisGrammar(ancestor):
         for sp in spoken:
             self.filesDict[sp] = vd + ':/' +  f
        
+       
     def catchTimerRecentFolders(self, hndle=None, className=None):
         """this function is called back every ... seconds with timercallback
         
@@ -723,7 +756,6 @@ class ThisGrammar(ancestor):
         if not activeFolder: return
         
         # activeFolder = os.path.normcase(activeFolder)
-        
         if self.recentFoldersDict and activeFolder == list(self.recentFoldersDict.values())[-1]:
             return
         spokenName = self.getFolderBasenameRemember(activeFolder)
@@ -745,6 +777,10 @@ class ThisGrammar(ancestor):
                 # print('_folders, remove from recent folders: %s (%s)'% (keysList[0], removeItem))
             # print("refilling recentfolders list with %s items'"% len(self.recentFoldersDict))
             self.setList('recentfolders', list(self.recentFoldersDict.keys()))
+            self.iniChangingData.delete('recentfolders')
+            for key, value in self.recentFoldersDict.items():
+                self.iniChangingData.set("recentfolders", key, value)
+            self.iniChangingData.writeIfChanged()
 
         if not Spoken: return
         if Spoken in self.recentFoldersDict:
@@ -752,20 +788,24 @@ class ThisGrammar(ancestor):
             if spokenFolder == Folder:
                 del self.recentFoldersDict[Spoken]
                 self.recentFoldersDict[Spoken] = Folder
-                # print('re-enter Folder in recent folders: %s (%s)'% (Spoken, Folder))
+                self.iniChangingData.set("recentfolders", Spoken, Folder)                # print('re-enter Folder in recent folders: %s (%s)'% (Spoken, Folder))
             elif Folder not in self.foldersSet:
                 print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s'% (Spoken, Folder, Spoken, spokenFolder))
                 del self.recentFoldersDict[Spoken]
                 self.recentFoldersDict[Spoken] = Folder
+                ## try to maintain order:
+                self.iniChangingData.delete('recentfolders', Spoken)
+                self.iniChangingData.set("recentfolders", Spoken, Folder)                
         else:
-            print('adding Folder in recent folders: %s (%s)'% (Spoken, Folder))
+            # print('adding Folder in recent folders: %s (%s)'% (Spoken, Folder))
             self.recentFoldersDict[Spoken] = Folder
             self.appendList('recentfolders', Spoken)
-            
-        self.displayRecentFolders()
+            self.iniChangingData.set("recentfolders", Spoken, Folder)
+        self.iniChangingData.writeIfChanged()
     
     def startRecentFolders(self):
         self.doTrackFoldersHistory = True
+        self.fillList('recentfolders')
         natlink.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # should have milliseconds
         print("track folders history is started, the timer callback is on")
         
@@ -777,8 +817,11 @@ class ThisGrammar(ancestor):
         print("track folders history is stopped, the timer callback is off")
         
     def resetRecentFolders(self):
-        pass
-        
+        self.recentFoldersDict = {}
+        self.iniChangingData.delete('recentfolders')
+        self.iniChangingData.writeIfChanged()
+        self.emptyList('recentfolders')
+
     def displayRecentFolders(self):
         """display the list of recent folders
         """
@@ -788,10 +831,10 @@ class ThisGrammar(ancestor):
         mess.append('-'*20)
         mess = '\n'.join(mess)
         if mess == self.previousDisplayRecentFolders:
+            print("recent folders, no change")
             return
         self.previousDisplayRecentFolders = mess
         print(mess)
-        
         
         
     def gotoRecentFolder(self, chooseNum):
@@ -1749,8 +1792,10 @@ class ThisGrammar(ancestor):
         # print 'iambrowser: %s Iamexplorer: %s'% (browser, IamExplorer)
         istop = self.getTopOrChild( m, childClass="#32770" )  # True if top window
         if IamChild32770:
+            print("IamChild32770: ", self.activeFolder)
             if not self.activeFolder:
                 self.activeFolder = mess.getFolderFromDialog(hndle, self.className)
+                print("IamChild32770 getFolderFromDialog: ", self.activeFolder)
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
                 #print 'newfolder (up %s): %s'% (upn, newfolder)
@@ -1893,12 +1938,6 @@ class ThisGrammar(ancestor):
                     continue
                 spoken = item
             spokenList = self.spokenforms.generateMixedListOfSpokenForms(spoken)
-            if not spokenList:
-                print('_folders, getSpokenFormsDict: false spokenList, List: %s'% List)
-                return D
-            #if spoken.startswith('.'):
-            #    spoken = 'dot ' + spoken[1:]
-            #    spoken = 'underscore ' + spoken[1:]
             for spoken in spokenList:
                 D[spoken] = item
         #print '----D:\n%s\n----'% D
@@ -2182,8 +2221,15 @@ class ThisGrammar(ancestor):
         if IamChild32770:
             self.className = '#32770'
         if IamChild32770:
-            self.gotoInThisDialog(f, hndle, self.className)
-            return
+            activeFolder = self.getActiveFolder()
+            if activeFolder:
+                print("go from here activeFolder: %s"% activeFolder)
+                self.gotoInThisDialog(f, hndle, self.className)
+                return
+            else:
+                print("no files/folder dialog, treat as top window")
+                self.gotoInThisComputer(f)
+                
         elif QuickMode and self.className == 'CabinetWClass':
             self.gotoInThisComputer(f)
             return

@@ -2280,9 +2280,14 @@ noot mies
 
     def fillList(self, listName):
         """fill a list in the grammar from the data of the inifile
-
+        
+        numbers lists get special treatment.
+        
+        special case: iniChangingData (_folders) can set a previous cached list for a future session. ('recentfolders')
+        
         """
         n = listName
+        
         if n[:6] == 'number' or \
                   (n[0] == 'n' and '-' in n):
             L = self.spokenforms.getNumberList(n)

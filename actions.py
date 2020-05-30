@@ -2075,6 +2075,19 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, pr
                 appPath2 = natlinkcorefunctions.expandEnvVariableAtStart(appPath)
                 if os.path.isfile(appPath2):
                     appPath = os.path.normpath(appPath2)
+                elif appPath.lower().startswith("%programfiles%"):
+                    appPathVariant = appPath.lower().replace("%programfiles", "%PROGRAMW6432%")
+                    appPath2 = natlinkcorefunctions.expandEnvVariableAtStart(appPath)
+                    if os.path.isfile(appPath2):
+                        appPath = os.path.normpath(appPath2)
+                    elif os.path.isdir(appPath2):
+                        appPath = os.path.join(appPath2, appName)
+                        if os.path.isfile(appPath):
+                            appPath = os.path.normpath(appPath)
+                        else:
+                            raise IOError('invalid path for PROGRAMFILES to PROGRAMW6432, app %s: %s (expanded: %s)'% (app, appPath, appPath2))
+                    else:
+                        raise IOError('invalid path for app with PROGRAMFILES %s: %s (expanded: %s)'% (app, appPath, appPath2))
                 else:
                     raise IOError('invalid path for  app %s: %s (expanded: %s)'% (app, appPath, appPath2))
         else:
