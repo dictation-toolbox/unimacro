@@ -55,7 +55,7 @@ class ThisGrammar(ancestor):
 
     gramSpec = """
 <shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
-<hidenumbers> exported = (hide) (numbers);
+<hidenumbers> exported = (hide) (numbers) [after {n1-20}];
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
 
 <navigatepages> exported = ((next|previous|{pagecommands}) page)|
@@ -154,9 +154,14 @@ class ThisGrammar(ancestor):
         """hide the numbers
 
         """
+        wordFound, position = self.hasCommon(words, "after", withIndex=True)
+        if wordFound:
+            print("setting timer later")
+        
         self.getInputcontrol()
         self.doOption(self.hideNumbers)
         self.finishInputControl()
+
 
     def gotResults_navigatepages(self,words,fullResults):
         """go to next or previous page(s) and refresh possibly"""

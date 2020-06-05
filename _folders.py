@@ -81,6 +81,8 @@ from actions import do_YESNO as YesNo
 from actions import Message, UnimacroBringUp
 from unimacro_wxpythondialogs import InputBox
 
+thisDir = (path(__file__)).split()[0]
+
 import webbrowser
 import urllib.request
 import urllib.parse
@@ -147,13 +149,13 @@ class ThisGrammar(ancestor):
     gramSpec = """
 <folder> exported = folder ({folders}[<foldercommands>]);
 <subfolder> exported = subfolder {subfolders}[<foldercommands>|<remember>];
-<disc> exported = drive {letters} [<foldercommands>];  # add + later again
+<disc> exported = drive {letters} [<foldercommands>]; 
 <thisfolder> exported = ((this|here) folder) (<foldercommands>|<remember>);
-<foldercommands> = {foldercommands}| on ({letters}|{virtualdrivesspoken}) |
+<foldercommands> = new | here | paste | on ({letters}|{virtualdrivesspoken}) |
                     (git) {gitfoldercommands}|
-                    <namepathcopy>;
+                    <namepathcopy>| {foldercommands};
                    
-<folderup> exported = folder up|folder up {n1-10};
+<folderup> exported = folder up|folder up {n1-10};   
 <file> exported = file ({files}|{subfiles})[<filecommands>|<remember>];  # add dot {extensions} later again
 <thisfile> exported = ((here|this) file) (<filecommands>|<remember>); 
 <filecommands> = {filecommands}| on ({letters}|{virtualdrivesspoken}) |
@@ -232,6 +234,17 @@ class ThisGrammar(ancestor):
         self.wantedFolder = self.wantedFile = self.wantedWebsite = None
         self.catchRemember = None
         self.gotFolder = self.gotFile = self.gotWebsite = False ## for catching 
+        
+        # folder options:
+        # CopyName and PasteName refers to the folder, file or website name
+        # Cut, Copy Paste of file or folder is not implemented
+        self.New = self.Here = self.Remote = self.Git = self.Cut = self.Copy = self.Paste = self.CopyNamePath = self.PastePath = False
+        # file options:
+        # OpenWith goes via Open.
+        self.Open = self.Edit = None
+        self.FolderOptions = []
+        self.FileOptions = []
+        self.WebsiteOptions = []
 
     def handleTrackFilesAndFolders(self, activeFolder):
         """set or empty lists for activeFolder and set/reset self.activeFolder
@@ -957,13 +970,9 @@ class ThisGrammar(ancestor):
         if ((site.startswith('http:') or site.startswith('https:')) and 
                     site.find('\\') > 0):
             site = site.replace('\\', '/')
+        self.wantedWebsite = site
         
-        if self.nextRule == 'websitecommands':
-            self.wantedWebsite = site
-        else:
-            self.openWebsiteDefault(site)
-            self.wantedWebsite = None
-            
+           
     def gotResults_thiswebsite(self,words,fullResults):
         """get current website and open with websitecommands rule
         
@@ -977,6 +986,7 @@ class ThisGrammar(ancestor):
         print('this website: %s'% self.wantedWebsite)
         natqh.restoreClipboard()
         if self.hasCommon(words, "remember"):
+            ## dgndictation is not used at the moment!!
             if self.nextRule == "dgndictation":
                 self.catchRemember = "website"
             else:
@@ -1086,36 +1096,17 @@ class ThisGrammar(ancestor):
         """
         if not self.wantedWebsite:
             print('websitecommands, no valid self.wantedWebsite: %s'% self.wantedWebsite)
-        openWith, owIndex = self.hasCommon(words, ['open with'], withIndex=1)
-        if openWith:
-            openWith = self.getFromInifile(words[owIndex+1], 'websiteopenprograms', noWarning=1)
-        self.openWebsiteDefault(self.wantedWebsite, openWith=openWith)
 
-#     def gotResults_folder(self, words, fullResults):
-#         """collects the given command words and try to find the given folder
-# 
-#         made distinction between folders and subfolders (17/2/2017)
-#         """
-# ##        print '-------folder words: %s'% words
-#         # if self.activeFolder and words[1] in self.subfoldersDict:
-#         #     subfolder = self.subfoldersDict[words[1]]
-#         #     folder = os.path.join(self.activeFolder, subfolder)
-#         #     print 'subfolder: %s'% folder
-#         # else:
-#         # subfolder = None
-#         if len(words) == 1:
-#             self.gotFolder = True
-#             return
-#         folder1 = self.foldersDict[words[1]]
-#         folder = self.substituteFolder(folder1)
-#             
-#         # if no next rule, simply go:
-#         if not self.nextRule:
-#             # do action straight away:
-#             self.gotoFolder(folder)
-#             self.wantedFolder = None
-#         else:
-#             self.wantedFolder = folder
+        nextOpenWith = False
+
+        for w in words:
+            if self.hasCommon(w, 'open with'):
+                nextOpenWith = True
+            elif nextOpenWith:
+                self.Open = self.getFromInifile(w, 'websiteopenprograms')
+                nextOpenWith = False
+            else:
+                print("unexpected website option: %s"% w)
 
     def gotResults_subfolder(self, words, fullResults):
         """collects the given command words and try to find the given subfolder
@@ -1142,13 +1133,7 @@ class ThisGrammar(ancestor):
         self.wantedFolder = folder
         if doRecentFolderCommand:
             self.manageRecentFolders(folderWord, folder)
-        if not self.nextRule:
-            # do action straight away:
-            self.gotoInThisComputer(folder)
-            self.wantedFolder = None
-        elif self.nextRule in ["remember", "foldercommands"]:
-            self.catchRemember = "folder"
-
+        
     def gotResults_recentfolder(self,words,fullResults):
         """give list of recent folders and choose option
         """
@@ -1172,7 +1157,7 @@ class ThisGrammar(ancestor):
         name = words[-1]
         folder = self.recentFoldersDict[name]
         print("recentfolder, name: %s, folder: %s"% (name, folder))
-        self.gotoFolder(folder)
+        self.wantedFolder = folder
 
     def gotResults_site(self,words,fullResults):
         """switch to one of the sites in the list
@@ -1208,15 +1193,13 @@ class ThisGrammar(ancestor):
         #    self.ini.set('sites', siteName, '')
         #    self.ini.write()
         #    return
-        if not self.nextRule:
-            if self.site:
-                rootDir = self.site.rootDir
-                self.gotoFolder(rootDir)
-            return
-        elif self.nextRule == "sitecommands":
-            print('site, waiting for sitecommands')
+        if self.nextRule == 'sitecommands':
+            print('site %s, waiting for sitecommands'% self.site)
         else:
-            self.wantedFolder = self.site.rootDir
+            if self.site:
+                self.wantedFolder = self.site.rootDir
+            else:
+                print("_folders, site command (private QH), no site specified")
     
     def gotResults_sitecommands(self, words, fullResults):
         """do the various options for sites (QH special).
@@ -1272,7 +1255,7 @@ class ThisGrammar(ancestor):
             self.gotoFolder(folder)
             self.wantedFolder = None
         elif website:
-            self.openWebsiteDefault(website)
+            self.gotoWebsite(website)
             self.wantedWebsite = None
 
     def getSiteInstance(self, siteName):
@@ -1333,12 +1316,8 @@ class ThisGrammar(ancestor):
 
         folder1 = self.foldersDict[words[1]]
         folder = self.substituteFolder(folder1)
-        # this one has no remember option:
-        if self.nextRule == "foldercommands":  
-            self.wantedFolder = folder
-        else:
-            self.gotoFolder(folder)
-            self.wantedFolder = None
+        # actions in gotResults_remember or in gotResults
+        self.wantedFolder = folder
 
     def gotResults_foldercommands(self, words, fullResults):
         """open the folder and do additional actions
@@ -1350,36 +1329,42 @@ class ThisGrammar(ancestor):
         if not self.wantedFolder:
             print('rule foldercommands, no wantedFolder, return')
             return
-        kw = {}
+        nextGit = nextRemote = False
         for w in words:
-            opt = self.getFromInifile(w, 'foldercommands')
-            if opt:
-                if opt in self.optionalfoldercommands:
-                    kw[opt] = opt
-                else:
-                    kw[w] = opt
-        Remote, remoteIndex = self.hasCommon(words, ['on'], withIndex=1)
-        print('remote: %s, remoteIndex: %s, words: %s'% (Remote, remoteIndex, words))
-        if Remote:
-            remoteLetter =  self.getFromInifile(words[remoteIndex+1], 'letters', noWarning=1)
-            remoteVirtualDrive = self.getFromInifile(words[remoteIndex+1], 'virtualdrivesspoken', noWarning=1)
-            if remoteLetter:
-                print('remoteLetter: %s'% remoteLetter)
-                kw['remote'] = remoteLetter.upper() + ":"
-            elif remoteVirtualDrive:
-                remote = self.virtualDriveDict[remoteVirtualDrive]
-                print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, remote))
-                kw['Remote'] = remote
+            if self.hasCommon(w, 'here'):
+                print("got Here: ", w)
+                self.Here = True
+            elif self.hasCommon(w, 'new'):
+                print("got New: ", w)
+                self.New = True
+            elif self.hasCommon(w, 'paste'):
+                print("got Paste, set PastePath: ", w)
+                self.PastePath = True
+            elif self.hasCommon(w, 'on'):
+                print("got Remote: ", w)
+                nextRemote = True
+            elif nextRemote:
+                remoteLetter =  self.getFromInifile(w, 'letters', noWarning=1)
+                remoteVirtualDrive = self.getFromInifile(w, 'virtualdrivesspoken', noWarning=1)
+                if remoteLetter:
+                    print('remoteLetter: %s'% remoteLetter)
+                    self.Remote = remoteLetter.upper() + ":"
+                elif remoteVirtualDrive:
+                    self.Remote = self.virtualDriveDict[remoteVirtualDrive]
+                    print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
+                nextRemote = False
+            elif self.hasCommon(w, 'git'):
+                print("got Git: ", w)
+                nextGit = True
+            elif nextGit:
+                print("got gitCommand: ", w)
+                gitCommand = self.getFromInifile(w, 'gitfoldercommands')
+                self.Git = gitCommand
+                nextGit = False # again
             else:
-                print('_folders: no valid drive or virtualdrive for remote options, words: %s'% repr(words))
-                return 
-        print('foldercommands: %s'% words)
-        Git, gitIndex = self.hasCommon(words, ['git'], withIndex=1)
-        if Git:
-            gitCommand = self.getFromInifile(words[gitIndex+1], 'gitfoldercommands')
-            kw['Git'] = gitCommand
-        
-        self.gotoFolder(self.wantedFolder, **kw)
+                opt = self.getFromInifile(w, 'foldercommands')
+                print("got FolderOptions: ", opt)
+                self.FolderOptions.append(opt)
 
     def gotResults_namepathcopy(self, words, fullResults):
         """copy the name or the path of a folder, file or website
@@ -1429,26 +1414,6 @@ class ThisGrammar(ancestor):
         if not self.catchRemember:
             print('_folders, in remember rule, but nothing to remember')
             return
-        # 
-        # 
-        # waitForDictation = (self.nextRule == "dgndictation")
-        # print "waitForDictation: %s"% waitForDictation
-        # print 'words remember: %s'% words
-        # lastWord = words[-1]
-        # if waitForDictation:
-        #     print 'last word: %s'% words[-1]
-        #     extraWords = ["as", "append", "insert"]
-        #     for extra in extraWords:
-        #         if self.hasCommon(lastWord, extra):
-        #             self.rememberExtra = extra
-        #             break
-        #     else:
-        #         self.rememberExtra = None
-        #     if not self.rememberExtra:
-        #         print "_folders, no valid word before dgndictation: %s\nShould be (synonym of translation) of one of: %s)"% (words[-1],
-        #                                                                     extraWords)
-        #     print 'rememberExtra: %s'% self.rememberExtra
-        # 
         if self.catchRemember == "folder":
             self.rememberBase = self.getFolderBasenameRemember(self.wantedFolder)
             duplicateFolders = self.getDuplicateFolders(self.wantedFolder)
@@ -1488,7 +1453,9 @@ class ThisGrammar(ancestor):
         if not self.checkForChanges:
             self.checkForChanges = 10  # switch this on 10 utterances
         pausetime = 3
-        makeFromTemplateAndExecute("C:/Natlink/Unimacro", "unimacrofoldersremembertemplate.py", "rememberexe.py",
+        # reset variables, no action in gotResults:
+        self.wantedFile = self.wantedFolder = self.wantedWebsite = ""
+        makeFromTemplateAndExecute(thisDir, "unimacrofoldersremembertemplate.py", "rememberexe.py",
                                       prompt, text, default, inifile, section, value, pausetime=pausetime)
 
 
@@ -1664,43 +1631,38 @@ class ThisGrammar(ancestor):
             return
         # print 'filecommands: %s'% words
         kw = {}
+        nextOpenWith = nextRemote = False
         for w in words:
-            opt = self.getFromInifile(w, 'filecommands')
-            if opt:
-                if opt in self.optionalfilecommands:
-                    kw[opt] = opt
-                    
-                else:
-                    kw[w] = opt
-        
-        # remote on virtualdrivesspoken or letter, like foldercommands:
-        Remote, remoteIndex = self.hasCommon(words, ['on'], withIndex=1)
-        if Remote:
-            # print 'file remote: %s, remoteIndex: %s, words: %s'% (Remote, remoteIndex, words)
-            remoteLetter =  self.getFromInifile(words[remoteIndex+1], 'letters', noWarning=1)
-            remoteVirtualDrive = self.getFromInifile(words[remoteIndex+1], 'virtualdrivesspoken', noWarning=1)
-            if remoteLetter:
-                print('get file on remoteLetter: %s'% remoteLetter)
-                kw['remote'] = remoteLetter.upper() + ":"
-            elif remoteVirtualDrive:
-                remote = self.virtualDriveDict[remoteVirtualDrive]
-                print('get file on remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, remote))
-                kw['remote'] = remote
+            if self.hasCommon(w, 'open with'):
+                nextOpenWith = True
+            elif nextOpenWith:
+                self.Open = self.getFromInifile(w, 'fileopenprograms')
+                nextOpenWith = False
+            elif self.hasCommon(w, 'on'):
+                nextRemote = True
+            elif nextRemote:
+                remoteLetter =  self.getFromInifile(w, 'letters', noWarning=1)
+                remoteVirtualDrive = self.getFromInifile(w, 'virtualdrivesspoken', noWarning=1)
+                if remoteLetter:
+                    print('remoteLetter: %s'% remoteLetter)
+                    self.Remote = remoteLetter.upper() + ":"
+                elif remoteVirtualDrive:
+                    self.Remote = self.virtualDriveDict[remoteVirtualDrive]
+                    print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
+                nextRemote = False
+            elif self.hasCommon(w, 'git'):
+                print("got Git: ", w)
+                nextGit = True
+            elif nextGit:
+                print("got gitCommand: ", w)
+                gitCommand = self.getFromInifile(w, 'gitfilecommands')
+                self.Git = gitCommand
+                nextGit = False # again
             else:
-                print('_folders: no valid drive or virtualdrive for remote options, of getting file. Words: %s'% repr(words))
-                return
-        
-        OpenWith, owIndex = self.hasCommon(words, ['open with'], withIndex=1)
-        if OpenWith:
-            OpenWith = self.getFromInifile(words[owIndex+1], 'fileopenprograms')
-            print('openwith: %s'% OpenWith)
-            kw["openwith"] = OpenWith
-        
-        self.gotoFile(self.wantedFile, **kw)
-        
-    # methods gotResults_info and gotResults_onoroff are
-    # provided in IniGrammar
-    
+                act = self.getFromInifile(w, 'foldercommands')
+                print("got FileCommand: ", act)
+                self.FileOptions.append(act)
+       
     def gotResults_thisfolder(self,words,fullResults):
         """do additional commands for current folder
     
@@ -1764,17 +1726,6 @@ class ThisGrammar(ancestor):
         else:
             print('_folders, wantedFolder not a valid folder: %s'% self.wantedFolder)
            
-    # def gotResults_dgndictation(self, words, fullResults):
-    # this rule proved to hit too often with website command. Better avoid this rule!
-    #     """catch dictate for remember folder, file or website
-    #     """
-    #     if self.waitForDictation == 'website':
-    #         text, dummy = nsformat.formatWords(words, state=-1)  # no capping, no spacing
-    #         print 'google for %s'% text
-    #         textplus = "+".join(text.split())
-    #         searchurl = "https://www.google.com/search?q=%s"% textplus
-    #         self.openWebsiteDefault(searchurl)
-    #         return
     #         
     def gotResults_folderup(self,words,fullResults):
         """ go up in hierarchy"""
@@ -1970,9 +1921,34 @@ class ThisGrammar(ancestor):
                 return
         return 1
 
-    def gotoFile(self, f, Copy=None, Paste=None, Edit=None, Openwith=None,
-                   Remote=None, Git=None, **additionalOptions):
-        """goto the file f"""
+    def gotoWebsite(self, f):
+        """goto the file f, options in instance variables
+        
+        FileOptions: list
+        Git (with gitfileoptions), False or the git action to be taken
+        Remote, False or the virtual drive to be inserted
+        Open, False or app to Open with (default)
+        Edit, False or app to Edit with, if fails, take Notepad
+
+        ##special case for citrix
+        """
+        if self.Open:
+            print("gotoWebsite %s with: %s", (f, self.Open))
+        else:
+            print("gotoWebsite: ", f)
+        self.openWebsiteDefault(f, openWith=self.Open)
+
+    def gotoFile(self, f):
+        """goto the file f, options in instance variables
+        
+        FileOptions: list
+        Git (with gitfileoptions), False or the git action to be taken
+        Remote, False or the virtual drive to be inserted
+        Open, False or app to Open with (default)
+        Edit, False or app to Edit with, if fails, take Notepad
+
+        ##special case for citrix
+        """
         if self.citrixApps:
             prog = natqh.getProgInfo()[0]
             
@@ -1985,14 +1961,12 @@ class ThisGrammar(ancestor):
                 # keystroke("{enter}")
                 return
 
-
         if not os.path.isfile(f):
             self.DisplayMessage('file does not exist: %s'% f)
             return
         m = natlink.getCurrentModule()
         prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
-        mode = openWith = None
-        
+       
         # istop logic, with functions from action.py module, settings from:
         # child behaves like top = natspeak: dragon-balk
         # top behaves like child = komodo: find, komodo; thunderbird: bericht opslaan
@@ -2000,34 +1974,31 @@ class ThisGrammar(ancestor):
 
         istop = self.getTopOrChild( m, childClass="#32770") # True if top
     
-        if Remote:
-            print('Remote: %s'% Remote)
-        if Remote:
-            print('Remote: %s'% Remote)
-            f = self.getValidFile(f, Remote)
+        if self.Remote:
+            print('Remote: %s'% self.Remote)
+            f = self.getValidFile(f, self.Remote)
+            
             if not f:
                 return
             
-        if Git:
-            print('git command "%s" for file "%s"'% (Git, f))
-            self.doGitCommand(Git, f)
+        if self.Git:
+            print('git command "%s" for file "%s"'% (self.Git, f))
+            self.doGitCommand(self.Git, f)
             return
         
-        if Edit:
+        mode = None
+        if self.Edit:
             mode = 'edit'        
-        else:
+        if self.Open:
             mode = 'open'
 
-        if Copy:
+        if self.CopyNamePath:
             natqh.setClipboard(f)
             return
-        if Paste:
+        if self.Paste:
             action("SCLIP %s"%f)
-            # keystroke(f)C>Documenten
+            # keystroke(f)
             return
-        if additionalOptions:
-            print('additional options: %s'% additionalOptions)
-
 
         if not istop:   # child window actions
             # put the mouse in the left top corner of the window:
@@ -2043,11 +2014,15 @@ class ThisGrammar(ancestor):
             keystroke('{Shift+Tab}')
         else:
             # top or top behaviourthis
-            kw = dict(mode=mode, openWith=Openwith)
-            self.openFileDefault(f, mode=mode, openWith=Openwith, addOpts=additionalOptions)
+            self.openFileDefault(f)
         
-    def openFileDefault(self, filename, mode=None, openWith=None, addOpts=None):
-        """open the file in the default window and perform additional options"""
+    def openFileDefault(self, filename, mode=None, windowStyle=None, name=None, openWith=None):
+        """open the file according to the options given
+        
+        The passed keyword arguments are identical to those in the ancestor class, but hardly used.
+        
+        Open, Edit and FileOptions, see above
+        """
 ##        action('CW')
         if not os.path.isfile(filename):
             print('file does not exist, cannot open: %s'% filename)
@@ -2055,14 +2030,15 @@ class ThisGrammar(ancestor):
         if not ancestor.openFileDefault(self, filename, mode=mode, openWith=openWith):
             print('could not open %s (mode: %s, openWith: %s)'% (filename, mode, openWith))
             return
-        if addOpts:
-            for opt in addOpts:
-                action(opt)
+        try:
+            # try is needed in case function is called from another class (dirty trick with _control, sorry)
+            for act in self.FileOptions:
+                if act:
+                    action(act)
+        except AttributeError:
+            pass
 
-
-
-
-    def openFolderDefault(self, foldername, additionalOptions=None):
+    def openFolderDefault(self, foldername, mode=None, openWith=None):
         """open the folder in the default window
          LW() 
         if succeed, perform optional additional options.
@@ -2071,64 +2047,81 @@ class ThisGrammar(ancestor):
 ##        action('CW')
         #print 'going to open folder: %s'% foldername
             
-        if not ancestor.openFolderDefault(self, foldername):
+        if not ancestor.openFolderDefault(self, foldername, mode=mode, openWith=openWith):
             print('failed to open folder: %s'% foldername)
             return
-        if additionalOptions:
-            for opt, act in additionalOptions.items():
-                print("openFolderDefault, opt: %s, actions: %s"% (opt, act))
+        
+        for act in self.FolderOptions:
+            if act:
+                print("openFolderDefault, action: %s"% act)
                 action(act)
             
     #  This is the function which does the real work, depending on the
     #    window you are in
-    def gotoFolder(self, f, New=None, Here=None, Copy=None, Paste=None,
-                   Remote=None, Git=None, **additionalOptions):
+    def gotoFolder(self, f):
         """go to the specified folder
         
-        the named optional parameters correspond to the extra folder options.
-
+        all the options are via instance variables, New, Here, Copy, Paste, Remote, Git (all False by default)
+        and FolderOptions (a list, initially empty).
+        
         f = the (local) folder to go to
-        options to be set in dict kw:
-        --New = true if a new window is asked for
-        --Explorer = true is an explorer window (possibly 2xExplorer) is wanted (obsolete)
-        --Remote = the remote drive letter if the folder is wanted on another drive
+
+        Options that can be set to True(ish)
+        --New: a new window is wanted
+        --Here: if you want to remain in the same window
+                -for top windows: if explorer OK, otherwise paste the path.
+                -for child windows: default if file dialog window (#32770), otherwise paste the path)
+        --Remote: pass the (virtual) drive where the folder is wanted
+        --Copy: investigate
+        --Paste: only paste the path at the place where you are.
+        --Git: do a git command on the folder. To be done.
 
         this is the central routine, with complicated strategy for getting it,
         in pseudocode:
         
-        If QuickMode, we are in CabinetWClass and probably want a subfolder
-        
         if New:
-            if Explorer:
-                start start new Explorer
-                (xxExplorer or Windows Explorer)
-            elif isTop and in xxExplorer:
-                go to other pane
-            else:
-                get new folder
+            get new explorer folder
+        elif Here:
+            if Top and explorer:
+                open in same window
+            if Top and other program:
+                paste text of folder
+            if child and #32770 file dialog:
+                (Here is default)
+                goto the folder in this dialog
+            if child and NOT file dialog:
+                paste text of folder
+        elif Paste:
+            just paste text of folder
+        elif Copy:
+            more details, but get the name of path of the called folder (or this folder) on the clipboard
         else:
-            if Explorer:
-                search for Explorer or start new
-                (mainly for cases: in child or if xxExplorer is switched on)
-            elif isChild:
-                get the folder
-            else: # isTop!
-                if in xxExplorer:
-                    get the folder
+            if Top and explorer:
+                open in same window if new folder is in same tree
+            if Top and other program:
+                open in new window, looking for nearest window if possible, see below
+            if child and #32770 file dialog:
+                goto the folder in this dialog
+            if child and NOT file dialog:
+                open in new window, looking for nearest window if possible, see below
+
+            when looking for best fitting window alread open:
+                look for all for the Windows with titles
+                ## TODOQH
+                if exact:
+                    go to that folder window
+                elif overList: (titles are longer than folder asked for)
+                    get folder in nearest window 
+                    (if you are already there, switch to the folder you want)
+                elif underList: (titles are shorter than folder you asked for)
+                    take longest of the windows, if you are in goto exact
                 else:
-                    look for all for the Windows with titles
-                    if exact:
-                        go to that folder window
-                    elif overList: (titles are longer than folder asked for)
-                        get folder in this window 
-                        (if you are already there, switch to the folder you want)
-                    elif underList: (titles are shorter than folder you asked for)
-                        take longest of the windows, if you are in goto exact
-                    else:
-                        if part of path is common, switch to that and goto folder
+                    if part of path is common, switch to that and goto folder
 
         ## remove subversion support,
         ## git support if git executable isdefined in section [general]
+
+       ##special if citrixApps is set, just open the folder.
                         
         """
         if self.citrixApps:
@@ -2146,97 +2139,57 @@ class ThisGrammar(ancestor):
             self.DisplayMessage('folder does not exist: %s'% f)
             return
         
-        QuickMode = None
-        # for opt in self.optionalfoldercommands:
-        #     exec("%s = None"% opt.capitalize())
-        # additionalOptions = []
-        # for k, v in list(kw.items()):
-        #     if k in self.optionalfoldercommands:
-        #         # special options, not handled in foldercommands in inifile:
-        #         exec("%s = '%s'"% (k.capitalize(), v))
-        #     else:
-        #         additionalOptions.append(v)
-        # addOpts = tuple(additionalOptions)
+        if self.Git:
+            self.doGitCommand(self.Git, f)
         
-        if Git:
-            self.doGitCommand(Git, f)
-        
-        xx = self.xxExplorer
-        if Remote:
-            print('Remote: %s'% Remote)
-            f = self.getValidDirectory(f, Remote)
+        # xx = self.xxExplorer
+        if self.Remote:
+            print('Remote: %s'% self.Remote)
+            f = self.getValidDirectory(f, self.Remote)
+            print('Remote: %s'% f)
             if not f:
                 return
-        if Paste:
+        if self.PastePath:
             action("SCLIP(%s)"%f)
-            # keystroke(f)
-            return
-        if Copy:
+            print("PastePath: %s"% f)
+            return  # 
+        if self.CopyNamePath:
             print('put path on clipboard: "%s"'% f)
             natqh.setClipboard(f)
             return
+
+        if self.New:
+            self.openFolderDefault(f)
+            return                    
         
         m = natlink.getCurrentModule()
         istop = self.getTopOrChild( m, childClass="#32770" )
         prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
-
-        Iam2x = prog == '2xexplorer'
+        if not hndle:
+            print('_folders, gotoFolder: no window handle found, return')
+        # Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
         browser = prog in ['iexplore', 'firefox','opera', 'netscp']
 ##        print 'iambrowser:', browser
 ##        print 'xx: %s, Iam2x: %s, IamExplorer: %s'% (xx, Iam2x, IamExplorer)
-        if New:
-            if Explorer:
-                if xx:
-                    self.doStart2xExplorer()
-                    self.gotoIn2xExplorer(f)
-                    return
-                elif self.useOtherExplorer:
-                    UnimacroBringUp(self.useOtherExplorer)
-                    self.gotoInOtherExplorer(f)
-                else:
-                    self.openFolderDefault(f, **addOpts)
-                    
 ##
-####                    print 'starting windows explorer'
-##                    self.doStartWindowsExplorer()
-##                    self.gotoInThisComputer(f)
-                    return
-            elif istop and Iam2x:
-                keystroke('{tab}')
-                # and go on in the next section!
-            else:
-                self.openFolderDefault(f, **addOpts)
-                return
-        # now ready for a go:
-        m = natlink.getCurrentModule()
-        istop = self.getTopOrChild( m, childClass="#32770" )
-        hndle = thisHandle = m[2]
-        if not hndle:
-            print('_folders, gotoFolder: no window handle found, return')
-        # prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
-        Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
         IamChild32770 = (not istop) and win32gui.GetClassName(hndle) == '#32770'
         if IamChild32770:
             self.className = '#32770'
         if IamChild32770:
-            activeFolder = self.getActiveFolder()
-            if activeFolder:
-                print("go from here activeFolder: %s"% activeFolder)
+            self.activeFolder = self.getActiveFolder()
+            if self.activeFolder:
+                # print("go from here activeFolder: %s"% self.activeFolder)
                 self.gotoInThisDialog(f, hndle, self.className)
                 return
             else:
                 print("no files/folder dialog, treat as top window")
-                self.gotoInThisComputer(f)
+                self.openFolderDefault(f)
                 
-        elif QuickMode and self.className == 'CabinetWClass':
-            self.gotoInThisComputer(f)
-            return
-
-        #print 'no dialog 32770 or QuickMode, finding good window for %s'% f
         if not istop:   # child window actions
             # put the mouse in the left top corner of the window:
+            print("_folders, child window, comes ever here???")
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
             natqh.saveClipboard()
@@ -2248,28 +2201,20 @@ class ThisGrammar(ancestor):
             keystroke('{Shift+Tab}')
             return
 
-        # rest, in top, look for right window:
-        if Iam2x:
-            self.gotoIn2xExplorer(f)
+        ## now istop:
+        if self.Here:
+            if IamExplorer:
+                self.gotoInThisComputer(f)
+            else:
+                # paste, the best we can do
+                action("SCLIP %s"%f)
             return
 
-        # if user wants another explorer:
-        if self.useOtherExplorer:
-            UnimacroBringUp(self.useOtherExplorer)    
-            self.gotoInOtherExplorer(f)
-            return
-            
-        # search folder titles (with Class name: CabinetWClass)
-        if IamExplorer and Here:
-            self.gotoInThisComputer(f)
-            return
-        
         ## now the big search for the most appropiate window
         ## TODOQH should be looked into:
         LIST = getExplorerTitles()
         if not LIST:
-            self.openFolderDefault(f, **additionalOptions)
-
+            self.openFolderDefault(f)
             return
         
         exactList = []
@@ -2351,11 +2296,11 @@ class ThisGrammar(ancestor):
                     self.gotoInThisComputer(f)
                 else:
                     print('could not set foregroundwindow: %s'% h)
-                    self.openFolderDefault(f, additionalOptions)  ## TODOQH, *addOpts)
+                    self.openFolderDefault(f)  
                     
             else:
                 #print 'no matching window at all, start new'
-                self.openFolderDefault(f, additionalOptions) ### TODOQH, *addOpts)
+                self.openFolderDefault(f)
         else:
             # no this computer windows (yet)
             print("grammar folders shouldn't be here!")  
@@ -2438,11 +2383,14 @@ class ThisGrammar(ancestor):
         return D
     
     def gotResults(self, words,fullResults):
-        """at end of utterance, check recentFoldersList
+        """at last do most of the actions, depending on the variables collected in the rules.
         """
-        pass
-        # if self.trackFoldersHistory:
-        #     print('got results, start timer callback')
+        if self.wantedFolder:
+            self.gotoFolder(self.wantedFolder)
+        if self.wantedFile:
+            self.gotoFile(self.wantedFile)
+        if self.wantedWebsite:
+            self.gotoWebsite(self.wantedWebsite)
          
 
     def doGitCommand(self, command, path):
@@ -2456,51 +2404,10 @@ class ThisGrammar(ancestor):
         ## does not work (yet)...
         # natqh.AppBringUp(name, self.doGit, args)
         
-        
-#     def checkChildBehavesLikeTop(self, prog, title):
-#         """check if prog and title match with self.childBehavesLikeTop
-#         
-#         obsolete, in favour of ChilWindowBehavesLikeTop of actions.py (december 2017)
-#         """
-#         title = title.lower()
-# ##        print 'self.childBehavesLikeTop: %s'% self.childBehavesLikeTop
-#         if prog in self.childBehavesLikeTop:
-#             wantedTitles = self.childBehavesLikeTop[prog]
-# ##            print 'child behave like top?? title %s, wanted: %s'% (title, wantedTitles)
-#             if not wantedTitles:
-#                 return 1   # found!
-#             if type(wantedTitles) != types.ListType:
-#                 wantedTitles = [wantedTitles]
-# 
-#             for t in wantedTitles:
-#                 t = t.lower()
-#                 if title.find(t) >= 0:
-#                     print 'child window behaves like top: %s: %s'% (prog, title)
-#                     return 1
-
-#     def checkTopBehavesLikeChild(self, prog, title):
-#         """check if prog and title match with self.topBehavesLikeChild
-#         
-#         obsolete, in favour of topWindowBehavesLikeChild (december 2017)
-#         """
-#         title = title.lower()
-# ##        print 'self.childBehavesLikeTop: %s'% self.childBehavesLikeTop
-#         if prog in self.topBehavesLikeChild:
-#             wantedTitles = self.topBehavesLikeChild[prog]
-# ##            print 'child behave like top?? title %s, wanted: %s'% (title, wantedTitles)
-#             if not wantedTitles:
-#                 return 1   # found!
-#             if type(wantedTitles) != types.ListType:
-#                 wantedTitles = [wantedTitles]
-# 
-#             for t in wantedTitles:
-#                 t = t.lower()
-#                 if title.find(t) >= 0:
-#                     print 'top window behaves like child: %s: %s'% (prog, title)
 #                     return 1
 
     def doStart2xExplorer(self):
-        """starting the 2xExplorer
+        """starting the 2xExplorer, obsolete
 
         """        
         command = 'AppBringUp "%s"'% self.xxExplorer
@@ -2517,10 +2424,7 @@ class ThisGrammar(ancestor):
         action('W')
         keystroke(f)
         action('VW')
-        if natqh.getWindowsVersion() == '7':
-            keystroke('{enter}{shift+tab 3}')
-        else:
-            keystroke('{enter}{tab}')
+        keystroke('{enter}{tab}')
 
     def gotoInThisDialog(self, f, hndle, className):
         """perform the keystrokes to go to a folder in a (#32770) Dialog
@@ -2558,8 +2462,8 @@ class ThisGrammar(ancestor):
         else:
             print('_folders, please specify in function "gotoInOtherExplorer" for "use other explorer": "%s"'% self.useOtherExplorer)
 
-    def goUpInPath(self, Path, nsteps):
-        """return a new path, n steps up in hierarchy
+    def goUpInPath(self, Path, nsteps=None):
+        """return a new path, n steps up in hierarchy, default 1
         """
         if not nsteps:
             nsteps = 1
@@ -2568,7 +2472,7 @@ class ThisGrammar(ancestor):
         return Path
 
     def gotoIn2xExplorer(self, f):
-        """perform the keystrokes to go to a folder in the 2xExplorer
+        """perform the keystrokes to go to a folder in the 2xExplorer, obsolete
 
         """
         keystroke('{alt+f}t')

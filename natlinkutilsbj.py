@@ -2539,9 +2539,15 @@ noot mies
             return 1  # signalling things changed
 
     
-    def openFolderDefault(self, foldername, mode=None, windowStyle=None):
-        """open the folder in the default window"""
-        mode = mode or 'open'
+    def openFolderDefault(self, foldername, mode=None, windowStyle=None, openWith=None):
+        """open the folder in the default window
+        
+        is only used for top windows, calling from a dialog window should be handled otherwise
+        
+        mode and windowStyle and openWith are (currently) not used any more, could be re-implemented
+        
+        """
+        # mode = mode or 'open'
         if not os.path.isdir(foldername):
             self.DisplayMessage('the folder you want to open does not exist: %s'% foldername)
             return
@@ -2572,11 +2578,21 @@ noot mies
         """open the file in the default window
 
         if the file is opened with AppBringUp ( not one of the exceptions), the optional
-        name is given, which can be used with to switch to command!
+        name is given, which can be used with to switch to command! (to be investigated)
         In the messages window the name of the AppBringUp command is given.
         
+        windowStyle and name are not used at the moment.
+
+        if OpenWith is a valid program, this is used.
+        otherwise if mode is valid, take it,
+        otherwise 'open' is passed.
+        
         """
-        print('openFileDefault: %s (type: %s, mode: %s, openWith: %s)'% (filename, type(filename), mode, openWith))
+        if mode or openWith:
+            print('openFileDefault: %s (mode: %s, openWith: %s)'% (filename, mode, openWith))
+        else:
+            print('openFileDefault: %s'% filename)
+        
         appname = "file %s"% filename
         mode = mode or 'open'
         
@@ -2585,7 +2601,7 @@ noot mies
             return
         if openWith:
             return UnimacroBringUp(openWith, filename)
-        elif mode:
+        elif mode and mode in ['open', 'edit']:
             return UnimacroBringUp(mode, filename)
         else:
             return UnimacroBringUp(None, filename)
