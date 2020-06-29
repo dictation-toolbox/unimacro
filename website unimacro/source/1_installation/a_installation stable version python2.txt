@@ -1,4 +1,4 @@
-Installation of Natlink/Vocola 2/Unimacro
+Installation of Natlink/Vocola 2/Unimacro Stable, Python2.7
 
 Here is the final release for Python 2.7: 4.2
  
