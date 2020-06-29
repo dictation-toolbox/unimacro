@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>unimacro, features, AutoHotkey</title>
+<meta charset="UTF-8">
+<meta name="description" content="SourceForge project for Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="features, AutoHotkey">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topoff" height="28" onclick="location='../../installation/index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../../installation/index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topon" height="28" onclick="location='../index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="../index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../grammars/index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../../grammars/index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td>
+<td align="center" class="topoff" height="28" onclick="location='../../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > autohotkey</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="leftoff" colspan="2"><a href="../actions/index.html">Actions</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../numbers/index.html">Numbers and Spoken Forms</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../unimacroandvocola/index.html">Unimacro and Vocola</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../tracing.html">Tracing</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../inifiles.html">Inifiles</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../translations/index.html">Translations</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../cooperationwithvoicecoder/index.html">Cooperation with voicecoder</a></td></tr>
+
+<tr><td class="lefton" colspan="2">AutoHotkey</td></tr>    
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="details.html">Details</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="configuration.html">Configuration</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../unittesting/index.html">Unit testing</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../grammarclasses/index.html">Grammar classes</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../globaldictation/index.html">Global dictation</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../monitorfunctions/index.html">Monitorfunctions</a></td></tr>
+</table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>AutoHotkey</h1>
+<p>The program AutoHotkey can perform many actions on your computer, in some cases smarter and more reliable than can be done with (the current knowledge) of Unimacro.</p>
+
+<p>AutoHotkey actions can be called from Unimacro grammars, but also with the
+<a href="../../features/actions/shorthandcommands.html">Unimacro Shorthand Command</a> <strong>AHK</strong>, which can also be called from Vocola.</p>
+
+<h3>Installation and configuration</h3><ul><li>Install AutoHotkey.</li><li>(Re)start Dragon, with NatLink, Vocola and Unimacro or the option "Vocola takes Unimacro actions" enabled, in the NatLink config program.</li><li>Try the Vocola examples below</li></ul>
+
+<p>At first call of any of the Unimacro AutoHotkey functions, Unimacro tries to locate the <strong>autohotkey.exe</strong> and the directory of script files (with extension <strong>.ahk</strong>):</p>
+<ul><li>Unimacro expects <strong>autohotkey.exe</strong> in the "old style" program files directory, most often <strong>C:\Program files</strong>, and then in subdirectory <strong>autohotkey</strong>. Read the <a href="configuration.html">configuration</a> if you want them somewhere else.</li><li>Unimacro expects or creates a user ahk scripts folder <strong>AutoHotkey</strong> in the users documents directory. Read the <a href="details.html">details</a> if you want them somewhere else.</li><li>Some sample scripts are copied from the <strong>sample_ahk</strong> directory of Unimacro into this user ahk scripts directory, whenever these are newer. So when you mess up a script which is in the sample_ahk directory, delete it and restart Dragon.</li></ul>
+
+<h3>Script file or string</h3>
+<p>As script, you can either enter a filename (a AutoHotkey script, ending with <strong>.ahk</strong>), or the contents of the script. This is especially handy for one-liners.</p>
+<ul><li>If a script or the text in the one-liner has that literary text <strong>%hndle%</strong>, the handle of the foreground window will be inserted in this place. This handle can be changed if the script is called from Unimacro, not via the <strong>AHK</strong> Unimacro Shorthand Command, see <a href="details.html">details</a>. If this substitution happens in a script file, the script text is used and script file is not changed, because:</li><li>If a script text is used, it is first written to <strong>tempscript.ahk</strong>, and then this script is executed with AutoHotkey. All script files are in the AutoHotkey directory of your user documents folder.</li></ul>
+
+<h3>Examples from Vocola</h3>
+<p class="pre">## Global vocola commands using AHK:<br>
+test paste = AHK(&ldquo;send ^v&rdquo;);<br>
+wheel (up=up|down=down) = AHK(&ldquo;send {wheel$1}&rdquo;);<br>
+wheel (up=up|down=down) 2..10&nbsp;&nbsp;= AHK(&ldquo;send {wheel$1 $2}&rdquo;);<br>
+show messages = AHK(showmessageswindow.ahk);<br>
+testswitchback = RW() VW() AHK(showmessageswindow.ahk) VW() RTW();</p>
+<ul><li>The first three send Keystrokes (including mouse actions), like the Dragon/VB SendKey command or the natlink.playString function. AutoHotkey has even more support for this, for example for handling the mouse wheel.</li><li>Switching to another window with the python/win32gui function <strong>SetForegroundWindow</strong> is often unrelible. Luckily the AutoHotkey programmers do know how to do this task very reliable.</li><li>The example <strong>testswitchback</strong> uses AutoHotkey functions also from within Unimacro. See <a href="details.html">details</a>.</li></ul>
+
+<h1>Comments</h1>
+<p>This is (December 2013) a new feature in Unimacro. Please comment on things and contribute scripts you use.</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > autohotkey > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../sitemap.html#autohotkey';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../sitemap.html#autohotkey">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;jun 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;jun 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>

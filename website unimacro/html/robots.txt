@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /im/
+Disallow: /statistik/
+Disallow: /statistiek/
+Disallow: /stat/
+Disallow: /statistics/
+Disallow: /guestbook/
+Disallow: /gastenboek/

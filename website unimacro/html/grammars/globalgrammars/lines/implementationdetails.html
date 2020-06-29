@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>unimacro, grammars, global grammars, lines, Implementation details</title>
+<meta charset="UTF-8">
+<meta name="description" content="SourceForge project for Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="grammars, global, lines, Implementation, details, global grammars, Implementation details">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../../../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../../../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../../../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../../../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../../../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topoff" height="28" onclick="location='../../../installation/index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../../../installation/index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../../features/index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="../../../features/index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topon" height="28" onclick="location='../../index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../../index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td>
+<td align="center" class="topoff" height="28" onclick="location='../../../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../../../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">grammars</a> > <a href="../folders/index.html">global grammars</a> > <a href="index.html">lines</a> > implementation details</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="leftoff" colspan="3"><a href="../../control/index.html">Control</a></td></tr>
+
+<tr><td class="lefton" colspan="3"><a href="../folders/index.html">Global grammars</a></td></tr>
+    
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../folders/index.html">Folders</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../general/index.html">General</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="lefton" colspan="2"><a href="index.html">Lines</a></td></tr>
+        
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="lefton">Implementation details</td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tasks/index.html">Tasks</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../keystrokes/index.html">Keystrokes</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../repeat/index.html">Repeat</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../edit/index.html">Edit</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../latex/index.html">Latex</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../number/index.html">Number grammar</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../modes/index.html">Modes</a></td></tr>
+
+<tr><td class="leftoff" colspan="3"><a href="../../specificgrammars/index.html">Specific grammars</a></td></tr>
+
+<tr><td class="leftoff" colspan="3"><a href="../../unimacrotest/index.html">Unimacro test</a></td></tr>
+
+<tr><td class="leftoff" colspan="3"><a href="../../games/patience.html">Games</a></td></tr>
+</table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Implementation details</h1>
+<h3>actions.ini</h3>
+<p>In the inifile <strong>actions.ini</strong> the implementation for different programs is realized. When you call <strong>edit actions</strong> this file will open for inspection and editing.</p>
+
+<h3>gotoline n</h3>
+<p>The basic action for jumping to a line is the <a href="../../../features/actions/metaactions.html">meta-action</a> <strong>gotoline n</strong>, called from the lines grammar with the wanted line number for <strong>n</strong>.</p>
+
+<p>In the default section you will find:</p>
+<p class="pre">[default]<br>
+(...)<br>
+gotoline n = {Ctrl+ExtHome}{ExtDown n}{ExtUp}</p>
+
+<p>So when there is no other way to jump to a line, you simply go to the top and then down the needed number of lines.</p>
+
+<p>Here are some applications which do it another way:</p>
+<p class="pre">[emacs]<br>
+gotoline n = EMACS goto-line; n{enter}<br>
+<br>
+[excel]<br>
+gotoline n = {ctrl+g}; n:n{enter}<br>
+<br>
+[pythonwin]<br>
+gotoline n = {ctrl+g}; n{enter}; {home}<br>
+<br>
+[textpad]<br>
+gotoline n = {ctrl+g}; n{enter}<br>
+<br>
+[uedit32]<br>
+gotoline n = {ctrl+g}; n{enter}<br>
+<br>
+[win32pad]<br>
+gotoline n = {ctrl+g}; n{enter}</p>
+
+<p>Note: the excel action is overridden by the function <strong>metaaction_gotoline</strong> in the <a href="../../../features/actions/actionclassesforapplications.html">excel actions class module</a>.</p>
+
+<h3>line numbers modulo hundred</h3>
+<p>When you set this option to true in the _lines.ini file (say <strong>edit lines</strong>):</p>
+
+<p class="pre">[general]<br>
+line numbers modulo hundred = T</p>
+<p>You will be able to use this feature for Excel, win32pad and ultraedit right now. The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
+
+<p>Note: for Emacs the line module hundred trick can be implemented by inserting the correct function, <strong>mdl-goto-line-mod100</strong> instead of <strong>goto-line</strong>.</p>
+
+<h3>simpleactions</h3>
+<p>These are the actions like &lt;&lt;copy>>, &lt;&lt;cut>>, &lt;&lt;delete>>, &lt;&lt;duplicate>>, which can be investigated in the actions.ini file.</p>
+
+<h3>move copy actions</h3>
+<p>These actions require some more tuning in some applications. Details will follow.</p>
+
+<h3>Paragraph actions</h3>
+<p>These are tested in Word, and basically meant for this program.</p>
+<p>In the actions.ini file there are now  analogous to "selectdown": "selectparadown" and to "selectline" there is "selectpara":</p>
+
+<p class="pre">selectpreviouspara = {ctrl+up}{shift+ctrl+up}<br>
+selectpara = {ctrl+down}{ctrl+up}{shift+ctrl+down}<br>
+selectparadown n = {shift+ctrl+down n}<br>
+selectparaup n = {shift+ctrl+up n}<br></p>
+
+<p>These new meta-actions are found in the file sample_ini/actions.ini (March 2016, QH)</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">grammars</a> > <a href="../folders/index.html">global grammars</a> > <a href="index.html">lines</a> > implementation details > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../../sitemap.html#implementationdetails';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../../sitemap.html#implementationdetails">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: Implementation details", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;jun 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;jun 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>
