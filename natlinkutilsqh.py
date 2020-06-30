@@ -360,7 +360,8 @@ def getProgInfo(modInfo=None):
         print("===modInfo via autohotkeyactions: ", repr(modInfo))
     hndle = modInfo[2]
     if not hndle:
-        return 
+        ## assume desktop, no foreground window, treat as top...
+        return ProgInfo("", "", "top", "", 0)
     prog = getBaseNameLower(modInfo[0])
     title = modInfo[1]
     if isTopWindow(modInfo[2]):
@@ -1313,7 +1314,7 @@ def clearTrayIcon():
     natlink.setTrayIcon()
 
 
-def rememberWindow(modInfo=None):
+def rememberWindow(modInfo=None, progInfo=None, comingFrom=None):
     global hndle, waitingCanceled, windowTitle
     # if not hndle true, then raised in error, because
     # rememberWindow is called before and not finished correct
@@ -1367,7 +1368,7 @@ def waitForWindowTitle(titleName, nWait=10, waitingTime=0.1, comingFrom=None):
         return
 
 # rememberWindow must run before. nWait and waitingTime as suggested above
-def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
+def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None, progInfo=None):
     if hndle==None:
         raise NatlinkCommandError("waitForNewWindow, no valid old hndle, do a rememberWindow() first")
     for i in range(nWait):
@@ -1383,8 +1384,8 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
             return
         
         stepsToBeStable = max(3, i) # if it took longer to bring window in front, test more steps
-        prog, title, hndle = modInfo
-        if hndle != hndle:
+        progN, titleN, hndleN = modInfo
+        if hndleN != hndle:
             # new window, wait for stable situation
             succes = 0
             for j in range(stepsToBeStable*3):
@@ -1414,7 +1415,7 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
         print("waiting for new window lasts too long, fail")
         return 
 
-def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
+def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None, progInfo=None):
     if hndle==None:
         raise NatlinkCommandError("waitForNewWindow, no valid old hndle, do a rememberWindow() first")
     for i in range(nWait):
@@ -1438,7 +1439,7 @@ def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
     
 # return to window that was remembered by rememberWindow.
 # nWait and waitingTime as suggested above.
-def returnToWindow(nWait=5, waitingTime=0.05, winHandle=None, winTitle=None):
+def returnToWindow(nWait=5, waitingTime=0.05, winHandle=None, winTitle=None, **kw):
     """return to previous remembered window
     
     mostly do not specify winHandle and winTitle, as it is set as global

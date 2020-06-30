@@ -47,7 +47,6 @@ import copy
 import re
 import types
 import natlinkutils
-import utilsqh
 import gramparser  # for splitApartLines
 
 ListCode = 0    # List
@@ -86,15 +85,11 @@ class GrammarElement:
             self.AlternativesDict=AlternativesDict
 
     def Append(self,NewElement):
-        if IsText(NewElement):
-            NewElement = utilsqh.convertToUnicode(NewElement)
         self.Included.append(NewElement)
         self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
         pass        
 
     def Insert(self,NewElement):
-        if IsText(NewElement):
-            NewElement = utilsqh.convertToUnicode(NewElement)
         self.Included.insert(0,NewElement)
         self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
         pass
@@ -103,8 +98,8 @@ class GrammarElement:
         pass
     
     def SetToAllText(self,Text):
-        UnicodeText = [utilsqh.convertToUnicode(t) for t in Text]
-        self.Included=UnicodeText
+        AllText = [str(t) for t in Text]
+        self.Included=AllText
         self.ObjIncluded=0
 
     def SetIsAllText(self):

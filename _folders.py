@@ -56,11 +56,13 @@ import types
 import re
 import copy
 import natlink
+import pickle    #recentFoldersDict
 import nsformat # for "remember as"
 import os
 import sys
 import time
 import fnmatch
+import collections 
 import win32gui
 import win32con
 from win32com.client import Dispatch
@@ -183,7 +185,7 @@ class ThisGrammar(ancestor):
                     <foldercommands> | <websitecommands>;
         """
     if doRecentFolderCommand:
-        gramSpec += """<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|HIDE|RESET|START|STOP);"""
+        gramSpec += """<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|HIDE|RESET|START|STOP) [<foldercommands>];"""
 
     def initialize(self):
         self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
@@ -321,6 +323,23 @@ class ThisGrammar(ancestor):
         else:
             return ancestor.fillList(self, listName)
 
+    def dumpRecentFoldersDict(self):
+        """for making the dict of recent folders persistent
+        """
+        dumpToPickle(self.recentFoldersDict, self.pickleChangingData)
+
+    def loadRecentFoldersDict(self):
+        """for getting the dict of recent folders from previous session
+        """
+        result = loadFromPickle(self.pickleChangingData)
+        if result and type(result) is dict:
+            return result
+        else:
+            return {}
+
+
+
+
     def fillInstanceVariables(self):
         """fills the necessary instance variables
           take the lists of folders, virtualdrives (optional) and remotedrives (optional).
@@ -344,24 +363,23 @@ class ThisGrammar(ancestor):
         else:
             self.trackFoldersInterval = 4000  # default 5 seconds
         
-        self.recentFoldersDict = {}  # just to be sure, also if no timer is used...
+        self.recentFoldersDict = {}
         inipath = self.ini.getFilename()
         if inipath.endswith('.ini'):
-            changingDataIniPath = inipath.replace(".ini", "changingdata.ini")
-            self.iniChangingData = inivars.IniVars(changingDataIniPath)
+            changingDataIniPath = inipath.replace(".ini", "changingdata.pickle")
+            self.pickleChangingData = inipath.replace(".ini", "changingdata.pickle")
+        else:
+            self.pickleChangingData = ""
         
         ## automatic tracking of recent folders :
         self.trackFoldersHistory = self.ini.getInt('general', 'track folders history')
         if self.trackFoldersHistory:
-            if self.iniChangingData:
-                recentFoldersKeys = self.iniChangingData.get('recentfolders')
-                for key in recentFoldersKeys:
-                    folder = self.iniChangingData.get('recentfolders', key)
-                    self.recentFoldersDict[key] = folder
+            if self.pickleChangingData:
+                self.recentFoldersDict = self.loadRecentFoldersDict()
                 if self.recentFoldersDict:
-                    print("recentfolders, set %s keys from _folderschangingdata.ini"% len(self.recentFoldersDict))
+                    print("recentfolders, set %s keys from _folderschangingdata.pickle"% len(self.recentFoldersDict))
                 else:
-                    print("recentfolder, no previous recentfolders cached in _folderschangindata.ini")
+                    print("recentfolder, no previous recentfolders cached in _folderschangingdata.pickle")
         
             self.doTrackFoldersHistory = True   # can be started or stopped with command
                                                 # recent [folders] START or recent [folders] STOP
@@ -618,7 +636,7 @@ class ThisGrammar(ancestor):
             nf = os.path.normpath(f)
             # print("getActiveFolder: %s"% nf)
             return nf
-        print("folder in getActiveFolder: %s"% f)
+        # print("folder in getActiveFolder: %s"% f)
         realFolder = natlinkcorefunctions.getFolderFromLibraryName(f)
         if realFolder:
             # print("getActiveFolder realFolder for %s: %s"% (f, realFolder))
@@ -790,10 +808,11 @@ class ThisGrammar(ancestor):
                 # print('_folders, remove from recent folders: %s (%s)'% (keysList[0], removeItem))
             # print("refilling recentfolders list with %s items'"% len(self.recentFoldersDict))
             self.setList('recentfolders', list(self.recentFoldersDict.keys()))
-            self.iniChangingData.delete('recentfolders')
-            for key, value in self.recentFoldersDict.items():
-                self.iniChangingData.set("recentfolders", key, value)
-            self.iniChangingData.writeIfChanged()
+            self.dumpRecentFoldersDict()
+            # self.pickleChangingData.delete('recentfolders')
+            # for key, value in self.recentFoldersDict.items():
+            #     # self.pickleChangingData.set("recentfolders", key, value)
+            # self.pickleChangingData.writeIfChanged()
 
         if not Spoken: return
         if Spoken in self.recentFoldersDict:
@@ -801,20 +820,23 @@ class ThisGrammar(ancestor):
             if spokenFolder == Folder:
                 del self.recentFoldersDict[Spoken]
                 self.recentFoldersDict[Spoken] = Folder
-                self.iniChangingData.set("recentfolders", Spoken, Folder)                # print('re-enter Folder in recent folders: %s (%s)'% (Spoken, Folder))
+                self.dumpRecentFoldersDict()
+                # self.pickleChangingData.set("recentfolders", Spoken, Folder)                # print('re-enter Folder in recent folders: %s (%s)'% (Spoken, Folder))
             elif Folder not in self.foldersSet:
                 print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s'% (Spoken, Folder, Spoken, spokenFolder))
                 del self.recentFoldersDict[Spoken]
                 self.recentFoldersDict[Spoken] = Folder
+                self.dumpRecentFoldersDict()
                 ## try to maintain order:
-                self.iniChangingData.delete('recentfolders', Spoken)
-                self.iniChangingData.set("recentfolders", Spoken, Folder)                
+                # self.pickleChangingDatahangingData.delete('recentfolders', Spoken)
+                # self.pickleChangingData.set("recentfolders", Spoken, Folder)                
         else:
             # print('adding Folder in recent folders: %s (%s)'% (Spoken, Folder))
             self.recentFoldersDict[Spoken] = Folder
             self.appendList('recentfolders', Spoken)
-            self.iniChangingData.set("recentfolders", Spoken, Folder)
-        self.iniChangingData.writeIfChanged()
+            self.dumpRecentFoldersDict()
+            # self.pickleChangingData.set("recentfolders", Spoken, Folder)
+        # self.pickleChangingData.writeIfChanged()
     
     def startRecentFolders(self):
         self.doTrackFoldersHistory = True
@@ -831,15 +853,16 @@ class ThisGrammar(ancestor):
         
     def resetRecentFolders(self):
         self.recentFoldersDict = {}
-        self.iniChangingData.delete('recentfolders')
-        self.iniChangingData.writeIfChanged()
+        self.dumpRecentFoldersDict()
+        # self.pickleChangingData.delete('recentfolders')
+        # self.pickleChangingData.writeIfChanged()
         self.emptyList('recentfolders')
 
     def displayRecentFolders(self):
         """display the list of recent folders
         """
         mess = ["_folders, recent folders:"]
-        for name, value in reversed(self.recentFoldersDict.items()):
+        for name, value in self.recentFoldersDict.items():
             mess.append('- %s: %s'% (name, value))
         mess.append('-'*20)
         mess = '\n'.join(mess)
@@ -1113,7 +1136,7 @@ class ThisGrammar(ancestor):
 
         see above!! But do no actions if there is a rule after (remember, foldercommands)
         
-        fill self.wantedFolder
+        fill self.wantedFolder and self.Here (do in same folder, also if top)
         """
 ##        print '-------folder words: %s'% words
         folderWord = words[1]
@@ -1131,6 +1154,7 @@ class ThisGrammar(ancestor):
             
         # if no next rule, simply go:
         self.wantedFolder = folder
+        self.Here = True
         if doRecentFolderCommand:
             self.manageRecentFolders(folderWord, folder)
         
@@ -1889,8 +1913,9 @@ class ThisGrammar(ancestor):
                     continue
                 spoken = item
             spokenList = self.spokenforms.generateMixedListOfSpokenForms(spoken)
-            for spoken in spokenList:
-                D[spoken] = item
+            if spokenList:
+                for spoken in spokenList:
+                    D[spoken] = item
         #print '----D:\n%s\n----'% D
         return D      
 
@@ -2695,6 +2720,34 @@ def connectOutlook():
         outlookApp = None
         outlookAppProgram = None
         return outlookApp
+
+
+def loadFromPickle(picklePath):
+    """retrieve from pickle file, None if error
+    """
+    # print("loadFromPickle %s"% picklePath)
+    try:
+        with open(picklePath, 'rb') as pp:
+            data = pickle.load(pp)
+            # print("data loaded %s"% len(data))
+
+            return data
+    except:
+        return None
+    
+def dumpToPickle(data, picklePath):
+    """dump the data to picklePath
+    """
+    print("dumpToPickle %s, %s"% (picklePath, len(data)))
+    if not data:
+        os.remove(picklePath)
+        return
+    try:
+        with open(picklePath, 'wb') as pp:
+            pickle.dump(data, pp)
+    except:
+        pass
+
     
 
 def collection_iter(collection):
@@ -2714,6 +2767,11 @@ else:
         global thisGrammar, dialogGrammar
         if thisGrammar:
             natlink.setTimerCallback(None, 0)
+            # make recentFoldersDict persistent across 
+            try:
+                thisGrammar.dumpRecentFoldersDict()
+            except:
+                pass
             thisGrammar.unload()
         thisGrammar = None
 

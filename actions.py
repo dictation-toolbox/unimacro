@@ -225,6 +225,9 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     if comingFrom and comingFrom.interrupted:
         print('command was interrupted')
         return
+
+    if debug > 4: D("doAction: %s"% action)
+
     # at first (nonrecursive) call check for all variables:
     if not completeAction:
         # first (nonrecursive) call,
@@ -294,7 +297,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
                          progInfo=progInfo, modInfo=None, sectionList=sectionList,
                          comment=comment, comingFrom=comingFrom)
             if not result: return
-            if debug > 2:D('pause between actions: %s'% pauseBA)
+            if debug > 2:D('pause between actions: %s'% pauseBA) 
             do_W(pauseBA)
         return result
     else:
@@ -359,8 +362,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         args = convertToPythonArgs(rest)
         kw = {}
         kw['progInfo'] = progInfo
-        if com in ('WWT', 'WTC'):
-            kw = kw['comingFrom'] - comingFrom
+        kw['comingFrom'] = comingFrom
         func = globals()[funcName]
         if not type(func) == types.FunctionType:
             raise UnimacroError('appears to be not a function: %s (%s)'% (funcName, func))
@@ -712,7 +714,9 @@ def getFromIni(keyword, default='',
         sectionList = ini.getSectionsWithPrefix(prog, title) + \
                       ini.getSectionsWithPrefix('default', title)
         if debug > 5: D('getFromIni, sectionList: |%s|' % sectionList)
-    return ini.get(sectionList, keyword, default)
+    value = ini.get(sectionList, keyword, default)
+    if debug > 5: D('got from setting/getFromIni: %s (keyword: %s'% (value, keyword))
+    return value
 
 setting = getFromIni
 
@@ -1500,7 +1504,7 @@ def do_DOCUMENT(number=None, **kw):
 def do_TASK(number=None, **kw):
     """switch to task with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, classname, hndle = lkw['progInfo']
+    prog, title, topchild, classname, hndle = kw['progInfo']
     if prog == 'explorer' and not title:
         doKeystroke('{esc}')
         natqh.shortWait()
@@ -1768,12 +1772,12 @@ def do_TASKTOSCREEN(screennumber, winHndle=None, **kw):
         return
     if wantedMonitor == mon:
         print('already on monitor %s (%s)'% (screennumber, wantedMonitor))
-        return
+        return_WTC
     resize = monitorfunctions.window_can_be_resized(winHndle)
     monitorfunctions.move_to_monitor(winHndle, wantedMonitor, mon, resize)
     return 1
 
-def do_TASKOD(winHndle=None):
+def do_TASKOD(winHndle=None, **kw):
     """call the monitorfunctions to put task in other display"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
@@ -1856,7 +1860,7 @@ def stripTextInMessage(t):
 # the icons in the msgboxconfirm:
 MsgboxConfirmIconDict = dict(critical=16, query=32, warning=48, information=64)
 
-def Message(t, title=None, icon=64, alert=None, switchOnMic=None):
+def Message(t, title=None, icon=64, alert=None, switchOnMic=None, progInfo=None, comingFrom=None):
     """put message on screen
 
     from grammar, call through self.DisplayMessage, only in some circumstances
@@ -1899,7 +1903,7 @@ def Message(t, title=None, icon=64, alert=None, switchOnMic=None):
     
 do_MESSAGE = do_MSG
 
-def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0):
+def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0, progInfo=None, comingFrom=None):
     """put message on screen, ask for yes or no
 
     if yes return True    
@@ -2172,7 +2176,7 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, pr
     ##do_RW()
     #print 'unimacrobringup: name: %s, app: %s, args: %s (filepath: %s)'% (appName, appPath, appArgs, filepath)
     result = natqh.AppBringUp(appName, appPath, appArgs, appWindowStyle, appDirectory)
-    print("result of UnimacroBringUp:", result)
+    # print("result of UnimacroBringUp:", result)
     if extra:
         doAction(extra)
         

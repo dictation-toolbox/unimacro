@@ -6,7 +6,7 @@ You have two choices:
 
 -The link(/installation/installationstableversionpython2.html, stable release with python2.7)
 
--The link(/installation/installationexperimentalversionpython3.html, experimental release with python 3.8)
+-The link(/installation/installationexperimentalversionpython3.html, experimental release with python 3.7 or 3.8)
 
  And then:
 

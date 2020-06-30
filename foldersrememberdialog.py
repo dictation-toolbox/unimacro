@@ -8,16 +8,14 @@ import time
 import inivars
 
 prompt = """Remember in Unimacro _folders grammar"""  # readable text
-text = """Remember website for future calling?
+text = """Remember file "C:/faunabescherming/briefpapier/persbericht faunabescherming 30-6-2020.docx" for future calling?
 
-- https://sourceforge.net -
-
-Please give a spoken form for this website and choose OK; or Cancel..."""          # input text, the key of the 
-inifile = "C:/Users/Gebruiker/Documents/unimacro_qh/enx_inifiles/_folders.ini"
-section = "websites"
-value = "https://sourceforge.net"
+Please give a spoken form for this file and choose OK; or Cancel..."""          # input text, the key of the 
+inifile = "C:/Users/Gebruiker/Documents/unimacro_qh/nld_inifiles/_folders.ini"
+section = "files"
+value = "C:/faunabescherming/briefpapier/persbericht faunabescherming 30-6-2020.docx"
 title = "test"
-default = "sourceforge"
+default = "persbericht faunabescherming dertig zes twee duizend twintig"
 pausetime = 3  # should be replaced by 0 or a positive int value
 
 

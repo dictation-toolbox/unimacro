@@ -1,5 +1,17 @@
 Problems with installation?
 
+ Correct python version
+For Natlink, you need a 32-bit version of python, currently 3.7 or 3.8 (with preference to 3.8). So 37-32 or 38-32.
+
+When you have more python versions on your system, 2.7 or 64bit, or lower 3 versions, be sure you start your config script with one of the correct versions.
+
+
+
+witregel(2)
+
+   Older problems:
+ The rest of this page is from the long python 2 history of Natlink, which gave some hard-to-tackle issues. Hopefully they will all be obsolete with the new python 3 version of Natlink.
+
  When configuring Natlink:
  
  Install of Dragon in a non-standard location

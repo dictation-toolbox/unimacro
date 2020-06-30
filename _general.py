@@ -266,13 +266,16 @@ class ThisGrammar(ancestor):
             parts = m.groups()
             print('coordinates: %s, length: %s'% (repr(parts), len(parts)))
         elif t.find(";") >= 0:
-            parts = t.split(";")
+            parts = [t.strip() for t in t.split(";")]
             print('splitted string: %s, length: %s'% (repr(parts), len(parts)))
         else:
             parts = [t]
             print('cannot split text: %s\nreturn list of length 1: %s'% (t, parts))
         return parts
         
+    def gotResults_before(self,words,fullResults):
+        if self.hasCommon(words, 'here'):
+            natut.buttonClick('left', 1)
 
     def gotResults_batch(self,words,fullResults):
         

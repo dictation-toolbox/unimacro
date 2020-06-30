@@ -519,7 +519,7 @@ class UtilGrammar(ancestor):
         if Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
             activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
-            otherGrammars = list(loadedFiles.keys())  # start with all keys from natlinkmain
+            otherGrammars = [k for k in natlinkmain.loadedFiles.keys()]
             for g in natbj.loadedGrammars:
                 gram = natbj.loadedGrammars[g]
                 result = getattr(gram, 'isActive')
@@ -592,7 +592,7 @@ class UtilGrammar(ancestor):
             if self.hasCommon(words, 'grammar'):
                 module = grammar.__module__
                 filename = natqh.getModuleFilename(module)
-                print('open for edit file: %s (type: %s)'% (filename, type(filename)))
+                print('open for edit file: ', filename)
                 self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
                 natqh.setCheckForGrammarChanges(1)
             else:
@@ -648,11 +648,11 @@ class UtilGrammar(ancestor):
         """
         wrongNames = set(natlinkmain.wrongFiles.keys())
         loadedNames = set(natlinkmain.loadedFiles.keys())
-        print("wrong names: ", wrongNames)
-        print("\nloaded names: ", loadedNames)
+        # print("wrong names: ", wrongNames)
+        # print("\nloaded names: ", loadedNames)
 
         unimacroPyFiles = [f for f in os.listdir(unimacroDirectory) if f.endswith('.py')]
-        print("\n===unimacroPyFiles", unimacroPyFiles)
+        # print("\n===unimacroPyFiles", unimacroPyFiles)
         loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
         return loadedandwrongmodules
 
