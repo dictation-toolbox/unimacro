@@ -1957,14 +1957,34 @@ noot mies
                         L.append("\n[%s] (%s)\n%s\n"% (gList, nListValues, formattedTexts))
                     else:
                         L.append("\n[%s]\n%s\n"% (gList, formattedTexts))
+
                 elif '%sDict'%gList in dir(self):
                     if gList in grammarLists:
                         grammarLists.remove(gList)
-                    dictName = '%sDict'%gList
-                    items = sorted(getattr(self, dictName).keys())
-                    L.append("\n[%s] (from %s, %s)"% (gList, dictName, nListValues))
+                    dictName = "%sDict"% gList
+                    items = getattr(self, dictName).keys()   ## not sorted!!
+                    listFromIni = sorted(ini.get(gList))
+                    itemsSorted = sorted(items)
+                    nListValues = max(len(listFromIni), len(items))
+                    if nListValues > 20:
+                        if listFromIni != itemsSorted:
+                            L.append("\n[%s] (from %s, %s)"% (gList, dictName, nListValues))
+                        else:
+                            L.append("\n[%s] (%s)"% (gList, nListValues))
+                            items = listFromIni
+                    else:
+                        if listFromIni != itemsSorted:
+                            L.append("\n[%s] (from %s)"% (gList, dictName))
+                        else:
+                            L.append("\n[%s]"% gList)
+                            items = listFromIni
                     L.append(formatListColumns(items))
+                    itemsFromGrammar = sorted(self.Lists[gList])
+                    if itemsFromGrammar != itemsSorted:
+                        L.append('\ncomplete list from grammar (different):')
+                        L.append(formatListColumns(itemsFromGrammar))
                     L.append('\n')
+                
                 elif '%sList'%gList in dir(self):
                     if gList in grammarLists:
                         grammarLists.remove(gList)

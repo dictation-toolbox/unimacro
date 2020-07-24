@@ -39,6 +39,13 @@ import sys
 import os.path
 import stat
 import collections
+
+# for debugging:
+coreDir =  r"C:\DT\Natlink\MacroSystem\core"
+if coreDir not in sys.path:
+    sys.path.append(coreDir)
+del coreDir
+
 import natlink
 import inivars
 import utilsqh
@@ -52,7 +59,7 @@ import natlinkmain
 import natlinkstatus
 import natlinkcorefunctions
 status = natlinkstatus.NatlinkStatus()
-import RegistryDict  # for emergency get of UserDirectory!
+# import RegistryDict  # for emergency get of UserDirectory!
 import autohotkeyactions
 from readwritefile import DecodeEncode
 import utilsqh
