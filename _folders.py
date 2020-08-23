@@ -1656,16 +1656,16 @@ class ThisGrammar(ancestor):
             return
         # print 'filecommands: %s'% words
         kw = {}
-        nextOpenWith = nextRemote = False
+        OpenWith = Remote = False
         for w in words:
             if self.hasCommon(w, 'open with'):
-                nextOpenWith = True
-            elif nextOpenWith:
+                OpenWith = True
+            elif OpenWith:
                 self.Open = self.getFromInifile(w, 'fileopenprograms')
-                nextOpenWith = False
+                OpenWith = False
             elif self.hasCommon(w, 'on'):
-                nextRemote = True
-            elif nextRemote:
+                Remote = True
+            elif Remote:
                 remoteLetter =  self.getFromInifile(w, 'letters', noWarning=1)
                 remoteVirtualDrive = self.getFromInifile(w, 'virtualdrivesspoken', noWarning=1)
                 if remoteLetter:
@@ -1674,15 +1674,15 @@ class ThisGrammar(ancestor):
                 elif remoteVirtualDrive:
                     self.Remote = self.virtualDriveDict[remoteVirtualDrive]
                     print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
-                nextRemote = False
+                Remote = False
             elif self.hasCommon(w, 'git'):
                 print("got Git: ", w)
-                nextGit = True
-            elif nextGit:
+                Git = True
+            elif Git:
                 print("got gitCommand: ", w)
                 gitCommand = self.getFromInifile(w, 'gitfilecommands')
                 self.Git = gitCommand
-                nextGit = False # again
+                Git = False # again
             else:
                 act = self.getFromInifile(w, 'foldercommands')
                 print("got FileCommand: ", act)

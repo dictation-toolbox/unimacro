@@ -59,30 +59,31 @@ class BringupTest(UnimacroTestHelpers.UnimacroTestHelpers):
     def test_Should_BringUp_DragonPad(self):
 
         actions.UnimacroBringUp("dragonpad")
+        time.sleep(2)
         self.assert_mod_partoftitle('natspeak', 'DragonPad', " when bringing up DragonPad")
         natut.playString("this should last 2 seconds")
         time.sleep(2)
         actions.do_KW()
 
         
-    def tttest_Bringup_list_of_small_applications(self):
+    def test_Bringup_list_of_small_applications(self):
         preserveApps = []  # other apps are killed after the test
-        apps = ['notepad', 'calc', 'dragonpad']
+        apps = ['notepad', 'dragonpad']   ## calc renamed in Windows 10
         self.doTestBringupApplications(apps, preserveApps)
 
-    def tttest_Bringup_list_of_medium_applications(self):
+    def test_Bringup_list_of_medium_applications(self):
 
         preserveApps = ['pythonwin', 'edit']  # other apps are killed after the test
         apps = ['notepad', 'pythonwin', 'dragonpad', 'edit', 'cmd']
         self.doTestBringupApplications(apps, preserveApps)
 
-    def test_Bringup_list_of_emacs_applications(self):
+    def tttest_Bringup_list_of_emacs_applications(self):
 
         preserveApps = ['pythonwin']  # other apps are killed after the test
         apps = ['notepad', 'emacs', 'pythonwin']
         self.doTestBringupApplications(apps, preserveApps)
 
-    def tttest_Bringup_list_of_office_applications(self):
+    def test_Bringup_list_of_office_applications(self):
 
         preserveApps = []  # other apps are killed after the test
         apps = ['notepad', 'winword', 'excel']

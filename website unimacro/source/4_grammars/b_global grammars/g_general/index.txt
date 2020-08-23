@@ -17,7 +17,50 @@ This is a vulnerable mechanism, should be investigated more.
 highlight <dgndictation>
 ::
 
-Searches for the dictated text. Started as a one shot application for Shane Delmore. Should be fine tuned for some application, see link(/features/actions/metaactions.html, *meta actions*), example at the bottom.
+Searches for the dictated text. Started as a one shot application for Shane Delmore.
+
+The meta actions bold(startsearch) and bold(startgo) possibly need fine tuning for some applications, see link(/features/actions/metaactions.html, *meta actions*).
+
+ Format variables
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:Command
+:COL:result
+:ROW:
+camel &lt;dgndictation>
+:COL: "camel top down" gives "topDown"
+:ROW:
+camel back <1..5>
+:COL:
+the last <n> words are cameled
+::
+
+You need to specify which formatting is desired, you can choose your own spoken word like "camel" above.
+
+You do this by editing the _general.ini config file, say "edit general", and fill in in section:
+:CODE:
+[formatvariable]
+camel = camel
+::
+
+-The second word, after the bold("="), is the trick, which must be taken literally from the table below.
+-The spoken word is before the bold("=").
+
+:TABLE:
+:HEADING:the trick
+:COL:the action performed
+:ROW:camel
+:COL:  var like this -> varLikeThis
+:ROW:studly
+:COL:var like this -> VarLikeThis
+:ROW:dotword
+:COL:var like this -> var.like.this
+:ROW:jive
+:COL:var like this -> var-like-this
+:ROW:score
+:COL:var like this -> var_like_this
+::
+
 
  Task switching
  

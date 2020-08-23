@@ -85,8 +85,38 @@
 <p>This is a vulnerable mechanism, should be investigated more.</p>
 <h3>Highlight</h3>
 <p class="pre">highlight &lt;dgndictation></p>
-<p>Searches for the dictated text. Started as a one shot application for Shane Delmore. Should be fine tuned for some application, see <a href="../../../features/actions/metaactions.html"><strong>meta actions</strong></a>, example at the bottom.</p>
+<p>Searches for the dictated text. Started as a one shot application for Shane Delmore.</p>
 
+<p>The meta actions <b>startsearch</b> and <b>startgo</b> possibly need fine tuning for some applications, see <a href="../../../features/actions/metaactions.html"><strong>meta actions</strong></a>.</p>
+
+<h3>Format variables</h3>
+<table border="1" cellspacing="0" class="table"><tr><th class="TH1"><p>Command</p></th><th class="TH"><p>result</p></th></tr>
+
+<tr><td class="TD1"><p>camel &lt;dgndictation></p></td><td class="TD"><p>"camel top down" gives "topDown"</p></td></tr>
+
+<tr><td class="TD1"><p>camel back <1..5></p></td><td class="TD"><p>the last <n> words are cameled</p></td></tr></table>
+
+<p>&nbsp;</p>
+<p>You need to specify which formatting is desired, you can choose your own spoken word like "camel" above.</p>
+
+<p>You do this by editing the _general.ini config file, say "edit general", and fill in in section:</p>
+
+<p class="pre">[formatvariable]<br>
+camel = camel</p><ul><li>The second word, after the <b>=</b>, is the trick, which must be taken literally from the table below.</li><li>The spoken word is before the <b>=</b>.</li></ul>
+
+<table cellspacing="0" class="table"><tr><th class="TH1"><p>the trick</p></th><th class="TH"><p>the action performed</p></th></tr>
+
+<tr><td class="TD1"><p>camel</p></td><td class="TD"><p>var like this -> varLikeThis</p></td></tr>
+
+<tr><td class="TD1"><p>studly</p></td><td class="TD"><p>var like this -> VarLikeThis</p></td></tr>
+
+<tr><td class="TD1"><p>dotword</p></td><td class="TD"><p>var like this -> var.like.this</p></td></tr>
+
+<tr><td class="TD1"><p>jive</p></td><td class="TD"><p>var like this -> var-like-this</p></td></tr>
+
+<tr><td class="TD1"><p>score</p></td><td class="TD"><p>var like this -> var_like_this</p></td></tr></table>
+
+<p>&nbsp;</p>
 <h3>Task switching</h3>
 <p>Is now moved to the <a href="../../../grammars/globalgrammars/tasks/index.html">grammar <strong>_tasks</strong></a></p>
 
@@ -122,7 +152,7 @@ The clipboard is used by this macro, but previous contents are saved at the begi
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;jul 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;jul 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;aug 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;aug 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

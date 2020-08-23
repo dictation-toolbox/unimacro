@@ -447,7 +447,7 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
             return
     if checkForChanges:
         if debug > 5: D('checking for changes')
-        doCheckForChanges() # resetting the ini file if changes were made
+        doCheckForChanges() # resetting the ini file if changes were made# 
     if not ini:
         D('no valid inifile for keystrokes')
     if type(hardKeys) != str:
@@ -456,6 +456,8 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
         hardKeys = ['all']
     elif hardKeys == 0:
         hardKeys = ['none']
+
+    if debug > 5: D('doKeystroke, pauseBK: %s, hardKeys: %s'% (pauseBK, hardKeys))
 
     if pauseBK == None or hardKeys == None:
         if sectionList == None:
@@ -495,6 +497,7 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
            #do_W(pauseBK)
     elif braceExact.match(action):
         # exactly 1 {key}:
+        if debug > 5: D('exact action, hardKeys[0]: %s'% hardKeys[0])
         if hardKeys[0] == 'none':
             natut.playString(action)  # the fastest way
             return
@@ -1278,19 +1281,19 @@ def do_SW(**kw):
     return 1
 do_SHORTWAIT = do_SW
 
-def do_KW(action1=None, action2=None, **kw):
+def do_KW(action1=None, action2=None, progInfo=None, comingFrom=None):
     """kill window
 
     """
     if action1:
         if action2:
 ##        print 'KW with: %s'% action1
-            killWindow(action1, action2, **kw)
+            killWindow(action1, action2, progInfo=progInfo, comingFrom=comingFrom)
         else:
-            killWindow(action1, **kw)
+            killWindow(action1, progInfo=progInfo, comingFrom=comingFrom)
     else:
 ##        print 'KW without action 1'
-        killWindow(**kw)
+        killWindow(progInfo=progInfo, comingFrom=comingFrom)
     return 1
 
 ## def do_RS():
@@ -1606,7 +1609,7 @@ def IfWindowTitleDoAction(title, action, **kw):
         # print 'title: %s, does not match'% title
     return 1
     
-def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
+def killWindow(action1='<<windowclose>>', action2='<<killletter>>', modInfo=None, progInfo=None, comingFrom=None):
     """Closes a window and asks automatically for confirmation
 
     The default action 1 is "{alt+f4}",
@@ -1616,14 +1619,14 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
     command
  
     """
-    if kw['progInfo']:
-        prog, title, topchild, classname, hndle = kw['progInfo']
-    else:
-        prog, title, topchild, classname, hndle = 'unknown', 'unknown', 'top', 0
+    if not progInfo:
+        progInfo = natqh.getProgInfo(modInfo=modInfo)
+    
+    prog, title, topchild, classname, hndle = progInfo
         
     progNew = prog
-    prevHandle = windowHandle
-    doAction(action1, **kw)
+    prevHandle = hndle
+    doAction(action1, progInfo=progInfo, comingFrom=comingFrom)
     natqh.shortWait()
     count = 0
     while count < 20:
@@ -1639,16 +1642,14 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
         if progNew != prog: break
         hndle = modInfo[2]
         if hndle != prevHandle:
-            kw = {}
-            kw['modInfo'] = modInfo
 
             if not natqh.isTopWindow(hndle):
                 # child:
                 print('do action2: %s'% action2)
-                doAction(action2, **kw)
+                doAction(action2)
             elif topWindowBehavesLikeChild(modInfo):
                 print('topWindowBehavesLikeChild action2: %s'% action2)
-                doAction(action2, **kw)
+                doAction(action2)
             break
         
         natqh.shortWait()
@@ -2006,7 +2007,7 @@ bringups = {}
 # special:
 voicecodeApp = 'emacs'
 
-def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, progInfo=None):
+def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, progInfo=None, comingFrom=None):
     """get a running copy of app in the foreground
 
     the full path can be set in section [bringup app], key path
@@ -2331,15 +2332,18 @@ def getAppForEditExt(ext):
 def dragonpadBringUp():
     i = 0
     natlink.recognitionMimic(["Start", "DragonPad"])
-    while i < 10:
+    sleepTime = 0.3
+    waitSteps = 10
+    while i < waitSteps:
         i += 1
         prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if windowCorrespondsToApp('dragonpad', 'natspeak', prog, title):
             break
-        do_W(0.1)
-        print('try to check for DP: %s'% prog)
+        do_W(sleepTime)
+        if i > waitSteps/2:
+            print('try to check for DP: %s (%s)'% (prog, i))
     else:
-        print('could not bringup DragonPad')
+        print('could not bringup DragonPad after %s seconds'% sleepTime*waitSteps)
         return
     return 1
         
@@ -2444,7 +2448,7 @@ def windowCorrespondsToApp(app, appName, actualProg, actualTitle):
 
     """
     if app == 'dragonpad':
-        return (appName == actualProg and actualTitle.startswith("dragonpad"))
+        return (appName == actualProg and actualTitle.startswith("DragonPad"))
     else:
         return appName == actualProg
     
@@ -2522,7 +2526,7 @@ else:
 
 if __name__ == '__main__':
     # s = 551345646373737373
-    # do_SCLIP(s)
-    UnimacroBringUp("edit", r"C:\NatlinkGIT3\Unimacro\_lines.py")
+    do_SCLIP(s)
+    # UnimacroBringUp("edit", r"C:\NatlinkGIT3\Unimacro\_lines.py")
     
     

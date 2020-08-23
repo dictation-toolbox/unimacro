@@ -133,8 +133,9 @@ class ThisGrammar(ancestor):
 <dgndictation> imported;
 <documentation> exported = Make documentation;
 <batch> exported = do batch words;
-#<test> exported = test (klik|dubbelklik|shiftklik|controlklik|rechtsklik|foutklik|combinedklik|trippelklik);
-<test> exported = test clipboard formats;
+<test> exported = test micstate;
+#test (klik|dubbelklik|shiftklik|controlklik|rechtsklik|foutklik|combinedklik|trippelklik);
+# <test> exported = test clipboard formats;
 # <test> exported = eating <food> <time> [thinking <dgndictation>];
 # <food> = "an orange" | "an apple"; # 
 # <time> = "yesterday" | "today";
@@ -663,44 +664,57 @@ TT { font-family: lucidatypewriter, lucida console, courier }
 #  sstarting message
     def gotResults_test(self,words,fullResults):
 
-        ## test clipboard formats
-        f = natlinkclipboard.Clipboard.get_clipboard_formats()
-        print('formats: %s'% f)
-        
+        micstate = natlink.getMicState()
+        for ms in ('off', 'on'):
+            print("switching %s mic"% ms)
+            natlink.setMicState(ms)
+            time.sleep(1)
+            newMs = natlink.getMicState()
+            time.sleep(1)
+            if ms == newMs:
+                time.sleep(0.5)
+                continue
+            print("conflicting mic states, now: %s, expected: %s"% (newMs, ms))
 
-        # natlink.recognitionMimic(["list", "windows", "for", "Windows", "Explorer"])
-        return
 
-        # test klik with variations:
-        # test (klik|dubbelklik|shiftklik|controlklik)
-        if words[-1] == 'klik':
-            print(words, 'single click')
-            natut.buttonClick()
-        elif words[-1] == 'dubbelklik':
-            print(words, 'double click')
-            natut.buttonClick(1,2)
-        elif words[-1] == 'trippelklik':
-            print(words, 'triple click')
-            natut.buttonClick(1,3)
-        elif words[-1] == 'shiftklik':
-            print(words, 'shift click')
-            natut.buttonClick(1,1,"shift")
-        elif words[-1] == 'controlklik':
-            print(words, 'control click')
-            natut.buttonClick(1,1,"ctrl")
-        elif words[-1] == 'rechtsklik':
-            print(words, 'right click')
-            natut.buttonClick(2,1)
-        elif words[-1] == 'combinedklik':
-            print(words, 'combined click')
-            natut.buttonClick(1,1,"shift+ctrl")
-            # natut.buttonClick(1,1,["shift", "ctrl"])
-        elif words[-1] == 'foutklik':
-            print(words, 'fout click')
-            natut.buttonClick("long")
-        else:
-            print(words, "test klik no valid last word:", words[-1])
-        
+        # ## test clipboard formats
+        # f = natlinkclipboard.Clipboard.get_clipboard_formats()
+        # print('formats: %s'% f)
+        # 
+        # 
+        # # natlink.recognitionMimic(["list", "windows", "for", "Windows", "Explorer"])
+        # return
+        # 
+        # # test klik with variations:
+        # # test (klik|dubbelklik|shiftklik|controlklik)
+        # if words[-1] == 'klik':
+        #     print(words, 'single click')
+        #     natut.buttonClick()
+        # elif words[-1] == 'dubbelklik':
+        #     print(words, 'double click')
+        #     natut.buttonClick(1,2)
+        # elif words[-1] == 'trippelklik':
+        #     print(words, 'triple click')
+        #     natut.buttonClick(1,3)
+        # elif words[-1] == 'shiftklik':
+        #     print(words, 'shift click')
+        #     natut.buttonClick(1,1,"shift")
+        # elif words[-1] == 'controlklik':
+        #     print(words, 'control click')
+        #     natut.buttonClick(1,1,"ctrl")
+        # elif words[-1] == 'rechtsklik':
+        #     print(words, 'right click')
+        #     natut.buttonClick(2,1)
+        # elif words[-1] == 'combinedklik':
+        #     print(words, 'combined click')
+        #     natut.buttonClick(1,1,"shift+ctrl")
+        #     # natut.buttonClick(1,1,["shift", "ctrl"])
+        # elif words[-1] == 'foutklik':
+        #     print(words, 'fout click')
+        #     natut.buttonClick("long")
+        # else:
+        #     print(words, "test klik no valid last word:", words[-1])
+        # 
 
         #action('SCLIP hallo, dit is een, test')
         #if os.path.isfile(soundFile):
