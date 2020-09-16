@@ -181,7 +181,7 @@ GrammarFileName=baseDirectory+'\\grammar.bin'
 for somePath in sys.path:
     files = glob.glob(somePath + '\\pythonwin.exe')
     if files:
-        print("pythonwin.exe: %s"% files)
+        # print("pythonwin.exe: %s"% files)
         PythonwinExe=files[0]
         break
 else:
