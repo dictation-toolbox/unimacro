@@ -39,7 +39,8 @@ import glob
 import pprint
 import datetime
 
-import natlink
+
+import natlinkstatus
 import natlinkmain
 import natlinkclipboard
 import win32api
@@ -847,13 +848,14 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             T.append('class name: %s'% win32gui.GetClassName(hwnd))
 
         elif self.hasCommon(words,'user'):
-            T.append('user:\t\t%s'% natqh.getUser())
-            T.append('userLanguage:\t%s'% natqh.getUserLanguage())
+            status = natlinkstatus.NatlinkStatus()
+            T.append('user:\t\t%s'% status.getUserName())
+            T.append('userLanguage:\t%s'% status.getUserLanguage())
             T.append('language:\t%s'% self.language)
-            bm = natqh.getBaseModel()
-            bt = natqh.getBaseTopic()
-            ut = natqh.getUserTopic()
-            version = natqh.getDNSVersion()
+            bm = status.getBaseModel()
+            bt = status.getBaseTopic()
+            ut = status.getUserTopic()
+            version = status.getDNSVersion()
             if version >= 15:
                 T.append('UserTopic (DPI15):\t%s'% ut)
             if natqh.getDNSVersion() >= 15:
@@ -869,12 +871,14 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             # extra.append('change folders, recording code and user name of course')
             
         elif self.hasCommon(words,'unimacro'):
-            version = natqh.getDNSVersion()
+            status = natlinkstatus.NatlinkStatus()
+            version = status.getDNSVersion()
             T.append('DNSVersion:\t\t%s  (%s)'% (version, type(version)))
-            wVersion = natqh.getWindowsVersion()
+            wVersion = status.getWindowsVersion()
             T.append('WindowsVersion:\t\t%s (%s)'% (wVersion, type(wVersion)))
-            T.append('UnimacroDirectory:\t%s'% natqh.getUnimacroDirectory())
-            T.append('UnimacroUserDirectory:\t%s'% natqh.getUnimacroUserDirectory())
+            T.append('UnimacroDirectory:\t%s'% status.getUnimacroDirectory())
+            T.append('UnimacroUserDirectory:\t%s'% status.getUnimacroUserDirectory())
+            T.append('UnimacroGrammarsDirectory:\t%s'% status.getUnimacroGrammarsDirectory())
             T.append('DNSuserDirectory:\t%s'% natqh.getDNSuserDirectory())
         elif self.hasCommon(words,'path'):
         	  T.append('the python path:')
