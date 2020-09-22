@@ -61,19 +61,22 @@
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Installation of Natlink/Vocola 2/Unimacro Experimental Release with Python 3</h1>
 <ul><li>Use 32 bit version of python, versions 3.7 or 3.8</li><li>If possible, use <strong>python3.8 </strong></li></ul>
 
-<h3>Prerequisites:</h3><ul><li>Exit dragon</li><li>Download and install 32-bit Python 3.8.2 from https://www.python.org/downloads/windows/299 (Select Add to path install option, and Install FOR ALL USERS)</li><li>Start menu -> cmd (start in admin mode)</li><li>pip3 install six wheel future pywin32</li><li>pip3 install wxpython==4.0.3  (for natlink config GUI program, more recent versions fail to work, for python3.8 wxpython==4.0.7 probably also works)</li><li>pip3 install dragonfly2 tomlkit mock appdirs scandir pyvda (for Caster)</li><li>git clone git@github.com:dictation-toolbox/natlink.git (In your preferred directory eg "C:\Natlink\Natlink")</li></ul>
+<h3>Prerequisites:</h3><ul><li>Exit dragon</li><li>Download and install 32-bit Python 3.8.5 from <a href="https://www.python.org/downloads/windows/299" target="_blank">Python 3.8.5 latest version</a> (Select Add to path install option, and Install FOR ALL USERS)</li><li>Start menu -> cmd (start in admin mode)</li><li>pip3 install six wheel future pywin32</li><li>pip3 install <strong>wxpython==4.0.3</strong>  (for natlink config GUI program, more recent versions fail to work, for python3.8 <strong>wxpython==4.0.7</strong> probably also works)</li><li>pip3 install dragonfly2 tomlkit mock appdirs scandir pyvda (for Caster)</li><li>Packages are now all in the dictation-toolbox in github, for packages that are not pipped, I recommend cloning the wanted repositories in one base directory, for example <strong>C:\DT</strong></li><li>Dragonfly and Caster are normally pipped, other packages, Natlink, Vocola, Unimacro have to be cloned for the moment:</li>    <ul>    <li>git clone git@github.com:dictation-toolbox/natlink.git (In your preferred directory eg <strong>C:\DT\Natlink</strong>)</li>    <li>If you want Unimacro: git clone git@github.com:dictation-toolbox/unimacro.git (into <strong>C:\DT\Unimacro</strong>)</li>    <li>If you want Vocola: git clone git@github.com:dictation-toolbox/vocola2.git (into <strong>C:\DT\Vocola</strong>) (Vocola2 being the Vocola version for Dragon/Natlink)</li></ul>
+</ul>
 
 <h3>Main install instructions, targeted to Caster (as given by LexiconCode):</h3>
-<ul><li>Probably you can go to</li><li>cd C:\Natlink\Natlink\confignatlinkvocolaunimacro (With C:\Natlink being your preferred directory)</li><li>and run start_configurenatlink.py</li></ul>
+<ul><li>Note: directory "confignatlinkvocolaunimacro" had been renamed to "ConfigureNatlink":</li><li>Probably you can go to</li><li>cd C:\DT\Natlink\ConfigureNatlink (With C:\Natlink being your preferred directory)</li><li>and run start_configurenatlink.py</li></ul>
 
 <p>(if this fails):</p><ul><li>Start menu -> cmd -> Run as Administrator</li><li>cd C:\Natlink\Natlink\confignatlinkvocolaunimacro (Could be any preferred directory)
 (so in in elevated cmd window cd to directory where you cloned natlink)</li><li>cd confignatlinkvocolaunimacro</li><li>python3 start_configurenatlink.py (Requires administration rights)</li></ul>
 
 <p>(and when the wxpython GUI window doesn't want to start)</p><ul><li>run start_natlinkconfigfunctions.py (which will ask for elevation), or</li><li>python3 natlinkconfigfunctions.py (in elevated mode),</li></ul>
 
-<h3>In the config GUI:</h3><ul><li>Click enable natlink</li><li>Click enable UserDirectory</li><li>Choose Caster directory as user directory</li><li>reboot (maybe not needed)</li><li>restart dragon</li></ul>
+<h3>In the config GUI:</h3><ul><li>Click enable Natlink</li><li>Click enable UserDirectory</li><li>Choose Caster directory as user directory</li><li>reboot (maybe not needed)</li><li>restart dragon</li></ul>
 
-<h3>In the natlinkconfigfunctions:</h3><ul><li>press <strong>e</strong> (enable Natlink)</li><li>sometimes you need "r" (reregister Natlink)</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<h3>In the natlinkconfigfunctions:</h3><ul><li>press <strong>e</strong> (enable Natlink)</li><li>sometimes you need "r" (reregister Natlink)</li></ul>
+
+<h3>Vocola and Unimacro:</h3><ul><li>In the config GUI or natlinkconfigfunctions.py (CLI) enable these packages. (With the CLI, type <strong>u</strong> for Usage).</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../index.html">home</a> > <a href="index.html">installation natlink/vocola/unimacro</a> > installation experimental version python3 > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../sitemap.html#installationexperimentalversionpython3';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../sitemap.html#installationexperimentalversionpython3">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -81,7 +84,7 @@
 m("antenna.nl", "q.hoogenboom", "information about: installation experimental version python3", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;aug 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;aug 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;sep 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;sep 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

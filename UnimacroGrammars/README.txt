@@ -8,6 +8,8 @@ Deactivating goes the other way around, simply remove from the UnimacroGrammarsD
 
 Note for unimacro grammar files it is also possible to activate/deactivate the grammars by voice commands as defined in _control.
 
+Note: when developing grammars, do not forget to copy the last version from the "ActiveGrammars" directory (the UnimacroGrammarsDirectory) into the UnimacroGrammars directory here.
+
 
 
 
