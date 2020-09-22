@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>unimacro, features, AutoHotkey, details</title>
+<meta charset="UTF-8">
+<meta name="description" content="SourceForge project for Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="features, AutoHotkey, details">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topoff" height="28" onclick="location='../../installation/index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../../installation/index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topon" height="28" onclick="location='../index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="../index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../grammars/index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../../grammars/index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td>
+<td align="center" class="topoff" height="28" onclick="location='../../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > <a href="index.html">autohotkey</a> > details</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="leftoff" colspan="2"><a href="../actions/index.html">Actions</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../numbers/index.html">Numbers and Spoken Forms</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../unimacroandvocola/index.html">Unimacro and Vocola</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../tracing.html">Tracing</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../inifiles.html">Inifiles</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../translations/index.html">Translations</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../cooperationwithvoicecoder/index.html">Cooperation with voicecoder</a></td></tr>
+
+<tr><td class="lefton" colspan="2"><a href="index.html">AutoHotkey</a></td></tr>
+    
+<tr><td class="back" width="20">&nbsp;</td><td class="lefton">Details</td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="configuration.html">Configuration</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../unittesting/index.html">Unit testing</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../grammarclasses/index.html">Grammar classes</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../globaldictation/index.html">Global dictation</a></td></tr>
+
+<tr><td class="leftoff" colspan="2"><a href="../monitorfunctions/index.html">Monitorfunctions</a></td></tr>
+</table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Programming details</h1>
+<h3>Example: use in _tasks grammar</h3>
+<p>An example of the script showmessageswindow.ahk is used in the tasks grammar of Unimacro. With the command <strong>task messages</strong> inside this grammar the <strong>Messages from NatLink</strong> is switched to.</p>
+
+<p>Note: you need to have messages in your application section of the _tasks.ini file, see <a href="../../features/actions/bringupdetails.html">Bringup details</a>:</p>
+
+<p class="pre">[application]<br>
+messages=messages</p><p class="witregel">&nbsp;</p>
+<p>In the <strong>actions.py</strong> module you find the code:</p>
+<p class="pre">import autohotkeyactions as ahka<br>
+def messagesBringUp():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&ldquo;switch to the messages from python macros window&rdquo;&rdquo;&rdquo;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if ahka.ahk_is_active():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do_AHK(&ldquo;showmessageswindow.ahk&rdquo;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;# do it &ldquo;the old way&rdquo;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(...)</p>
+
+<p>Which means that if AutoHotkey is active, the same script as in the preceding Vocola examples is called. If AutoHotkey is not active, the previous way to perform this task is tried, with win32gui functions.</p>
+
+<h3>Remember window and Return to window</h3>
+<p>The following example first remembers the current window handle (<strong>RW()</strong>). It then switches with a ahk script to the Messages from NatLink window. After a visible wait <strong>VW()</strong>, the return to window <strong>RTW()</strong> is done.</p>
+
+<p class="pre">testswitchback = RW() AHK(showmessageswindow.ahk) VW() RTW();</p>
+
+<p>With RW() the handle of the foreground window is stored. The RTW() call uses this handle. Internally the following function is called (in natlinkutilsqh.py):</p>
+
+<p class="pre">import autohotkeyactions as ahka</p>
+<p class="pre">def SetForegroundWindow(h):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&ldquo;gets the window in front, given by window handle h<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try AutoHotkey, if it is not on your computer, otherwise try it with win32gui functions<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if ahka.ahk_is_active():<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = ahka.do_ahk_script(&ldquo;WinActivate, ahk_id&nbsp;&nbsp;%s&rdquo;% h)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#result = ahka.do_ahk_script(&ldquo;getintoforeground.ahk&rdquo;, hndle=h)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#result = ahka.do_ahk_script(&ldquo;WinActivate, ahk_id&nbsp;&nbsp;%hndle%&rdquo;, hndle=h)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if result == 1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if result:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;SetForegroundWindow %s with AutoHotkey failed:\n====%s====&rsquo;% (h, result)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print result<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;# if here, autohotkey is not found, and the SetForegroundWindow is done the &ldquo;old&rdquo; way,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;# which often/sometimes fails<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(...)</p>
+
+<h3>getintoforeground.ahk looks like:</h3>
+<p class="pre">;for Unimacro, changes %hndle% into the current foreground hndle.<br>
+WinActivate, ahk_id&nbsp;&nbsp;%hndle%</p>
+<ul><li>In the first <strong>result = </strong> line, a one liner is created, with the window handle filled in in the ahk script line.</li><li>In the second and third (here commented) lines the above script is called, with the <strong>hndle</strong> as named parameter. Before Unimacro calls autohotkey.exe, the script text is changed: <strong>%hndle%</strong> into the actual value (contained in <strong>h</strong>). The changed script, put into the temp file <strong>tempscript.ahk</strong> is executed by autohotkey.exe.</li><li>In all three examples exactly the same actions are done eventually.</li><li>The return parameters: this has to be sorted out further. For the moment a return value of 1 (OK) is taken all the time.</li><li><strong>GetAhkExe()</strong> and <strong>GetAhkScriptFolder()</strong>: helper functions to find the autohotkey.exe and the user script folder, and store them for future use in the moule global variables <strong>ahkexe</strong> and <strong>ahkscriptfolder</strong>.</li><li><strong>ahk_is_active()</strong>: return the executable (so True) or "" (so False) if autohotkey.exe cannot be found. This function should be called before other attempts to execute a ahk script are made.</li><li><b>do_ahk_script</b>(script, hndle=None): This function does the actual calling of autohotkey. If ahkexe is not found, it raises a ValueError. In the Unimacro Shorthand Command <strong>AHK</strong> this function is called, so do not use this from Vocola if AutoHotkey is not installed on your computer.</li>    <ul>    <li>the <strong>script</strong> can either be a autohotkey script file (with extension .ahk) or a script line. In the latter case the script line is written to tempscript.ahk before calling autohotkey.exe</li>    <li>the optional parameter <strong>hndle</strong> is substited into <strong>%hndle%</strong> in the script or script file, if this string is present. By default, for example when a script is called via the Unimacro Shorthand Command <strong>AHK</strong>, the handle of the active window is used.</li></ul>
+<li><strong>copySampleAhkScripts()</strong>: at first call of GetAhkScriptFolder, for example in the first call of do_ahk_script, the .ahk scripts of the sample_ahk directory of Unimacro are copied into the user ahk scripts folder, whenever they are newer. If a different version of the script is found the user ahk scripts folder, the old version is copied into scriptname.ahkold (unless that file already exists)</li><li>See <a href="configuration.html">configuration</a> when you want non-standard paths for <strong>ahkexe</strong> and <strong>ahkscriptfolder</strong>.</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > <a href="index.html">autohotkey</a> > details > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../sitemap.html#details';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../sitemap.html#details">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: details", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;aug 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;aug 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>

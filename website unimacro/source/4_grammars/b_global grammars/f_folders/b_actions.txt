@@ -1,6 +1,6 @@
 Actions used in this grammar
 
-For a dialog window part link("/features/actions/index.html", "*two actions*") are used:
+For a dialog window part link("/features/actions/index.html", "*two meta-actions*") are used (say *edit actions* to view/edit the actions.ini config file):
 
 
 :TABLE firstcoldifferent=1, border=1:
@@ -12,6 +12,8 @@ For a dialog window part link("/features/actions/index.html", "*two actions*") a
 
 :ROW:filename&nbsp;exit
 :COL:to leave the filename textbox.  Needs some adjustment sometimes in Office programs
+::
 
 
-Please study the actions ini file (call with the command *Edit actions*)
+-Note: for working the *cmd* program, Command Prompt, the meta-action &lt;&lt;paste>> should be set, see link(details).
+

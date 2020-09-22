@@ -181,6 +181,7 @@ GrammarFileName=baseDirectory+'\\grammar.bin'
 for somePath in sys.path:
     files = glob.glob(somePath + '\\pythonwin.exe')
     if files:
+        # print("pythonwin.exe: %s"% files)
         PythonwinExe=files[0]
         break
 else:
@@ -1956,14 +1957,34 @@ noot mies
                         L.append("\n[%s] (%s)\n%s\n"% (gList, nListValues, formattedTexts))
                     else:
                         L.append("\n[%s]\n%s\n"% (gList, formattedTexts))
+
                 elif '%sDict'%gList in dir(self):
                     if gList in grammarLists:
                         grammarLists.remove(gList)
-                    dictName = '%sDict'%gList
-                    items = sorted(getattr(self, dictName).keys())
-                    L.append("\n[%s] (from %s, %s)"% (gList, dictName, nListValues))
+                    dictName = "%sDict"% gList
+                    items = getattr(self, dictName).keys()   ## not sorted!!
+                    listFromIni = sorted(ini.get(gList))
+                    itemsSorted = sorted(items)
+                    nListValues = max(len(listFromIni), len(items))
+                    if nListValues > 20:
+                        if listFromIni != itemsSorted:
+                            L.append("\n[%s] (from %s, %s)"% (gList, dictName, nListValues))
+                        else:
+                            L.append("\n[%s] (%s)"% (gList, nListValues))
+                            items = listFromIni
+                    else:
+                        if listFromIni != itemsSorted:
+                            L.append("\n[%s] (from %s)"% (gList, dictName))
+                        else:
+                            L.append("\n[%s]"% gList)
+                            items = listFromIni
                     L.append(formatListColumns(items))
+                    itemsFromGrammar = sorted(self.Lists[gList])
+                    if itemsFromGrammar != itemsSorted:
+                        L.append('\ncomplete list from grammar (different):')
+                        L.append(formatListColumns(itemsFromGrammar))
                     L.append('\n')
+                
                 elif '%sList'%gList in dir(self):
                     if gList in grammarLists:
                         grammarLists.remove(gList)
@@ -2280,9 +2301,14 @@ noot mies
 
     def fillList(self, listName):
         """fill a list in the grammar from the data of the inifile
-
+        
+        numbers lists get special treatment.
+        
+        special case: iniChangingData (_folders) can set a previous cached list for a future session. ('recentfolders')
+        
         """
         n = listName
+        
         if n[:6] == 'number' or \
                   (n[0] == 'n' and '-' in n):
             L = self.spokenforms.getNumberList(n)
@@ -2534,9 +2560,15 @@ noot mies
             return 1  # signalling things changed
 
     
-    def openFolderDefault(self, foldername, mode=None, windowStyle=None):
-        """open the folder in the default window"""
-        mode = mode or 'open'
+    def openFolderDefault(self, foldername, mode=None, windowStyle=None, openWith=None):
+        """open the folder in the default window
+        
+        is only used for top windows, calling from a dialog window should be handled otherwise
+        
+        mode and windowStyle and openWith are (currently) not used any more, could be re-implemented
+        
+        """
+        # mode = mode or 'open'
         if not os.path.isdir(foldername):
             self.DisplayMessage('the folder you want to open does not exist: %s'% foldername)
             return
@@ -2567,11 +2599,21 @@ noot mies
         """open the file in the default window
 
         if the file is opened with AppBringUp ( not one of the exceptions), the optional
-        name is given, which can be used with to switch to command!
+        name is given, which can be used with to switch to command! (to be investigated)
         In the messages window the name of the AppBringUp command is given.
         
+        windowStyle and name are not used at the moment.
+
+        if OpenWith is a valid program, this is used.
+        otherwise if mode is valid, take it,
+        otherwise 'open' is passed.
+        
         """
-        print('openFileDefault: %s (type: %s, mode: %s, openWith: %s)'% (filename, type(filename), mode, openWith))
+        if mode or openWith:
+            print('openFileDefault: %s (mode: %s, openWith: %s)'% (filename, mode, openWith))
+        else:
+            print('openFileDefault: %s'% filename)
+        
         appname = "file %s"% filename
         mode = mode or 'open'
         
@@ -2580,7 +2622,7 @@ noot mies
             return
         if openWith:
             return UnimacroBringUp(openWith, filename)
-        elif mode:
+        elif mode and mode in ['open', 'edit']:
             return UnimacroBringUp(mode, filename)
         else:
             return UnimacroBringUp(None, filename)

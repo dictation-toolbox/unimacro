@@ -225,6 +225,9 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
     if comingFrom and comingFrom.interrupted:
         print('command was interrupted')
         return
+
+    if debug > 4: D("doAction: %s"% action)
+
     # at first (nonrecursive) call check for all variables:
     if not completeAction:
         # first (nonrecursive) call,
@@ -294,7 +297,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
                          progInfo=progInfo, modInfo=None, sectionList=sectionList,
                          comment=comment, comingFrom=comingFrom)
             if not result: return
-            if debug > 2:D('pause between actions: %s'% pauseBA)
+            if debug > 2:D('pause between actions: %s'% pauseBA) 
             do_W(pauseBA)
         return result
     else:
@@ -359,8 +362,7 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         args = convertToPythonArgs(rest)
         kw = {}
         kw['progInfo'] = progInfo
-        if com in ('WWT', 'WTC'):
-            kw = kw['comingFrom'] - comingFrom
+        kw['comingFrom'] = comingFrom
         func = globals()[funcName]
         if not type(func) == types.FunctionType:
             raise UnimacroError('appears to be not a function: %s (%s)'% (funcName, func))
@@ -445,7 +447,7 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
             return
     if checkForChanges:
         if debug > 5: D('checking for changes')
-        doCheckForChanges() # resetting the ini file if changes were made
+        doCheckForChanges() # resetting the ini file if changes were made# 
     if not ini:
         D('no valid inifile for keystrokes')
     if type(hardKeys) != str:
@@ -454,6 +456,8 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
         hardKeys = ['all']
     elif hardKeys == 0:
         hardKeys = ['none']
+
+    if debug > 5: D('doKeystroke, pauseBK: %s, hardKeys: %s'% (pauseBK, hardKeys))
 
     if pauseBK == None or hardKeys == None:
         if sectionList == None:
@@ -493,6 +497,7 @@ def doKeystroke(action, hardKeys=None, pauseBK=None,
            #do_W(pauseBK)
     elif braceExact.match(action):
         # exactly 1 {key}:
+        if debug > 5: D('exact action, hardKeys[0]: %s'% hardKeys[0])
         if hardKeys[0] == 'none':
             natut.playString(action)  # the fastest way
             return
@@ -712,7 +717,9 @@ def getFromIni(keyword, default='',
         sectionList = ini.getSectionsWithPrefix(prog, title) + \
                       ini.getSectionsWithPrefix('default', title)
         if debug > 5: D('getFromIni, sectionList: |%s|' % sectionList)
-    return ini.get(sectionList, keyword, default)
+    value = ini.get(sectionList, keyword, default)
+    if debug > 5: D('got from setting/getFromIni: %s (keyword: %s'% (value, keyword))
+    return value
 
 setting = getFromIni
 
@@ -1274,19 +1281,19 @@ def do_SW(**kw):
     return 1
 do_SHORTWAIT = do_SW
 
-def do_KW(action1=None, action2=None, **kw):
+def do_KW(action1=None, action2=None, progInfo=None, comingFrom=None):
     """kill window
 
     """
     if action1:
         if action2:
 ##        print 'KW with: %s'% action1
-            killWindow(action1, action2, **kw)
+            killWindow(action1, action2, progInfo=progInfo, comingFrom=comingFrom)
         else:
-            killWindow(action1, **kw)
+            killWindow(action1, progInfo=progInfo, comingFrom=comingFrom)
     else:
 ##        print 'KW without action 1'
-        killWindow(**kw)
+        killWindow(progInfo=progInfo, comingFrom=comingFrom)
     return 1
 
 ## def do_RS():
@@ -1500,7 +1507,7 @@ def do_DOCUMENT(number=None, **kw):
 def do_TASK(number=None, **kw):
     """switch to task with number"""
 ##    print 'action: goto task: %s'% number
-    prog, title, topchild, classname, hndle = lkw['progInfo']
+    prog, title, topchild, classname, hndle = kw['progInfo']
     if prog == 'explorer' and not title:
         doKeystroke('{esc}')
         natqh.shortWait()
@@ -1602,7 +1609,7 @@ def IfWindowTitleDoAction(title, action, **kw):
         # print 'title: %s, does not match'% title
     return 1
     
-def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
+def killWindow(action1='<<windowclose>>', action2='<<killletter>>', modInfo=None, progInfo=None, comingFrom=None):
     """Closes a window and asks automatically for confirmation
 
     The default action 1 is "{alt+f4}",
@@ -1612,14 +1619,14 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
     command
  
     """
-    if kw['progInfo']:
-        prog, title, topchild, classname, hndle = kw['progInfo']
-    else:
-        prog, title, topchild, classname, hndle = 'unknown', 'unknown', 'top', 0
+    if not progInfo:
+        progInfo = natqh.getProgInfo(modInfo=modInfo)
+    
+    prog, title, topchild, classname, hndle = progInfo
         
     progNew = prog
-    prevHandle = windowHandle
-    doAction(action1, **kw)
+    prevHandle = hndle
+    doAction(action1, progInfo=progInfo, comingFrom=comingFrom)
     natqh.shortWait()
     count = 0
     while count < 20:
@@ -1635,16 +1642,14 @@ def killWindow(action1='<<windowclose>>', action2='<<killletter>>', **kw):
         if progNew != prog: break
         hndle = modInfo[2]
         if hndle != prevHandle:
-            kw = {}
-            kw['modInfo'] = modInfo
 
             if not natqh.isTopWindow(hndle):
                 # child:
                 print('do action2: %s'% action2)
-                doAction(action2, **kw)
+                doAction(action2)
             elif topWindowBehavesLikeChild(modInfo):
                 print('topWindowBehavesLikeChild action2: %s'% action2)
-                doAction(action2, **kw)
+                doAction(action2)
             break
         
         natqh.shortWait()
@@ -1768,12 +1773,12 @@ def do_TASKTOSCREEN(screennumber, winHndle=None, **kw):
         return
     if wantedMonitor == mon:
         print('already on monitor %s (%s)'% (screennumber, wantedMonitor))
-        return
+        return_WTC
     resize = monitorfunctions.window_can_be_resized(winHndle)
     monitorfunctions.move_to_monitor(winHndle, wantedMonitor, mon, resize)
     return 1
 
-def do_TASKOD(winHndle=None):
+def do_TASKOD(winHndle=None, **kw):
     """call the monitorfunctions to put task in other display"""
     if winHndle is None:
         winHndle = win32gui.GetForegroundWindow()
@@ -1856,7 +1861,7 @@ def stripTextInMessage(t):
 # the icons in the msgboxconfirm:
 MsgboxConfirmIconDict = dict(critical=16, query=32, warning=48, information=64)
 
-def Message(t, title=None, icon=64, alert=None, switchOnMic=None):
+def Message(t, title=None, icon=64, alert=None, switchOnMic=None, progInfo=None, comingFrom=None):
     """put message on screen
 
     from grammar, call through self.DisplayMessage, only in some circumstances
@@ -1899,7 +1904,7 @@ def Message(t, title=None, icon=64, alert=None, switchOnMic=None):
     
 do_MESSAGE = do_MSG
 
-def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0):
+def YesNo(t, title=None, icon=32, alert=None, defaultToSecondButton=0, progInfo=None, comingFrom=None):
     """put message on screen, ask for yes or no
 
     if yes return True    
@@ -2002,7 +2007,7 @@ bringups = {}
 # special:
 voicecodeApp = 'emacs'
 
-def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, progInfo=None):
+def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, progInfo=None, comingFrom=None):
     """get a running copy of app in the foreground
 
     the full path can be set in section [bringup app], key path
@@ -2075,6 +2080,19 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, pr
                 appPath2 = natlinkcorefunctions.expandEnvVariableAtStart(appPath)
                 if os.path.isfile(appPath2):
                     appPath = os.path.normpath(appPath2)
+                elif appPath.lower().startswith("%programfiles%"):
+                    appPathVariant = appPath.lower().replace("%programfiles", "%PROGRAMW6432%")
+                    appPath2 = natlinkcorefunctions.expandEnvVariableAtStart(appPath)
+                    if os.path.isfile(appPath2):
+                        appPath = os.path.normpath(appPath2)
+                    elif os.path.isdir(appPath2):
+                        appPath = os.path.join(appPath2, appName)
+                        if os.path.isfile(appPath):
+                            appPath = os.path.normpath(appPath)
+                        else:
+                            raise IOError('invalid path for PROGRAMFILES to PROGRAMW6432, app %s: %s (expanded: %s)'% (app, appPath, appPath2))
+                    else:
+                        raise IOError('invalid path for app with PROGRAMFILES %s: %s (expanded: %s)'% (app, appPath, appPath2))
                 else:
                     raise IOError('invalid path for  app %s: %s (expanded: %s)'% (app, appPath, appPath2))
         else:
@@ -2159,7 +2177,7 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, pr
     ##do_RW()
     #print 'unimacrobringup: name: %s, app: %s, args: %s (filepath: %s)'% (appName, appPath, appArgs, filepath)
     result = natqh.AppBringUp(appName, appPath, appArgs, appWindowStyle, appDirectory)
-    print("result of UnimacroBringUp:", result)
+    # print("result of UnimacroBringUp:", result)
     if extra:
         doAction(extra)
         
@@ -2314,15 +2332,18 @@ def getAppForEditExt(ext):
 def dragonpadBringUp():
     i = 0
     natlink.recognitionMimic(["Start", "DragonPad"])
-    while i < 10:
+    sleepTime = 0.3
+    waitSteps = 10
+    while i < waitSteps:
         i += 1
         prog, title, topchild, classname, hndle = natqh.getProgInfo()
         if windowCorrespondsToApp('dragonpad', 'natspeak', prog, title):
             break
-        do_W(0.1)
-        print('try to check for DP: %s'% prog)
+        do_W(sleepTime)
+        if i > waitSteps/2:
+            print('try to check for DP: %s (%s)'% (prog, i))
     else:
-        print('could not bringup DragonPad')
+        print('could not bringup DragonPad after %s seconds'% sleepTime*waitSteps)
         return
     return 1
         
@@ -2427,7 +2448,7 @@ def windowCorrespondsToApp(app, appName, actualProg, actualTitle):
 
     """
     if app == 'dragonpad':
-        return (appName == actualProg and actualTitle.startswith("dragonpad"))
+        return (appName == actualProg and actualTitle.startswith("DragonPad"))
     else:
         return appName == actualProg
     
@@ -2505,7 +2526,7 @@ else:
 
 if __name__ == '__main__':
     # s = 551345646373737373
-    # do_SCLIP(s)
-    UnimacroBringUp("edit", r"C:\NatlinkGIT3\Unimacro\_lines.py")
+    do_SCLIP(s)
+    # UnimacroBringUp("edit", r"C:\NatlinkGIT3\Unimacro\_lines.py")
     
     

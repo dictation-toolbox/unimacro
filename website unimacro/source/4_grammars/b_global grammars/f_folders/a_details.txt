@@ -1,4 +1,22 @@
-Top window behaviour
+Odds and ends of the _folders grammar
+
+ cmd
+The *cmd* program (Command Prompt) can also react to several folders commands, but the pathname of the wanted folder are pasted into the cmd-window. This is done with the Unimacro Shorthand Command *SCLIP*.
+
+One detail has to be set into the *actions.ini* config file, when you upgraded from an older version of Unimacro (before July 2020).
+-Say "edit actions"
+-Goto the section of &#091;cmd] and set:
+
+:CODE:
+[cmd]
+(...)
+paste = SSK({ctrl+v})
+::
+
+This is needed because the cmd window wants "system keys", so the meta-action &lt;&lt;paste>> should be given with the Unimacro Shorthand Command *SSK*.
+
+
+ Top window behaviour
 If you call for a folder outside a dialog window (a child window), all explorer (this computer) windows are inspected, and compared with the folder name that is asked for.  The window with the nearest folder name (in the window title) is chosen. If no near match is present, a new "this computer" window is opened.  If part of the folder name is present in the current active window, you switch to the exact folder, otherwise only the nearest folder window is brought to the front.
 
 In order to force a new window, you can say *new* at the end of the folder command.  In order to open an explorer window (with folder list on the left side) you can say *explorer* at the end of the folder command (or both *new* and *explorer*) (explorer does not work at the moment)

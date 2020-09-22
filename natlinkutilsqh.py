@@ -39,6 +39,13 @@ import sys
 import os.path
 import stat
 import collections
+
+# for debugging:
+coreDir =  r"C:\DT\Natlink\MacroSystem\core"
+if coreDir not in sys.path:
+    sys.path.append(coreDir)
+del coreDir
+
 import natlink
 import inivars
 import utilsqh
@@ -51,11 +58,14 @@ import pywintypes
 import natlinkmain
 import natlinkstatus
 import natlinkcorefunctions
-natlinkstatus = natlinkstatus.NatlinkStatus()
+status = natlinkstatus.NatlinkStatus()
+# import RegistryDict  # for emergency get of UserDirectory!
 import autohotkeyactions
 from readwritefile import DecodeEncode
 import utilsqh
 DEBUG = 0
+
+status = natlinkstatus.NatlinkStatus()
 
 # make old Dos style 8.3 filenames: (can be switched off)
 AppBringUpDoExec83 = 0
@@ -104,9 +114,9 @@ def getLanguage():
     """get current language, 3 characters
 
     """
-    lang = natlinkstatus.getLanguage()
+    lang = status.getLanguage()
     if not lang:
-        print("natlinkutilsqh, getLanguage, no language from natlinkstatus found, return 'zyx'")
+        print("natlinkutilsqh, getLanguage, no language from status found, return 'zyx'")
         lang = 'zyx'
     return lang
 
@@ -114,9 +124,9 @@ def getUserLanguage():
     """get current language, long name
 
     """
-    userlang = natlinkstatus.getUserLanguage()
+    userlang = status.getUserLanguage()
     if not userlang:
-        print("natlinkutilsqh, getUserLanguage, no userLanguage from natlinkstatus found")
+        print("natlinkutilsqh, getUserLanguage, no userLanguage from status found")
         userlang = 'unknown'
     return userlang
 
@@ -125,19 +135,19 @@ def getBaseModel():
     """get BaseModel of user
 
     """
-    return natlinkstatus.getBaseModel()
+    return status.getBaseModel()
 
 def getBaseTopic():
     """get BaseTopic of user
 
     """
-    return natlinkstatus.getBaseTopic()
+    return status.getBaseTopic()
 
 def getUserTopic():
     """get userTopic of user (starting DPI15)
 
     """
-    return natlinkstatus.getUserTopic()
+    return status.getUserTopic()
 
 
 def getDNSVersion():
@@ -147,20 +157,20 @@ def getDNSVersion():
     assume to be 5 if not found there, see unimacro version of natlinkmain
 
     """
-    return natlinkstatus.getDNSVersion()
+    return status.getDNSVersion()
 
 def getDNSuserDirectory():
     """get DNSUserFolder from natlinkmain
 
     """
-    return natlinkstatus.getDNSuserDirectory()
+    return status.getDNSuserDirectory()
 
 def getUser():
     """get current user
 
 
     """
-    return natlinkstatus.getUserName()
+    return status.getUserName()
 
 def getWindowsVersion():
     """get windows version
@@ -168,7 +178,7 @@ def getWindowsVersion():
     known are eg. 'Vista', 'XP', '2000', 'NT4', 'NT351', '98'
 
     """
-    return natlinkmain.WindowsVersion
+    return status.getWindowsVersion()
 
 def setCheckForGrammarChanges(value):
     """pass on to natlinkmain, constant checking of grammar changes"""
@@ -189,8 +199,7 @@ def getUserDirectory():
     Special trick: get this directory if userDirectory not valid
 
     """
-    print('WARNING, should be changed in Unimacro: getUnimacroDirectory')
-    ud = natlinkmain.userDirectory
+    ud = status.getUserDirectory()
     if ud:
         return ud
     else:
@@ -202,19 +211,19 @@ def getOriginalUnimacroDirectory(fromGetUserDirectory=None):
     if userDirectory different from unimacro directory, find the one in relation to core
     prevent recursive calling with fromGetUserDirectory variable...
     """
-    return natlinkstatus.getUnimacroDirectory()
+    return status.getUnimacroDirectory()
 
 def getUnimacroDirectory():
-    """just return from natlinkstatus
+    """just return from status
     """
-    return natlinkstatus.getUnimacroDirectory()
+    return status.getUnimacroDirectory()
 
 def getUnimacroUserDirectory():
     """return the unimacro user (ini)files directory,
     the ini files and possibly other things are located here, by language
 
     """
-    return natlinkstatus.getUnimacroUserDirectory()
+    return status.getUnimacroUserDirectory()
 
 # utility functions----------------------------------------
 ## matchWindow from natlinkutils:
@@ -358,7 +367,8 @@ def getProgInfo(modInfo=None):
         print("===modInfo via autohotkeyactions: ", repr(modInfo))
     hndle = modInfo[2]
     if not hndle:
-        return 
+        ## assume desktop, no foreground window, treat as top...
+        return ProgInfo("", "", "top", "", 0)
     prog = getBaseNameLower(modInfo[0])
     title = modInfo[1]
     if isTopWindow(modInfo[2]):
@@ -1311,7 +1321,7 @@ def clearTrayIcon():
     natlink.setTrayIcon()
 
 
-def rememberWindow(modInfo=None):
+def rememberWindow(modInfo=None, progInfo=None, comingFrom=None):
     global hndle, waitingCanceled, windowTitle
     # if not hndle true, then raised in error, because
     # rememberWindow is called before and not finished correct
@@ -1365,7 +1375,7 @@ def waitForWindowTitle(titleName, nWait=10, waitingTime=0.1, comingFrom=None):
         return
 
 # rememberWindow must run before. nWait and waitingTime as suggested above
-def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
+def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None, progInfo=None):
     if hndle==None:
         raise NatlinkCommandError("waitForNewWindow, no valid old hndle, do a rememberWindow() first")
     for i in range(nWait):
@@ -1381,8 +1391,8 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
             return
         
         stepsToBeStable = max(3, i) # if it took longer to bring window in front, test more steps
-        prog, title, hndle = modInfo
-        if hndle != hndle:
+        progN, titleN, hndleN = modInfo
+        if hndleN != hndle:
             # new window, wait for stable situation
             succes = 0
             for j in range(stepsToBeStable*3):
@@ -1412,7 +1422,7 @@ def waitForNewWindow(nWait=10, waitingTime=0.1, comingFrom=None, debug=None):
         print("waiting for new window lasts too long, fail")
         return 
 
-def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
+def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None, progInfo=None):
     if hndle==None:
         raise NatlinkCommandError("waitForNewWindow, no valid old hndle, do a rememberWindow() first")
     for i in range(nWait):
@@ -1436,7 +1446,7 @@ def waitForNewWindowTitle(nWait=10, waitingTime=0.1, comingFrom=None):
     
 # return to window that was remembered by rememberWindow.
 # nWait and waitingTime as suggested above.
-def returnToWindow(nWait=5, waitingTime=0.05, winHandle=None, winTitle=None):
+def returnToWindow(nWait=5, waitingTime=0.05, winHandle=None, winTitle=None, **kw):
     """return to previous remembered window
     
     mostly do not specify winHandle and winTitle, as it is set as global

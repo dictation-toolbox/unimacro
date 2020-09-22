@@ -1,5 +1,4 @@
-Natlink, including Unimacro and Vocola
-
+Natlink, including Unimacro and Vocolaaa
 
 :TABLE firstcoldifferent=1, border=1:
 :ROW:
@@ -14,34 +13,20 @@ On this website are the instructions for *downloading and configuring Natlink*, 
 :ROW:
 *A stable release is finally committed: link(/installation/installation.html, release 4.2)*
 
-This will also be the final release for Python 2.7, only bugfixes will be released.
-
-Work is done on getting an implementation of Natlink with Python 3. This will take some time though.
+This will also be the final release for Python 2.7.
 
 Python 3 users can - for the time being - install Python 2.7 alongside, and run Natlink via this version. This does not disturb the working of Python 3.
+
+The implementation of Natlink with python3 is going pretty well. See link(/installation/installationexperimentalversionpython3.html, experimental install), when you want to go that way!
+
+
 :ROW:
+
 _bold(Please consider making a link(/aboutunimacro/donation/index.html, donation to this project))_
 
 
 ::
 
-
-:xx:
-:TABLE firstcoldifferent=1, border=1:
-:ROW:
-*Unimacro* provides extended and advanced command grammars for *Dragon* NaturallySpeaking.
-
-Unimacro connects to the [NatLink]/[NatPython] project, which again connects to [Dragon NaturallySpeaking].
-
-So Unimacro is an extension of an extension of the speech recognition program Dragon NaturallySpeaking.
-
-Unimacro is free, like NatLink/NatPython, and can be downloaded from SourceForge.
-
-Unimacro also aims at unifying the different open source developments that use Natlink as basis. Therefore on this website
-the combined link(/installation/installation.html, installer for NatLink/Unimacro/
-Vocola 2) is also presented.
-::
-:en:
 
  The Natlink base:
  
@@ -84,4 +69,4 @@ Some  demonstration movies have been made, to show features of Unimacro.
 
 Please now download the first "stable" release in years: link(/installation/installation.html, *4.2*) (September 2, 2019).
 
-See link(/installation/installation.html, *installation pages*)
+See link(/installation/index.html, *installation pages*)

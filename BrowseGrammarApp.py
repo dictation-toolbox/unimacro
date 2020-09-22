@@ -19,7 +19,8 @@
 # Python Macro Language for Dragon NaturallySpeaking
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
-# 
+#
+# June 2020: adapt for python3, Quintijn Hoogenboom
 # Author: Bart Jan van Os, Version: 1.0
 """This file implements a dialog/window to browse and train NatLink
 grammars
@@ -573,6 +574,7 @@ def CreateBrowseDialog():
     if Exclusive: Name='Exclusive Grammars (Active Rules)'
     elif All: Name='All Grammars'
     else:   Name='Active Grammars'
+    # dlg=GrammarDialog(Name,GramHierList(Grammars,Start))
     dlg=TrainGrammarDialog(Name,GramHierList(Grammars,Start))
     return dlg
 

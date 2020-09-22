@@ -1723,7 +1723,7 @@ if __name__ == '__main__':
     
     # view settings explorer (this one fails!)
     # testExplorerViews(986418)
-    g = getFolderFromCabinetWClass(853938)
-    # g = getFolderFromDialog(132792, '#32770')
+    g = getFolderFromCabinetWClass(1837622)
+    # g = getFolderFromDialog(394720, '#32770')
     print(g, type(g))
     pass
