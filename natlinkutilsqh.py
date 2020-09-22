@@ -52,7 +52,6 @@ import natlinkmain
 import natlinkstatus
 import natlinkcorefunctions
 natlinkstatus = natlinkstatus.NatlinkStatus()
-import RegistryDict  # for emergency get of UserDirectory!
 import autohotkeyactions
 from readwritefile import DecodeEncode
 import utilsqh
