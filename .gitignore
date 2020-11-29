@@ -8,3 +8,4 @@ __pycache__
 /unimacro_test/testresult.txt
 /_number extended.py
 /_repeat.py
+.vscode/launch.json
