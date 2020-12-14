@@ -2711,8 +2711,8 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
         
     outputpath = os.path.join(unimacrogrammarsfolder, outputfile)
     readwritefile.writeAnything(outputpath, encoding, bom, Text)
-    print('wrote to: %s'% outputfile)
-    print(f'output dialog: {outputpath}, python: {pythonexe}')
+    # print('wrote to: %s'% outputfile)
+    # print(f'output dialog: {outputpath}, python: {pythonexe}')
     UnimacroBringUp(pythonexe.normpath(), outputpath)    
 
         
