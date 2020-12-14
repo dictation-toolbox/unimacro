@@ -3,14 +3,34 @@ Configuration
    Administrator rights/elevated mode
 You need Administator rights for the some (of the most important) configuration actions. Therefore the  *Configure program* (*Configure NatLink via GUI*), or via the command line interface, will be started with link(/installation/configureadministratorrights.html, Administrator rights), when you use the links from the Start menu. Please answer "Yes" if Windows asks you for this.
 
--The first time you run the configure program, it must run in  this elevated  mode.
-   
+ Run config program with python2.7 in elevated mode
+In this link("https://www.youtube.com/watch?v=IJy6IL3rizk&feature=youtu.be", *short video*) it is shown how you can start the natlink config GUI or the natlinkconfigfunctions.py, with python2.7, even when you have more python versions installed on your system.
+
+The steps are:
+= start a Command Prompt in admin mode (Run as administrator)
+= go to the confignatlinkvocolaunimacro directory of your natlink folder (eg. C:\natlink\natlink\confignatlinkvocolaunimacro)
+= start with *"py -2.7"*  *configurenatlink.pyw*
+= if that fails, try the natlinkconfigfunctions.py
+
+:CODE:
+so type:
+
+py -2.7 configurenatlink.pyw
+
+or:
+
+py -2.7 natlinkconfigfunctions.py
+::
+
+witregel(2)
+
    Export speech profiles
 -You may want to backup your speech profiles before enabling NatLink for the first time. Use the "Advance, Export" function of the "Profile, Manage Users" dialog of Dragon.
 -However, we believe NatLink is so stable in combination with Dragon, that the chance of Natlink corrupting your speech profile is very small.
    
    Configure NatLink/Vocola 2/Unimacro
 
+-If this fails, see the video above!
 -From the start menu, run *Configure NatLink via GUI*
 -This program prompts you for accepting elevated mode (see above)
 -When this is the first time your run this program, several things are done silent, you can inspect the "log" panel of the GUI to see what happened.

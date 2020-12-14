@@ -630,6 +630,7 @@ class GrammarX(GrammarXAncestor):
         return self.__class__.__bases__[0] 
 
     def load(self,gramSpec,allResults=0,hypothesis=0, grammarName=None):
+        
         if gramSpec:
             success = self.__inherited.load(self,gramSpec,allResults,hypothesis, grammarName=grammarName)
             if success:
@@ -1439,6 +1440,8 @@ class IniGrammar(IniGrammarAncestor):
                 print('---IniGrammar loaded %s, succes: %s'% (grammarName, success))
                 if grammarName is None:
                     print('---gramspec: %s'% gramSpec)
+            else:
+                print(f'failed to load gramSpec of IniGrammar {self}')
                 
             return success
 
@@ -2370,7 +2373,6 @@ noot mies
         commandDir = os.path.join(userDir,
                                         self.language +"_inifiles")
         inifile = os.path.join(commandDir, modName + '.ini')
-        #print 'starting inifile for %s'% modName
         if not os.path.isfile(inifile):
             print('Cannot find inifile: %s'% inifile)
             self.lookForExampleInifile(commandDir, modName + '.ini')

@@ -1,0 +1,177 @@
+Microsoft Windows [Version 10.0.19041.572]
+(c) 2020 Microsoft Corporation. Alle rechten voorbehouden.
+
+C:\WINDOWS\system32>cd \python27\Scripts
+
+C:\Python27\Scripts>pip -V
+pip 19.2.3 from c:\python27\lib\site-packages\pip (python 2.7)
+
+C:\Python27\Scripts>pip install pywin32
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Requirement already satisfied: pywin32 in c:\python27\lib\site-packages (225)
+WARNING: You are using pip version 19.2.3, however version 20.2.4 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\Python27\Scripts>py2
+'py2' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Python27\Scripts>../python.exe
+'..' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Python27\Scripts>..\python.exe
+Python 2.7.16 (v2.7.16:413a49145e, Mar  4 2019, 01:30:55) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import wxpython
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: No module named wxpython
+>>> import wx
+>>> wx.version
+<function version at 0x040F5DF0>
+>>> wx.version()
+u'4.0.6 msw (phoenix) wxWidgets 3.0.5'
+>>> ^X
+  File "<stdin>", line 1
+    ↑
+    ^
+SyntaxError: invalid syntax
+>>> ^Z
+
+
+C:\Python27\Scripts>pip uninstall wxpython
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Uninstalling wxPython-4.0.6:
+  Would remove:
+    c:\python27\lib\site-packages\wx\*
+    c:\python27\lib\site-packages\wxpython-4.0.6.dist-info\*
+    c:\python27\scripts\helpviewer.exe
+    c:\python27\scripts\img2png.exe
+    c:\python27\scripts\img2py.exe
+    c:\python27\scripts\img2xpm.exe
+    c:\python27\scripts\pycrust.exe
+    c:\python27\scripts\pyshell.exe
+    c:\python27\scripts\pyslices.exe
+    c:\python27\scripts\pyslicesshell.exe
+    c:\python27\scripts\pywxrc.exe
+    c:\python27\scripts\wxdemo.exe
+    c:\python27\scripts\wxdocs.exe
+    c:\python27\scripts\wxget.exe
+Proceed (y/n)? y
+  Successfully uninstalled wxPython-4.0.6
+
+C:\Python27\Scripts>pip install wxpython==4.0.3
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Collecting wxpython==4.0.3
+  Using cached https://files.pythonhosted.org/packages/5c/0b/64d5f55be921ec58586086fd1b86de6f84ae1f60b59836f539b3a5ebdfeb/wxPython-4.0.3-cp27-cp27m-win32.whl
+Requirement already satisfied: PyPubSub in c:\python27\lib\site-packages (from wxpython==4.0.3) (4.0.0)
+Requirement already satisfied: six in c:\python27\lib\site-packages (from wxpython==4.0.3) (1.12.0)
+Requirement already satisfied: typing in c:\python27\lib\site-packages (from PyPubSub->wxpython==4.0.3) (3.6.6)
+Installing collected packages: wxpython
+  WARNING: The scripts helpviewer.exe, img2png.exe, img2py.exe, img2xpm.exe, pycrust.exe, pyshell.exe, pyslices.exe, pyslicesshell.exe, pywxrc.exe, wxdemo.exe, wxdocs.exe and wxget.exe are installed in 'c:\python27\Scripts' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed wxpython-4.0.3
+WARNING: You are using pip version 19.2.3, however version 20.2.4 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\Python27\Scripts>../python.exe
+'..' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Python27\Scripts>..\python.exe
+Python 2.7.16 (v2.7.16:413a49145e, Mar  4 2019, 01:30:55) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import wx
+>>> wx.version()
+u'4.0.3 msw (phoenix) wxWidgets 3.0.5'
+>>> ^Z
+
+
+C:\Python27\Scripts>pip uninstall wxpython
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Uninstalling wxPython-4.0.3:
+  Would remove:
+    c:\python27\lib\site-packages\wx\*
+    c:\python27\lib\site-packages\wxpython-4.0.3.dist-info\*
+    c:\python27\scripts\helpviewer.exe
+    c:\python27\scripts\img2png.exe
+    c:\python27\scripts\img2py.exe
+    c:\python27\scripts\img2xpm.exe
+    c:\python27\scripts\pycrust.exe
+    c:\python27\scripts\pyshell.exe
+    c:\python27\scripts\pyslices.exe
+    c:\python27\scripts\pyslicesshell.exe
+    c:\python27\scripts\pywxrc.exe
+    c:\python27\scripts\wxdemo.exe
+    c:\python27\scripts\wxdocs.exe
+    c:\python27\scripts\wxget.exe
+Proceed (y/n)? y
+  Successfully uninstalled wxPython-4.0.3
+
+C:\Python27\Scripts>pip install wxpython
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Collecting wxpython
+  Downloading https://files.pythonhosted.org/packages/7b/cc/305d6468dc8e523384168dde4716c0dd23b395ea4f3cac75d017bc84f58e/wxPython-4.1.0-cp27-cp27m-win32.whl (14.7MB)
+     |################################| 14.7MB 6.0MB/s
+Requirement already satisfied: pillow in c:\python27\lib\site-packages (from wxpython) (5.2.0)
+Requirement already satisfied: six in c:\python27\lib\site-packages (from wxpython) (1.12.0)
+Requirement already satisfied: numpy<1.17; python_version <= "2.7" in c:\python27\lib\site-packages (from wxpython) (1.16.5)
+Installing collected packages: wxpython
+  WARNING: The scripts helpviewer.exe, img2png.exe, img2py.exe, img2xpm.exe, pycrust.exe, pyshell.exe, pyslices.exe, pyslicesshell.exe, pywxrc.exe, wxdemo.exe, wxdocs.exe and wxget.exe are installed in 'c:\python27\Scripts' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed wxpython-4.1.0
+WARNING: You are using pip version 19.2.3, however version 20.2.4 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\Python27\Scripts>..\python.exe
+Python 2.7.16 (v2.7.16:413a49145e, Mar  4 2019, 01:30:55) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import wx
+>>> wx.version()
+u'4.1.0 msw (phoenix) wxWidgets 3.1.4'
+>>> ^Z
+
+
+C:\Python27\Scripts>pip uninstall wxpython
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Uninstalling wxPython-4.1.0:
+  Would remove:
+    c:\python27\lib\site-packages\wx\*
+    c:\python27\lib\site-packages\wxpython-4.1.0.dist-info\*
+    c:\python27\scripts\helpviewer.exe
+    c:\python27\scripts\img2png.exe
+    c:\python27\scripts\img2py.exe
+    c:\python27\scripts\img2xpm.exe
+    c:\python27\scripts\pycrust.exe
+    c:\python27\scripts\pyshell.exe
+    c:\python27\scripts\pyslices.exe
+    c:\python27\scripts\pyslicesshell.exe
+    c:\python27\scripts\pywxrc.exe
+    c:\python27\scripts\wxdemo.exe
+    c:\python27\scripts\wxdocs.exe
+    c:\python27\scripts\wxget.exe
+Proceed (y/n)? y
+  Successfully uninstalled wxPython-4.1.0
+
+C:\Python27\Scripts>pip install wxpython==4.0.3
+DEPRECATION: Python 2.7 will reach the end of its life on January 1st, 2020. Please upgrade your Python as Python 2.7 won't be maintained after that date. A future version of pip will drop support for Python 2.7. More details about Python 2 support in pip, can be found at https://pip.pypa.io/en/latest/development/release-process/#python-2-support
+Collecting wxpython==4.0.3
+  Using cached https://files.pythonhosted.org/packages/5c/0b/64d5f55be921ec58586086fd1b86de6f84ae1f60b59836f539b3a5ebdfeb/wxPython-4.0.3-cp27-cp27m-win32.whl
+Requirement already satisfied: PyPubSub in c:\python27\lib\site-packages (from wxpython==4.0.3) (4.0.0)
+Requirement already satisfied: six in c:\python27\lib\site-packages (from wxpython==4.0.3) (1.12.0)
+Requirement already satisfied: typing in c:\python27\lib\site-packages (from PyPubSub->wxpython==4.0.3) (3.6.6)
+Installing collected packages: wxpython
+  WARNING: The scripts helpviewer.exe, img2png.exe, img2py.exe, img2xpm.exe, pycrust.exe, pyshell.exe, pyslices.exe, pyslicesshell.exe, pywxrc.exe, wxdemo.exe, wxdocs.exe and wxget.exe are installed in 'c:\python27\Scripts' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+Successfully installed wxpython-4.0.3
+WARNING: You are using pip version 19.2.3, however version 20.2.4 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+C:\Python27\Scripts>..\python
+Python 2.7.16 (v2.7.16:413a49145e, Mar  4 2019, 01:30:55) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import wx
+>>> wx.version()
+u'4.0.3 msw (phoenix) wxWidgets 3.0.5'
+>>>
