@@ -1,6 +1,18 @@
-This is the repository which was previously with subversion on sourceforge.net.
+# Unimacro
+#note for the python packagng files were copied from https://github.com/pypa/sampleproject
 
-Information about this project, which goes together with Natlink2, on 
-https://qh.antenna.nl/unimacro/index.html
+[The source for this project is available here][https://github.com/dictation-toolbox/natlink].
 
-Quintijn Hoogenboom, Sept 27, 2019.
+Most of the configuration for this  Python project is done in the `setup.py` file
+----
+
+This is the README file for the Unimacro.
+
+#The file should use UTF-8 encoding and can be written using
+#[reStructuredText][rst] or [markdown][md use] with the appropriate [key set][md
+#use]. It will be used to generate the project webpage on PyPI and will be
+#displayed as the project homepage on common code-hosting services, and should be
+#written for that purpose.
+
+
+
