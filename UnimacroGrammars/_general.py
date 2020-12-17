@@ -39,9 +39,8 @@ import glob
 import pprint
 import datetime
 
-
+import natlink
 import natlinkstatus
-import natlinkmain
 import natlinkclipboard
 import win32api
 import win32gui
@@ -56,8 +55,8 @@ from actions import doAction as action
 from actions import doKeystroke as keystroke
 import actions
 # taskswitching moved to _tasks.py (july 2006)
-
-language = natqh.getLanguage()
+status = natlinkstatus.NatlinkStatus()
+language = status.getLanguage()
 FORMATS = {
     # for letters (do nothing):
     'no spacing': (natqh.wf_NoSpaceFollowingThisWord | natqh.wf_NoSpacePreceedingThisWord |
@@ -74,8 +73,9 @@ FORMATS = {
             natqh.wf_AddAnExtraSpaceFollowingThisWord
           ), 
     }
-version = natqh.getDNSVersion()
-user = natlink.getCurrentUser()[0]
+
+version = status.getDNSVersion()
+user = status.getUserName()
 wordsFolder = os.path.split(
             sys.modules[__name__].__dict__['__file__'])[0] + \
             '\\' + language  + "_words" + \
@@ -541,114 +541,115 @@ class ThisGrammar(ancestor):
         natqh.restoreClipboard()
  
     def gotResults_documentation(self,words,fullResults):
-        oldPath = os.getcwd()
-        uniGrammars = self.ini.getList('documentation', 'unimacro grammars')
-        uniModules = self.ini.getList('documentation', 'unimacro modules')
-        otherGrammars = self.ini.getList('documentation', 'other grammars')
-        otherModules = self.ini.getList('documentation', 'other modules')
-        base = natqh.getUnimacroUserDirectory()
-        docPath = os.path.join(base, 'doc')
-        pickleFile = os.path.join(docPath, '@unimacro.pickle')
-        try:
-            psock = open(pickleFile, 'r')
-            memory = pickle.load(psock)
-            psock.close()
-            print('--------------------memory from pickle: %s'% pickleFile)
-        except:
-            memory = {}
-            print('--------------------no or invalid pickle file: %s'% pickleFile)
-            
-        utilsqh.createFolderIfNotExistent(docPath)
-        os.chdir(docPath)
-        self.DisplayMessage('writing documentation to: %s'% docPath)
-        pydoc.writedocs(base)
-        self.DisplayMessage('checking unimacro grammars, modules and other grammars, modules')
-        loadedGrammars = list(natlinkmain.loadedFiles.keys())
-        if 'unimacro grammars' not in memory:
-            memory['unimacro grammars'] = {}
-        mem = memory['unimacro grammars']
-        for m in uniGrammars:
-            if m in loadedGrammars:
-                mem[m] = sys.modules[m].__doc__
-            else:
-                if not m in mem:
-                    mem[m] = ''
-
-        if 'unimacro modules' not in memory:
-            memory['unimacro modules'] = {}
-        mem = memory['unimacro modules']
-        for m in uniModules:
-            if m in sys.modules:
-                mem[m] = sys.modules[m].__doc__
-            else:
-                try:
-                    M = __import__(m)
-                except ImportError:
-                    print('cannot import module: %s'% m)
-                    continue
-                mem[m] = M.__doc__
-                mem[m] = M.__doc__
-                del M
-
-        print('writing to pickle file: %s'% pickleFile)
-        psock = open(pickleFile, 'w')
-        pickle.dump(memory, psock)
-        psock.close()
-        L = []
-        htmlFiles = list(filter(isHtmlFile, os.listdir(docPath)))
-        
-        
-        categories = self.ini.get('documentation')
-        if not categories:
-            self.DisplayMessage('please fill in documentation categories')
-
-        for c in categories:
-            if not c in memory:
-                continue
-            L.append("<H1>%s</H1>"% c)
-            mem = memory[c]
-            for m in mem:
-                file = m+'.html'
-                if os.path.isfile(os.path.join(docPath, m+'.html')):
-                    link = "<a href=%s.html>%s</a>"% (m, m)
-                    htmlFiles.remove(file)
-                else:
-                    link = "???%s"% m
-                if mem[m] == None:
-                    text = 'no doc string for this module'
-                elif mem[m] == '':
-                    text = 'module could not be loaded, possibly start program and do "Make documentation" again'
-                else:
-                    text = mem[m]
-
-                if text.find('\n\n'):
-                    T = text.split('\n\n')
-                    text = T[0]
-                L.append("<p>%s: %s</p>"% (link, text))
-        if htmlFiles:
-            M = []
-            L.append("<H1>%s</H1>"% "other files")
-            for f in htmlFiles:
-                if f == 'index.html':
-                    continue
-                name = f.split('.')[0]
-                link = "<a href=%s>%s</a>"% (f, name)
-                M.append(link)
-            L.append("<p>%s</p>"% ', '.join(M))
-        HTMLpage = '''<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html><head><title>Natlink grammars and modules documentations</title>
-<style type="text/css"><!--
-TT { font-family: lucidatypewriter, lucida console, courier }
---></style></head><body bgcolor="#f0f0f8">
-%s
-</body></html>''' % '\n'.join(L)
-        fsock = open(os.path.join(docPath, 'index.html'), 'w')
-        fsock.write(HTMLpage)
-        fsock.close()
-                    
-        os.chdir(oldPath)
-        
-        self.DisplayMessage('okay')
+        print("obsolete")
+#         oldPath = os.getcwd()
+#         uniGrammars = self.ini.getList('documentation', 'unimacro grammars')
+#         uniModules = self.ini.getList('documentation', 'unimacro modules')
+#         otherGrammars = self.ini.getList('documentation', 'other grammars')
+#         otherModules = self.ini.getList('documentation', 'other modules')
+#         base = natqh.getUnimacroUserDirectory()
+#         docPath = os.path.join(base, 'doc')
+#         pickleFile = os.path.join(docPath, '@unimacro.pickle')
+#         try:
+#             psock = open(pickleFile, 'r')
+#             memory = pickle.load(psock)
+#             psock.close()
+#             print('--------------------memory from pickle: %s'% pickleFile)
+#         except:
+#             memory = {}
+#             print('--------------------no or invalid pickle file: %s'% pickleFile)
+#             
+#         utilsqh.createFolderIfNotExistent(docPath)
+#         os.chdir(docPath)
+#         self.DisplayMessage('writing documentation to: %s'% docPath)
+#         pydoc.writedocs(base)
+#         self.DisplayMessage('checking unimacro grammars, modules and other grammars, modules')
+#         loadedGrammars = list(natlinkmain.loadedFiles.keys())
+#         if 'unimacro grammars' not in memory:
+#             memory['unimacro grammars'] = {}
+#         mem = memory['unimacro grammars']
+#         for m in uniGrammars:
+#             if m in loadedGrammars:
+#                 mem[m] = sys.modules[m].__doc__
+#             else:
+#                 if not m in mem:
+#                     mem[m] = ''
+# 
+#         if 'unimacro modules' not in memory:
+#             memory['unimacro modules'] = {}
+#         mem = memory['unimacro modules']
+#         for m in uniModules:
+#             if m in sys.modules:
+#                 mem[m] = sys.modules[m].__doc__
+#             else:
+#                 try:
+#                     M = __import__(m)
+#                 except ImportError:
+#                     print('cannot import module: %s'% m)
+#                     continue
+#                 mem[m] = M.__doc__
+#                 mem[m] = M.__doc__
+#                 del M
+# 
+#         print('writing to pickle file: %s'% pickleFile)
+#         psock = open(pickleFile, 'w')
+#         pickle.dump(memory, psock)
+#         psock.close()
+#         L = []
+#         htmlFiles = list(filter(isHtmlFile, os.listdir(docPath)))
+#         
+#         
+#         categories = self.ini.get('documentation')
+#         if not categories:
+#             self.DisplayMessage('please fill in documentation categories')
+# 
+#         for c in categories:
+#             if not c in memory:
+#                 continue
+#             L.append("<H1>%s</H1>"% c)
+#             mem = memory[c]
+#             for m in mem:
+#                 file = m+'.html'
+#                 if os.path.isfile(os.path.join(docPath, m+'.html')):
+#                     link = "<a href=%s.html>%s</a>"% (m, m)
+#                     htmlFiles.remove(file)
+#                 else:
+#                     link = "???%s"% m
+#                 if mem[m] == None:
+#                     text = 'no doc string for this module'
+#                 elif mem[m] == '':
+#                     text = 'module could not be loaded, possibly start program and do "Make documentation" again'
+#                 else:
+#                     text = mem[m]
+# 
+#                 if text.find('\n\n'):
+#                     T = text.split('\n\n')
+#                     text = T[0]
+#                 L.append("<p>%s: %s</p>"% (link, text))
+#         if htmlFiles:
+#             M = []
+#             L.append("<H1>%s</H1>"% "other files")
+#             for f in htmlFiles:
+#                 if f == 'index.html':
+#                     continue
+#                 name = f.split('.')[0]
+#                 link = "<a href=%s>%s</a>"% (f, name)
+#                 M.append(link)
+#             L.append("<p>%s</p>"% ', '.join(M))
+#         HTMLpage = '''<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+# <html><head><title>Natlink grammars and modules documentations</title>
+# <style type="text/css"><!--
+# TT { font-family: lucidatypewriter, lucida console, courier }
+# --></style></head><body bgcolor="#f0f0f8">
+# %s
+# </body></html>''' % '\n'.join(L)
+#         fsock = open(os.path.join(docPath, 'index.html'), 'w')
+#         fsock.write(HTMLpage)
+#         fsock.close()
+#                     
+#         os.chdir(oldPath)
+#         
+#         self.DisplayMessage('okay')
         
 
     def gotResults_stopwatch(self,words,fullResults):
@@ -821,13 +822,14 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             p = natqh.getProgInfo(m)
             topchild = p[2] == 'top'
             T.append('---from natqh.getProgInfo:')
-            T.append('0 program: %s'% p[0])
-            T.append('1 window title: %s'% p[1])
+            T.append('0 prog: %s'% p[0])
+            T.append('1 title: %s'% p[1])
             T.append('2 topchild: %s'% p[2])
+            T.append('3 classname: %s'% p[3])
             childClass = "#32770"
             overruleIsTop = self.getTopOrChild(m, childClass=childClass)
                 
-            T.append('3 window handle: %s'% p[3])
+            T.append('4 hndle: %s'% p[4])
 
             if topchild != overruleIsTop:
                 T.append('')
@@ -848,7 +850,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             T.append('class name: %s'% win32gui.GetClassName(hwnd))
 
         elif self.hasCommon(words,'user'):
-            status = natlinkstatus.NatlinkStatus()
+            # status (natlinkstatus.NatlinkStatus()) is global variable
             T.append('user:\t\t%s'% status.getUserName())
             T.append('userLanguage:\t%s'% status.getUserLanguage())
             T.append('language:\t%s'% self.language)
@@ -871,7 +873,7 @@ TT { font-family: lucidatypewriter, lucida console, courier }
             # extra.append('change folders, recording code and user name of course')
             
         elif self.hasCommon(words,'unimacro'):
-            status = natlinkstatus.NatlinkStatus()
+            # status (natlinkstatus.NatlinkStatus()) is global variable
             version = status.getDNSVersion()
             T.append('DNSVersion:\t\t%s  (%s)'% (version, type(version)))
             wVersion = status.getWindowsVersion()

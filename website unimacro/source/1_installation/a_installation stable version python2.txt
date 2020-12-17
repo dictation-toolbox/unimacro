@@ -28,12 +28,12 @@ witregel()
 --This is a self-extracting zip file, with extension .exe.
 --This is nearly the latest release of python 2.7.
 
-   Installing Python2.7.16
--Or better, go to link(https://www.python.org/downloads/release/python-2716/, python download site), and download the *Windows x86 MSI installer*.
+   Installing Python2.7.18
+-Or better, go to link(https://www.python.org/downloads/release/python-2718/, python download site), and download the *Windows x86 MSI installer*.
 --Warning: Natlink does not work when you install a "64 bit" python version. So *DO NOT USE* the Windows x86-64 MSI installer.
 -Install *for all users*, which is the default
 -You now need to install four additional packages, *pywin32*, *wxpython*, *six* and *future*
--You can do this best via *pip*, please follow the link(Installing packages via pip.pdf, *pip instructions*) (pdf 131kb).
+-You can do this best via *pip*, please follow the link(Installing packages via pip.pdf, *pip instructions*) (pdf 147kb).
 
 witregel()
 

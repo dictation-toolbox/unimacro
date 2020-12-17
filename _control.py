@@ -473,6 +473,8 @@ class UtilGrammar(ancestor):
 
         grammars = natbj.loadedGrammars
         gramNames = list(grammars.keys())
+        print(f"_control, gramNames: {gramNames}")
+        
         gramName = self.hasCommon(words, gramNames)
         if gramName:
             grammar = grammars[gramName]
