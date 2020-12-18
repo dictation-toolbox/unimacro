@@ -312,7 +312,8 @@ class GrammarDialog(dialog.Dialog):
         index = 0
         for col in self.colHeadings:
             itemDetails = (commctrl.LVCFMT_LEFT, width*colw[index], col, 0)
-            self.Syntax.InsertColumn(index, itemDetails)
+            self.Syntax.In
+            sertColumn(index, itemDetails)
             index = index + 1
         index = 0
 

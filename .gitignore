@@ -1,10 +1,9 @@
-/*.pyc
-/actionclasses/*.pyc
+__pycache__/
 /grammar.bin
 /unimacro_test/*.pyc
-/actionclasses/__pycache__/*.pyc
 *.bak
-__pycache__
 /unimacro_test/testresult.txt
 /_number extended.py
 /_repeat.py
+.vscode/launch.json
+/dist

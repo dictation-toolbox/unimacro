@@ -1310,6 +1310,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         """only prepare the current state, should be followed by the BrowseShow
         
         """
+        print("BrowsePrepare")
         if Exclusive:
             print('browse for exclusive grammars only')
             All = 0
@@ -1329,6 +1330,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
     def BrowseShow(self):
         """show the grammars as prepared in the function BrowsePrepare
         """
+        print(f"BrowseShow {self}")
         pypath = path('.').normpath()
         if pypath not in sys.path:
             sys.path.append(pypath)
