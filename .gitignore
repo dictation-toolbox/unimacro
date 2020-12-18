@@ -6,4 +6,4 @@ __pycache__/
 /_number extended.py
 /_repeat.py
 .vscode/launch.json
-dist/
+/dist
