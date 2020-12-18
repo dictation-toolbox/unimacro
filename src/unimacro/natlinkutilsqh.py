@@ -509,8 +509,6 @@ def AppBringUp(App, Exec=None, Args=None, windowStyle=None, directory=None, call
     can be called from actions (UnimacroBringUp, or (do_)BRINGUP.
 
     """
-
-    print(f"AppBringUp, App {App} Exec {Exec} WindowStyle {windowStyle}  Directory {directory} CallingFrom {callingFrom}")
     global pendingBringUps
     app = App.lower()
     if Args:
@@ -521,7 +519,7 @@ def AppBringUp(App, Exec=None, Args=None, windowStyle=None, directory=None, call
     else:
         args = None
 
- ##    if (GetOS()!='windows_nt'):
+##    if (GetOS()!='windows_nt'):
 ##        app=App.lower()
 ##    else:
 ##        app=App
@@ -555,25 +553,23 @@ def AppBringUp(App, Exec=None, Args=None, windowStyle=None, directory=None, call
         cmdline += ', "%s"'% directory
 
     cmdline = cmdline.strip(", ")        
-    print(f"AppBringUp cmdline: {cmdline}")
+    #print "AppBringUp: %s"% cmdline
 
     if callingFrom and (getattr(callingFrom, 'status', '') == 'new' or
                         getattr(callingFrom, 'inGotBegin', 0)):
-        print(f"pending AppBringUp for {callingFrom.getName()}")   #was a variable script in here before too
+        #print 'pending AppBringUp for %s, %s'% (callingFrom.getName(), script)
         pendingBringUps.append(cmdline)
         return    
     try:
         ## this is a tricky thing, execScript only recognises str, not unicode!
         ## as default, ascii or cp1252 or latin-1 is taken, the windows defaults.
-        print(f"\nAppbringUp:natlink execscript {cmdline}")
         result = natlink.execScript(cmdline)
         pass
     except natlink.NatError as t:
-        print(f"\nAppbringUp Exception {t} add to pending")
         #print 'wait for bringup until later: %s'% cmdline
         pendingBringUps.append(cmdline)
         return
-    print('ready withAppBringUp')
+##    print 'ready withAppBringUp'
     return 1
 
 # word formatting parameters:

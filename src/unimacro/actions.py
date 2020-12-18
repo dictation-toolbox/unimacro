@@ -786,44 +786,6 @@ def doCheckForChanges(previousIni=None):
             ini = previousIni
         iniFileDate = newDate
 
-port = 7474
-
-def connect_sock_server():
-    import socket
-
-    def is_port_in_use(port):
-         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('localhost', port)) == 0
-
-    def sock_server(port):
-        addr=("localhost",port)
-        s=socket.create_server(addr)
-        s.listen()
-        conn, remote = s.accept()
-        print(f"Connected {port} by {remote}")
-        with conn:
-            while True:
-                data = conn.recv(1024)
-                if not data:
-                    break
-                conn.sendall(data)
-    sock_server(port)
-
-
-import debugpy
-import socket
-
-def connect_debugger():
-    def is_port_in_use(port):
-         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            return s.connect_ex(('localhost', port)) == 0
-
-    print(f"debugpy listen on port {port}")
-    debugpy.listen(port) 
-    printf(f"Listening")
-    return False
-
-
 
 def writeDebug(s):
     if debugSock:
@@ -838,17 +800,6 @@ def debugActions(n, openMode='w'):
     global debug, debugSock
     debug = n
     print('setting debug actions: %s'% debug)
-
-    if(n==3):
-            debugpy.breakpoint()
-    if(n==4):
-        print("Trying the socket server")
-        connect_sock_server()
-    if(n==5):
-        print("N==5, try and launch debugger")
-        connect_debugger()
-
-
     if debugSock:
         debugSock.close()
         debugSock = None
@@ -2381,7 +2332,6 @@ def getAppForEditExt(ext):
 def dragonpadBringUp():
     i = 0
     natlink.recognitionMimic(["Start", "DragonPad"])
-    
     sleepTime = 0.3
     waitSteps = 10
     while i < waitSteps:
