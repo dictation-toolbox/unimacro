@@ -1,54 +1,41 @@
 Installation of Natlink/Vocola 2/Unimacro Experimental Release with Python 3
-Vocola and Unimacro work well on the development branch but you are may come across the odd bug.  
 
--Download and install the latest 3.8 32-bit Python  from link(https://www.python.org/downloads/windows/299, "Python 3.8  latest version") (Select Add to path install option, and Install FOR ALL USERS.  Save 
-yourself some grief and install it at the root of  your c: drive, like c:\python38-32).  If you already have a python 3.7 32 bit installation you can use that.
-At this time, do not create a link(https://docs.python.org/3/tutorial/venv.html) Virtual Environment. They do not work with Natlink.
+-Use 32 bit version of python, versions 3.7 or 3.8
+-If possible, use *python3.8 *
 
- 
--Packages are now all in the dictation-toolbox in github, for packages that are not packaged for pip installation, 
-I recommend cloning the wanted repositories in one base directory, for example *C:\DT*
-Instructions below install the source from GIT.   Select a folder to host your natlink, unimacro, dragonfly, etc.  Below the example is C:\DT but it can be anything.
+-NOTE: from December 3, 2020: also *pip install debugpy* is needed.
 
-
+ Prerequisites:
 -Exit dragon
-
-- Download the source from GIT 
-
---git clone git@github.com:dictation-toolbox/natlink.git (In your preferred directory eg *C:\DT\Natlink*. We will assume C:\DT in the instructions below. )
+-Download and install 32-bit Python 3.8.5 from link(https://www.python.org/downloads/windows/299, "Python 3.8.5 latest version") (Select Add to path install option, and Install FOR ALL USERS)
+-Start menu -> cmd (start in admin mode)
+-pip3 install six wheel future pywin32
+-pip3 install debugpy
+-pip3 install *wxpython==4.0.3*  (for natlink config GUI program, more recent versions fail to work, for python3.8 *wxpython==4.0.7* probably also works)
+-pip3 install dragonfly2 tomlkit mock appdirs scandir pyvda (for Caster)
+-Packages are now all in the dictation-toolbox in github, for packages that are not pipped, I recommend cloning the wanted repositories in one base directory, for example *C:\DT*
+-Dragonfly and Caster are normally pipped, other packages, Natlink, Vocola, Unimacro have to be cloned for the moment:
+--git clone git@github.com:dictation-toolbox/natlink.git (In your preferred directory eg *C:\DT\Natlink*)
 --If you want Unimacro: git clone git@github.com:dictation-toolbox/unimacro.git (into *C:\DT\Unimacro*)
 --If you want Vocola: git clone git@github.com:dictation-toolbox/vocola2.git (into *C:\DT\Vocola*) (Vocola2 being the Vocola version for Dragon/Natlink)
-if you want the development branch of   Dragonfly and Caster, clone from their git repositories.  Otherwise install them using pip (see below).
 
--Install the python package  prequisistes:
-
--Start menu -> cmd (start in admin mode).  Powershell also will work.
-Change directory to C:\DT\Natlink\ConfigureNatlink
-
-This will install the python prerequisites for natlink, vocola, and unimacro
-pip install -r requirements.txt
-
-This will instal the prequsiites for  caster and dragonfly.  you can skip this is you are installing those with pip:
-pip install -r caster_requirements.txt
-
-
-Main install instructions, targeted to Caster (as given by LexiconCode):
+ Main install instructions, targeted to Caster (as given by LexiconCode):
  
-
+-Note: directory "confignatlinkvocolaunimacro" had been renamed to "ConfigureNatlink":
 -Probably you can go to 
 -cd C:\DT\Natlink\ConfigureNatlink (With C:\Natlink being your preferred directory)
--and run start_configurenatlink.py  (by typing python start_configurenatlink.py)
+-and run start_configurenatlink.py
 
 (if this fails):
 -Start menu -> cmd -> Run as Administrator
 -cd C:\Natlink\Natlink\confignatlinkvocolaunimacro (Could be any preferred directory)
 (so in in elevated cmd window cd to directory where you cloned natlink)
--cd C:\DT\Natlink\ConfigureNatlink
--python start_configurenatlink.py (Requires administration rights)
+-cd confignatlinkvocolaunimacro
+-python3 start_configurenatlink.py (Requires administration rights)
 
 (and when the wxpython GUI window doesn't want to start)
 -run start_natlinkconfigfunctions.py (which will ask for elevation), or
--python natlinkconfigfunctions.py (in elevated mode),
+-python3 natlinkconfigfunctions.py (in elevated mode),
 
  In the config GUI:
 -Click enable Natlink
