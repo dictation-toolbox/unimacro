@@ -1,5 +1,5 @@
 # Unimacro
-#note for the python packagng files were copied from https://github.com/pypa/sampleproject
+# Note: for the python packaging files were copied from https://github.com/pypa/sampleproject
 
 [The source for this project is available here][https://github.com/dictation-toolbox/natlink].
 
