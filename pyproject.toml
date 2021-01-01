@@ -9,7 +9,7 @@ author-email = "quintijn@me.uk"
 home-page = "https://github.com/dictation-toolbox/unimacro"
 description-file = "README.md"
 
-requires=["natlink",
+requires=["natlinkpy",
 		  "debugpy >= 1.2.0",
 		  "pywin32 >= 300"]
 		  
