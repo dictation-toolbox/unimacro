@@ -1,18 +1,33 @@
 # Unimacro
-#note for the python packagng files were copied from https://github.com/pypa/sampleproject
+The Unimacro project aims to provide a rich set of command grammars, that can be configured by the users without programming knowledge. 
+Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/unimacro/index.html)
 
-[The source for this project is available here][https://github.com/dictation-toolbox/natlink].
+# Installing
 
-Most of the configuration for this  Python project is done in the `setup.py` file
-----
+Unimacro is stable, but not yet released.  Install from the [Test Python Package Index](https://test.pypi.org/)
+with the following.
 
-This is the README file for the Unimacro.
+`pip install --no-cache --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple unimacro`
 
-#The file should use UTF-8 encoding and can be written using
-#[reStructuredText][rst] or [markdown][md use] with the appropriate [key set][md
-#use]. It will be used to generate the project webpage on PyPI and will be
-#displayed as the project homepage on common code-hosting services, and should be
-#written for that purpose.
+
+# Location of Grammars
+
+Grammars installed with Unimacro will be installed in:
+the Lib\site-packages\unimacro\UnimacroGrammars sub-directory of your 
+Python installation.  Good ones to start with include _folders.py and _clickbyvoice.py 
+as most users will  find web and file system navigation by voice useful.
+
+More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgrammars/folders/index.html)
+
+#Developer instructions.
+
+Follow the instructions for [Natlink](https://test.pypi.org/project/natlinkpy/), replacing 'natlinkpy' with 'unimacro'.
+The same commands for building packages and publishing are available in the unimacro root.
+
+
+
+
+
 
 
 
