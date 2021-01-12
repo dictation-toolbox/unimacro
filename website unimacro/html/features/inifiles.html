@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>unimacro, features, inifiles</title>
+<meta charset="UTF-8">
+<meta name="description" content="Natlink and Unimacro, for a Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="features, inifiles">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+
+
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topoff" height="28" onclick="location='../installation/index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../installation/index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topon" height="28" onclick="location='index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../grammars/index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../grammars/index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../index.html">home</a> > <a href="index.html">features</a> > inifiles</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="leftoff"><a href="actions/index.html">Actions</a></td></tr>
+
+<tr><td class="leftoff"><a href="numbers/index.html">Numbers and Spoken Forms</a></td></tr>
+
+<tr><td class="leftoff"><a href="unimacroandvocola/index.html">Unimacro and Vocola</a></td></tr>
+
+<tr><td class="leftoff"><a href="tracing.html">Tracing</a></td></tr>
+<tr><td class="lefton">Inifiles</td></tr>
+<tr><td class="leftoff"><a href="translations/index.html">Translations</a></td></tr>
+
+<tr><td class="leftoff"><a href="cooperationwithvoicecoder/index.html">Cooperation with voicecoder</a></td></tr>
+
+<tr><td class="leftoff"><a href="autohotkey/index.html">AutoHotkey</a></td></tr>
+
+<tr><td class="leftoff"><a href="unittesting/index.html">Unit testing</a></td></tr>
+
+<tr><td class="leftoff"><a href="grammarclasses/index.html">Grammar classes</a></td></tr>
+
+<tr><td class="leftoff"><a href="globaldictation/index.html">Global dictation</a></td></tr>
+
+<tr><td class="leftoff"><a href="monitorfunctions/index.html">Monitorfunctions</a></td></tr>
+</table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>ini files</h1>
+<p>A lot of configuration is done through <strong>configuration files</strong>, here called <strong>ini files</strong>.</p>
+
+<p>A ini file can be edited in many programs e.g. notepad, textpad, win32pad (like notepad, but with line numbers), emacs etc. In many situations there is a Unimacro command with which the appropriate ini file is opened automatically (in program associated with the extension <em>.ini</em>).</p>
+
+<p>Inifiles have sections (between square brackets), and each section has key value combinations, separated by "=".  Whitespace around values is ignored (stripped).</p>
+
+<p>A sample:</p>
+<p class="pre">[section]<br>
+key = action<br>
+second key = another action<br>
+<br>
+[section two]<br>
+key = action of section two</p>
+
+<h2>Actions</h2>
+<p>These are defined in a file <strong>actions.ini</strong>.  A lot of grammars and commands use so-called meta actions, which can have different behaviours in different windows.</p>
+
+<p>See <a href="actions/index.html">pages on actions</a>. The <em>actions.ini</em> file can be opened by the command (from the grammar control) <strong>edit actions</strong>. All the active actions for a program/windowtitle can be shown by the command <strong>show actions</strong>.</p>
+
+<h2>Numbers and other Spoken Forms</h2>
+<p>Starting with release 4.0 spoken forms for numbers are put in <strong>xxx_spokenforms.ini</strong>. <strong>xxx</strong> being the language code of your speech profile. See <a href="numbers/index.html">Numbers and Spoken Forms</a>.</p>
+
+<p>Samples are (hopefully) to be found in the sample_ini directory of Unimacro. Call <strong>edit spoken forms</strong> for opening this file. Also see <a href="../features/numbers/index.html">Numbers and Spoken Forms</a> for more programming instructions and examples.</p>
+<ul><li>Alternative values may be separated by a <strong>,</strong>, <strong>;</strong> or a <strong>|</strong>.</li></ul>
+
+<p>At the moment only some sections are really used, especially for numbers spoken forms:</p>
+<ul><li><strong>&#091;numbers]</strong>: keys are numbers, values are the spoken forms.  At least the numbers <strong>0</strong> to <strong>99</strong> should be filled, and also <strong>100</strong>, <strong>1000</strong>. If in doubt, see the English example. Note in some functions only the first alternative will be taken if the lists are getting too long.</li><li><strong>&#091;prefixes]</strong>: synonyms for <strong>hundred</strong> and <strong>thousand</strong>. Also a possible synonym for <strong>dot</strong> in file or url extensions.</li></ul>
+
+<h2>Other spoken forms lists</h2><ul><li><strong>&#091;alphabet]</strong>: keys are the letters, values the spoken forms. At startup possible alternatives will be taken, they have to be valid dictation words, for better recognition. Tf in doubt the alternatives with or without capitalization will be checked. If no valid alternatives are found for a spoken form, the spoken form will nevertheless be accepted. Used in eg the grammar _keystrokes.py.</li><li><strong>&#091;abbrevs]</strong>: possibility to define abbreviations, which will be used when making spoken forms for file names or folder names (<strong>_folders</strong> grammar). Keys are the abbreviations, values are the spoken forms. If capitalized letters are taken, the <strong>.</strong> is added or removed depending on the NatSpeak/Dragon version. (up to NatSpeak 10, the <strong>.</strong> is compulsory, starting with Dragon 11 they are forbidden.)</li><li><strong>&#091;extensions]</strong>: file extensions, without the <strong>.</strong> (dot).</li><li><strong>&#091;punctuationreverse]</strong>: This section is (July 2015) used for getting a list of non character symbols in spoken forms, which are here on the left side of the <strong>=</strong>. So the other way around as all the other lists. Used in the grammar _keystrokes.py.</li></ul>
+
+<h2>Configuration of grammars</h2>
+<p>All grammars that derive from the class IniGrammar can use the ini file mechanism.  Parameters can be set and inspected.</p>
+
+<p>For example: <em>edit folders</em> gives the inifile for the grammar <em>_folders</em>. The values can be edited and are automatically read into the grammar.  With <em>show folders</em> information on the lists that are active in the grammar (plus the grammar definition) are showing on your screen (through a temporary .txt file)</p>
+
+<h2>Sample ini files</h2>
+<p>In a folder <strong>sample_ini</strong> default ini files for different tasks (actions.ini, configuration files of grammars) are kept and copied for a user if needed.  See also <a href="../installation/inifilestrategy.html">notes in the installation pages</a>.</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../index.html">home</a> > <a href="index.html">features</a> > inifiles > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../sitemap.html#inifiles';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../sitemap.html#inifiles">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: inifiles", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;dec 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;dec 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>

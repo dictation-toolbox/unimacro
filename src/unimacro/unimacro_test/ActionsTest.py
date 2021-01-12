@@ -1,3 +1,4 @@
+
 #
 # Python Macro Language for Dragon NaturallySpeaking
 #   (c) Copyright 1999 by Joel Gould
@@ -153,7 +154,7 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         testActionResult(1, "BRINGUP dragonpad")
         testActionResult(1, "abc")
         
-        testActionResult(1, "ghi; W; def")
+        testActionResult(1, "ghi; W; déf")
         testActionResult(1, "klm; nop")
 ## next two tests need user interaction.  Activate if you specifically want to test them:
 ##        testActionResult(1, 'YESNO "please answer yes"')

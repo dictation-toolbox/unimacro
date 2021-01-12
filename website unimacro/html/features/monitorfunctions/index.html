@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>unimacro, features, Monitorfunctions</title>
+<meta charset="UTF-8">
+<meta name="description" content="Natlink and Unimacro, for a Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="features, Monitorfunctions">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topoff" height="28" onclick="location='../../installation/index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../../installation/index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topon" height="28" onclick="location='../index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="../index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../grammars/index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../../grammars/index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td>
+<td align="center" class="topoff" height="28" onclick="location='../../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > monitorfunctions</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="leftoff"><a href="../actions/index.html">Actions</a></td></tr>
+
+<tr><td class="leftoff"><a href="../numbers/index.html">Numbers and Spoken Forms</a></td></tr>
+
+<tr><td class="leftoff"><a href="../unimacroandvocola/index.html">Unimacro and Vocola</a></td></tr>
+
+<tr><td class="leftoff"><a href="../tracing.html">Tracing</a></td></tr>
+<tr><td class="leftoff"><a href="../inifiles.html">Inifiles</a></td></tr>
+
+<tr><td class="leftoff"><a href="../translations/index.html">Translations</a></td></tr>
+
+<tr><td class="leftoff"><a href="../cooperationwithvoicecoder/index.html">Cooperation with voicecoder</a></td></tr>
+
+<tr><td class="leftoff"><a href="../autohotkey/index.html">AutoHotkey</a></td></tr>
+
+<tr><td class="leftoff"><a href="../unittesting/index.html">Unit testing</a></td></tr>
+
+<tr><td class="leftoff"><a href="../grammarclasses/index.html">Grammar classes</a></td></tr>
+
+<tr><td class="leftoff"><a href="../globaldictation/index.html">Global dictation</a></td></tr>
+
+<tr><td class="lefton">Monitorfunctions</td></tr></table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Monitor functions</h1>
+<p>The module "monitorfunctions.py" (tested with "unittestMonitorfunctions.py") is written for manipulation of windows on the monitors/displays. These functions are used in the grammar <a href="../../grammars/globalgrammars/tasks/index.html"><strong>tasks</strong></a>.</p>
+
+<h3>Other display</h3>
+<p>With the function <strong>move_to_monitor</strong> a window is moved to another monitor</p>
+
+<p class="pre">move_to_monitor(winHndle, newMonitor, oldMonitor, resize):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&ldquo;move window to another monitor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;preserving position of restore_area as much as possible.<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- get winHndle for example with winHndle = win32gui.GetForegroundWindow()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- get current monitor (oldMonitor) with get_nearest_monitor_window(winHndle)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- get other monitor (in case of 2 monitors) with get_other_monitors(mon), and take<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the first of the list that is retured.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;resize: 0 if window is (assumed to be) fixed in size, can be found with:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;- window_can_be_resized(winHndle):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1 if a window can be resized (like Komodo etc). Not eg calc.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;</p>
+
+<h3>Moving inside one monitor:</h3>
+<p class="pre">maximize_window(winHndle): just maximize<br>
+<br>
+minimize_window(winHndle): just minimize<br>
+<br>
+restore_window(winHndle, ...): placing in various spots and widths/heights<br>
+&nbsp;&nbsp;&nbsp;&nbsp;see at definition for parameters<br>
+<br>
+move_window(winHndle, ...)<br>
+<br>
+stretch_window(winHndle, ...)<br>
+<br>
+shrink_window(winHndle, ...)<br></p>
+
+<h3>Position of the taskbar</h3>
+<p class="pre">get_taskbar_position(): gives the placing of the taskbar (&lsquo;left&rsquo;, &lsquo;bottom&rsquo;, &lsquo;right&rsquo;, &lsquo;top&rsquo;).</p>
+
+<p>This can be used for NatSpeak/Unimacro keystroke macros which can depend on this position (for example stacked taskbar windows in Window 7 Aero Peek view).</p>
+
+<h3>Getting mouse positions of monitor</h3>
+<p>(new, December 2017)</p>
+<p class="pre">get_current_monitor_rect ( pos )&nbsp;&nbsp;and<br>
+<br>
+get_current_monitor_rect_work( pos)<br></p>
+
+<p>Pass the current mouse position as a tuple (xpos,ypos)</p>
+<p>Returns the rect tuple of the monitor, with <strong>_work</strong> only the work area, so excluding task bar or Dragon bar.</p>
+
+<h3>Notes:</h3><ul><li>unittesting is done with the file unittestMonitorfunctions.py (in the <strong>unimacro_test</strong> subdirectory of Unimacro).</li><li>demos can be done by uncommenting the different <strong>test_...</strong> functions at the bottom of the script monitorfunctions.py, and run the script.</li><li>See for more details in the code...</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > monitorfunctions > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../sitemap.html#monitorfunctions';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../sitemap.html#monitorfunctions">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;dec 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;dec 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>
