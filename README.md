@@ -25,6 +25,8 @@ Follow the instructions for [Natlink](https://test.pypi.org/project/natlinkpy/),
 The same commands for building packages and publishing are available in the unimacro root.
 
 
+# Note: for the python packaging files were copied from https://github.com/pypa/sampleproject
+
 
 
 

@@ -4,8 +4,8 @@ build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
 module="unimacro"
-author = "quintijn"
-author-email = "quintijn@me.uk"
+author = "Quintijn Hoogenboom"
+author-email = "q.hoogenboom@antenna.nl"
 home-page = "https://github.com/dictation-toolbox/unimacro"
 description-file = "README.md"
 
