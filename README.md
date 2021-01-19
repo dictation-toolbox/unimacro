@@ -40,6 +40,11 @@ More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgra
 Follow the instructions for [Natlink](https://test.pypi.org/project/natlinkpy/), replacing 'natlink' with 'unimacro'.
 The same commands for building packages and publishing are available in the unimacro root.
 
+If you wish to build or publish a package, there are:
+
+- build_package.ps1 and build_package.ps1 to build the packages.  
+- publish_package_pypi.ps1/.cmd to upload the package to the  [Python Packaging Index](https://pypi.org/)
+- publish_package_testpypi.ps1/.cmd to upload the packkage to the [Test Python Packaging Index](https://test.pypi.org/)
 
  
 
