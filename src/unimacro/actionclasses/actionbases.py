@@ -18,7 +18,7 @@ class AllActions:
             newProgInfo = natqh.getProgInfo()
         if newProgInfo == self.progInfo:
             return
-        print('allactions: new prog info, overload for your specific program: %s'% self.prog)
+        # print('allactions: new prog info, overload for your specific program: %s'% self.prog)
         self.progInfo = newProgInfo
         self.prog, self.topTitle, self.topchild, self.className, self.topHandle = newProgInfo
         
