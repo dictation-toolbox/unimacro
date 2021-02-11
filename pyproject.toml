@@ -9,8 +9,8 @@ author-email = "q.hoogenboom@antenna.nl"
 home-page = "https://github.com/dictation-toolbox/unimacro"
 description-file = "README.md"
 
-requires=["wxPython >=4.1.1",
-		  "debugypy > 1.2.0",
+requires=["natlink",
+		  "debugpy >= 1.2.0",
 		  "pywin32 >= 300"]
 		  
 		
