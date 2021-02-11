@@ -1,5 +1,7 @@
 """actions from application code (Visual Studio)
 
+configuring instructions for Visual Studio at the bottom of this file
+
 getting the current line number!
 """
 import time
@@ -40,4 +42,21 @@ class  CodeActions(AllActions):
     
 if __name__ == '__main__':
     pass        
+        
+# Note, the program name of Visual Studio Code is "code.exe", so this module is called code.py
+#
+# Please install the VS Code extension called 'copy-current-line-number'
+# that copies the current editor line number to the clipboard.
+#
+# Next go to the File, Preferences, Keyboard Shortcuts.
+# lookup your extension (copy current line number), and attach ctrl+alt+c to this extension.
+
+# After you configure the grammar _lines.py, like:
+# [general]
+# line numbers modulo hundred = T
+# and toggle the microphone, possibly restart Dragon,
+# the feature should work.
+#
+# each line number below 100, will jump to the nearest line with respect to the current line.
+        
         

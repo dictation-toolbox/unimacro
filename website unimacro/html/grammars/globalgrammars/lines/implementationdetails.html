@@ -74,10 +74,10 @@
 </table>
 
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Implementation details</h1>
-<h3>actions.ini</h3>
+<h2>actions.ini</h2>
 <p>In the inifile <strong>actions.ini</strong> the implementation for different programs is realized. When you call <strong>edit actions</strong> this file will open for inspection and editing.</p>
 
-<h3>gotoline n</h3>
+<h2>gotoline n</h2>
 <p>The basic action for jumping to a line is the <a href="../../../features/actions/metaactions.html">meta-action</a> <strong>gotoline n</strong>, called from the lines grammar with the wanted line number for <strong>n</strong>.</p>
 
 <p>In the default section you will find:</p>
@@ -88,7 +88,12 @@ gotoline n = {Ctrl+ExtHome}{ExtDown n}{ExtUp}</p>
 <p>So when there is no other way to jump to a line, you simply go to the top and then down the needed number of lines.</p>
 
 <p>Here are some applications which do it another way:</p>
-<p class="pre">[emacs]<br>
+<p>(<strong>code</strong> is the program name of Visual Studio)</p>
+<p class="pre">[code]<br>
+gotoline n = {ctrl+g}; n{enter}<br>
+realhome = {end}{home}{home}<br>
+<br>
+[emacs]<br>
 gotoline n = EMACS goto-line; n{enter}<br>
 <br>
 [excel]<br>
@@ -108,22 +113,29 @@ gotoline n = {ctrl+g}; n{enter}</p>
 
 <p>Note: the excel action is overridden by the function <strong>metaaction_gotoline</strong> in the <a href="../../../features/actions/actionclassesforapplications.html">excel actions class module</a>.</p>
 
-<h3>line numbers modulo hundred</h3>
+<h2>line numbers modulo hundred</h2>
 <p>When you set this option to true in the _lines.ini file (say <strong>edit lines</strong>):</p>
 
 <p class="pre">[general]<br>
 line numbers modulo hundred = T</p>
-<p>You will be able to use this feature for Excel, win32pad and ultraedit right now. The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
+<p>You will be able to use this feature for Excel, win32pad and ultraedit right now. New, February 2021 is Visual Studio Code.</p>
+
+<p>The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
+
+<h3>Visual Studio (2021)</h3>
+<p>For Visual Studio, you need to add the extension <strong>copy current line number to clipboard</strong>, and attach the shortcut key <strong>{ctrl+alt+c}</strong> to this extension.</p>
+
+<p>The file <strong>code-actions.py</strong> in the folder <strong>actionclasses</strong> of Unimacro does the work. See there for more detailed instructions.</p>
 
 <p>Note: for Emacs the line module hundred trick can be implemented by inserting the correct function, <strong>mdl-goto-line-mod100</strong> instead of <strong>goto-line</strong>.</p>
 
-<h3>simpleactions</h3>
+<h2>simpleactions</h2>
 <p>These are the actions like &lt;&lt;copy>>, &lt;&lt;cut>>, &lt;&lt;delete>>, &lt;&lt;duplicate>>, which can be investigated in the actions.ini file.</p>
 
-<h3>move copy actions</h3>
+<h2>move copy actions</h2>
 <p>These actions require some more tuning in some applications. Details will follow.</p>
 
-<h3>Paragraph actions</h3>
+<h2>Paragraph actions</h2>
 <p>These are tested in Word, and basically meant for this program.</p>
 <p>In the actions.ini file there are now  analogous to "selectdown": "selectparadown" and to "selectline" there is "selectpara":</p>
 
@@ -140,7 +152,7 @@ selectparaup n = {shift+ctrl+up n}<br></p>
 m("antenna.nl", "q.hoogenboom", "information about: Implementation details", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;dec 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;dec 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--
