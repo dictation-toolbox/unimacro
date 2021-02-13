@@ -15,10 +15,11 @@ class  CodeActions(AllActions):
         AllActions.__init__(self, progInfo)
         
     def getCurrentLineNumber(self, handle=None):
+        debug - 0
         t1 = time.time()
         if self.topchild == "child":
             return 0
-        cb = natlinkclipboard.Clipboard(save_clear=True, debug=1)  # clear "debug" to get rid of timing line
+        cb = natlinkclipboard.Clipboard(save_clear=True, debug=debug)  # clear "debug" to get rid of timing line
         # via the command palette:
         # action("{shift+ctrl+p}; copy current line to clipboard; {enter};")
           
@@ -29,11 +30,12 @@ class  CodeActions(AllActions):
         keystroke(shortcutkey)
         
         # now collect the clipboard, at most waiting 10 intervals of 0.1 second.
-        result = cb.get_text(waiting_interval=0.025, waiting_iterations=10)    # should be the current line number
+        result = cb.get_text(waiting_interval=0.01, waiting_iterations=10)    # should be the current line number
         # print(f'result from clipboard: {result}')
         t2 = time.time()
         lapse = t2 - t1
-        print(f'time in getCurrentLineNumber: {lapse:.3f}')
+        if debug:
+            print(f'time in getCurrentLineNumber: {lapse:.3f}')
         try:
             return int(result)
         except (ValueError, TypeError):
