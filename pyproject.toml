@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 module="unimacro"
 author = "Quintijn Hoogenboom"
 author-email = "q.hoogenboom@antenna.nl"
-home-page = "https://github.com/dictation-toolbox/unimacro"
+home-page = "https://qh.antenna.nl/unimacro/"
 description-file = "README.md"
 
 requires=["natlink",

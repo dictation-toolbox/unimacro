@@ -118,7 +118,7 @@ gotoline n = {ctrl+g}; n{enter}</p>
 
 <p class="pre">[general]<br>
 line numbers modulo hundred = T</p>
-<p>You will be able to use this feature for Excel, win32pad and ultraedit right now. New, February 2021 is Visual Studio Code.</p>
+<p>You will be able to use this feature for Excel, win32pad and Visual Studio Code (New, February 2021).</p>
 
 <p>The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
 
@@ -127,6 +127,19 @@ line numbers modulo hundred = T</p>
 
 <p>The file <strong>code-actions.py</strong> in the folder <strong>actionclasses</strong> of Unimacro does the work. See there for more detailed instructions.</p>
 
+<h3>Komodo IDE</h3>
+<p>For this commercial program, the trick now also works (February 2021):</p>
+
+<p>You need to make a "<strong>Userscript</strong>" in Komodo:</p><ul><li>Go to View, Tabs & Sidebars, Toolbox</li><li>Click on the Tools pictogram (right top) and choose <strong>New Userscript</strong></li><li>Give it a name, eg "copy current line number", keep Javascript.</li><li>Give it the Key Binding <strong>Alt+Shift+C</strong>. (When you need another Key Binding, you also need to edit komodo-actions.py in the folder actionclasses.)</li></ul>
+
+<p>Now paste the following code in the Userscript:</p>
+<p class="pre">var editor = require(&ldquo;ko/editor&rdquo;);<br>
+var linenum = editor.getLineNumber(editor.getCursorPosition());<br>
+var clipboard = require(&ldquo;sdk/clipboard&rdquo;);<br>
+clipboard.set(String(linenum));</p>
+<ul><li>Probably you need to restart Dragon, and you can try the feature.</li><li>Note: when you want set/clear debug information (about the timing issues), change line 48 of the file <strong>komodo-actions.py</strong> in the folder <strong>actionclasses</strong> (debug=1 or debug=0).</li></ul>
+
+<h3>Emacs (special!)</h3>
 <p>Note: for Emacs the line module hundred trick can be implemented by inserting the correct function, <strong>mdl-goto-line-mod100</strong> instead of <strong>goto-line</strong>.</p>
 
 <h2>simpleactions</h2>

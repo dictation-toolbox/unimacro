@@ -134,7 +134,7 @@ For some programs, who can "return" the current line number to this grammar with
 
 For example, when you are in line 1375, with "line eighty", you go to line 1380.
 
-This feature has been implemented for a limited number of applications: *win32pad*, *ultraedit*, *Visual Studio* (new, February 2021), and *excel*. See:
+This feature has been implemented for a limited number of applications: *win32pad*, *excel*, *Visual Studio* (new, February 2021) and *Komodo* (a commercial IDE program, also new February 2021).  See:
 
 -link(/grammars/globalgrammars/lines/implementationdetails.html, implementation details) for this grammar and 
 -link(/features/actions/actionclassesforapplications.html, programming details) about the action classes modules.

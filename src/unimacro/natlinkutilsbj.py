@@ -429,7 +429,7 @@ def RegisterGrammarObject(GrammarObject):
     value is the instance object itself
     """    
     global loadedGrammars, grammarsChanged
-    print('registering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
+    # print('registering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
     loadedGrammars[GrammarObject.GetName()] = GrammarObject
     grammarsChanged = 1
 
@@ -1440,8 +1440,8 @@ class IniGrammar(IniGrammarAncestor):
                 print('---IniGrammar loaded %s, succes: %s'% (grammarName, success))
                 if grammarName is None:
                     print('---gramspec: %s'% gramSpec)
-            else:
-                print(f'failed to load gramSpec of IniGrammar {self}')
+            if not success:
+                print(f'failed to load gramSpec of Unimacro IniGrammar {self}')
                 
             return success
 
