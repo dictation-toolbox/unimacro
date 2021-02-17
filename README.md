@@ -20,7 +20,6 @@ In a shell with administrator privileges,
 
 ## Install unimacro
 
-
 Install from the [Test Python Package Index](https://test.pypi.org/)
 with the following.
 

@@ -4,11 +4,11 @@ Packages are build without a setup.py, and source only, as any PIP recent enough
 Flit is the simplest packaging tool that will work. Read about it here https://flit.readthedocs.io/en/latest/cmdline.html.
 
 Getting Ready to Publish a Package.
-
+9
 Get your credentials for pypi and testpypi and add them to your ~\.pypirc.  ~\.pypirc
 seems very finicky even though it looks like a text file.  If publishing to pypi or testpypi is
 new it is suggested you copy pypirc_template to ~/.pypirc and add your token from your accounts for PyPi/TestPyPi.
-
+(see in the natlink repository for this template)
  
 Customizing the Package for PyPi:
 
