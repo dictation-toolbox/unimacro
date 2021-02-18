@@ -1,0 +1,27 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module="unimacro"
+author = "Quintijn Hoogenboom"
+author-email = "q.hoogenboom@antenna.nl"
+home-page = "https://qh.antenna.nl/unimacro/"
+description-file = "README.md"
+
+requires=["natlink",
+		  "debugpy >= 1.2.0",
+		  "pywin32 >= 300"]
+		  
+		
+classifiers=[	"Development Status :: 4 - Beta",
+				"Topic :: Multimedia :: Sound/Audio :: Speech",
+				"Topic :: Scientific/Engineering :: Human Machine Interfaces",
+				]
+				
+requires-python = ">=3.8"
+keywords="dragon,speech,dictation,dictation-toolobx,unimacro,natlink"
+
+[tool.flit.scripts]
+
+		

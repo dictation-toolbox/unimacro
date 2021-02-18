@@ -2,7 +2,7 @@
 <html><head>
 <title>unimacro, Installation Natlink/Vocola/Unimacro, configuration</title>
 <meta charset="UTF-8">
-<meta name="description" content="SourceForge project for Dragon NaturallySpeaking macro facility">
+<meta name="description" content="Natlink and Unimacro, for a Dragon NaturallySpeaking macro facility">
 <meta name="keywords" content="Installation, Natlink/Vocola/Unimacro, configuration, Installation Natlink/Vocola/Unimacro">
 <meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
 <link rel="stylesheet" href="../unimacro.css" type="text/css" title="unimacro.css">
@@ -60,11 +60,24 @@
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Configuration</h1>
 <h1>Administrator rights/elevated mode</h1>
 <p>You need Administator rights for the some (of the most important) configuration actions. Therefore the  <strong>Configure program</strong> (<strong>Configure NatLink via GUI</strong>), or via the command line interface, will be started with <a href="../installation/configureadministratorrights.html">Administrator rights</a>, when you use the links from the Start menu. Please answer "Yes" if Windows asks you for this.</p>
-<ul><li>The first time you run the configure program, it must run in  this elevated  mode.</li></ul>
 
+<h3>Run config program with python2.7 in elevated mode</h3>
+<p>In this <a href="https://www.youtube.com/watch?v=IJy6IL3rizk&feature=youtu.be" target="_blank"><strong>short video</strong></a> it is shown how you can start the natlink config GUI or the natlinkconfigfunctions.py, with python2.7, even when you have more python versions installed on your system.</p>
+
+<p>The steps are:</p><ol><li>start a Command Prompt in admin mode (Run as administrator)</li><li>go to the confignatlinkvocolaunimacro directory of your natlink folder (eg. C:\natlink\natlink\confignatlinkvocolaunimacro)</li><li>start with <strong>"py -2.7"</strong>  <strong>configurenatlink.pyw</strong></li><li>if that fails, try the natlinkconfigfunctions.py</li></ol>
+
+<p class="pre">so type:<br>
+<br>
+py -2.7 configurenatlink.pyw<br>
+<br>
+or:<br>
+<br>
+py -2.7 natlinkconfigfunctions.py</p>
+<p class="witregel">&nbsp;</p>
+<p class="witregel">&nbsp;</p>
 <h1>Export speech profiles</h1><ul><li>You may want to backup your speech profiles before enabling NatLink for the first time. Use the "Advance, Export" function of the "Profile, Manage Users" dialog of Dragon.</li><li>However, we believe NatLink is so stable in combination with Dragon, that the chance of Natlink corrupting your speech profile is very small.</li></ul>
 
-<h1>Configure NatLink/Vocola 2/Unimacro</h1><ul><li>From the start menu, run <strong>Configure NatLink via GUI</strong></li><li>This program prompts you for accepting elevated mode (see above)</li><li>When this is the first time your run this program, several things are done silent, you can inspect the "log" panel of the GUI to see what happened.</li></ul>
+<h1>Configure NatLink/Vocola 2/Unimacro</h1><ul><li>If this fails, see the video above!</li><li>From the start menu, run <strong>Configure NatLink via GUI</strong></li><li>This program prompts you for accepting elevated mode (see above)</li><li>When this is the first time your run this program, several things are done silent, you can inspect the "log" panel of the GUI to see what happened.</li></ul>
 
 <h1>NatLink</h1><ul><li>In the "NatLink" section, click the "Enable" button. If NatLink is not enabled, Vocola 2 and Unimacro do NOT work.</li></ul>
 
@@ -102,7 +115,7 @@ Also see the <a href="../installation/technicaldetails/natlinkconfigfunctions.ht
 m("antenna.nl", "q.hoogenboom", "information about: configuration", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;sep 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;sep 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

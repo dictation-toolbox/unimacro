@@ -6,7 +6,7 @@ With the grammar *lines* you can easily jump to lines, numbered or relative to t
 -Lines (numbered or relative) can have an additional action, like *delete*
 -Lines can be moved or copied up or down or to another numbered line
 -Selected lines can have the same actions by the keyword *THAT*
--New (december 2013): *jump to line numbers modulo hundred*
+-For some programs: jump to *line numbers modulo hundred*
 -Add some paragraph (para) commands (March 2016)
 
 This grammar relies heavily on 
@@ -130,7 +130,11 @@ link(/features/cooperationwithvoicecoder/index.html,*connection with voicecoder 
 
  Line numbers modulo hundred
  
-Challenged by Mark Lillibridge, who implemented an option like this in Vocola and Emacs, a start is made to do this from Unimacro. This grammar must then have knowledge about the state of the application. This has been done for a limited number of applications: *win32pad*, *ultraedit* and *excel*. See:
+For some programs, who can "return" the current line number to this grammar with introspection, you can call "line numbers modulo hundred".
+
+For example, when you are in line 1375, with "line eighty", you go to line 1380.
+
+This feature has been implemented for a limited number of applications: *win32pad*, *excel*, *Visual Studio* (new, February 2021) and *Komodo* (a commercial IDE program, also new February 2021).  See:
 
 -link(/grammars/globalgrammars/lines/implementationdetails.html, implementation details) for this grammar and 
 -link(/features/actions/actionclassesforapplications.html, programming details) about the action classes modules.

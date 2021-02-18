@@ -1,0 +1,22 @@
+ _vocola_main started with language: enx
+actions module has ambiguous baseDirectory: D:\natlink\unimacro\jason || d:\natlink\unimacro
+take d:\natlink\unimacro for base
+appending to sys.path: D:\natlink\voicecode\Admin
+appending to sys.path: D:\natlink\voicecode\Config
+appending to sys.path: D:\natlink\voicecode\Mediator
+initializing/loading DictGrammar!!
+messageDictGrammar initialized
+['.', 'D:\\natlink\\unimacro\\jason', '', 'd:\\projects\\miscqh', 'd:\\projects\\wxdesigner\\controlpanel', 'd:\\projects\\wxdesigner', 'd:\\projects\\ftp', 'd:\\projects\\unittest', 'd:\\projects\\sitegen', 'd:\\projects', 'd:\\natlink\\voicecode\\mediator', 'd:\\natlink\\unimacro', 'C:\\Program Files\\OpenLibraries\\python', 'D:\\natlink\\natlink\\MacroSystem\\core', 'D:\\natlink\\natlink\\MacroSystem', 'C:\\Python25\\Lib', 'C:\\Python25\\DLLs', 'C:\\Python25\\Lib\\lib-tk', 'C:\\Program Files\\Nuance\\NaturallySpeaking9\\Program', 'C:\\Python25', 'C:\\Python25\\lib\\site-packages', 'D:\\drocco\\NatLink-py25\\MacroSystem', 'D:\\drocco\\NatLink-py25\\MiscScripts', 'C:\\Python25\\lib\\site-packages\\Numeric', 'C:\\Python25\\lib\\site-packages\\PIL', 'C:\\Python25\\lib\\site-packages\\win32', 'C:\\Python25\\lib\\site-packages\\win32\\lib', 'C:\\Python25\\lib\\site-packages\\Pythonwin', 'C:\\Python25\\lib\\site-packages\\wx-2.6-msw-ansi', 'D:\\natlink\\natlink\\Vocola\\Exec\\2.5', 'D:\\natlink\\voicecode\\Admin', 'D:\\natlink\\voicecode\\Config', 'D:\\natlink\\voicecode\\Mediator', 'D:\\natlink\\unimacro']
+tester: notepad
+cmdGrammar loaded
+IniGrammar switched on: jason
+type: user
+args: ('ustest', 'C:\\Documents and Settings\\All Users\\Application Data\\Nuance\\NaturallySpeaking9\\Users\\ustest\\current') (len 2)
+Starting natlinkmain from D:\natlink\natlink\MacroSystem\core:
+  NatLink version: 3.8
+  DNS version: 9
+  Python version: 2.5
+  Windows Version: XP
+
+natlinkmain started (imported)
+

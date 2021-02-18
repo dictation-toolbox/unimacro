@@ -2,7 +2,7 @@
 <html><head>
 <title>unimacro, grammars, global grammars, lines, Implementation details</title>
 <meta charset="UTF-8">
-<meta name="description" content="SourceForge project for Dragon NaturallySpeaking macro facility">
+<meta name="description" content="Natlink and Unimacro, for a Dragon NaturallySpeaking macro facility">
 <meta name="keywords" content="grammars, global, lines, Implementation, details, global grammars, Implementation details">
 <meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
 <link rel="stylesheet" href="../../../unimacro.css" type="text/css" title="unimacro.css">
@@ -74,10 +74,10 @@
 </table>
 
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Implementation details</h1>
-<h3>actions.ini</h3>
+<h2>actions.ini</h2>
 <p>In the inifile <strong>actions.ini</strong> the implementation for different programs is realized. When you call <strong>edit actions</strong> this file will open for inspection and editing.</p>
 
-<h3>gotoline n</h3>
+<h2>gotoline n</h2>
 <p>The basic action for jumping to a line is the <a href="../../../features/actions/metaactions.html">meta-action</a> <strong>gotoline n</strong>, called from the lines grammar with the wanted line number for <strong>n</strong>.</p>
 
 <p>In the default section you will find:</p>
@@ -88,7 +88,12 @@ gotoline n = {Ctrl+ExtHome}{ExtDown n}{ExtUp}</p>
 <p>So when there is no other way to jump to a line, you simply go to the top and then down the needed number of lines.</p>
 
 <p>Here are some applications which do it another way:</p>
-<p class="pre">[emacs]<br>
+<p>(<strong>code</strong> is the program name of Visual Studio)</p>
+<p class="pre">[code]<br>
+gotoline n = {ctrl+g}; n{enter}<br>
+realhome = {end}{home}{home}<br>
+<br>
+[emacs]<br>
 gotoline n = EMACS goto-line; n{enter}<br>
 <br>
 [excel]<br>
@@ -108,22 +113,42 @@ gotoline n = {ctrl+g}; n{enter}</p>
 
 <p>Note: the excel action is overridden by the function <strong>metaaction_gotoline</strong> in the <a href="../../../features/actions/actionclassesforapplications.html">excel actions class module</a>.</p>
 
-<h3>line numbers modulo hundred</h3>
+<h2>line numbers modulo hundred</h2>
 <p>When you set this option to true in the _lines.ini file (say <strong>edit lines</strong>):</p>
 
 <p class="pre">[general]<br>
 line numbers modulo hundred = T</p>
-<p>You will be able to use this feature for Excel, win32pad and ultraedit right now. The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
+<p>You will be able to use this feature for Excel, win32pad and Visual Studio Code (New, February 2021).</p>
 
+<p>The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
+
+<h3>Visual Studio (2021)</h3>
+<p>For Visual Studio, you need to add the extension <strong>copy current line number to clipboard</strong>, and attach the shortcut key <strong>{ctrl+alt+c}</strong> to this extension.</p>
+
+<p>The file <strong>code-actions.py</strong> in the folder <strong>actionclasses</strong> of Unimacro does the work. See there for more detailed instructions.</p>
+
+<h3>Komodo IDE</h3>
+<p>For this commercial program, the trick now also works (February 2021):</p>
+
+<p>You need to make a "<strong>Userscript</strong>" in Komodo:</p><ul><li>Go to View, Tabs & Sidebars, Toolbox</li><li>Click on the Tools pictogram (right top) and choose <strong>New Userscript</strong></li><li>Give it a name, eg "copy current line number", keep Javascript.</li><li>Give it the Key Binding <strong>Alt+Shift+C</strong>. (When you need another Key Binding, you also need to edit komodo-actions.py in the folder actionclasses.)</li></ul>
+
+<p>Now paste the following code in the Userscript:</p>
+<p class="pre">var editor = require(&ldquo;ko/editor&rdquo;);<br>
+var linenum = editor.getLineNumber(editor.getCursorPosition());<br>
+var clipboard = require(&ldquo;sdk/clipboard&rdquo;);<br>
+clipboard.set(String(linenum));</p>
+<ul><li>Probably you need to restart Dragon, and you can try the feature.</li><li>Note: when you want set/clear debug information (about the timing issues), change line 48 of the file <strong>komodo-actions.py</strong> in the folder <strong>actionclasses</strong> (debug=1 or debug=0).</li></ul>
+
+<h3>Emacs (special!)</h3>
 <p>Note: for Emacs the line module hundred trick can be implemented by inserting the correct function, <strong>mdl-goto-line-mod100</strong> instead of <strong>goto-line</strong>.</p>
 
-<h3>simpleactions</h3>
+<h2>simpleactions</h2>
 <p>These are the actions like &lt;&lt;copy>>, &lt;&lt;cut>>, &lt;&lt;delete>>, &lt;&lt;duplicate>>, which can be investigated in the actions.ini file.</p>
 
-<h3>move copy actions</h3>
+<h2>move copy actions</h2>
 <p>These actions require some more tuning in some applications. Details will follow.</p>
 
-<h3>Paragraph actions</h3>
+<h2>Paragraph actions</h2>
 <p>These are tested in Word, and basically meant for this program.</p>
 <p>In the actions.ini file there are now  analogous to "selectdown": "selectparadown" and to "selectline" there is "selectpara":</p>
 
@@ -140,7 +165,7 @@ selectparaup n = {shift+ctrl+up n}<br></p>
 m("antenna.nl", "q.hoogenboom", "information about: Implementation details", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;sep 2020</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;sep 2020<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

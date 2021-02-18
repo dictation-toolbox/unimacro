@@ -1,10 +1,10 @@
 Implementation details
 
- actions.ini
+  actions.ini
  
 In the inifile *actions.ini* the implementation for different programs is realized. When you call *edit actions* this file will open for inspection and editing.
 
- gotoline n
+  gotoline n
 
 The basic action for jumping to a line is the link(/features/actions/metaactions.html, meta-action) *gotoline n*, called from the lines grammar with the wanted line number for *n*.
 
@@ -20,12 +20,22 @@ So when there is no other way to jump to a line, you simply go to the top and th
 
 Here are some applications which do it another way:
 
+(*code* is the program name of Visual Studio)
+
 :CODE:
+[code]
+gotoline n = {ctrl+g}; n{enter}
+realhome = {end}{home}{home}
+
 [emacs]
 gotoline n = EMACS goto-line; n{enter}
 
 [excel]
 gotoline n = {ctrl+g}; n:n{enter}
+
+[komodo]
+gotoline n = {Ctrl+g}; W; n;{enter}
+realhome = {alt+home}
 
 [pythonwin]
 gotoline n = {ctrl+g}; n{enter}; {home}
@@ -43,7 +53,7 @@ gotoline n = {ctrl+g}; n{enter}
 Note: the excel action is overridden by the function *metaaction_gotoline* in the link(/features/actions/actionclassesforapplications.html, excel actions class module).
 
 
- line numbers modulo hundred
+  line numbers modulo hundred
  
 When you set this option to true in the _lines.ini file (say *edit lines*):
 
@@ -52,20 +62,52 @@ When you set this option to true in the _lines.ini file (say *edit lines*):
 line numbers modulo hundred = T
 ::
 
-You will be able to use this feature for Excel, win32pad and ultraedit right now. The clue is in the link(/features/actions/actionclassesforapplications.html, actions classes), which can provide, per application, the calling grammar with the current line number from the function *getCurrentLineNumber*. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.
+You will be able to use this feature for Excel, win32pad and Visual Studio Code (New, February 2021).
 
+The clue is in the link(/features/actions/actionclassesforapplications.html, actions classes), which can provide, per application, the calling grammar with the current line number from the function *getCurrentLineNumber*. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.
+
+ Visual Studio (2021)
+
+For Visual Studio, you need to add the extension *copy current line number to clipboard*, and attach the shortcut key *{ctrl+alt+c}* to this extension.
+
+The file *code-actions.py* in the folder *actionclasses* of Unimacro does the work. See there for more detailed instructions.
+
+ Komodo IDE
+For this commercial program, the trick now also works (February 2021):
+
+You need to make a "*Userscript*" in Komodo:
+-Go to View, Tabs & Sidebars, Toolbox
+-Click on the Tools pictogram (right top) and choose *New Userscript*
+-Give it a name, eg "copy current line number", keep Javascript.
+-Give it the Key Binding *Alt+Shift+C*. (When you need another Key Binding, you also need to edit komodo-actions.py in the folder actionclasses.)
+
+Now paste the following code in the Userscript:
+:CODE:
+var editor = require("ko/editor");
+var linenum = editor.getLineNumber(editor.getCursorPosition());
+var clipboard = require("sdk/clipboard");
+clipboard.set(String(linenum));
+::
+
+-Probably you need to restart Dragon, and you can try the feature.
+
+-Note: when you want set/clear debug information (about the timing issues), change line 48 of the file *komodo-actions.py* in the folder *actionclasses* (debug=1 or debug=0).
+
+ Emacs (special!)
 Note: for Emacs the line module hundred trick can be implemented by inserting the correct function, *mdl-goto-line-mod100* instead of *goto-line*.
 
- simpleactions
+
+
+  simpleactions
 
 These are the actions like &lt;&lt;copy>>, &lt;&lt;cut>>, &lt;&lt;delete>>, &lt;&lt;duplicate>>, which can be investigated in the actions.ini file.
 
 
- move copy actions
+  move copy actions
 
 These actions require some more tuning in some applications. Details will follow.
 
- Paragraph actions
+  Paragraph actions
  
 These are tested in Word, and basically meant for this program.
 
