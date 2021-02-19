@@ -444,7 +444,7 @@ def UnRegisterGrammarObject(GrammarObject):
     for k, v in list(loadedGrammars.items()):
         if v is GrammarObject:
             del loadedGrammars[k]
-            print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
+            # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
             grammarsChanged = 1
             break
     else:

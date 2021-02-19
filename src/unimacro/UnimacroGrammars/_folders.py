@@ -2781,9 +2781,9 @@ else:
 
 def unload():
     global thisGrammar, dialogGrammar
-    print("function unload in _folders.py")
+    # print("function unload in _folders.py")
     if thisGrammar:
-        print("unloading folders grammar")
+        # print("unloading folders grammar")
         natlink.setTimerCallback(None, 0)
         # make recentfoldersDict persistf across 
         try:
