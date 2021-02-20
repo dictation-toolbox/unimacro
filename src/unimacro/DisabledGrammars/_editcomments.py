@@ -26,10 +26,10 @@ the vocabulary builder.
 """
 class EditError(Exception): pass
 
-import natlink
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlink as natlink
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
 import utilsqh
 import win32gui
 import time

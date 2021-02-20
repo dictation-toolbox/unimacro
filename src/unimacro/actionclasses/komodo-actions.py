@@ -6,7 +6,7 @@ now special (QH) metaactions for very special tasks on selections of a file only
 import win32gui
 import ctypes
 import win32api
-import messagefunctions as mf
+import unimacro.messagefunctions as mf
 from .actionbases import AllActions
 from actions import doAction as action
 from actions import doKeystroke as keystroke

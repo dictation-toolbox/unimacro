@@ -44,9 +44,9 @@ further comments in _number extended.py. Also see the page "number grammar" on t
 """
 from actions import doKeystroke as keystroke
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):

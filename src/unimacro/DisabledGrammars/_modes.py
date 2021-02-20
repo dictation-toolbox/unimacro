@@ -35,11 +35,11 @@ import os
 import sys
 import types
 import re
-import natlink
+import natlinkcore.natlink as natlink
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 
 # lists number1to99 and number1to9 etc. are taken from function getNumberList in natlinkutilsbj

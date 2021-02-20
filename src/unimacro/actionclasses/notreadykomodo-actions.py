@@ -5,7 +5,7 @@ see www.activestate.com. Does not work (yet)
 import win32gui
 import ctypes
 import win32api
-import messagefunctions as mf
+import unimacro.messagefunctions as mf
 from .actionbases import MessageActions
 import pprint
 

@@ -6,8 +6,8 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
 import actions
 action = actions.doAction
 

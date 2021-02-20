@@ -13,11 +13,11 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 # March 2011
 #
 
-import natlink
+import natlinkcore.natlink as natlink
 import nsformat
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 

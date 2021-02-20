@@ -18,8 +18,8 @@ import os.path
 import time
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
-import natlink
-import natlinkmain
+import natlinkcore.natlink as natlink
+import natlinkcore.natlinkmain as natlinkmain
 import natlinkstatus
 from actions import doAction as action
 from actions import doKeystroke as keystroke
@@ -28,9 +28,9 @@ import actions
 
 status = natlinkstatus.NatlinkStatus()
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 from actions import doKeystroke as keystroke
 from actions import doAction as action
 

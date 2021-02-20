@@ -14,8 +14,8 @@ import types
 import os
 import os.path
 import TestCaseWithHelpers
-import natlink
-import natlinkutilsqh as natqh
+import natlinkcore.natlink as natlink
+import unimacro.natlinkutilsqh as natqh as natqh
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.

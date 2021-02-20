@@ -18,11 +18,11 @@ import unittest
 import TestCaseWithHelpers
 import re
 import types
-import natlink
-natqh = __import__('natlinkutilsqh')   
-natut = __import__('natlinkutils')
+import natlinkcore.natlink as natlink
+import unimacro.natlinkutilsqh as natqh   
+import natlinkcore.natlinkutils as natut
 
-import natlinkutils
+import natlinkcore.natlinkutils as natut
 import win32gui
 reWhiteSpace = re.compile('\s+')
 

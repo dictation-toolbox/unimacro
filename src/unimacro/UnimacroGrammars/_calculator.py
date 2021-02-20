@@ -37,9 +37,9 @@ the grammars _number simple and _number extended.
 import copy
 from actions import doKeystroke as keystroke
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):

@@ -30,16 +30,16 @@
 Extensive use is made of mouse (dragging) routines.
 """
 
-import natlink
+import natlinkcore.natlink as natlink
 import win32gui
 import types
 import time
 import os
 import os.path
 import win32api
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 

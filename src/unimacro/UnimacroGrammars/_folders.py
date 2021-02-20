@@ -55,7 +55,7 @@ The git additional commands are only valid if you specify a valid git client in 
 import types
 import re
 import copy
-import natlink
+import natlinkcore.natlink as natlink
 import pickle    #recentfoldersDict
 import nsformat # for "remember as"
 import os
@@ -72,7 +72,7 @@ import inivars  # for IniError
 import utilsqh
 from pathqh import path
 import readwritefile
-import messagefunctions as mess
+import unimacro.messagefunctions as mess
 import natlinkclipboard
 #, win32com
 import natlinkcorefunctions # getExtendedEnv
@@ -90,9 +90,9 @@ import webbrowser
 import urllib.request
 import urllib.parse
 import urllib.error
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 # for getting unicode explorer window titles:
 import ctypes

@@ -24,12 +24,12 @@ unimacroFolder = (thisDir/'..').normpath()
 if not unimacroFolder in sys.path:
     sys.path.append(unimacroFolder)
 import TestCaseWithHelpers
-import natlink
+import natlinkcore.natlink as natlink
 import natlinkclipboard
 import actions
 from actions import doAction as action
-import natlinkutilsqh
-import natlinkutils
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
 
 class TestError(Exception):
     pass

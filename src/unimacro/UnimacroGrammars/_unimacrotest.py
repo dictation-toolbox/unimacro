@@ -25,12 +25,12 @@ __version__ = "$Rev: 561 $ on $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015)
 #
 
 import unittest
-import natlink
+import natlinkcore.natlink as natlink
 import os
 import sys
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
 import utilsqh
 import glob
 import actions

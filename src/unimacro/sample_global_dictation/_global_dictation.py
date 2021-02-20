@@ -62,7 +62,7 @@ import sys
 import types
 import re
 #print 'sys.path: %s'% sys.path
-import messagefunctions as mess
+import unimacro.messagefunctions as mess
 try:
     # this is a little module for easy changing of test application
     # the file testermod.py (NOT included in svn) holds something like:
@@ -82,13 +82,13 @@ import windowparameters
 testMode = 1
 defaultWaitTime = 0.2  # change to slow down or speed up actions.
 
-import natlink
+import natlinkcore.natlink as natlink
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 from time import sleep  
 

@@ -41,10 +41,10 @@ import time
 import re
 import shutil
 import copy
-import natlink
-import natlinkmain
+import natlinkcore.natlink as natlink
+import natlinkcore.natlinkmain as natlinkmain
 import natlinkcorefunctions
-#from natlinkutils import *  ## natut refers to natlinkutils
+#from natlinkcore.natlinkutils import *  ## natut refers to natlinkutils
 import gramparser # for translation with GramScannerReverse
 from actions import doAction as action
 from actions import doKeystroke as keystroke
@@ -88,8 +88,8 @@ spokenFormCounts = {'nld': {'12': "twaalf"}}
 import BrowseGrammar
 # for IniGrammar:
 import inivars
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
 class UnimacroError(Exception): pass
 # personal use: find out on what machine we are
 def GetID():

@@ -61,12 +61,12 @@ import win32gui
 import win32con
 import win32com.client
 import html.entities
-import monitorfunctions
-import messagefunctions
+import unimacro.monitorfunctions
+import unimacro.messagefunctions
 import autohotkeyactions # for AutoHotkey support
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-import natlink
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlink as natlink
 import natlinkcorefunctions # extended environment variables....
 import natlinkstatus
 import time

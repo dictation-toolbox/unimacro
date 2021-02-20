@@ -46,7 +46,7 @@ import os
 import copy
 import re
 import types
-import natlinkutils
+import natlinkcore.natlinkutils as natut
 import gramparser  # for splitApartLines
 
 ListCode = 0    # List

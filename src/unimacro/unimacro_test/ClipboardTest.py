@@ -14,8 +14,8 @@ unimacroDir=(thisDir/'..').normpath()
 if unimacroDir not in sys.path:
     print("add unimacroDir to sys.path: %s"% unimacroDir)
     sys.path.append(unimacroDir)
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
 
 import time
 import actions

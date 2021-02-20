@@ -49,9 +49,9 @@ from actions import doKeystroke as keystroke
 from actions import doAction as action
 from actions import getMetaAction
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 import iban  # special module for banknumber (European mainly I think)
 import types
 

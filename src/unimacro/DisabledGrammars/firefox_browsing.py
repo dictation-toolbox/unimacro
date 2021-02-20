@@ -41,10 +41,10 @@ tab number # |  tab number # close | tab number # refresh
 """
 
 
-import natlink
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlink as natlink
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 

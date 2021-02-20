@@ -11,10 +11,10 @@
 
 
 
-import natlink
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlink as natlink
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 from actions import doKeystroke as keystroke
 from actions import doAction as action
 

@@ -31,11 +31,11 @@ dictate again and
    correct then if needed.
 
 """
-import natlink
+import natlinkcore.natlink as natlink
 import nsformat
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
+import natlinkcore.natlinkutils as natut
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 

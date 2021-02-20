@@ -10,9 +10,9 @@ import sys
 unimacrodir = path('./..').normpath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-import natlink
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import natlinkcore.natlink as natlink
 import actions
 # reload(actions)
 action = actions.doAction

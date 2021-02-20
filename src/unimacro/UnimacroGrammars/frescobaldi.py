@@ -47,10 +47,10 @@ If just input notes are given, the strategy of insert/update of notes is
   
 """
 
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-import natlink
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
+import natlinkcore.natlink as natlink
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 from itertools import cycle

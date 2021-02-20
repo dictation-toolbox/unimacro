@@ -3,11 +3,11 @@ Grammar to help with natlink hosted python debugging.
 """
 
 
-import natlink
+import natlinkcore.natlink as natlink
 import natlinkpydebug as pd
-import natlinkutilsqh as natqh
-import natlinkutils as natut
-import natlinkutilsbj as natbj
+import unimacro.natlinkutilsqh as natqh as natqh
+import natlinkcore.natlinkutils as natut as natut
+import unimacro.natlinkutilsbj as natbj as natbj
 # import gramparser as gp
 from actions import doAction as action
 import nsformat

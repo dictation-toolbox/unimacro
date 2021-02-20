@@ -5,8 +5,8 @@ now works with copy and so getting the wanted contents of text around the cursor
 """
 from .actionbases import AllActions
 import pprint
-import natlinkutils as natut
-import natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut as natut
+import unimacro.natlinkutilsqh as natqh as natqh
 import time
 
 class FrescobaldiActions(AllActions):
@@ -103,7 +103,7 @@ class FrescobaldiActions(AllActions):
 if __name__ == '__main__':
     # search all frescobaldi instances and dump the controls:
     # does not give a useful result
-    import messagefunctions as mf
+    import unimacro.messagefunctions as mf
     # trying to hack into frescobaldi, no luck (yet)
     tw = mf.findTopWindows(wantedText="frescobaldi")
     for t in tw:

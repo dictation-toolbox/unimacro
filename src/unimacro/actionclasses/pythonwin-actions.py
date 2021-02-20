@@ -2,7 +2,7 @@
 """
 import win32gui
 import win32con
-import messagefunctions
+import unimacro.messagefunctions
 import as
 import mf
 from .actionbases import MessageActions

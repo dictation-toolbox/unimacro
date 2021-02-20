@@ -7,7 +7,7 @@ not fully tested, all this, Quintijn Hoogenboom, 2021
 import win32gui
 import ctypes
 import win32api
-import messagefunctions as mf
+import unimacro.messagefunctions as mf
 from actionbases import MessageActions
 import pprint
 

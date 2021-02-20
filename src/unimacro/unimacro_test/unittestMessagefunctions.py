@@ -57,11 +57,11 @@ import os.path
 import time
 import traceback        # for printing exceptions
 from struct import pack
-import natlink
+import natlinkcore.natlink as natlink
 import win32gui
 import win32ui
 from messagefunctions import *
-import messagefunctions as mess
+import unimacro.messagefunctions as mess
 import TestCaseWithHelpers
 class TestError(Exception):pass
 
