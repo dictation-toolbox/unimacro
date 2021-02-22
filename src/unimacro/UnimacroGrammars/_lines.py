@@ -52,8 +52,7 @@ import re
 reNulls = re.compile('0+$')
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsbj as natbj
+import natlinkutilsbj as natbj
 from unimacro.actions import doAction as action
 from unimacro.actions import doKeystroke as keystroke
 from unimacro import actions

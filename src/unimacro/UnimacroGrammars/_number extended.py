@@ -50,10 +50,10 @@ from unimacro.actions import doAction as action
 from unimacro.actions import getMetaAction
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsbj as natbj
+import natlinkutilsbj as natbj
+
 import iban  # special module for banknumber (European mainly I think)
-import types
+import types  
 
 # Note: lists number1to99 and number1to9 and n1-9 and n20-90 etc. are taken from function getNumberList in natlinkutilsbj
 

@@ -28,9 +28,9 @@ import unittest
 from natlinkcore import natlink
 import os
 import sys
-import unimacro.natlinkutilsqh as natqh
+import natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsbj as natbj
+import natlinkutilsbj as natbj
 from natlinkcore import utilsqh
 import glob
 from unimacro import actions

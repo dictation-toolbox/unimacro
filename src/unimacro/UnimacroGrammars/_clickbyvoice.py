@@ -58,6 +58,13 @@ class ThisGrammar(ancestor):
 <hidenumbers> exported = (hide) (numbers) [after {n1-20}];
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
 
+# is already in _tasks grammar:
+# <navigatetabs> exported = ((next|previous) tab) [{n1-20} | {tabcommands}]|
+#                            (tab (back|forward) [{n1-20} | {tabcommands}]);
+# <numberedtabs> exported = tab {n1-n20} [{tabcommands}];
+# <tabactions> exported = tab {tabcommands};
+
+
 <navigatepages> exported = ((next|previous|{pagecommands}) page)|
                             (page (back|forward) [{n1-20}]) |
                             page {pagecommands} |
@@ -162,6 +169,56 @@ class ThisGrammar(ancestor):
         self.doOption(self.hideNumbers)
         self.finishInputControl()
 
+    def gotResults_tabactions(self,words,fullResults):
+        """do an actions to the current tab (doc)"""
+        # print(f'tabactions words: {words}')
+        command = self.getFromInifile(words, 'tabcommands')
+            
+        if command:
+            action(command)
+
+    def gotResults_numberedtabs(self,words,fullResults):
+        """go to a numbered tab (doc) and do an optional action"""
+        print(f'numberedtabs: {words}')
+        command = self.getFromInifile(words, 'tabcommands')
+
+        counts = self.getNumbersFromSpoken(words)
+        if not counts:
+            print(f'_clickbyvoice, numberedtabs, no valid tab number found: {words}')
+            return
+            
+        if command:
+            action(command)
+
+    def gotResults_navigatetabs(self,words,fullResults):
+        """go to next or previous tab(s) (documents) and refresh possibly"""
+        print(f'navigate tabs: {words}')
+        dir = None
+        command = self.getFromInifile(words, 'tabcommands',noWarning=1)
+        
+        if self.hasCommon(words, ['next', 'verder', 'volgende', 'vooruit', 'forward']):
+            dir = 'tab'
+        elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
+            dir = 'shift+tab'
+        else:
+            print(f'no direction found in command: {words}')
+        
+        counts = self.getNumbersFromSpoken(words)
+        if counts:
+            count = counts[0]
+        else:
+            count = 1
+##        print 'tabs:     dir: %s, count: |%s|, command: |%s|'% (dir, counlinker balkt, command)
+
+        if dir:        
+            while count > 0:
+                count -= 1
+                keys = '{ctrl+' + dir + '}'
+                keystroke(keys)
+                natqh.Wait(0.5) #0.3 seem too short for going back tabs in chrome
+            
+        if command:
+            action(command)
 
     def gotResults_navigatepages(self,words,fullResults):
         """go to next or previous page(s) and refresh possibly"""

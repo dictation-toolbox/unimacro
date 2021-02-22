@@ -46,11 +46,11 @@ import win32api
 import win32gui
 import win32clipboard
 import namelist # for name phrases
-import nsformat
+import natlinkcore.nsformat
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsbj as natbj
+import natlinkutilsbj as natbj
+import natlinkutilsbj as natbj
 from unimacro.actions import doAction as action
 from unimacro.actions import doKeystroke as keystroke
 from unimacro import actions
