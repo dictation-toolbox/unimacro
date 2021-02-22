@@ -41,12 +41,12 @@ tab number # |  tab number # close | tab number # refresh
 """
 
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 # some fixed keystrokes:
 getNumbers = dict(hah='{ctrl+,}', mlb='{NumKey.}')  #keystrokes to get the numbers

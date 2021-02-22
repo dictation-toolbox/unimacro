@@ -31,13 +31,13 @@ dictate again and
    correct then if needed.
 
 """
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import nsformat
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 language = natqh.getLanguage()
 

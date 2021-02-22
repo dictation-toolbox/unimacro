@@ -40,9 +40,9 @@ import os.path
 import copy
 import operator
 import win32api
-import inivars
-import natlinkstatus
-import utilsqh
+from natlinkcore import inivars
+from natlinkcore import natlinkstatus
+from natlinkcore import utilsqh
 from functools import reduce
 
 class NumbersError(Exception): pass

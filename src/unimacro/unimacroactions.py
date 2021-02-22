@@ -66,14 +66,14 @@ import unimacro.messagefunctions
 import autohotkeyactions # for AutoHotkey support
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
-import natlinkcore.natlink as natlink
-import natlinkcorefunctions # extended environment variables....
-import natlinkstatus
+from natlinkcore import natlink
+from natlinkcore import natlinkcorefunctions # extended environment variables....
+from natlinkcore import natlinkstatus
 import time
 import datetime
 import subprocess  # for calling a ahk script
-import utilsqh
-import inivars
+from natlinkcore import utilsqh
+from natlinkcore import inivars
 
 external_actions_modules = {}  # the modules, None if not available (for prog)
 external_action_instances = {} # the instances, None if not available (for hndle)
@@ -759,7 +759,7 @@ class UnimacroAction:
     setting = getFromIni
     
     def get_external_module(self, prog):
-        """try to import actions_prog and put in external_actions_modules
+        """try to from natlinkcore import actions_prog and put in external_actions_modules
         
         if module not there, put None in this external_actions_modules dict
         """

@@ -35,7 +35,7 @@ import os
 import sys
 import types
 import re
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh

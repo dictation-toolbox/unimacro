@@ -11,7 +11,7 @@
 #
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
-import actions
+from unimacro import actions
 action = actions.doAction
 
 import unittest

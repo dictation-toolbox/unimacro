@@ -30,7 +30,7 @@
 Extensive use is made of mouse (dragging) routines.
 """
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import win32gui
 import types
 import time
@@ -40,8 +40,8 @@ import win32api
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 
 #aantal carden en aantal stapelplaatsen:

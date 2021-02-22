@@ -50,7 +50,7 @@ from pywin.mfc import dialog
 from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 from natlinkcore.natlinkutils import *
 from natlinkutilsbj import SetMic,GrammarFileName
 from operator import methodcaller

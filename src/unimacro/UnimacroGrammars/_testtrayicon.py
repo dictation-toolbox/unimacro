@@ -1,5 +1,5 @@
 import natlinkcore.natlinkutils as natut
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import os
 import os.path
 import time

@@ -1,6 +1,6 @@
 #Copyright Ben Staniford (ben@staniford.net)
 #I do not know status of this presently (Quintijn)
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 from natlinkcore.natlinkutils import *
 
 import re

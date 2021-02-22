@@ -55,7 +55,7 @@ The git additional commands are only valid if you specify a valid git client in 
 import types
 import re
 import copy
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import pickle    #recentfoldersDict
 import nsformat # for "remember as"
 import os
@@ -68,20 +68,20 @@ import win32con
 from win32com.client import Dispatch
 from pprint import pprint
 import pywintypes
-import inivars  # for IniError
-import utilsqh
-from pathqh import path
+from natlinkcore import inivars  # for IniError
+from natlinkcore import utilsqh
+from natlinkcore.pathqh import path
 import readwritefile
 import unimacro.messagefunctions as mess
 import natlinkclipboard
 #, win32com
-import natlinkcorefunctions # getExtendedEnv
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from natlinkcore import natlinkcorefunctions # getExtendedEnv
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 from pathqh import getValidPath
-from actions import do_YESNO as YesNo
-from actions import Message, UnimacroBringUp
-import actions
+from unimacro.actions import do_YESNO as YesNo
+from unimacro.actions import Message, UnimacroBringUp
+from unimacro import actions
 from unimacro_wxpythondialogs import InputBox
 
 thisDir = (path(__file__)).split()[0]

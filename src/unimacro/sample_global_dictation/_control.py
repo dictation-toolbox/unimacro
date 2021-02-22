@@ -32,7 +32,7 @@ import sys
 import re
 import pickle
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 from natlinkcore.natlinkutils import *
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut

@@ -8,8 +8,8 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
 """
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
-import actions
-import natlinkcore.natlink as natlink
+from unimacro import actions
+from natlinkcore import natlink
 import unittest
 import time
 import types

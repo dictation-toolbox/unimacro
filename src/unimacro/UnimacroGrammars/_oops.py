@@ -52,9 +52,9 @@ turned on.
 """
 
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import win32gui
-import utilsqh
+from natlinkcore import utilsqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj

@@ -21,7 +21,7 @@ Move tasks to other display other to a corner of the current monitor
 """
 #
 #
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import nsformat # for give name
 
 import time
@@ -35,11 +35,11 @@ import types
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-from actions import setPosition
-from actions import getPosition
-import actions
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import setPosition
+from unimacro.actions import getPosition
+from unimacro import actions
 import win32con
 import win32api
 language = natqh.getLanguage()        

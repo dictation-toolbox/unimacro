@@ -82,9 +82,9 @@ import windowparameters
 testMode = 1
 defaultWaitTime = 0.2  # change to slow down or speed up actions.
 
-import natlinkcore.natlink as natlink
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from natlinkcore import natlink
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh

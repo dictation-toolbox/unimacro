@@ -35,7 +35,7 @@ Also see the page "number grammar" on the Unimacro site and
 the grammars _number simple and _number extended.
 """
 import copy
-from actions import doKeystroke as keystroke
+from unimacro.actions import doKeystroke as keystroke
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh

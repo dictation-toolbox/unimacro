@@ -27,12 +27,12 @@ in the foreground
 """
 
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 # use extension Click by Voice
 visiblePause = 0.4

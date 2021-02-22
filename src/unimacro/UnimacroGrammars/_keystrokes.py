@@ -20,13 +20,13 @@ others continuously.
 import time
 import os
 import sys
-import inivars
+from natlinkcore import inivars
 import types
 import copy
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import nsformat
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh

@@ -11,12 +11,12 @@
 
 
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
-from actions import doKeystroke as keystroke
-from actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
 
 
 ancestor = natbj.IniGrammar

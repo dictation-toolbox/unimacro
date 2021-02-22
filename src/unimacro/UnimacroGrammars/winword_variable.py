@@ -7,7 +7,7 @@
 # for a variable number of words grammar
 # Quintijn, June 28, 2009
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
 
 

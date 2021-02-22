@@ -32,15 +32,15 @@ import copy
 import time
 import pydoc
 import os
-import utilsqh
+from natlinkcore import utilsqh
 import sys
 import pickle
 import glob
 import pprint
 import datetime
 
-import natlinkcore.natlink as natlink
-import natlinkstatus
+from natlinkcore import natlink
+from natlinkcore import natlinkstatus
 import natlinkclipboard
 import win32api
 import win32gui
@@ -51,9 +51,9 @@ import nsformat
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import actions
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from unimacro import actions
 # taskswitching moved to _tasks.py (july 2006)
 status = natlinkstatus.NatlinkStatus()
 language = status.getLanguage()

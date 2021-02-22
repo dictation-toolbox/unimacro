@@ -14,7 +14,7 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 """
 #
 #
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import win32event
 import pywintypes
 import win32api
@@ -24,7 +24,7 @@ import time
 import os
 import os.path
 import sys
-from actions import doAction as action
+from unimacro.actions import doAction as action
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj

@@ -15,9 +15,9 @@
 import sys
 import os
 import os.path
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import math
-from actions import doAction as action
+from unimacro.actions import doAction as action
 import unimacro.natlinkutilsqh as natqh as natqh
 print('file: %s'% __file__)
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on

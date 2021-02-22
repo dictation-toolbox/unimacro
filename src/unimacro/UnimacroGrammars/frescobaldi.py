@@ -50,11 +50,11 @@ If just input notes are given, the strategy of insert/update of notes is
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj
-import natlinkcore.natlink as natlink
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from natlinkcore import natlink
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 from itertools import cycle
-import actions
+from unimacro import actions
 import re
 import copy
 import time

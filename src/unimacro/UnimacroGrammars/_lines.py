@@ -45,8 +45,8 @@ import os
 import sys
 import types
 import re
-import natlinkcore.natlink as natlink
-import inivars
+from natlinkcore import natlink
+from natlinkcore import inivars
 import re
 # for checking base number:
 reNulls = re.compile('0+$')
@@ -54,9 +54,9 @@ reNulls = re.compile('0+$')
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import actions
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from unimacro import actions
 class LinesError(Exception): pass
 
 

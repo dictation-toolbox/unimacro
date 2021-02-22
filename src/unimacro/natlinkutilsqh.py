@@ -46,9 +46,9 @@ import win32con
 import win32clipboard
 import pywintypes
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
-import natlinkcore.natlinkmain as natlinkmain
+from natlinkcore import natlinkmain
 import natlinkcore.natlinkstatus as natlinkstatus
 import natlinkcore.natlink as natlinkcorefunctions
 status = natlinkstatus.NatlinkStatus()

@@ -4,7 +4,7 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-from pathqh import path
+from natlinkcore.pathqh import path
 from pprint import pprint
 import sys
 unimacrodir = path('./..').normpath()
@@ -12,8 +12,8 @@ if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
-import natlinkcore.natlink as natlink
-import actions
+from natlinkcore import natlink
+from unimacro import actions
 # reload(actions)
 action = actions.doAction
 

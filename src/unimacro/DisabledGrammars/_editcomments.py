@@ -26,18 +26,18 @@ the vocabulary builder.
 """
 class EditError(Exception): pass
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj
-import utilsqh
+from natlinkcore import utilsqh
 import win32gui
 import time
 import re
 import os
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import actions
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from unimacro import actions
 import ctypes
 
 

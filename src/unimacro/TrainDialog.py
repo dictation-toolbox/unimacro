@@ -31,7 +31,7 @@ import win32ui,win32con,win32api,commctrl
 from pywin.mfc import dialog
 from pywin.framework import dlgappcore
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 from natlinkcore.natlinkutils import *
 from natlinkutilsbj import SetMic
 

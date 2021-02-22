@@ -8,7 +8,7 @@
 #   (that you want to preserve) before these tests are run.
 #   performed.
 import sys
-from pathqh import path
+from natlinkcore.pathqh import path
 thisDir = path('.')
 unimacroDir=(thisDir/'..').normpath()
 if unimacroDir not in sys.path:
@@ -18,7 +18,7 @@ import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 
 import time
-import actions
+from unimacro import actions
 
 import unittest
 import UnimacroTestHelpers

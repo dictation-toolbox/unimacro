@@ -25,15 +25,15 @@ __version__ = "$Rev: 561 $ on $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015)
 #
 
 import unittest
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import os
 import sys
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj
-import utilsqh
+from natlinkcore import utilsqh
 import glob
-import actions
+from unimacro import actions
 
 class UnittestGrammar(natbj.IniGrammar):
     language = natqh.getLanguage()        

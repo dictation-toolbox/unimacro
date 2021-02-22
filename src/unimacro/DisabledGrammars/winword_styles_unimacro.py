@@ -10,7 +10,7 @@
 # implemented as DocstringGrammar example (april 2010)
 #
 
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsbj as natbj

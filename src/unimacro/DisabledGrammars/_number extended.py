@@ -45,9 +45,9 @@ as "30", "3".
 QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
-from actions import doKeystroke as keystroke
-from actions import doAction as action
-from actions import getMetaAction
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import getMetaAction
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh

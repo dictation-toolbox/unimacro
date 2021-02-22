@@ -40,13 +40,13 @@ grammar.
 import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-from actions import doAction as action
+from unimacro.actions import doAction as action
 
 import os
 import os.path
 import sys
 import time         # for clock
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import natlinktimer
 import types
 

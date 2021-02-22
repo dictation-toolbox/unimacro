@@ -58,7 +58,7 @@ import unimacro.messagefunctions
 import unimacro.autohotkeyactions as autohotkeyactions # for AutoHotkey support
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 import natlinkcore.natlink as natlinkcorefunctions # extended environment variables....
 import natlinkcore.natlinkstatus as natlinkstatus
 import natlinkcore.utilsqh as utilsqh
@@ -725,7 +725,7 @@ def getFromIni(keyword, default='',
 setting = getFromIni
 
 def get_external_module(prog):
-    """try to import actions_prog and put in external_actions_modules
+    """try to from natlinkcore import actions_prog and put in external_actions_modules
     
     if module not there, put None in this external_actions_modules dict
     """

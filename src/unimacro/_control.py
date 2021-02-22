@@ -14,11 +14,11 @@ import string
 import os
 import sys
 import re # cPickle
-import natlinkcore.natlink as natlink
+from natlinkcore import natlink
 from natlinkcore.natlinkutils import *
-import natlinkcore.natlinkmain as natlinkmain
+from natlinkcore import natlinkmain
 # from natlinkmain import loadedFiles, unloadModule, loadModule
-import utilsqh
+from natlinkcore import utilsqh
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
