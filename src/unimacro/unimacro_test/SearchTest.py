@@ -3,9 +3,9 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-import actions
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+from unimacro import actions
 actions.debugActions(1)
 
 import unittest

@@ -41,27 +41,29 @@ import time
 import re
 import shutil
 import copy
-import natlink
-import natlinkmain
-import natlinkcorefunctions
-#from natlinkutils import *  ## natut refers to natlinkutils
-import gramparser # for translation with GramScannerReverse
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-from actions import Message
-from actions import getAppPath, getAppName, getAppForEditExt
-from actions import UnimacroBringUp
-from actions import topWindowBehavesLikeChild, childWindowBehavesLikeTop  # getTopOrChild
-from readwritefile import readAnything, writeAnything
-import actions
-import utilsqh
-from utilsqh import formatListColumns
-from pathqh import path
-#consts = win32com.client.constants
+
 import win32com
 import win32gui
 import win32api
-import natlinkstatus
+
+from natlinkcore import natlink
+from natlinkcore import natlinkmain
+from natlinkcore import natlinkcorefunctions
+#from natlinkcore.natlinkutils import *  ## natut refers to natlinkutils
+from natlinkcore import gramparser # for translation with GramScannerReverse
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import Message
+from unimacro.actions import getAppPath, getAppName, getAppForEditExt
+from unimacro.actions import UnimacroBringUp
+from unimacro.actions import topWindowBehavesLikeChild, childWindowBehavesLikeTop  # getTopOrChild
+from natlinkcore.readwritefile import readAnything, writeAnything
+from unimacro import actions
+from natlinkcore import utilsqh
+from natlinkcore.utilsqh import formatListColumns
+from natlinkcore.pathqh import path
+
+from natlinkcore import natlinkstatus
 status = natlinkstatus.NatlinkStatus()
 debugLoad = status.getDebugLoad()
 
@@ -87,9 +89,9 @@ spokenFormCounts = {'nld': {'12': "twaalf"}}
 
 import BrowseGrammar
 # for IniGrammar:
-import inivars
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
+from natlinkcore import inivars
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
 class UnimacroError(Exception): pass
 # personal use: find out on what machine we are
 def GetID():
@@ -444,7 +446,7 @@ def UnRegisterGrammarObject(GrammarObject):
     for k, v in list(loadedGrammars.items()):
         if v is GrammarObject:
             del loadedGrammars[k]
-            print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
+            # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
             grammarsChanged = 1
             break
     else:

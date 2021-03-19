@@ -14,7 +14,7 @@ import types
 import os
 import os.path
 import TestCaseWithHelpers
-import natlink
+from natlinkcore import natlink
 
 
 def getBaseFolder(globalsDict=None):

@@ -4,7 +4,7 @@ import os
 import os.path
 from pythoncom import com_error
 from .actionbases import AllActions
-import natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh as natqh
 
 
 class ExcelActions(AllActions):

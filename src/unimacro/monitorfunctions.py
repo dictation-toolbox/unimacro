@@ -79,7 +79,7 @@ import pprint
 import types
 import math
 import copy
-import messagefunctions # only for taskbar position (left, bottom etc)
+import unimacro.messagefunctions # only for taskbar position (left, bottom etc)
 
 MONITOR_INFO = None
 MONITOR_HNDLES = None

@@ -14,20 +14,20 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 """
 #
 #
-import natlink
+from natlinkcore import natlink
 import win32event
 import pywintypes
 import win32api
 
-import monitorfunctions # for get_taskbar_position
+import unimacro.monitorfunctions # for get_taskbar_position
 import time
 import os
 import os.path
 import sys
-from actions import doAction as action
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from unimacro.actions import doAction as action
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 language = natqh.getLanguage()        
 # center mouse after taskswitch (not good with XP and choice boxes in taskbar)

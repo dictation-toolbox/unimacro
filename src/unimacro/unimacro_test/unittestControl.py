@@ -8,7 +8,7 @@
 #   the site mechanism (of Qh private) in which modules of a website generating program
 #   are tested specifically
 #
-from pathqh import path
+from natlinkcore.pathqh import path
 from pprint import pprint
 import sys
 unimacrodir = path('./..').normpath()
@@ -20,7 +20,7 @@ import types
 import os
 import os.path
 import TestCaseWithHelpers
-import natlink
+from natlinkcore import natlink
 
 
 def getBaseFolder(globalsDict=None):

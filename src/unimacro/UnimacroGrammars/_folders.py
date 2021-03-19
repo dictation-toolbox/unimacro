@@ -55,9 +55,9 @@ The git additional commands are only valid if you specify a valid git client in 
 import types
 import re
 import copy
-import natlink
+from natlinkcore import natlink
 import pickle    #recentfoldersDict
-import nsformat # for "remember as"
+import natlinkcore.nsformat # for "remember as"
 import os
 import sys
 import time
@@ -68,20 +68,20 @@ import win32con
 from win32com.client import Dispatch
 from pprint import pprint
 import pywintypes
-import inivars  # for IniError
-import utilsqh
-from pathqh import path
-import readwritefile
-import messagefunctions as mess
-import natlinkclipboard
+from natlinkcore import inivars  # for IniError
+from natlinkcore import utilsqh
+from natlinkcore.pathqh import path
+import natlinkcore.readwritefile
+import unimacro.messagefunctions as mess
+import natlinkcore.natlinkclipboard
 #, win32com
-import natlinkcorefunctions # getExtendedEnv
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-from pathqh import getValidPath
-from actions import do_YESNO as YesNo
-from actions import Message, UnimacroBringUp
-import actions
+from natlinkcore import natlinkcorefunctions # getExtendedEnv
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from natlinkcore.pathqh import getValidPath
+from unimacro.actions import do_YESNO as YesNo
+from unimacro.actions import Message, UnimacroBringUp
+from unimacro import actions
 from unimacro_wxpythondialogs import InputBox
 
 thisDir = (path(__file__)).split()[0]
@@ -90,9 +90,9 @@ import webbrowser
 import urllib.request
 import urllib.parse
 import urllib.error
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 # for getting unicode explorer window titles:
 import ctypes
@@ -409,9 +409,9 @@ class ThisGrammar(ancestor):
         for f in foldersList:
             folder = self.substituteFolder(self.ini.get('folders', f))
             if not os.path.isdir(folder):
-                print('warning _folders,  folder "%s" does not exist (move away): "%s"'% (f, folder))
-                self.ini.delete('folders', f)
-                self.ini.set('obsolete folders', f, folder)
+                print(f'warning _folders,  folder "{f}" does not exist: "{folder}"')
+                # self.ini.delete('folders', f)
+                # self.ini.set('obsolete folders', f, folder)
                 continue
             self.foldersDict[f] = folder
         
@@ -476,9 +476,9 @@ class ThisGrammar(ancestor):
         for f in filesList[:]:
             filename = self.substituteFilename(self.ini.get('files', f))
             if not os.path.isfile(filename):
-                print('warning _folders, file "%s" does not exist: "%s"'% (f, filename))
-                self.ini.delete('files', f)
-                self.ini.set('obsolete files', f, filename)
+                print(f'warning _folders, file "{f}" does not exist: "{filename}"'% (f, filename))
+                # self.ini.delete('files', f)
+                # self.ini.set('obsolete files', f, filename)
                 continue
             self.filesDict[f] = filename
 
@@ -543,11 +543,12 @@ class ThisGrammar(ancestor):
                     self.ini.delete('obsolete virtualdrives', dr) # just in case
         
         if wantedVirtualDrives:
-            print('could not resolve "virtualdrive" entries: %s, move to section "obsolete virtualdrives"'% ", ".join(wantedVirtualDrives))
-            for dr in wantedVirtualDrives:
-                virtualDrive = self.ini.get('virtualdrives', dr)
-                self.ini.delete('virtualdrives', dr)
-                self.ini.set('obsolete virtualdrives', dr, virtualDrive)
+            textline = ", ".join(wantedVirtualDrives)
+            print(f'Warning: could not resolve "virtualdrive" entries: {textline}, ignore')
+            # for dr in wantedVirtualDrives:
+            #     virtualDrive = self.ini.get('virtualdrives', dr)
+            #     self.ini.delete('virtualdrives', dr)
+            #     self.ini.set('obsolete virtualdrives', dr, virtualDrive)
 
 
     def getFolderFromVirtualDrive(self, vd):
@@ -2781,9 +2782,9 @@ else:
 
 def unload():
     global thisGrammar, dialogGrammar
-    print("function unload in _folders.py")
+    # print("function unload in _folders.py")
     if thisGrammar:
-        print("unloading folders grammar")
+        # print("unloading folders grammar")
         natlink.setTimerCallback(None, 0)
         # make recentfoldersDict persistf across 
         try:

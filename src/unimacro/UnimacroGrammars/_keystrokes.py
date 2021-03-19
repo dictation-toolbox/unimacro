@@ -20,17 +20,17 @@ others continuously.
 import time
 import os
 import sys
-import inivars
+from natlinkcore import inivars
 import types
 import copy
-import natlink
+from natlinkcore import natlink
 import nsformat
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 
 language = natqh.getLanguage()        
 

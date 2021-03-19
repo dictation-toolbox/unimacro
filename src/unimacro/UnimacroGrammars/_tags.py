@@ -13,11 +13,11 @@ __version__ = "$Rev: 606 $ on $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019)
 
 """
 
-import natlink
-import natlinkutilsqh as natqh
-import natlinkutils as natut
-import natlinkutilsbj as natbj
-from actions import doAction as action
+from natlinkcore import natlink
+import unimacro.natlinkutilsqh as natqh as natqh
+import natlinkcore.natlinkutils as natut as natut
+import unimacro.natlinkutilsbj as natbj as natbj
+from unimacro.actions import doAction as action
 import nsformat
 
 language = natqh.getLanguage()        

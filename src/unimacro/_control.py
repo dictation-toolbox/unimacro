@@ -14,14 +14,14 @@ import string
 import os
 import sys
 import re # cPickle
-import natlink
-from natlinkutils import *
-import natlinkmain
+from natlinkcore import natlink
+from natlinkcore.natlinkutils import *
+from natlinkcore import natlinkmain
 # from natlinkmain import loadedFiles, unloadModule, loadModule
-import utilsqh
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
+from natlinkcore import utilsqh
+import unimacro.natlinkutilsbj as natbj
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
 import D_
 
 # extra commands for controlling actions module:

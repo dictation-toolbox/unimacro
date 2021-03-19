@@ -52,12 +52,12 @@ turned on.
 """
 
 
-import natlink
+from natlinkcore import natlink
 import win32gui
-import utilsqh
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import utilsqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 import time
 import copy
 import sys

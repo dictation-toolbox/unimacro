@@ -18,21 +18,21 @@ import os.path
 import time
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
-import natlink
-import natlinkmain
-import natlinkstatus
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-from pathqh import path
-import actions
+from natlinkcore import natlink
+from natlinkcore import natlinkmain
+from natlinkcore import natlinkstatus
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
+from natlinkcore.pathqh import path
+from unimacro import actions
 
 status = natlinkstatus.NatlinkStatus()
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-from actions import doKeystroke as keystroke
-from actions import doAction as action
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
 
 class TestError(Exception):
     pass

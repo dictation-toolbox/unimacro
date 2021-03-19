@@ -32,11 +32,11 @@ import sys
 import re
 import pickle
 
-import natlink
-from natlinkutils import *
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
+from natlinkcore import natlink
+from natlinkcore.natlinkutils import *
+import unimacro.natlinkutilsbj as natbj
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
 import D_
 
 # extra commands for controlling actions module:

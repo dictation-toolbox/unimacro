@@ -47,20 +47,21 @@ import win32api
 import win32gui
 import win32con
 import win32com.client
-import inivars
 import html.entities
-import monitorfunctions
-import messagefunctions
-import autohotkeyactions # for AutoHotkey support
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-import natlink
-import natlinkcorefunctions # extended environment variables....
-import natlinkstatus
 import time
 import datetime
 import subprocess  # for calling a ahk script
-import utilsqh
+
+import natlinkcore.inivars as inivars
+import unimacro.monitorfunctions
+import unimacro.messagefunctions
+import unimacro.autohotkeyactions as autohotkeyactions # for AutoHotkey support
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+from natlinkcore import natlink
+import natlinkcore.natlink as natlinkcorefunctions # extended environment variables....
+import natlinkcore.natlinkstatus as natlinkstatus
+import natlinkcore.utilsqh as utilsqh
 
 external_actions_modules = {}  # the modules, None if not available (for prog)
 external_action_instances = {} # the instances, None if not available (for hndle)
@@ -725,7 +726,7 @@ def getFromIni(keyword, default='',
 setting = getFromIni
 
 def get_external_module(prog):
-    """try to import actions_prog and put in external_actions_modules
+    """try to from natlinkcore import actions_prog and put in external_actions_modules
     
     if module not there, put None in this external_actions_modules dict
     """

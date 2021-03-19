@@ -1,6 +1,6 @@
 # actions classes for specific programs, base classes first:
-import messagefunctions as mess
-import natlinkutilsqh as natqh
+import unimacro.messagefunctions as mess
+import unimacro.natlinkutilsqh as natqh as natqh
 
 class AllActions:
     def __init__(self, progInfo):

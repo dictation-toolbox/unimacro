@@ -6,10 +6,10 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-import actions
-import natlink
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+from unimacro import actions
+from natlinkcore import natlink
 import unittest
 import time
 import types

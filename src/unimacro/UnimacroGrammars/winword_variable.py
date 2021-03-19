@@ -7,8 +7,8 @@
 # for a variable number of words grammar
 # Quintijn, June 28, 2009
 
-import natlink
-natut = __import__('natlinkutils')
+from natlinkcore import natlink
+import natlinkcore.natlinkutils as natut
 
 
 ancestor = natut.GrammarBase

@@ -10,10 +10,10 @@
 # implemented as DocstringGrammar example (april 2010)
 #
 
-import natlink
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import natlink
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
 
 import win32api
 import win32com.client

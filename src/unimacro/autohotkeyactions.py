@@ -39,8 +39,8 @@ import sys
 import subprocess
 import stat
 import shutil
-import natlinkcorefunctions
-import natlinkstatus
+from natlinkcore import natlinkcorefunctions
+from natlinkcore import natlinkstatus
 import win32gui
 
 # assume this module is in Unimacro

@@ -18,12 +18,12 @@
 # See http://qh.antenna.nl/unimacro/features/grammarclasses/docstringgrammar/index.html
 # (March 2010, Quintijn Hoogenboom)
 #
-import natlink
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-from actions import doKeystroke as keystroke
-from actions import doAction as action
+from natlinkcore import natlink
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
 
 class ThisGrammar(natbj.DocstringGrammar):
     """simple example of a NatLink grammar with the rule definition in docstring

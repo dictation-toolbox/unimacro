@@ -45,13 +45,13 @@ as "30", "3".
 QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
-from actions import doKeystroke as keystroke
-from actions import doAction as action
-from actions import getMetaAction
+from unimacro.actions import doKeystroke as keystroke
+from unimacro.actions import doAction as action
+from unimacro.actions import getMetaAction
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 import iban  # special module for banknumber (European mainly I think)
 import types
 

@@ -37,16 +37,16 @@ grammar.
 """
 
 #
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
-from actions import doAction as action
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
+import natlinkcore.natlinkutils as natut
+from unimacro.actions import doAction as action
 
 import os
 import os.path
 import sys
 import time         # for clock
-import natlink
+from natlinkcore import natlink
 import natlinktimer
 import types
 

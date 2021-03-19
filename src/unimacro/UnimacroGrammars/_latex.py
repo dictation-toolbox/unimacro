@@ -13,13 +13,13 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 # March 2011
 #
 
-import natlink
+from natlinkcore import natlink
 import nsformat
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+import unimacro.natlinkutilsqh as natqh
+import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsbj as natbj
+from unimacro.actions import doAction as action
+from unimacro.actions import doKeystroke as keystroke
 
 language = natqh.getLanguage()        
 ICAlphabet = natbj.getICAlphabet(language=language)

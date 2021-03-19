@@ -30,7 +30,7 @@
 
 """
 #
-import monitorfunctions # elaborated version QH
+import unimacro.monitorfunctions as monitorfunctions  # elaborated version QH
 import time
 import re
 import types
@@ -40,29 +40,26 @@ import os.path
 import stat
 import collections
 
-# for debugging:
-coreDir =  r"C:\DT\Natlink\MacroSystem\core"
-if coreDir not in sys.path:
-    sys.path.append(coreDir)
-del coreDir
-
-import natlink
-import inivars
-import utilsqh
-natut = __import__('natlinkutils')
 import win32gui
 import win32api
 import win32con
 import win32clipboard
 import pywintypes
-import natlinkmain
-import natlinkstatus
-import natlinkcorefunctions
+
+from natlinkcore import natlink
+import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkmain
+import natlinkcore.natlinkstatus as natlinkstatus
+import natlinkcore.natlink as natlinkcorefunctions
 status = natlinkstatus.NatlinkStatus()
 # import RegistryDict  # for emergency get of UserDirectory!
-import autohotkeyactions
-from readwritefile import DecodeEncode
-import utilsqh
+import unimacro.autohotkeyactions as autohotkeyactions
+from natlinkcore.readwritefile import DecodeEncode
+import natlinkcore.utilsqh as utilsqh
+import natlinkcore.inivars as inivars
+import natlinkcore.utilsqh as utilsqh
+
+
 DEBUG = 0
 
 status = natlinkstatus.NatlinkStatus()
@@ -1251,7 +1248,7 @@ def clearWindowHandle():
 # movement in all cases.
 waitingCanceled = 0
 iconState = 0
-iconDirectory = os.path.join(getUnimacroDirectory(), 'icons')
+iconDirectory = os.path.join(status.getUnimacroDirectory(), 'icons')
 
 # this sets the icontray for several waiting situations:::
 def setTrayIcon(state=None, toolTip=None, comingFrom=None):
