@@ -33,37 +33,23 @@
 
 <!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
 <table class="leftmenu" cellspacing="0" width="100%">
-<tr><td class="leftoff"><a href="installationstableversionpython2.html">Installation stable version python2</a></td></tr>
+<tr><td class="leftoff"><a href="installforpython27/installationstableversionpython2.html">Install for python 27</a></td></tr>
 
 <tr><td class="lefton">Installation experimental version python3</td></tr>
 
-<tr><td class="leftoff"><a href="configuration.html">Configuration</a></td></tr>
-
-<tr><td class="leftoff"><a href="howtostart.html">How to start</a></td></tr>
-
-<tr><td class="leftoff"><a href="logofchanges/index.html">Log of changes</a></td></tr>
-
-<tr><td class="leftoff"><a href="problemswithinstallation.html">Problems with installation?</a></td></tr>
-
-<tr><td class="leftoff"><a href="problemswithnatlink.html">Problems with NatLink?</a></td></tr>
-
-<tr><td class="leftoff"><a href="speechmodel.html">Speech Model</a></td></tr>
-
-<tr><td class="leftoff"><a href="inifilestrategy.html">Ini file strategy</a></td></tr>
-
-<tr><td class="leftoff"><a href="configureadministratorrights.html">Configure administrator rights</a></td></tr>
-
-<tr><td class="leftoff"><a href="settinghome/index.html">Setting HOME</a></td></tr>
-
-<tr><td class="leftoff"><a href="technicaldetails/index.html">Technical details</a></td></tr>
+<tr><td class="leftoff"><a href="logofchangespython3.html">log of changes Python 3</a></td></tr>
 </table>
 
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Installation of Natlink/Vocola 2/Unimacro Experimental Release with Python 3</h1>
 
 <p>Vocola and Unimacro work well on the development branch but you are may come across the odd bug.</p>
-<ul><li>Download and install the latest 3.8 32-bit Python  from <a href="https://www.python.org/downloads/windows/299" target="_blank">Python 3.8  latest version</a> (Select "Add to path" install option, and "Install FOR ALL USERS".  Save
+
+<p>(-Download and install the latest 3.8 32-bit Python  from <a href="https://www.python.org/downloads/windows/299" target="_blank">Python 3.8  latest version</a>: Note there is now a Python 3.9 version, but please stick to 3.8.</p>
+
+<p>(Select "Add to path" install option, and "Install FOR ALL USERS".  Save
 yourself some grief and install it at the root of  your c: drive, like <strong>c:\python38-32</strong>).  If you already have a python 3.7 32 bit installation you can use that.
-(At this time, do not create a <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">https://docs.python.org/3/tutorial/venv.html</a> Virtual Environment. They do not work with Natlink.)</li><li>Packages are now all in the dictation-toolbox in github. For packages that are not packaged for a pip install,
+(At this time, do not create a <a href="https://docs.python.org/3/tutorial/venv.html" target="_blank">https://docs.python.org/3/tutorial/venv.html</a> Virtual Environment. They do not work with Natlink.)</p>
+<ul><li>Packages are now all in the dictation-toolbox in github. For packages that are not packaged for a pip install,
 we recommend cloning the wanted repositories in one base directory, for example <strong>C:\DT</strong>
 Instructions below install the source from GIT.   Select a folder to host your natlink, unimacro, dragonfly, etc.  Below the example is <strong>C:\DT</strong> but it can be anything.</li><li>Exit dragon</li><li>Download the source from GIT</li>    <ul>    <li><b>git clone git@github.com:dictation-toolbox/natlink.git</b> (In your preferred directory eg <strong>C:\DT\Natlink</strong>. We will assume C:\DT in the instructions below. )</li>    <li>If you want Unimacro: git clone git@github.com:dictation-toolbox/unimacro.git (into <strong>C:\DT\Unimacro</strong>)</li>    <li>If you want Vocola: git clone git@github.com:dictation-toolbox/vocola2.git (into <strong>C:\DT\Vocola</strong>) (Vocola2 being the Vocola version for Dragon/Natlink)</li>    <li>If you want the development branch of Dragonfly and Caster, clone from their git repositories.  Otherwise install them using pip (see below).</li></ul>
 <li>Install the python package prequisistes:</li>    <ul>    <li>Start menu -> cmd (Command prompt) and <strong>Run as administrator</strong>).  Powershell also will work.</li>    <li>Change directory to <strong>C:\DT\Natlink\ConfigureNatlink</strong></li>    <li>This will install the python prerequisites for natlink, vocola, and unimacro: <strong>pip install -r requirements.txt</strong></li>    <li>This will instal the prerequisites for  caster and dragonfly.  You can skip this when you install those with pip:
@@ -84,7 +70,7 @@ Instructions below install the source from GIT.   Select a folder to host your n
 m("antenna.nl", "q.hoogenboom", "information about: installation experimental version python3", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

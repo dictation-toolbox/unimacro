@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>Install for python 27, technical details, natlinkutils</title>
+<meta charset="UTF-8">
+<meta name="description" content="Natlink and Unimacro, for a Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="Installation, Natlink/Vocola/Unimacro, Install, python, 27, technical, details, natlinkutils, technical details, Install for python 27, Installation Natlink/Vocola/Unimacro">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../../../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../../../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../../../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../../../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../../../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topon" height="28" onclick="location='../../index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../../index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../../features/index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="../../../features/index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../../grammars/index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../../../grammars/index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td>
+<td align="center" class="topoff" height="28" onclick="location='../../../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../../../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">installation natlink/vocola/unimacro</a> > <a href="../installationstableversionpython2.html">install for python 27</a> > <a href="index.html">technical details</a> > natlinkutils</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="lefton" colspan="3"><a href="../installationstableversionpython2.html">Install for python 27</a></td></tr>
+    
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../installationstableversionpython2.html">Installation stable version python2</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../configuration.html">Configuration</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../howtostart.html">How to start</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../logofchanges/index.html">Log of changes</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../problemswithinstallation.html">Problems with installation</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../problemswithnatlink.html">problems with NatLink</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../speechmodel.html">Speech Model</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../inifilestrategy.html">Ini file strategy</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../configureadministratorrights.html">Configure administrator rights</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../settinghome/index.html">Setting HOME</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="lefton" colspan="2"><a href="index.html">Technical details</a></td></tr>
+        
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="natlinkstatus.html">Natlinkstatus</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="natlinkconfigfunctions.html">Natlinkconfigfunctions</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="natlinkcorefunctions.html">Natlinkcorefunctions</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="configuregui.html">configure GUI</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="batchmodeforconfiguration.html">Batch mode for configuration</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="installer.html">Installer</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="natlinkmainvocolamain.html">Natlinkmain_vocola_main</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="natlinkmain.html">Natlinkmain</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="lefton">Natlinkutils</td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="nsformat.html">Nsformat</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="testingnatlink.html">Testing natlink</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="workingwithsubversion/index.html">Working with subversion</a></td></tr>
+
+<tr><td class="leftoff" colspan="3"><a href="../../installationexperimentalversionpython3.html">Installation experimental version python3</a></td></tr>
+
+<tr><td class="leftoff" colspan="3"><a href="../../logofchangespython3.html">log of changes Python 3</a></td></tr>
+</table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Changes in natlinkutils.py</h1>
+<h3>January, 2014:  a change with the python statement <strong>import</strong></h3>
+
+<p>The following statement is changed, which can cause problems  in NatLink grammar files:</p>
+
+<p class="pre">from natlink import *</p>
+<p>has been changed to:</p>
+<p class="pre">import natlink</p>
+<p>Therefore variables, functions or exceptions from natlink (the natlink.pyd file) could be (often were) called in a confusing way:</p>
+
+<p class="pre">## previous:<br>
+import natlinkutils<br>
+# and use functions or exceptions from natlink as<br>
+# if they were taken from natlinkutils:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;natlinkutils.recognitionMimic(....)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;except natlinkutils.BadWindow:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+
+<p>or even names from natlink could be called unqualified, residing in the global namespace:</p>
+
+<p class="pre">## previous:<br>
+from natlinkutils import *<br>
+<br>
+# and use functions or exceptions from natlink as<br>
+# if they were in the global namespace<br>
+&nbsp;&nbsp;&nbsp;&nbsp;recognitionMimic(....)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;except BadWindow:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+
+<h3>The preferred way to call these names:</h3>
+<p>As the use of <b>from ... import *</b> is now considered bad programming practice, we advise the following way:</p>
+
+<p class="pre">import natlinkutils<br>
+import natlink<br>
+&nbsp;&nbsp;&nbsp;&nbsp;natlink.recognitionMimic(....)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;try:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+&nbsp;&nbsp;&nbsp;&nbsp;except natlink.BadWindow:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+
+<h3>Earlier changes:</h3>
+<p>Only a few minor changes, as addition to Scott Weinstein's installation are made.</p>
+<ul><li>"moddle" has been changed to "middle"</li><li>in the function <strong>activateSet</strong> a <strong>&#091;:&#93;</strong> is added, in order to make copy of the list of activeRules.</li></ul>
+
+<p>This file should come in the core folder of the NatLink system.</p>
+<h3>Change January 2012 (Quintijn)</h3><ul><li>at callback time now also <strong>self.wordsByRule</strong> is provided. This dictionary is identical to the output of the utility function <strong>convertResults</strong> (in natlinkutils).</li></ul>
+
+<h3>Example (also see unittestNatlink.py, around line 2530):</h3>
+<p>Consider the grammar (the list <strong>{furniture}</strong> containing "table" and "chair".</p>
+
+<p class="pre">&lt;run> exported = test [&lt;optional>+] {colors}+ &lt;extra>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;optional>&nbsp;&nbsp;= very | small | big;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;extra> = {furniture};</p>
+
+<p>The recognition <strong>test very big blue chair</strong> will go through the rules:</p>
+
+<table cellspacing="0" class="table"><tr><th class="TH1"><p>rule</p></th><th class="TH"><p>words</p></th><th class="TH"><p>prevRule</p></th><th class="TH"><p>nextRule</p></th><th class="TH"><p>prevWords</p></th><th class="TH"><p>nextWords</p></th></tr>
+
+<tr><td class="TD1"><p>run</p></td><td class="TD"><p>&#091;test]</p></td><td class="TD"><p></p></td><td class="TD"><p>optional</p></td><td class="TD"><p>&#091;]</p></td><td class="TD"><p>&#091;"very", "big"]</p></td></tr>
+
+<tr><td class="TD1"><p>optional</p></td><td class="TD"><p>&#091;"very", "big"]</p></td><td class="TD"><p>run</p></td><td class="TD"><p>run</p></td><td class="TD"><p>&#091;"test"]</p></td><td class="TD"><p>&#091;"blue"]</p></td></tr>
+
+<tr><td class="TD1"><p>run</p></td><td class="TD"><p>&#091;"blue"]</p></td><td class="TD"><p>optional</p></td><td class="TD"><p>extra</p></td><td class="TD"><p>&#091;"very", "big"]</p></td><td class="TD"><p>&#091;"chair"]</p></td></tr>
+
+<tr><td class="TD1"><p>extra</p></td><td class="TD"><p>&#091;"chair"]</p></td><td class="TD"><p>run</p></td><td class="TD"><p></p></td><td class="TD"><p>&#091;"blue"]</p></td><td class="TD"><p>&#091;]</p></td></tr></table>
+
+<p>&nbsp;</p>
+<h3>The additional helper variables are:</h3>
+<table cellspacing="0" class="table"><tr><th class="TH1"><p>variable</p></th><th class="TH"><p>contents</p></th></tr>
+
+<tr><td class="TD1"><p>self.fullResults</p></td><td class="TD"><p>&#091;('test', 'run'), ('very', 'optional'), ('big', 'optional'), ('blue', 'run'), ('chair', 'extra')]</p></td></tr>
+
+<tr><td class="TD1"><p>self.seqsAndRules</p></td><td class="TD"><p>&#091;(&#091;'test'], 'run'), (&#091;'very', 'big'], 'optional'), (&#091;'blue'], 'run'), (&#091;'chair'], 'extra')]</p></td></tr>
+
+<tr><td class="TD1"><p>self.wordsByRule</p></td><td class="TD"><p>{'optional': &#091;'very', 'big'], 'run': &#091;'test', 'blue'], 'extra': &#091;'chair']}</p></td></tr></table>
+
+<p>&nbsp;</p>
+<h3>Changes March 2010 (Quintijn)</h3><ul><li>added <strong>deactivateSet()</strong> function in GrammarBase</li><li>added <strong>exceptlist</strong> optional variable to <strong>activateAll</strong> method of GrammarBase</li><li>added <strong>callRuleResultsFunctions</strong> in resultsCallback, so the calling of
+the rule result functions can be overloaded (for DocstringGrammar)</li><li>through this function the instance variables <em>self.prevRule</em>, <em>self.prevWords</em>, <em>self.nextRule</em> and <em>self.nextWords</em>  are maintained, to facilitate looking forward and looking back one step in a recognition.</li><li>Preventing the detailed gotResults functions to execute:
+In a rare case it was needed to prevent the rule functions to execute. This is the case if <strong>self.doOnlyGotResultsObject</strong> is set to 1 or True. Only the gotResultsObject function is called in this case.</li></ul>
+
+<h3>Subclasses</h3>
+<p>For the more practical subclasses of GrammarBase see the <a href="../../../features/grammarclasses/index.html">Grammar classes</a> section.</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">installation natlink/vocola/unimacro</a> > <a href="../installationstableversionpython2.html">install for python 27</a> > <a href="index.html">technical details</a> > natlinkutils > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../../sitemap.html#natlinkutils';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../../sitemap.html#natlinkutils">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: natlinkutils", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>
