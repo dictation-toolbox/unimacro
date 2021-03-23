@@ -39,6 +39,7 @@ import os.path
 import win32api
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 from unimacro.actions import doAction as action
 from unimacro.actions import doKeystroke as keystroke

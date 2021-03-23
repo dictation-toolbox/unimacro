@@ -34,6 +34,7 @@ dictate again and
 from natlinkcore import natlink
 import nsformat
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
 from unimacro.actions import doAction as action

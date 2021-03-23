@@ -47,9 +47,11 @@ If just input notes are given, the strategy of insert/update of notes is
   
 """
 
-import natlinkutilsbj as natbj
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-import natlinkutilsbj as natbj
+import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlink
 from unimacro.actions import doAction as action
 from unimacro.actions import doKeystroke as keystroke

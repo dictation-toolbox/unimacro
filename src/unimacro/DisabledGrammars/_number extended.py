@@ -51,6 +51,7 @@ from unimacro.actions import getMetaAction
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import iban  # special module for banknumber (European mainly I think)
 import types

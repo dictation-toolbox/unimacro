@@ -27,6 +27,7 @@ import sys
 from unimacro.actions import doAction as action
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 
 language = natqh.getLanguage()        

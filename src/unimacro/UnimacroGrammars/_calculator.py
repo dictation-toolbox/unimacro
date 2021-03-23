@@ -39,6 +39,7 @@ from unimacro.actions import doKeystroke as keystroke
 
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar

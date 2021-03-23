@@ -21,6 +21,7 @@
 from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 from unimacro.actions import doKeystroke as keystroke
 from unimacro.actions import doAction as action

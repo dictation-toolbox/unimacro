@@ -29,6 +29,7 @@ class EditError(Exception): pass
 from natlinkcore import natlink
 import unimacro.natlinkutilsqh as natqh
 import natlinkcore.natlinkutils as natut
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import utilsqh
 import win32gui

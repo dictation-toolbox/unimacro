@@ -10,7 +10,7 @@
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003
 
-import string
+# import string
 import os
 import sys
 import re # cPickle
@@ -19,6 +19,7 @@ from natlinkcore.natlinkutils import *
 from natlinkcore import natlinkmain
 # from natlinkmain import loadedFiles, unloadModule, loadModule
 from natlinkcore import utilsqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
@@ -26,7 +27,7 @@ import D_
 
 # extra commands for controlling actions module:
 try:
-    actions = __import__('actions')
+    from unimacro import actions
 except ImportError:
     actions = None
     print('warning: actions module not imported')

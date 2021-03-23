@@ -34,6 +34,7 @@ import pickle
 
 from natlinkcore import natlink
 from natlinkcore.natlinkutils import *
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh

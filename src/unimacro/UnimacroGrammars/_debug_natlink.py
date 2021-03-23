@@ -7,6 +7,7 @@ from natlinkcore import natlink
 import natlinkpydebug as pd
 import unimacro.natlinkutilsqh as natqh as natqh
 import natlinkcore.natlinkutils as natut as natut
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj as natbj
 # from natlinkcore import gramparser as gp
 from unimacro.actions import doAction as action

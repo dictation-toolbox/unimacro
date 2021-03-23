@@ -57,6 +57,7 @@ import win32gui
 from natlinkcore import utilsqh
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 import time
 import copy

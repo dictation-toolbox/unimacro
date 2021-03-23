@@ -92,6 +92,7 @@ import urllib.parse
 import urllib.error
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
+import unimacro.natlinkutilsqh as natqh
 import unimacro.natlinkutilsbj as natbj
 
 # for getting unicode explorer window titles:
