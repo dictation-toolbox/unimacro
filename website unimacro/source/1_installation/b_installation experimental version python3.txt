@@ -1,7 +1,9 @@
 Installation of Natlink/Vocola 2/Unimacro Experimental Release with Python 3
 Vocola and Unimacro work well on the development branch but you are may come across the odd bug.  
 
--Download and install the latest 3.8 32-bit Python  from link(https://www.python.org/downloads/windows/299, "Python 3.8  latest version") (Select "Add to path" install option, and "Install FOR ALL USERS".  Save 
+(-Download and install the latest 3.8 32-bit Python  from link(https://www.python.org/downloads/windows/299, "Python 3.8  latest version"): Note there is now a Python 3.9 version, but please stick to 3.8.
+
+(Select "Add to path" install option, and "Install FOR ALL USERS".  Save 
 yourself some grief and install it at the root of  your c: drive, like *c:\python38-32*).  If you already have a python 3.7 32 bit installation you can use that.
 (At this time, do not create a link(https://docs.python.org/3/tutorial/venv.html) Virtual Environment. They do not work with Natlink.)
 

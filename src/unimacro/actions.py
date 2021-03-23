@@ -319,7 +319,8 @@ def doAction(action, completeAction=None, pauseBA=None, pauseBK=None,
         if type(aNew) == tuple:
             # found function
             func, number = aNew
-            if type(func) in (types.FunctionType, types.UnboundMethodType):
+            print(f'meatAction, type func: {type(func)}')
+            if type(func) in (types.FunctionType, types.MethodType):
                 func(number)
                 return 1
             else:
