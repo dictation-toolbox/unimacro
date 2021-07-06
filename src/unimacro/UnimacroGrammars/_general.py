@@ -16,8 +16,26 @@ mode, that only works when spell mode or command mode is on.
 
 
 """
-#
-#
+import re
+import os
+import sys
+import pprint
+
+import utilsqh
+
+import natlink
+import natlinkstatus
+import win32gui
+import namelist # for name phrases
+import nsformat
+
+import natlinkutils as natut
+from unimacro import natlinkutilsqh as natqh
+import unimacro.natlinkutilsbj as natbj
+from actions import doAction as action
+from actions import doKeystroke as keystroke
+import actions
+# taskswitching moved to _tasks.py (july 2006)
 
 Counts = list(range(1,20)) + list(range(20,51,5))
 
@@ -26,35 +44,6 @@ Handles = {}
 #systray:
 systrayHndle = 0
 
-import re
-import types
-import copy
-import time
-import pydoc
-import os
-import utilsqh
-import sys
-import pickle
-import glob
-import pprint
-import datetime
-
-import natlink
-import natlinkstatus
-import natlinkclipboard
-import win32api
-import win32gui
-import win32clipboard
-import namelist # for name phrases
-import nsformat
-
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import actions
-# taskswitching moved to _tasks.py (july 2006)
 status = natlinkstatus.NatlinkStatus()
 language = status.getLanguage()
 FORMATS = {
@@ -109,7 +98,7 @@ normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase', 'batch',
              'comment', 'documentation', 'modes', 'variable', 'search',
              'highlight',         # for Shane, enable, because Vocola did not fix _anything yet
              'browsewith', 'hyphenatephrase', 'pastepart',
-             'password']
+             'password', 'presscode', 'choose']
 #normalSet = ['hyphenatephrase']  # skip 'openuser'
 
 commandSet = normalSet[:] + ['dictate']
@@ -117,6 +106,7 @@ commandSet = normalSet[:] + ['dictate']
 
 ancestor=natbj.IniGrammar
 class ThisGrammar(ancestor):
+    # pylint: disable=C0116, W0613, W0201
 
     iniIgnoreGrammarLists = ['modes','count', 'namelist', 'character', 'punctuation']
 
@@ -132,9 +122,12 @@ class ThisGrammar(ancestor):
 <before> = Command | Here;
 <dgnletters> imported;
 <dgndictation> imported;
+# <dgnwords> imported;
 <documentation> exported = Make documentation;
 <batch> exported = do batch words;
 <test> exported = test micstate;
+<presscode> exported = (press|address) (<dgndictation>|<dgnletters>);
+<choose> exported = choose {n1-10};
 #test (klik|dubbelklik|shiftklik|controlklik|rechtsklik|foutklik|combinedklik|trippelklik);
 # <test> exported = test clipboard formats;
 # <test> exported = eating <food> <time> [thinking <dgndictation>];
@@ -187,6 +180,7 @@ class ThisGrammar(ancestor):
 ##            #self.setList('testlist', self.testlist)
 ##            self.emptyList('testlist')
             self.gotPassword = 0
+            # self.gotPresscode = 0
             # print "%s, activateSet: %s"% (self.name, normalSet)
             # self.deactivateAll()  # why is this necessary? The activateAll in switchOn is definitly now Ok...
             self.title = 'Unimacro grammar "'+__name__+'" (language: '+self.language+')'
@@ -400,19 +394,25 @@ class ThisGrammar(ancestor):
     def gotResults_dictate(self,words,fullResults):
         self.dictate = 1
 
-    # def gotResults_dgnletters(self,words,fullResults):
-    #     self.text = ''.join(map(natqh.stripSpokenForm, words))
-    #     if self.search:
-    #         # catch some common misrecognitions:
-    #         if self.text == '4':
-    #             print 'caught dgnletters %s, switch to forward search'% self.text
-    #             self.text = ''
-    #             self.search = 2 # forward search
-    #         elif self.text in ['43', '403']:
-    #             print 'caught dgnletters %s, switch to forward search 3'% self.text
-    #             self.text = ''
-    #             self.count = 3
-    #             self.search = 2 # forward search
+    def gotResults_dgnletters(self,words,fullResults):
+        self.text = ''.join(map(natqh.stripSpokenForm, words))
+        if self.search:
+            # catch some common misrecognitions:
+            if self.text == '4':
+                print(f'caught dgnletters {self.text}, switch to forward search')
+                self.text = ''
+                self.search = 2 # forward search
+            elif self.text in ['43', '403']:
+                print(f'caught dgnletters {self.text}, switch to forward search 3')
+                self.text = ''
+                self.count = 3
+                self.search = 2 # forward search
+            return
+        if self.gotPresscode:
+            print(f'gotPresscode: {words} -> {self.text}')
+            self.do_pressfirst(self.text)
+            return
+        
         
     def gotResults_characterpunctuation(self,words,fullResults):
         capNext = 0
@@ -440,6 +440,11 @@ class ThisGrammar(ancestor):
                 else:
                     print('general: character or punctuation not found for spoken form: %s'% w)
         
+    # def gotResults_dgnwords(self,words,fullResults):
+    #     #self.text = ' '.join(map(natqh.stripSpokenForm, words))
+    #     # try with the improved nsformat function
+    #     print(f'got dgnwords: {words}')
+
     def gotResults_dgndictation(self,words,fullResults):
         #self.text = ' '.join(map(natqh.stripSpokenForm, words))
         # try with the improved nsformat function 
@@ -449,6 +454,7 @@ class ThisGrammar(ancestor):
             keystroke(text)
             self.gotPassword = 0
             print('reset gotPassword, ', self.gotPassword)
+            return
         if self.gotVariable:
             print('do variable trick %s on %s'% (self.gotVariable, words))
             vartrick = self.gotVariable
@@ -464,6 +470,11 @@ class ThisGrammar(ancestor):
             result = func(words)
 #
             keystroke(" " + result)
+            return
+        if self.gotPresscode:
+            self.text = ' '.join(map(natqh.stripSpokenForm, words))
+            print(f'got dgndictation: {words} -> {self.text}')
+            self.do_pressfirst(self.text)
             return
         #very well for like this
         if self.search and self.text in ['on', 'verder']: # 
@@ -664,6 +675,28 @@ class ThisGrammar(ancestor):
 
 
 #  sstarting message
+    def gotResults_presscode(self,words,fullResults):
+        """pressing letters or dictation in for example explorer
+        
+        """
+        self.gotPresscode = 1
+        print(f'got presscode: {words}, presscode: {self.gotPresscode}')
+        if self.hasCommon(words, 'address'):
+            action('{alt+d}; VW')
+        # search maybe useful for safari, but does not make sense otherwise
+        # if self.hasCommon(words, 'search'):
+        #     action('{ctrl+k}; VW')
+        
+
+    def gotResults_choose(self,words,fullResults):
+        """choose alternative, via actions
+                
+        """
+        n = self.getNumberFromSpoken(words)   # return int
+        print(f'got choose: {words} -> {n}')
+        action(f'<<choose {n}>>')
+        
+        
     def gotResults_test(self,words,fullResults):
 
         micstate = natlink.getMicState()
@@ -1275,6 +1308,14 @@ class ThisGrammar(ancestor):
         tt = t + "  (command: " + self.fullText + ")"
         natqh.Message(tt,self.title)
         
+    def do_pressfirst(self, text):
+        """first character "hard", rest normal
+        """
+        if text:
+            action(f'SSK {text[0]}')
+            if len(text) > 1:
+                action('VW')
+                keystroke(text[1:])
 
 def isPythonFile(f):
     return f[-3:] == '.py'

@@ -457,7 +457,7 @@ class ThisGrammar(ancestor):
         if self.line:
             intLine = int(self.line)
             #print 'intLine: %s, currentLine: %s'% (intLine, self.currentLine)
-            if intLine >= 100 or self.line.startswith('0'):
+            if len(self.line) > 2:
                 self.line = intLine # always absolute
             elif self.currentLine:
                 intLine = getLineRelativeTo(intLine, self.currentLine)

@@ -409,9 +409,9 @@ class ThisGrammar(ancestor):
         for f in foldersList:
             folder = self.substituteFolder(self.ini.get('folders', f))
             if not os.path.isdir(folder):
-                print('warning _folders,  folder "%s" does not exist (move away): "%s"'% (f, folder))
-                self.ini.delete('folders', f)
-                self.ini.set('obsolete folders', f, folder)
+                print(f'warning _folders,  folder "{f}" does not exist: "{folder}"')
+                # self.ini.delete('folders', f)
+                # self.ini.set('obsolete folders', f, folder)
                 continue
             self.foldersDict[f] = folder
         
@@ -476,9 +476,9 @@ class ThisGrammar(ancestor):
         for f in filesList[:]:
             filename = self.substituteFilename(self.ini.get('files', f))
             if not os.path.isfile(filename):
-                print('warning _folders, file "%s" does not exist: "%s"'% (f, filename))
-                self.ini.delete('files', f)
-                self.ini.set('obsolete files', f, filename)
+                print(f'warning _folders, file "{f}" does not exist: "{filename}"'% (f, filename))
+                # self.ini.delete('files', f)
+                # self.ini.set('obsolete files', f, filename)
                 continue
             self.filesDict[f] = filename
 
@@ -543,11 +543,12 @@ class ThisGrammar(ancestor):
                     self.ini.delete('obsolete virtualdrives', dr) # just in case
         
         if wantedVirtualDrives:
-            print('could not resolve "virtualdrive" entries: %s, move to section "obsolete virtualdrives"'% ", ".join(wantedVirtualDrives))
-            for dr in wantedVirtualDrives:
-                virtualDrive = self.ini.get('virtualdrives', dr)
-                self.ini.delete('virtualdrives', dr)
-                self.ini.set('obsolete virtualdrives', dr, virtualDrive)
+            textline = ", ".join(wantedVirtualDrives)
+            print(f'Warning: could not resolve "virtualdrive" entries: {textline}, ignore')
+            # for dr in wantedVirtualDrives:
+            #     virtualDrive = self.ini.get('virtualdrives', dr)
+            #     self.ini.delete('virtualdrives', dr)
+            #     self.ini.set('obsolete virtualdrives', dr, virtualDrive)
 
 
     def getFolderFromVirtualDrive(self, vd):
