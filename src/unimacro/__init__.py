@@ -1,6 +1,6 @@
 """Unimacro"""
 
-__version__ = '0.0.3.9'   ## Quintijn testing
+__version__ = '0.0.3.10'   ## Quintijn testing
 
 
 """utility functions, to get calling directory of module (in site-packages),
