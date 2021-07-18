@@ -295,7 +295,7 @@ def SwitchToNat():
 #     (User,Dir)=natlink.getCurrentUser()
 #     try:
 #         OptFile=open(Dir+'\\'+'options.ini','r')
-#     except IOError:
+#     except OSError:
 #         return 1
 #     OptLines = OptFile.readlines()
 #     OptFile.close
@@ -2118,7 +2118,7 @@ noot mies
             #print 'already exist, try to remove: %s'% whatFile
             try:
                 os.remove(whatFile)
-            except IOError:
+            except OSError:
                 print('Cannot remove previous help (show) file: "%s:"\nProbably this file is still open in Notepad\nPlease close and call your command again'% whatFile)
                 return
         if os.path.isfile(whatFile):

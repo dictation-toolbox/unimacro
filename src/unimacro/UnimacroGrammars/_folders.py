@@ -117,7 +117,7 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 # extra for sites (QH)
 try:
     siteRoot = getValidPath('(C|D):\\projects\\sitegen')
-except IOError:
+except OSError:
     siteRoot = None
 if siteRoot:
     siteRoot = siteRoot.normpath()

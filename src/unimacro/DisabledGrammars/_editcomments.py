@@ -707,7 +707,7 @@ def logToFileNow(folderName, fileNameBase, append=1):
             fout.write('\n\n')
             fout.close()
             return name
-        except IOError:
+        except OSError:
             print('Grammar _editcomments: cannot log to file: %s:::%s'% (folderName, fileName))
     else:
         print('nothing to log')

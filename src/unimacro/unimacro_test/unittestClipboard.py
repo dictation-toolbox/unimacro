@@ -252,7 +252,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         docxFile2 = "natlink.docx"
         docxPath2 = os.path.normpath( os.path.join(testFilesDir, docxFile2))
         if not os.path.isfile(docxPath2):
-            raise IOError('file does not exist: %s'% docxPath2)
+            raise OSError('file does not exist: %s'% docxPath2)
         result = actions.AutoHotkeyBringUp(app=None, filepath=docxPath2)
         if result:
             pPath, wTitle, hndle = result

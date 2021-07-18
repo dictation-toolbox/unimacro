@@ -52,16 +52,16 @@ import time
 import datetime
 import subprocess  # for calling a ahk script
 
-import natlinkcore.inivars as inivars
+from natlinkcore import inivars
 import unimacro.monitorfunctions
 import unimacro.messagefunctions
-import unimacro.autohotkeyactions as autohotkeyactions # for AutoHotkey support
+from dtactions import autohotkeyactions # for AutoHotkey support
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
 from natlinkcore import natlink
-import natlinkcore.natlink as natlinkcorefunctions # extended environment variables....
-import natlinkcore.natlinkstatus as natlinkstatus
-import natlinkcore.utilsqh as utilsqh
+from natlinkcore import natlinkcorefunctions # extended environment variables....
+from natlinkcore import natlinkstatus
+from natlinkcore import utilsqh
 
 external_actions_modules = {}  # the modules, None if not available (for prog)
 external_action_instances = {} # the instances, None if not available (for hndle)
@@ -92,7 +92,7 @@ userDirectory = natqh.getUnimacroUserDirectory()
 # actions.ini should go in the baseDirectory (Unimacro).
 if userDirectory:
     if not os.path.isdir(userDirectory):
-        raise IOError("The UnimacroUserDirectory does not exist: %s"% userDirectory)
+        raise OSError("The UnimacroUserDirectory does not exist: %s"% userDirectory)
     inifile = os.path.join(userDirectory, 'actions.ini')
     oldversioninifile = os.path.join(baseDirectory, 'actions.ini')
     if not os.path.isfile(oldversioninifile):
@@ -130,7 +130,7 @@ if not os.path.isfile(inifile):
             samples.append(oldversioninifile)
             
     if not samples:
-        raise IOError("cannot find a valid sample file 'actions.ini'")
+        raise OSError("cannot find a valid sample file 'actions.ini'")
     elif utilsqh.IsIdenticalFiles(samples):
         sample = samples[0]            
         print('----copy actions.ini -----:\nfrom %s\nto new location %s\n---'% (sample, inifile))
@@ -199,7 +199,7 @@ if os.path.isfile(inifile):
         ini = None
         #win32api.ShellExecute(0, "open", inifile, None , "", 1)
 else:
-    raise IOError('no inifile found for Unimacro actions!')
+    raise OSError('no inifile found for Unimacro actions!')
 
 metaActions = re.compile(r'(<<[^>]+>>)')
 metaAction = re.compile(r'<<([^>]+)>>$')
@@ -2092,11 +2092,11 @@ def UnimacroBringUp(app, filepath=None, title=None, extra=None, modInfo=None, pr
                         if os.path.isfile(appPath):
                             appPath = os.path.normpath(appPath)
                         else:
-                            raise IOError('invalid path for PROGRAMFILES to PROGRAMW6432, app %s: %s (expanded: %s)'% (app, appPath, appPath2))
+                            raise OSError('invalid path for PROGRAMFILES to PROGRAMW6432, app %s: %s (expanded: %s)'% (app, appPath, appPath2))
                     else:
-                        raise IOError('invalid path for app with PROGRAMFILES %s: %s (expanded: %s)'% (app, appPath, appPath2))
+                        raise OSError('invalid path for app with PROGRAMFILES %s: %s (expanded: %s)'% (app, appPath, appPath2))
                 else:
-                    raise IOError('invalid path for  app %s: %s (expanded: %s)'% (app, appPath, appPath2))
+                    raise OSError('invalid path for  app %s: %s (expanded: %s)'% (app, appPath, appPath2))
         else:
             appPath = appName or app
         appArgs = ini.get("bringup %s"% app, "args") or None
@@ -2213,7 +2213,7 @@ def AutoHotkeyBringUp(app, filepath=None, title=None, extra=None, modInfo=None, 
     """
     scriptFolder = autohotkeyactions.GetAhkScriptFolder()
     if not os.path.isdir(scriptFolder):
-        raise IOError('no scriptfolder for AHK: %s'%s)
+        raise OSError('no scriptfolder for AHK: %s'%s)
     WinInfoFile = os.path.join(scriptFolder, "WININFOfromAHK.txt")
     
     ## treat mode = open or edit, finding a app in actions.ini:
@@ -2518,8 +2518,8 @@ def getPathOfOpenFile():
 if debug:
     try:
         debugSock = open(debugFile, 'w')
-    except IOError:
-        print('_actions, IOError, cannot write debug statements to: %s'% debugFile)
+    except OSError:
+        print('_actions, OSError, cannot write debug statements to: %s'% debugFile)
 else:
     try:
         os.remove(debugFile)

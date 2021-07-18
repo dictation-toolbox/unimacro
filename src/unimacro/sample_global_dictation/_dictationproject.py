@@ -215,7 +215,7 @@ class VoiceDictation:
             controlHndle = win32gui.GetForegroundWindow()
             if controlHndle == self.app: return hndle
             time.sleep(0.1)
-        raise IOError('could not aquire focus for %s'% self.app)
+        raise OSError('could not aquire focus for %s'% self.app)
 
     def looseFocus(self, hndle=None):
         """return the focus to window with hndle, or saved handle

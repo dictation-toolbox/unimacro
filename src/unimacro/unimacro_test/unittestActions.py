@@ -68,7 +68,7 @@ testFilesDir = path(thisDir)/'test_clipboardfiles'
 if testFilesDir.isdir():
     print("test files for Bringup: %s"% testFilesDir)
 else:
-    raise IOError("no valid directory for test files: %s"% testFilesDir)
+    raise OSError("no valid directory for test files: %s"% testFilesDir)
 #---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
 # no reopen user at each test anymore..
