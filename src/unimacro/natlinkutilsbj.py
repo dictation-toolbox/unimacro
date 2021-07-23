@@ -1,4 +1,5 @@
 # (unimacro - natlink macro wrapper/extensions)
+#pylint:disable=C0302
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
 #                    Bart Jan van Os (bjvo@users.sourceforge.net)
@@ -30,11 +31,10 @@
 """subclasses classes for natlink grammar files and utility functions
 
 """
-import types
 import sys
 import os
-import pickle
 import os.path
+import pickle
 import types
 import glob
 import time
@@ -43,31 +43,45 @@ import shutil
 import copy
 
 import win32com
-import win32gui
-import win32api
 
 from natlinkcore import natlink
 from natlinkcore import natlinkmain
-from natlinkcore import natlinkcorefunctions
+# from natlinkcore import natlinkcorefunctions
 #from natlinkcore.natlinkutils import *  ## natut refers to natlinkutils
 from natlinkcore import gramparser # for translation with GramScannerReverse
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
-from unimacro.actions import Message
-from unimacro.actions import getAppPath, getAppName, getAppForEditExt
-from unimacro.actions import UnimacroBringUp
-from unimacro.actions import topWindowBehavesLikeChild, childWindowBehavesLikeTop  # getTopOrChild
+from natlinkcore import natlinkstatus
 from natlinkcore.readwritefile import readAnything, writeAnything
-from unimacro import actions
 from natlinkcore import utilsqh
 from natlinkcore.utilsqh import formatListColumns
 from natlinkcore.pathqh import path
+from natlinkcore import inivars
+import natlinkcore.natlinkutils as natut
 
-from natlinkcore import natlinkstatus
+import BrowseGrammar
+import D_
+
+## future:
+# from dtactions.unimacro.actions import doAction as action
+# from dtactions.unimacro.actions import doKeystroke as keystroke
+# from dtactions.unimacro.actions import Message
+# from dtactions.unimacro.actions import UnimacroBringUp
+# from dtactions.unimacro.actions import topWindowBehavesLikeChild, childWindowBehavesLikeTop  # getTopOrChild
+# from dtactions.unimacro import actions
+# for IniGrammar:
+# was natlinkutilsqh:
+# import dtactions.unimacro.unimacroutils as natqh
+import natlinkutilsqh as natqh
+import actions
+from actions import doAction as action
+from actions import doKeystroke as keystroke
+from actions import Message
+from actions import UnimacroBringUp
+# from actions import topWindowBehavesLikeChild, childWindowBehavesLikeTop  # getTopOrChild
+import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
+
 status = natlinkstatus.NatlinkStatus()
 debugLoad = status.getDebugLoad()
 
-import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
 # for translating the gramSpec in inigrammars:
 reGrammarKeywords = re.compile(r"""
           (?<!{|<)        # not a { or a < before the string
@@ -87,18 +101,14 @@ spokenFormCounts = {'nld': {'12': "twaalf"}}
 
 
 
-import BrowseGrammar
-# for IniGrammar:
-from natlinkcore import inivars
-import unimacro.natlinkutilsqh as natqh
-import natlinkcore.natlinkutils as natut
-class UnimacroError(Exception): pass
-# personal use: find out on what machine we are
-def GetID():
-    if 'ID' in os.environ:
-        return os.environ['ID'].lower()
-    else:
-        return ''
+class UnimacroError(Exception):
+    """UnimacroError"""
+# # personal use: find out on what machine we are
+# def GetID():
+#     if 'ID' in os.environ:
+#         return os.environ['ID'].lower()
+#     else:
+#         return ''
 
 # can be switched off:
 automaticOpenFile = 1  # leave on!!
@@ -113,10 +123,7 @@ DisplayMessageForbiddenCharacters = '\n\\~' # newline, backslash, tilde
 DDIsRunning=0
 LastMouseX=0
 LastMouseY=0
-if GetID()!='laptop':
-    NaturalTextKey='{NumKey/}'
-else:
-    NaturalTextKey='{NumKey/}'
+NaturalTextKey='{NumKey/}'
 CorrectDlgKey='{NumKey-}'
 DragonBarKey='{NumKey*}'   
 
@@ -134,7 +141,6 @@ uepath = r'C:\Program Files\UltraEdit\UEdit32.exe'
 if os.path.isfile(uepath):
     UEdit = uepath
     print('use UltraEdit32 for textual files open')# special for UltraEdit32:
-import D_
 
 def changeInList(L, old, new):
     """change in place"""
@@ -173,9 +179,10 @@ def getICAlphabetDict(language=None):
     return D
     
 def letterUppercase(l):
-    """turns a\alpha into a\Alpha"""
+    r"""turns a\alpha into a\Alpha"""
     L = l.split('\\')
-    return '%s\\%s'% (L[0], L[1].capitalize())
+    written, spoken = L[0], L[1].capitalize()
+    return f'{written}\\{spoken}'
 
 baseDirectory = natqh.getUnimacroDirectory()
 
@@ -194,161 +201,93 @@ PythonServerExe=os.path.join(PythonwinPath, 'pserver1')
 
 # returns the union of two lists
 def Union(L1,L2):
-    if type(L1)==type(L2)==type([]):
-        L=L1[:]
-        for i in L2:
-            if not i in L1: L.append(i)
-        return L
-    else:
-        return []
+    """old fashioned union function of two lists
+    """
+    if not isinstance(L1, list):
+        raise TypeError(f'function Union, first input variable not a list: {type(L1)}')
+    if not isinstance(L2, list):
+        raise TypeError(f'function Union, second input variable not a list: {type(L2)}')
+    L=L1[:]
+    for i in L2:
+        if not i in L1:
+            L.append(i)
+    return L
 
 # returns the intersection of two lists
 def Intersect(L1,L2):
-    if type(L1)==type(L2)==type([]):
-        L=[]
-        for i in L2:
-            if i in L1: L.append(i)
-        return L
-    else:
-        return []
+    """old fashioned intersection function of two lists
+    """
+    if not isinstance(L1, list):
+        raise TypeError(f'function Intersect, first input variable not a list: {type(L1)}')
+    if not isinstance(L2, list):
+        raise TypeError(f'function Intersect, second input variable not a list: {type(L2)}')
+    L=[]
+    for i in L2:
+        if i in L1:
+            L.append(i)
+    return L
 
 def reverseDict(Dict):
+    """reverse a dict, ignoring multiple values of the original
+    """
     revDict={}
     for key in list(Dict.keys()):
         revDict[Dict[key]]=key
     return revDict
 
 def joinNestedStringLists(l):
-    i=-1
+    """nested lists of strings are "flattened" into one string
+    
+    so a sort of super ' '.join(...)
+    """
+    output = []
     for sub in l:
-        i=i+1
-        if type(sub)==type([]): l[i]=joinNestedStringLists(sub)
-    return ' '.join(l)
+        if isinstance(sub, list):
+            output.append(joinNestedStringLists(sub))
+        else:
+            output.append(sub)
+    return ' '.join(output)
 
 def getAllWords(fullResults):
-    allWords=[]
-    for word,rule in fullResults:
-            allWords.append(word)
-    return allWords
-
-#Should return the operating system
-def GetOS():
-    if 'OS' in os.environ:
-        return os.environ['OS'].lower()
-    else:
-        return ''
-
-def IsWin98():
-    #Don't know how. Better be on the safe side, return true if in doubt
-    #Is used to skip actions that are problematic in Windows 98
-    return  GetOS()!='windows_nt'
+    """get all words from the fullResults of a recognition
+    """
+    return list((word for (word, _rule) in fullResults))
 
 def ActivateDragonBarMenu():
-    natut.playString("{NumKey-}",hook_f_systemkeys)        
-
-
+    """activate the DragonBar"""
+    natut.playString("{NumKey-}", natut.hook_f_systemkeys)        
 
 def SetMic(state):
-    # we avoid error messages, when turning the mic on while the device
-    # is still busy.
+    """switch on or off the microphone
+    
+    we avoid error messages, when turning the mic on while the device
+    is still busy.
+    """
+    #pylint:disable=W0702
     try:
         natlink.setMicState(state)
     except :
         pass
 
-# mic switching
-def SetDDMic(state):
-    global DDIsRunning
-    state = state.lower()
-    if DDIsRunning:    
-        try:
-            if state == 'on':
-                if (GetOS()=='windows_nt'): #faster
-                    natut.playString('{F12}')
-                else:
-                    natlink.execScript(' DdeExecute "Dragon Voicebar", "system", "[SetMicrophone 1]",1')
-            elif state == 'off':
-                if (GetOS()=='windows_nt'): #faster
-                    natut.playString('{F12}')
-                else:                
-                    natlink.execScript(' DdeExecute "Dragon Voicebar", "system", "[SetMicrophone 0]",1')
-            else:
-                print('error: unknown DD mic state: ',state)
-        except:
-            pass
-    
-
-
-def SwitchToDD():
-    SetMic('off')    
-    SetDDMic('on')
-
-def SwitchToNat():
-    global DDIsRunning    
-    if DDIsRunning:        
-        SetDDMic('off')
-        Wait(1)
-    SetMic('on')
-
-# Natural text switching
-# def IsNaturalTextActive():
-#     (User,Dir)=natlink.getCurrentUser()
-#     try:
-#         OptFile=open(Dir+'\\'+'options.ini','r')
-#     except OSError:
-#         return 1
-#     OptLines = OptFile.readlines()
-#     OptFile.close
-#     for Line in OptLines:
-#         if Line[0:18]=='Global Dictation=0': return 0
-#     return 1
-
-def ToggleNaturalText():
-    natut.playString(NaturalTextKey,hook_f_systemkeys)
-    
-def SetNaturalText(State):
-    State=State.lower()
-    if GetDNSVersion()==5:
-        stateNr=State=='on'
-        natlink.execScript("SetNaturalText "+str(stateNr))
-    else:
-        if State=='on':
-            if not IsNaturalTextActive(): ToggleNaturalText()
-        elif State=='off':
-            if IsNaturalTextActive(): ToggleNaturalText()
-
-# mouse movement
-def SaveMousePosition():
-    global LastMouseX,LastMouseY
-    (LastMouseX,LastMouseY)=natlink.getCursorPos()
-
-def ReturnToLastMousePosition():
-    natlink.playEvents([(wm_mousemove,LastMouseX,LastMouseY)])
-    
-def MoveMouseToRel(x,y):
-    (cx,cy)=natlink.getCursorPos()
-    natlink.playEvents([(wm_mousemove,x+cx,y+cy)])
-
-def SetMousePosition(x,y):
-    natlink.playEvents([(wm_mousemove,x,y)])    
-
 #adapted from natlinkutils    
-def ButtonClick(btnName='left',click='single'):
-    x, y = natlink.getCursorPos()
-    singleLookup = { 
-        'left':  [(wm_lbuttondown,x,y),(wm_lbuttonup,x,y)],
-        'right': [(wm_rbuttondown,x,y),(wm_rbuttonup,x,y)],
-        'middle':[(wm_mbuttondown,x,y),(wm_mbuttonup,x,y)] }
-    doubleLookup = {
-        'left':  [(wm_lbuttondblclk,x,y),(wm_lbuttonup,x,y)],
-        'right': [(wm_rbuttondblclk,x,y),(wm_rbuttonup,x,y)],
-        'middle':[(wm_mbuttondblclk,x,y),(wm_mbuttonup,x,y)] }
-    single = singleLookup[btnName]  # KeyError means invalid button name
-    double = doubleLookup[btnName]
-
-    if click == 'single': playEvents( single )
-    elif click == 'double': playEvents( single + double )
-    else: raise ValueError("invalid click")
+# def ButtonClick(btnName='left',click='single'):
+#     """should by now be elsewhere
+#     """
+#     x, y = natlink.getCursorPos()
+#     singleLookup = { 
+#         'left':  [(wm_lbuttondown,x,y),(wm_lbuttonup,x,y)],
+#         'right': [(wm_rbuttondown,x,y),(wm_rbuttonup,x,y)],
+#         'middle':[(wm_mbuttondown,x,y),(wm_mbuttonup,x,y)] }
+#     doubleLookup = {
+#         'left':  [(wm_lbuttondblclk,x,y),(wm_lbuttonup,x,y)],
+#         'right': [(wm_rbuttondblclk,x,y),(wm_rbuttonup,x,y)],
+#         'middle':[(wm_mbuttondblclk,x,y),(wm_mbuttonup,x,y)] }
+#     single = singleLookup[btnName]  # KeyError means invalid button name
+#     double = doubleLookup[btnName]
+# 
+#     if click == 'single': playEvents( single )
+#     elif click == 'double': playEvents( single + double )
+#     else: raise ValueError("invalid click")
 
 ### lists for number grammar:
 ##language = natqh.getLanguage()
@@ -360,12 +299,12 @@ def ButtonClick(btnName='left',click='single'):
 ##number1to9 = map(str, range(1,10))
 
 # app switching (is this used still?? getProg should be better, but is case insensitive QH2
-def GetAppName():
-#    if (GetOS()!='windows_nt'):
-    App=getBaseName(natlink.getCurrentModule()[0])
-#    else:
-#        App=natlink.getCurrentModule()[0]
-    return App
+# def GetAppName():
+# #    if (GetOS()!='windows_nt'):
+#     App=getBaseName(natlink.getCurrentModule()[0])
+# #    else:
+# #        App=natlink.getCurrentModule()[0]
+#     return App
 
 
 ## movedgUp to natlinkutilsqh
@@ -389,21 +328,21 @@ def GetAppName():
 # applications, using the common 'Find' dialog.
 # When combined with the <dngwords> rule, you can
 # provide a crude form of select( and say) in unsupported applications
-def StartSearchFor(StringToSearch,Down=1,Full=0):
-    moduleInfo = natlink.getCurrentModule()
-    if matchWindow(moduleInfo, 'natspeak', '' ):
-        natut.playString('{Ctrl+f}'+StringToSearch+'{Alt+f}{Esc}')
-    elif matchWindow(moduleInfo, 'bibpad', '' ) or matchWindow(moduleInfo, 'textpad', '' ):
-        if Down:
-            if Full:
-                natut.playString('{Ctrl+Home}')
-            natut.playString('{F5}'+StringToSearch)
-            natut.playString('{Alt+d}{Alt+f}{Esc}')
-        else:
-            if Full:
-                natut.playString('{Ctrl+End}')
-            natut.playString('{F5}'+StringToSearch)                
-            natut.playString('{Alt+u}{Alt+f}{Esc}')
+# def StartSearchFor(StringToSearch,Down=1,Full=0):
+#     moduleInfo = natlink.getCurrentModule()
+#     if matchWindow(moduleInfo, 'natspeak', '' ):
+#         natut.playString('{Ctrl+f}'+StringToSearch+'{Alt+f}{Esc}')
+#     elif matchWindow(moduleInfo, 'bibpad', '' ) or matchWindow(moduleInfo, 'textpad', '' ):
+#         if Down:
+#             if Full:
+#                 natut.playString('{Ctrl+Home}')
+#             natut.playString('{F5}'+StringToSearch)
+#             natut.playString('{Alt+d}{Alt+f}{Esc}')
+#         else:
+#             if Full:
+#                 natut.playString('{Ctrl+End}')
+#             natut.playString('{F5}'+StringToSearch)                
+#             natut.playString('{Alt+u}{Alt+f}{Esc}')
 
 # Utility functions for global accessing of GrammarX objects.
 # The CallAllGrammarObjects(funcName,args) method provides
@@ -419,7 +358,8 @@ def ClearGrammarsChangedFlag():
 
     this flag was set when the grammar was registered or and registered
 
-    """    
+    """
+    #pylint:disable=W0603
     global grammarsChanged
     grammarsChanged = 0
 
@@ -430,6 +370,7 @@ def RegisterGrammarObject(GrammarObject):
     key in the dictionary loadedGrammars is the name,
     value is the instance object itself
     """    
+    #pylint:disable=W0603
     global loadedGrammars, grammarsChanged
     # print('registering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
     loadedGrammars[GrammarObject.GetName()] = GrammarObject
@@ -442,6 +383,7 @@ def UnRegisterGrammarObject(GrammarObject):
     delete the item in the dictionary "loadedGrammars"
 
     """    
+    #pylint:disable=W0603
     global loadedGrammars, grammarsChanged
     for k, v in list(loadedGrammars.items()):
         if v is GrammarObject:
@@ -460,7 +402,7 @@ def CallAllGrammarObjects(funcName,args):
     exits silently if function doesn't exist in a grammar
 
     """    
-    if args and len(args) == 1 and type(args[0]) == tuple:
+    if args and len(args) == 1 and isinstance(args[0], tuple):
         args = args[0] # in order to be able to give arguments "loose" in the call instead of
                        # in a explicit tuple: CAGO(func, a, b, c) instead of
                        #                      CAGO(func, (a, b, c))
@@ -469,7 +411,6 @@ def CallAllGrammarObjects(funcName,args):
             func = getattr(grammar, funcName)
         except AttributeError:
             print('func not found for %s'% name)
-            pass
         func(*args)
         # except AttributeError:
         #     print 'apply %s of %s fails'% (funcName, name)
@@ -482,6 +423,7 @@ def GetGrammarObject(grammarName):
     """
     if grammarName in loadedGrammars:
         return loadedGrammars[grammarName]
+    return None
 
 # Utility functions for displaying messages in the results box.
 # The module _control registers these, and should be available.
@@ -501,20 +443,25 @@ pendingMessage = []
 
 
 def SetPendingMessage(mess):
+    #pylint:disable=W0603, C0116
     global pendingMessage
     pendingMessage.append(mess)
 def ClearPendingMessage():
+    #pylint:disable=W0603, C0116
     global pendingMessage
     pendingMessage = []
 def GetPendingMessage():
+    #pylint:disable=W0603, C0116
     return pendingMessage
 
 def SetDisplayingMessage():
+    #pylint:disable=W0603, C0116
     global IsDisplayingMessage
 ##    print 'setting display message'
     IsDisplayingMessage = 1
 
 def ClearDisplayingMessage():
+    #pylint:disable=W0603, C0116
     global IsDisplayingMessage
 ##    print 'clearing display message'
     IsDisplayingMessage = 0
@@ -524,25 +471,30 @@ def ClearDisplayingMessage():
 # instead of this function simply the variable natbj.IsDisplayingMessage can be checked
 
 def RegisterMessageObject(GrammarObject):
+    #pylint:disable=W0603, C0116
     global loadedMessageGrammar
     loadedMessageGrammar=GrammarObject
 
 def UnRegisterMessageObject(GrammarObject):
+    #pylint:disable=W0603, C0116
     global loadedMessageGrammar
-    if (loadedMessageGrammar is GrammarObject):
-        loadedMessageGrammar=None
+    if loadedMessageGrammar is GrammarObject:
+        loadedMessageGrammar = None
 
 def RegisterControlObject(GrammarObject):
+    #pylint:disable=W0603, C0116
     global loadedControlGrammar
     loadedControlGrammar = GrammarObject
 
 def UnRegisterControlObject(GrammarObject):
+    #pylint:disable=W0603, C0116
     global loadedControlGrammar
-    if (loadedControlGrammar is GrammarObject):
+    if loadedControlGrammar is GrammarObject:
         loadedControlGrammar = None
 
 def GlobalResetExclusiveMode():
-    for k, v in list(exclusiveGrammars.items()):
+    #pylint:disable=C0116
+    for _k, v in list(exclusiveGrammars.items()):
 ##        print 'resetting: %s'% k
         v[0].resetExclusiveMode()
 
@@ -570,12 +522,12 @@ def  ControlResetExclusiveGrammar():
     This is done through this function
 
     """    
-    
-    global loadedContolGrammar
+    #pylint:disable=W0603
+    global loadedControlGrammar
     if exclusiveGrammars:    # should not come here
         print('no reset, still exclusiveGrammars present: %s'% exclusiveGrammars)
         return
-    if (loadedControlGrammar):
+    if loadedControlGrammar:
 ##        print 'resetting exclusive grammar control'
         loadedControlGrammar.setExclusive(0)
 
@@ -590,6 +542,7 @@ def ControlSetExclusiveGrammar():
     grammar _control, which invokes DisplayMessage.
 
     """    
+    #pylint:disable=W0603
     global loadedControlGrammar
     if not exclusiveGrammars:     # should not come here
         print('no set of grammar, though exclusiveGrammars exist')
@@ -604,17 +557,26 @@ def ControlSetExclusiveGrammar():
 
 #---------------------------------------------------------------------------
 # GrammarX
-# This is BJ's basic grammar class. It redefines some methods
-# such that allways self.setExclusive is used to change the exclusive state.
-# setExclusive is extended to keep track of the current exclusive state.
-# It also registers itself and unregisters itself to accomadate the
-# CallAllGrammarObjects function
-# It also has the method DisplayMessage to display text in the results box, IF
-#    the module _control (including a MessageDictationGrammar)
-#    is available in the User directory of natpython
+
 
 GrammarXAncestor=natut.GrammarBase # do not use self.__class__.bases[0]., see Python FAQ
 class GrammarX(GrammarXAncestor):
+    """first subclass of GrammarBase
+
+      This is BJ's basic grammar class (Bart Jan van Os).
+      
+      It redefines some methods such that always self.setExclusive is used to
+      change the exclusive state.
+      setExclusive is extended to keep track of the current exclusive state.
+      It also registers itself and unregisters itself to accomodate the
+      CallAllGrammarObjects function.
+      It also has the method DisplayMessage to display text in the results box, IF
+      the module _control (including a MessageDictationGrammar)
+      is available in the User directory of natpython
+
+    """
+    #pylint:disable=R0904, C0116
+
     __inherited=GrammarXAncestor
     status = 'new'
 
@@ -626,7 +588,8 @@ class GrammarX(GrammarXAncestor):
         self.language = natqh.getLanguage()
         self.version = natqh.getDNSVersion()
         self.exclusive = 0
-
+        self.name = ""
+        
     def getPrimaryAncestor(self):
         # the default primary ancestor is the first baseclass
         return self.__class__.__bases__[0] 
@@ -640,7 +603,8 @@ class GrammarX(GrammarXAncestor):
                     print('---success GrammarBase loaded, register: %s'% grammarName)
                 RegisterGrammarObject(self)
             return success
-
+        return None
+    
     def __str__(self):
         return '<grammarx: %s>'% self.GetName()
 
@@ -686,35 +650,35 @@ class GrammarX(GrammarXAncestor):
 
         0 = normal, 1 = dictation, 2 = command, 3 = numbers, 4 = spell
         """
+        #pylint:disable=R0201
         return natlinkmain.DNSmode
     
 
-    def setMode(self, n):
-        """setting normal, dictation, command, numbers of spell mode
-
-        remember the mode in instance variable currentMode.
-
-        only for version 7        
-        """
-        print('grammarX setMode: %s, version: %s'% (n, self.version))
-        if self.version != 7:
-            return
-
-        old = self.getMode()
-        
-        if n == old:
-            return
-        if n not in list(range(5)):
-            print('grammarX setMode: invalid mode: %s'% n)
-            return
-        natlink.execScript('SetRecognitionMode %s'% n)
-        # Bart Jan, is this too dirty?
-        natlinkmain.DNSmode = n
+    # def setMode(self, n):
+    #     """setting normal, dictation, command, numbers of spell mode
+    # 
+    #     remember the mode in instance variable currentMode.
+    # 
+    #     only for version 7        
+    #     """
+    #     print('grammarX setMode: %s, version: %s'% (n, self.version))
+    #     if self.version != 7:
+    #         return
+    # 
+    #     old = self.getMode()
+    #     
+    #     if n == old:
+    #         return
+    #     if n not in list(range(5)):
+    #         print('grammarX setMode: invalid mode: %s'% n)
+    #         return
+    #     natlink.execScript('SetRecognitionMode %s'% n)
+    #     # Bart Jan, is this too dirty?
+    #     natlinkmain.DNSmode = n
 
     def getName(self):
-        if "name" in dir(self):
+        if self.name:
             return self.name
-        
         n = self.__module__
         if n[0] == "_":
             n = n[1:]
@@ -729,7 +693,7 @@ class GrammarX(GrammarXAncestor):
     # under changing natlinkutils.
     def activate(self, ruleName, window=0, exclusive=None, noError=0):
         self.__inherited.activate(self, ruleName, window, noError=noError)
-        if exclusive != None:
+        if exclusive is not None:
             self.setExclusive(exclusive)
 
     def deactivate(self, ruleName, noError=0):
@@ -745,14 +709,14 @@ class GrammarX(GrammarXAncestor):
         #     self.isActive = 0
         # else:
         #     self.isActive = 1
-        if exclusive != None:
-             self.setExclusive(exclusive)
+        if exclusive is not None:
+            self.setExclusive(exclusive)
 
     def activateAll(self, window=0, exclusive=None, exceptlist=None):
         self.__inherited.activateAll(self, window, exceptlist=exceptlist)
         # self.isActive = 1
-        if exclusive != None:
-             self.setExclusive(exclusive)
+        if exclusive is not None:
+            self.setExclusive(exclusive)
 
     def deactivateAll(self):
         self.__inherited.deactivateAll(self)
@@ -777,8 +741,9 @@ class GrammarX(GrammarXAncestor):
 
         state is maintained in self.exclusive
         """
+        #pylint:disable=R0912, W0603
         global exclusiveGrammars
-        if exclusive == None:
+        if exclusive is None:
             return
         if exclusive == self.exclusive:
             return
@@ -812,16 +777,18 @@ class GrammarX(GrammarXAncestor):
 
     def cancelMode(self):
         """overload for grammars that can go exclusive"""
-        pass
+        raise NotImplementedError
 
     #Now we can get info on the exclusive state
     def getExclusiveInfo(self):
         name = self.GetName()
         if exclusiveGrammars and name in exclusiveGrammars:
             return exclusiveGrammars[name]
-
+        return None
+    
     def printExclusiveInfo(self):
         """global print info on exclusive grammar states"""
+        #pylint:disable=R0201
         if not exclusiveGrammars:
             print('no grammars are exclusive')
         else:
@@ -860,6 +827,7 @@ class GrammarX(GrammarXAncestor):
                  activateRule for activating one rule (string)
         
         """
+        #pylint:disable=R0911, R0912
         if 'force' in kw:
             if kw['force']:
                 self.mayBeSwitchedOn = 1
@@ -868,47 +836,47 @@ class GrammarX(GrammarXAncestor):
             activeSet = kw['activateSet']
             if self.mayBeSwitchedOn:
                 del kw['activateSet']
-                if type(activeSet) == list:
+                if isinstance(activeSet, list):
                     self.activateSet(activeSet, **kw)
-                elif type(activeSet) == tuple:
+                elif isinstance(activeSet, tuple):
                     self.activateSet(list(activeSet), **kw)
                     return 1
                 else:
-                    print('natlinkutils, switchOn: invalid type for activateSet %s (%s)'% (activateSet, type(activateSet))) 
-                    return
+                    print('natlinkutils, switchOn: invalid type for activateSet %s (%s)'% (activeSet, type(activeSet))) 
+                    return None
             else:
                 print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
-                return
+                return None
         if 'activateRule' in kw:
             rule = kw['activateRule']
             del kw['activateRule']
             if self.mayBeSwitchedOn:
                 self.activate(rule, **kw)
                 return 1
-            else:
-                print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
-                return
+            print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
+            return None
         if self.mayBeSwitchedOn:
             # print('switch all on: %s'% repr(kw))
             self.activateAll(**kw)
             return 1
-        else:
-            print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
-            return
+        # else:
+        print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
+        return None
 
     def switchOff(self, force=None):
         """switches grammar off, deactivates all rules
 
         must be overloaded if more specific behaviour is wished
         """
+        #pylint:disable=
         if force:
             self.mayBeSwitchedOn = 0
         self.deactivateAll()
         return 1
 
     def DisplayMessage(self, MessageText, pauseAfter=0, alert=None, alsoPrint=1):
-        #if natqh.getDNSVersion >= 12:
-        #    return # silently ignore this in Dragon 12
+        #pylint:disable=W0613, R0912, R0915
+        
         print("DisplayMessage for the time being:\n%s"% MessageText)
         return
         if self.inGotBegin:
@@ -2661,7 +2629,7 @@ noot mies
 
         If "words" is a list, the first hit is returned.        
         """
-        if self.ini == None:
+        if self.ini is None:
             self.error('no valid inifile')
         if type(words) == str:
             v = self.ini.get(section, words, None)
@@ -2674,7 +2642,7 @@ noot mies
         # list of words, normal case:
         for w in words:
             v = self.ini.get(section, w, None)
-            if v != None:
+            if v is not None:
                 return v  # maybe empty string, if no value for keyword given.
         else:
             if not noWarning:
@@ -2685,7 +2653,7 @@ noot mies
     def setInInifile(self, section, key, value):
         """set new value in inifile
         """
-        if self.ini == None:
+        if self.ini is None:
             self.error('no valid inifile')
         self.ini.set(section, key, value)
         self.ini.writeIfChanged()
@@ -3023,12 +2991,12 @@ noot mies
                       beforeafter=None, insert=None, extend=None):
         """search up or down to text, invoke actions, for program differences
 
-        if text == None, previous text is searched for
+        if text is None, previous text is searched for
         beforeafter: None == ignore,  before1, after=2, leave after the selection.
         """
         global lastSearchText, lastSearchDirection, beforeOrAfter
         # pass progInfo to the actions, to keep them from changing inside the stuff:
-        if progInfo == None:
+        if progInfo is None:
             progInfo = natqh.getProgInfo(modInfo)
         prog, title, topchild, classname, hndle = progInfo
         if prog == 'excel':
@@ -3147,7 +3115,7 @@ noot mies
     def searchMarkSpot(self, progInfo=None):
         """Mark the place where you can return with searchGoBack"""
         global comingFrom
-        if progInfo == None:
+        if progInfo is None:
             progInfo = natqh.getProgInfo()
         prog, title, topchild, classname, hndle = progInfo
         if prog == 'excel':
@@ -3162,7 +3130,7 @@ noot mies
 
     def searchGoBack(self, progInfo=None):
         """go back to previous place, excel or word"""
-        if progInfo == None:
+        if progInfo is None:
             progInfo = natqh.getProgInfo()
         prog, title, topchild, classname, hndle = progInfo
         if prog == 'excel':
@@ -3198,10 +3166,10 @@ noot mies
         
         istop = (progInfo.topchild == 'top')
         if istop:
-            if topWindowBehavesLikeChild( modInfo ):
+            if natqh.topWindowBehavesLikeChild( modInfo ):
                 istop = False
             elif childClass and progInfo.classname == childClass:
-                if childWindowBehavesLikeTop( modInfo ):
+                if natqh.childWindowBehavesLikeTop( modInfo ):
                     if self.debug:
                         print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
@@ -3211,7 +3179,7 @@ noot mies
                     istop = False
                     # IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         else:
-            if childWindowBehavesLikeTop( modInfo ):
+            if natqh.childWindowBehavesLikeTop( modInfo ):
                 if self.debug:
                     print('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True

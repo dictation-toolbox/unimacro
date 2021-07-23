@@ -19,10 +19,10 @@ from natlinkcore.natlinkutils import *
 from natlinkcore import natlinkmain
 # from natlinkmain import loadedFiles, unloadModule, loadModule
 from natlinkcore import utilsqh
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsbj as natbj
+# new name new locations:
+import dtactions.unimacro.unimacroutils as natqh
+import natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
 import D_
 
 # extra commands for controlling actions module:
