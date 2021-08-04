@@ -53,8 +53,8 @@ import datetime
 import subprocess  # for calling a ahk script
 
 from natlinkcore import inivars
-import unimacro.monitorfunctions
-import unimacro.messagefunctions
+from dtactions import monitorfunctions
+from dtactions import messagefunctions
 from dtactions import autohotkeyactions # for AutoHotkey support
 import natlinkcore.natlinkutils as natut
 import unimacro.natlinkutilsqh as natqh
