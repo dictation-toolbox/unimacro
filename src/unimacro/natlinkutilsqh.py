@@ -30,7 +30,6 @@
 
 """
 #
-import unimacro.monitorfunctions as monitorfunctions  # elaborated version QH
 import time
 import re
 import types
@@ -49,15 +48,17 @@ import pywintypes
 from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
 from natlinkcore import natlinkmain
-import natlinkcore.natlinkstatus as natlinkstatus
-import natlinkcore.natlink as natlinkcorefunctions
+from natlinkcore import natlinkstatus 
+from natlinkcore import natlinkcorefunctions
 status = natlinkstatus.NatlinkStatus()
 # import RegistryDict  # for emergency get of UserDirectory!
-import unimacro.autohotkeyactions as autohotkeyactions
 from natlinkcore.readwritefile import DecodeEncode
 import natlinkcore.utilsqh as utilsqh
 import natlinkcore.inivars as inivars
 import natlinkcore.utilsqh as utilsqh
+
+from dtactions import monitorfunctions
+from dtactions import autohotkeyactions
 
 
 DEBUG = 0

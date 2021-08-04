@@ -99,7 +99,7 @@ class UnittestGrammar(natbj.IniGrammar):
         super(UnittestGrammar, self).showInifile(commandExplanation=commandExplanation)
 
     def doUnitTests(self, tests):
-        self.checkSysPath(self.testFolder)  # append unimacro_test if needed
+        # self.checkSysPath(self.testFolder)  # append unimacro_test if needed
         suiteAll = None
         self.activeTests = []
 
