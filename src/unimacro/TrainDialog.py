@@ -148,7 +148,7 @@ class TrainDialogGrammar(GrammarBase):
             key='{Alt+c}'
         elif 'stop' in words:
             key='{Alt+p}'
-        natut.playString(key)
+        natlinkutils.playString(key)
 
     def gotResults_TrainButtons(self,words,fullResults):
         self.gotResults_Buttons(words,fullResults)
@@ -158,7 +158,7 @@ class TrainDialogGrammar(GrammarBase):
             key='{Up}'
         elif 'skip' in words:
             key='{Down}'
-        natut.playString(key)
+        natlinkutils.playString(key)
 
 
 

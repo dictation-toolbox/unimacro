@@ -33,18 +33,18 @@ dictate again and
 """
 from natlinkcore import natlink
 import nsformat
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 ancestor = natbj.DocstringGrammar
 class BracketsGrammar(ancestor):
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     name = "brackets"
 
     def initialize(self):
@@ -111,16 +111,16 @@ class BracketsGrammar(ancestor):
         #  see if something selected, leaving the clipboard intact
         #  keystroke('{ctrl+x}')  # try to cut the selection
         if self.between:
-            natqh.saveClipboard()
+            unimacroutils.saveClipboard()
             action('<<cut>>')
             contents = natlink.getClipboard().replace('\r','')
-            natqh.restoreClipboard()
+            unimacroutils.restoreClipboard()
         else:
             contents = ""
 
         if self.here:
-            natqh.buttonClick('left', 1)
-            natqh.visibleWait()
+            unimacroutils.buttonClick('left', 1)
+            unimacroutils.visibleWait()
 
         leftText = rightText = leftTextDict = rightTextDict = ""
         if contents:
@@ -141,13 +141,13 @@ class BracketsGrammar(ancestor):
             keystroke(lSpacing)
 
         action(self.pleft)
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
         if contents:
             #print 'contents: |%s|'% repr(contents)
             keystroke(contents)
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
         action(self.pright)
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
 
         if rSpacing:
             keystroke(rSpacing)

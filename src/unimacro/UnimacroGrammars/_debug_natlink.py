@@ -5,18 +5,18 @@ Grammar to help with natlink hosted python debugging.
 
 from natlinkcore import natlink
 import natlinkpydebug as pd
-import unimacro.natlinkutilsqh as natqh as natqh
+from dtactions.unimacro import unimacroutils as natqh
 import natlinkcore.natlinkutils as natut as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj as natbj
 # from natlinkcore import gramparser as gp
-from unimacro.actions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 import nsformat
 
 ancestor = natbj.IniGrammar  #QH1
 
 class DebugGrammar(ancestor):
-    # language = natqh.getLanguage()
+    # language = unimacroutils.getLanguage()
     name = "Natlink Debug"
     gramSpec = """
 <debug> exported = debug <deb_cmd>;

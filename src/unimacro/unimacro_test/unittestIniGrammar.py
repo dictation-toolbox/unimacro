@@ -30,11 +30,11 @@ from gramparser import GrammarError, SyntaxError
 status = natlinkstatus.NatlinkStatus()
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from unimacro.actions import doKeystroke as keystroke
-from unimacro.actions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 class TestError(Exception):
     pass

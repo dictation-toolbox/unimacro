@@ -11,9 +11,9 @@
 #
 
 from natlinkcore import natlink
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 import win32api
@@ -49,7 +49,7 @@ class ThisGrammar(natbj.DocstringGrammar):
 
         self.prevInfo = moduleInfo
 
-        winHandle = natut.matchWindow(moduleInfo,'winword','Microsoft Word')
+        winHandle = natlinkutils.matchWindow(moduleInfo,'winword','Microsoft Word')
         if winHandle:
             if self.checkForChanges:
                 print('word styles (%s), checking the inifile'% self.name)
@@ -67,7 +67,7 @@ class ThisGrammar(natbj.DocstringGrammar):
                 self.activateAll(window=winHandle)
                 self.activated = winHandle
         else:
-            winHandle = natut.matchWindow(moduleInfo,'winword','')
+            winHandle = natlinkutils.matchWindow(moduleInfo,'winword','')
             if not winHandle:
                 print('other application, release word')
                 if self.application:

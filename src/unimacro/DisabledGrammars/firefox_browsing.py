@@ -42,12 +42,12 @@ tab number # |  tab number # close | tab number # refresh
 
 
 from natlinkcore import natlink
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 # some fixed keystrokes:
 getNumbers = dict(hah='{ctrl+,}', mlb='{NumKey.}')  #keystrokes to get the numbers
@@ -55,7 +55,7 @@ Escape = dict(hah='{esc}', mlb='{esc}')
 waitBeforeNewNumbers = 0.8
 visiblePause = 0.4
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 #SET THIS TO "hah" or "mlb":
 mode = "mlb"
@@ -109,7 +109,7 @@ class ThisGrammar(ancestor):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        if natqh.matchModule('firefox', modInfo=moduleInfo):
+        if unimacroutils.matchModule('firefox', modInfo=moduleInfo):
             #print 'activate firefox %s mode'% mode
             if self.checkForChanges:
                 print('firefox browsing (%s), checking the inifile'% self.name)
@@ -180,11 +180,11 @@ class ThisGrammar(ancestor):
             while count > 0:
                 count= count -1
                 keystroke('{alt+ext%s}'%(dir))
-                natqh.Wait(0.5) #0.3 seem too short for going back pages in Firefox
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back pages in Firefox
         #elif count:
         #    print "Ctl + number doesnot work always!"
         #    keystroke('{ctrl+%s}'% count)
-        #    natqh.Wait(0.3)
+        #    unimacroutils.Wait(0.3)
             
         if command:
             action(command)
@@ -194,7 +194,7 @@ class ThisGrammar(ancestor):
 
         # only get new numbers if no refresh was asked for
         if getNumbersAgain and mode =="hah":
-            natqh.Wait(waitBeforeNewNumbers)
+            unimacroutils.Wait(waitBeforeNewNumbers)
             keystroke(getNumbers[mode])
 
     def gotResults_navigatetabs(self,words,fullResults):
@@ -225,16 +225,16 @@ class ThisGrammar(ancestor):
         getNumbersAgain = 1
         if dir:        
             keystroke('{ctrl+ext%s %s}'%(dir, count or '1'))
-            natqh.Wait(visiblePause)
+            unimacroutils.Wait(visiblePause)
         elif count:
             if mode == 'mlb':
                   if minus:
                       mbDonumber("01",'ctrl')
                       # need to wait:
-                      natqh.Wait(visiblePause*2)
+                      unimacroutils.Wait(visiblePause*2)
                       dir = 'pgup'
                       keystroke('{ctrl+ext%s %s}'%(dir, count or '1'))
-                      natqh.Wait(visiblePause)
+                      unimacroutils.Wait(visiblePause)
                   else:
 ##                      print 'go to tab: %s'% count
                       numberString = '%s%s'% (0,count)
@@ -248,7 +248,7 @@ class ThisGrammar(ancestor):
             getNumbersAgain = 0
             
         if command:
-            natqh.Wait(visiblePause*2)
+            unimacroutils.Wait(visiblePause*2)
             action(command)
 
         if command.lower().find('f5') > 0:
@@ -256,7 +256,7 @@ class ThisGrammar(ancestor):
             getNumbersAgain = 0
 
         if getNumbersAgain and mode =="hah":
-            natqh.Wait(waitBeforeNewNumbers)
+            unimacroutils.Wait(waitBeforeNewNumbers)
             keystroke(getNumbers[mode])
 
     def gotResults_moretabsclose(self,words,fullResults):
@@ -292,7 +292,7 @@ class ThisGrammar(ancestor):
         if mode =="hah":
 ##            print 'hah go to number:',self.number
             keystroke("%s"% self.number)
-            # natqh.Wait(visiblePause)
+            # unimacroutils.Wait(visiblePause)
             keystroke(getNumbers[mode])
             print('firefox browsing with hah obsolete')
             return
@@ -314,7 +314,7 @@ class ThisGrammar(ancestor):
                 print('unknown word in command: %s'% self.hadNew)
                 keystroke("{enter}")
 
-            natqh.Wait(waitBeforeNewNumbers)
+            unimacroutils.Wait(waitBeforeNewNumbers)
             keystroke(getNumbers[mode])
             
         elif mode == "mlb":
@@ -345,9 +345,9 @@ def getKeyCode(k):
         return 96 + int(k)
 
 modifiers = { 
-    'ctrl':  ((natut.wm_keydown, natut.vk_control, 1), (natut.wm_keyup, natut.vk_control, 1)),
-    'shift':  ((natut.wm_keydown, natut.vk_shift, 1), (natut.wm_keyup, natut.vk_shift, 1)),
-    'alt':  ((natut.wm_syskeydown, natut.vk_menu, 1), (natut.wm_syskeyup, natut.vk_menu, 1))}
+    'ctrl':  ((natlinkutils.wm_keydown, natlinkutils.vk_control, 1), (natlinkutils.wm_keyup, natlinkutils.vk_control, 1)),
+    'shift':  ((natlinkutils.wm_keydown, natlinkutils.vk_shift, 1), (natlinkutils.wm_keyup, natlinkutils.vk_shift, 1)),
+    'alt':  ((natlinkutils.wm_syskeydown, natlinkutils.vk_menu, 1), (natlinkutils.wm_syskeyup, natlinkutils.vk_menu, 1))}
 
     
 ##def mbDonumber(number, modifier=None):
@@ -356,7 +356,7 @@ modifiers = {
 ##    L = ['{ctrl+numkey%s}'%s for s in str(number)]
 ##    print 'L: %s'% L
 ##    for l in L:
-##        natut.playString(l, natut.hook_f_systemkeys)
+##        natlinkutils.playString(l, natlinkutils.hook_f_systemkeys)
     
 def mbDonumber(number, modifier=None):
     events = []
@@ -364,8 +364,8 @@ def mbDonumber(number, modifier=None):
         events.append (modifiers[modifier][0])
     for n in number:
         code = getKeyCode(n)
-        events.append((natut.wm_keydown, code, 1))
-        events.append((natut.wm_keyup, code, 1))
+        events.append((natlinkutils.wm_keydown, code, 1))
+        events.append((natlinkutils.wm_keyup, code, 1))
     if modifier:
         events.append (modifiers[modifier][1])
     try:

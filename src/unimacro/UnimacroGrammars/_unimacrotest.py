@@ -28,17 +28,17 @@ import unittest
 from natlinkcore import natlink
 import os
 import sys
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import utilsqh
 import glob
 from unimacro import actions
 
 class UnittestGrammar(natbj.IniGrammar):
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
     name = 'unimacro test'
     iniIgnoreGrammarLists = ['tests'] # are set in this module
     gramSpec = """
@@ -79,7 +79,7 @@ class UnittestGrammar(natbj.IniGrammar):
         the result (the testNames) can then be filled in the list {tests}
         self.allTests (dict) contains the names: files entries
         """
-        self.testFolder = os.path.join(natqh.getUnimacroDirectory(), "unimacro_test")
+        self.testFolder = os.path.join(unimacroutils.getUnimacroDirectory(), "unimacro_test")
         testFiles = glob.glob(os.path.join(self.testFolder, "*test.py"))
 ##        print 'testFiles: %s'% testFiles
         testNames = list(map(self.extractTestName, testFiles))

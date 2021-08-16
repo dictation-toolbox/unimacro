@@ -27,17 +27,17 @@ the vocabulary builder.
 class EditError(Exception): pass
 
 from natlinkcore import natlink
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import utilsqh
 import win32gui
 import time
 import re
 import os
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 from unimacro import actions
 import ctypes
 
@@ -61,7 +61,7 @@ winwordEmptyCommentLines = re.compile("^ *' *$", re.M)
 
 ancestor = natbj.IniGrammar
 class EditGrammar(ancestor):
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
     name = 'edit'
     gramSpec = """
 <log> exported = log (all|that|messages);
@@ -85,9 +85,9 @@ class EditGrammar(ancestor):
     def defineLogfiles(self):
         """folder for logging texts and folder for messages"""
 
-        umFolder = natqh.getUnimacroUserDirectory()
+        umFolder = unimacroutils.getUnimacroUserDirectory()
         self.messagesFolder = os.path.join(umFolder, 'log messages')
-        self.logFolder = os.path.join(umFolder, 'log %s'%self.language, natqh.getUser())
+        self.logFolder = os.path.join(umFolder, 'log %s'%self.language, unimacroutils.getUser())
 
 
     def gotBegin(self,moduleInfo):
@@ -102,7 +102,7 @@ class EditGrammar(ancestor):
         global sourceHandle
         print('---------------------edit: %s'% words)
         modInfo = natlink.getCurrentModule()
-        progInfo = natqh.getProgInfo()
+        progInfo = unimacroutils.getProgInfo()
         if progInfo[0] == self.startProgram.lower() or \
             self.startProgram == 'DragonPad' and progInfo[1].find('dragonpad') == 0:
             self.DisplayMessage('Do not use "%s" in %s'% (self.fullText, self.startProgram))
@@ -115,23 +115,23 @@ class EditGrammar(ancestor):
             toProg = 'emacs'
             self.changeFileToProg(sourceHandle, toProg)
             return
-        natqh.clearClipboard()
+        unimacroutils.clearClipboard()
         action('<<copy>>')
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
 
         if self.hasCommon(words, ['all']):
             action('<<selectall>>')            
 
-        self.progName = natqh.getProgName()
+        self.progName = unimacroutils.getProgName()
         self.comment = self.hasCommon(words,['comment','doc string'])
         self.remark = self.hasCommon(words,['remark']) # for excel, not well implemented
         self.emacs = self.hasCommon(words, ['code'])
         self.latex = self.hasCommon (words, ['latex'])
         
         if not self.remark:
-            natqh.clearClipboard()
+            unimacroutils.clearClipboard()
             action('<<copy>>')
-            inputText = natqh.getClipboard()
+            inputText = unimacroutils.getClipboard()
             if inputText.endswith('\n') and not self.emacs:
                 self.endsWithNewline = 1
                 inputText = inputText[:-1]
@@ -199,13 +199,13 @@ class EditGrammar(ancestor):
                 print('%s: problem with finding targetProg: %s'% (self.name, self.targetProg))
                 return
             if inputText:
-                natut.playString(inputText)
+                natlinkutils.playString(inputText)
         self.activateSet(editset)
 
     def gotResults_copy(self,words,fullResults):
         global sourceHandle, nsHandle
         modInfo = natlink.getCurrentModule()
-        if natut.matchWindow(modInfo, self.startProgram, self.startProgram):
+        if natlinkutils.matchWindow(modInfo, self.startProgram, self.startProgram):
             self.DisplayMessage('Do not use "'+self.fullText+'" in '+self.startProgram)
             return 
         # get Handle of this window:
@@ -214,14 +214,14 @@ class EditGrammar(ancestor):
         ##  If "edit all" is said, first select whole document
         if (self.hasCommon(words, ['all'])):
             action('<<selectall>>')
-            natqh.Wait(0.2)
+            unimacroutils.Wait(0.2)
         if (self.hasCommon(words, ['messages'])):
-            natqh.switchToWindowWithTitle('messages from python macros')
+            unimacroutils.switchToWindowWithTitle('messages from python macros')
             action('<<selectall>>')
-            natqh.Wait(0.2)
+            unimacroutils.Wait(0.2)
         # copy and goto NatSpeak
         #  clear clipboard, copy and goto DragonPad
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         if (self.hasCommon(words, ['copy'])):
             action('<<copy>>')
         elif (self.hasCommon(words, ['cut'])):
@@ -229,12 +229,12 @@ class EditGrammar(ancestor):
         else:
             print('no copy or cut in words: %s'% words)
             return
-        natqh.rememberWindow()
+        unimacroutils.rememberWindow()
         if self.startEditProgram():
-            if natqh.getClipboard():
+            if unimacroutils.getClipboard():
                     keystroke('{Ctrl+ExtEnd}{Enter}{Ctrl+v}')
-            natqh.returnToWindow(20,0.2, winHandle=sourceHandle)
-        natqh.restoreClipboard()
+            unimacroutils.returnToWindow(20,0.2, winHandle=sourceHandle)
+        unimacroutils.restoreClipboard()
         
     def changeFileToProg(self,fromHndle, toProg):
         """try getting file and folder in pythonwin <CURSOR> and emacs"""
@@ -262,27 +262,27 @@ class EditGrammar(ancestor):
     # file, which can
     # be used by the vocabulary builder later on.
     def gotResults_log(self,words,fullResults):
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         if ( words[1] in ['all']):
             #print "select all"
             action('<<selectall>>')
-            natqh.Wait(0.2)
+            unimacroutils.Wait(0.2)
             
         if (self.hasCommon(words, ['messages'])):
-            natqh.switchToWindowWithTitle('Messages')
-            natqh.Wait(0.5)
+            unimacroutils.switchToWindowWithTitle('Messages')
+            unimacroutils.Wait(0.5)
             action('<<selectall>>')
             action('<<copy>>')
             yearMonthDay = time.localtime(time.time())[:3]
             messagesLogbase = 'Messages %s %s %s'% yearMonthDay
             name = logToFileNow(self.messagesFolder, messagesLogbase, append=0)
             if name:
-                natqh.Wait(1)
+                unimacroutils.Wait(1)
                 action("{alt+f4}")
                 self.DisplayMessage('Messages logged to %s'% name)
             else:
                 self.DisplayMessage('error logging')
-            natqh.restoreClipboard()
+            unimacroutils.restoreClipboard()
             return
 ##            action("{alt+f4}")   
         # copy and goto NatSpeak
@@ -298,7 +298,7 @@ class EditGrammar(ancestor):
         else:
             self.DisplayMessage('could not do logging')
     
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
 
     def gotResults_ready(self,words,fullResults):
         modInfo = natlink.getCurrentModule()
@@ -309,31 +309,31 @@ class EditGrammar(ancestor):
 
             if checkHandle == nsHandle:
                 keystroke('{Ctrl+z}')
-            natqh.returnToWindow(20,0.2, winHandle=sourceHandle)
+            unimacroutils.returnToWindow(20,0.2, winHandle=sourceHandle)
 
         else:        # klaar:
             if checkHandle != nsHandle and self.targetProg != 'winword' and self.targetProg != 'emacs':                
                 self.DisplayMessage('command "%s" cannot be done from this window, only from "%s"'%(self.fullText, self.startProgram))
             else:
-                natqh.clearClipboard()
+                unimacroutils.clearClipboard()
                 if self.targetProg == "emacs":
                     keystroke('{alt+x}mark-whole-buffer{enter}')
-                    natqh.Wait()
+                    unimacroutils.Wait()
                     keystroke('{alt+x}clipboard-kill-region{enter}')
-                    natqh.Wait()
+                    unimacroutils.Wait()
                     self.killEmacsFile()
                 else:
                     keystroke('{Ctrl+a}{Ctrl+c}')
 		if self.targetProg == "winword":
 		    action ('<<filesave>>')
-		    natqh.Wait()
-                    if natqh.waitForWindowTitle ('microsoft word') == 1:
-                        progInfo = natqh.getProgInfo()
+		    unimacroutils.Wait()
+                    if unimacroutils.waitForWindowTitle ('microsoft word') == 1:
+                        progInfo = unimacroutils.getProgInfo()
                         if progInfo[2] == 'child':
         		    keystroke('{enter}')
-		    natqh.Wait()
+		    unimacroutils.Wait()
 		    action ('<<documentclose>>')
-                t = natqh.getClipboard()
+                t = unimacroutils.getClipboard()
                 if self.automaticLogToFile:
                     intros = dict(nld='teksten auto ', enx='texts auto ')
                     fileIntro = intros.get(self.language, 'texts ')
@@ -341,8 +341,8 @@ class EditGrammar(ancestor):
 
                     logFile = fileIntro +  (" %s %s"%yearMonth) + '.txt'
                     name = logToFileNow(self.logFolder, logFile)
-                    ##                natqh.killWindow()
-                natqh.returnToWindow(20,0.2, winHandle=sourceHandle)
+                    ##                unimacroutils.killWindow()
+                unimacroutils.returnToWindow(20,0.2, winHandle=sourceHandle)
                 if self.comment:
                     if self.comment in ['doc string']:
                         try:
@@ -386,11 +386,11 @@ class EditGrammar(ancestor):
         open(self.emacsFile, 'w').write(text)
         
         self.emacsCommand('find-file')
-        natqh.Wait()
+        unimacroutils.Wait()
         keystroke('{backspace 100}')
-        natqh.Wait()
+        unimacroutils.Wait()
         keystroke(self.emacsFile)
-        natqh.Wait()
+        unimacroutils.Wait()
         keystroke('{enter}')
         self.emacsCommand('delete-other-windows')
         
@@ -399,27 +399,27 @@ class EditGrammar(ancestor):
         
         """
         open(self.wordFile, 'w').write(text)
-	natqh.waitForWindowTitle ('Microsoft Word')
+	unimacroutils.waitForWindowTitle ('Microsoft Word')
 	print("found Microsoft Word")
         while 1:
             action('<<fileopen>>')
-            if natqh.waitForWindowTitle ('Open') == 1:
+            if unimacroutils.waitForWindowTitle ('Open') == 1:
                 print("got window title open")
-                progInfo = natqh.getProgInfo()
+                progInfo = unimacroutils.getProgInfo()
                 if progInfo[2] == 'child':
                     break
                 else:
                     print("not a child")
 
 	print("open file")
-        natqh.Wait()
+        unimacroutils.Wait()
         keystroke(self.wordFile)
-        natqh.Wait()
+        unimacroutils.Wait()
         keystroke('{enter}')
-        natqh.Wait()
-	if natqh.waitForWindowTitle ('File conversion'):
+        unimacroutils.Wait()
+	if unimacroutils.waitForWindowTitle ('File conversion'):
             keystroke('{alt+w}')
-            natqh.Wait()
+            unimacroutils.Wait()
 	    keystroke ('{enter}')
 	keystroke('{ctrl+alt+n}') #Switch Word to draft mode
 
@@ -429,10 +429,10 @@ class EditGrammar(ancestor):
         keystroke('{alt+x}')
         keystroke(cmd)
         if self.emacsWait:
-            natqh.Wait(self.emacsWait)
+            unimacroutils.Wait(self.emacsWait)
         keystroke('{enter}')
         if self.emacsWait:
-            natqh.Wait(self.emacsWait)
+            unimacroutils.Wait(self.emacsWait)
         
 
 
@@ -451,14 +451,14 @@ class EditGrammar(ancestor):
             nsHandle = hndle
             return hndle
 ##        
-##        natqh.rememberWindow()
+##        unimacroutils.rememberWindow()
 ##        print ' starting: %s'% prog
 ##        if prog == 'emacs':
 ##            finish = 'emacs'
 ##            
 ##            if self.emacsHndle:
 ##                try:
-##                    natqh.SetForegroundWindow(self.emacsHndle)
+##                    unimacroutils.SetForegroundWindow(self.emacsHndle)
 ##                except:
 ##                    self.emacsHndle = None
 ##            if not self.emacsHndle:
@@ -471,15 +471,15 @@ class EditGrammar(ancestor):
 ####            natlink.recognitionMimic(["start", self.startProgram])
 ##        print 'waiting for new window...'
 ##        try:
-##            natqh.waitForNewWindow(100,0.1)   # 3 seconds to start or switch
-##        except natqh.NatlinkCommandTimeOut:
+##            unimacroutils.waitForNewWindow(100,0.1)   # 3 seconds to start or switch
+##        except unimacroutils.NatlinkCommandTimeOut:
 ##            self.DisplayMessage('cannot switch to edit program: "%s"'% (prog or self.startProgram))
 ##            nsHandle = 0
 ##            return 0
 ##        newMod = natlink.getCurrentModule()
 ##        nsHandle = newMod[2]
 ##        if finish:
-##            newProg = natqh.matchModule('emacs', modInfo=newMod)
+##            newProg = unimacroutils.matchModule('emacs', modInfo=newMod)
 ##            if finish == newProg:
 ##                print 'emacs found ok'
 ##                self.emacsHndle = newMod[2]
@@ -543,10 +543,10 @@ class EditGrammar(ancestor):
             return '\n'.join(L)
                 
         elif not t: # starting with empty comment
-            natqh.saveClipboard()
+            unimacroutils.saveClipboard()
             action('<<selectline>>{ctrl+c}')
-            t = natqh.getClipboard()
-            natqh.restoreClipboard()
+            t = unimacroutils.getClipboard()
+            unimacroutils.restoreClipboard()
             p = len(t) - len(t.lstrip())
             self.prefix = ' '*p + "# "
             if t.find(self.prefix) == 0:
@@ -592,10 +592,10 @@ class EditGrammar(ancestor):
             return '\n'.join(L)
                 
         elif not t: # startin with current line
-            natqh.saveClipboard()
+            unimacroutils.saveClipboard()
             action('<<selectline>>{ctrl+c}')
-            t = natqh.getClipboard()
-            natqh.restoreClipboard()
+            t = unimacroutils.getClipboard()
+            unimacroutils.restoreClipboard()
             if not t:
                 self.prefix = ''
                 return ''
@@ -685,7 +685,7 @@ def pythonwinList(L):
 def logToFileNow(folderName, fileNameBase, append=1):
     print('start log to file now: folderName: %s, fileNameBase: %s, append: %s'% \
           (folderName, fileNameBase, append))
-    t = natqh.getClipboard()
+    t = unimacroutils.getClipboard()
     if t:
         utilsqh.createFolderIfNotExistent(folderName)
         try:

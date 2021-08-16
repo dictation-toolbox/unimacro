@@ -19,7 +19,7 @@ import TestCaseWithHelpers
 import re
 import types
 from natlinkcore import natlink
-import unimacro.natlinkutilsqh as natqh   
+from dtactions.unimacro import unimacroutils   
 import natlinkcore.natlinkutils as natut
 
 import natlinkcore.natlinkutils as natut
@@ -88,7 +88,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
     # to the end of the window to handle the case that the window is empty.
 
 ##    def getWindowContents(self):
-##        natut.playString('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
+##        natlinkutils.playString('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
 ##        contents = natlink.getClipboard()
 ##        if contents == 'x':
 ##            raise TestError,'Failed to read the contents of the NatSpeak window'
@@ -97,7 +97,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
         action = actions.doAction
         action('CLIPSAVE')
         action("<<selectall>><<copy>>")
-        contents = natqh.getClipboard()
+        contents = unimacroutils.getClipboard()
         action('CLIPRESTORE')
         return contents
     
@@ -137,7 +137,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
             self.assert_equal(expected, contents, testText)
             
     def clearWindow(self):
-        natut.playString('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
+        natlinkutils.playString('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
     #---------------------------------------------------------------------------
     # Utility function which calls a routine and tests the return value
 
@@ -151,7 +151,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
     # by the OS, we must send as system keys.
 
     def playAltEsc(self):
-        natut.playString('{alt+esc}',hook_f_systemkeys)
+        natlinkutils.playString('{alt+esc}',hook_f_systemkeys)
 
     #---------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
         actions.do_Wait(t)
 
     def killNatspeakOrDragonPad(self):
-        natqh.SetForegroundWindow(self.DragonPadHndle)
+        unimacroutils.SetForegroundWindow(self.DragonPadHndle)
         mod, title, hndle = natlink.getCurrentModule()
         self.assert_(mod == self.DragonPadMod and hndle == self.DragonPadHndle, "could not get back to Natspeak/DragonPad window")
         actions.killWindow()

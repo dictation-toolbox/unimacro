@@ -42,17 +42,17 @@ QH september 2013: rewriting of the functions, ruling out optional command words
 
 further comments in _number extended.py. Also see the page "number grammar" on the Unimacro we
 """
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
 
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
@@ -108,7 +108,7 @@ class ThisGrammar(ancestor):
         keystroke(number)
         #Step 5:
         # Here some extra postprocessing for different programs:
-        prog = natqh.getProgName()
+        prog = unimacroutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:  # DragonPad

@@ -11,7 +11,7 @@ from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
 
 
-ancestor = natut.GrammarBase
+ancestor = natlinkutils.GrammarBase
 class ThisGrammar(ancestor):
 
     gramSpec = """
@@ -34,7 +34,7 @@ class ThisGrammar(ancestor):
 
         self.prevInfo = moduleInfo
 
-        winHandle = natut.matchWindow(moduleInfo,'winword','Microsoft Word')
+        winHandle = natlinkutils.matchWindow(moduleInfo,'winword','Microsoft Word')
         if winHandle:
             if not self.isActive():
                 self.activateAll()
@@ -47,7 +47,7 @@ class ThisGrammar(ancestor):
         for w in words:
 ##            print 'got phword: %s'% w   # including the trigger words!
             L.append(w)
-        natut.playString(' '.join(L))
+        natlinkutils.playString(' '.join(L))
             
 # standard stuff:
 thisGrammar = ThisGrammar()

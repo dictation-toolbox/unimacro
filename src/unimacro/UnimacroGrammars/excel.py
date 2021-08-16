@@ -10,19 +10,19 @@ __version__ = "$Rev: 429 $ on $Date: 2011-05-31 16:21:03 +0200 (di, 31 mei 2011)
 
 
 from natlinkcore import natlink
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import pprint
 import types
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 from unimacro import actions
 import win32com
 
 # 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 ancestor = natbj.DocstringGrammar
 class ThisGrammar(ancestor):
 
@@ -63,7 +63,7 @@ class ThisGrammar(ancestor):
                 return
         else:
             self.prevHandle = winHandle
-            if natqh.matchModule('excel', modInfo=moduleInfo):
+            if unimacroutils.matchModule('excel', modInfo=moduleInfo):
                 #print 'activate firefox %s mode'% mode
                 if self.checkForChanges:
                     print('excel (%s), checking the inifile'% self.name)
@@ -78,7 +78,7 @@ class ThisGrammar(ancestor):
                 return
         if self.isActive():
             # refreshes current position now as well:
-            progInfo = natqh.getProgInfo(moduleInfo)
+            progInfo = unimacroutils.getProgInfo(moduleInfo)
             if self.excel is None:
                 self.excel = actions.get_instance_from_progInfo(progInfo)
                 if self.excel.app:
@@ -201,7 +201,7 @@ class ThisGrammar(ancestor):
             if not self.doWaitForMouseToStop():
                 print('excel, mouse does not stop, cancel command')
                 return
-            natqh.buttonClick()
+            unimacroutils.buttonClick()
 
     def gotResults_date(self,words,fullResults):
         day = self.getNumberFromSpoken(words[1])

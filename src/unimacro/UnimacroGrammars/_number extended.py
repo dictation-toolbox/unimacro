@@ -45,12 +45,12 @@ as "30", "3".
 QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
-from unimacro.actions import doKeystroke as keystroke
-from unimacro.actions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 from unimacro.actions import getMetaAction
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 import iban  # special module for banknumber (European mainly I think)
@@ -61,7 +61,7 @@ import types
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
     try:
@@ -254,7 +254,7 @@ class ThisGrammar(ancestor):
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
-        self.progInfo = natqh.getProgInfo(moduleInfo)
+        self.progInfo = unimacroutils.getProgInfo(moduleInfo)
   
     def initialize(self):
         if not self.language:
@@ -536,7 +536,7 @@ class ThisGrammar(ancestor):
             number = str(number)
 
         keystroke(number)
-        prog = natqh.getProgName()
+        prog = unimacroutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:

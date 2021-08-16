@@ -9,28 +9,20 @@
 # _control.py, adapted version of_gramutils.py
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003
-
-# import string
+#pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107
 import os
-import sys
-import re # cPickle
 from natlinkcore import natlink
-from natlinkcore.natlinkutils import *
+from natlinkcore import natlinkutils
 from natlinkcore import natlinkmain
 # from natlinkmain import loadedFiles, unloadModule, loadModule
 from natlinkcore import utilsqh
 # new name new locations:
-import dtactions.unimacro.unimacroutils as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroactions as actions
+
 import natlinkutilsbj as natbj
-import natlinkcore.natlinkutils as natut
-import D_
 
 # extra commands for controlling actions module:
-try:
-    from unimacro import actions
-except ImportError:
-    actions = None
-    print('warning: actions module not imported')
 try:
     spokenforms = __import__('spokenforms')
 except ImportError:
@@ -49,7 +41,7 @@ def ReadFilteredWords(Filename):
     except:
         return []
     Words = File.readlines()
-    File.close
+    File.close()
     for w in Words:
         Words[Words.index(w)]=w[:-1]
     freq={}        
@@ -64,8 +56,8 @@ def ReadFilteredWords(Filename):
 FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
                  'if', 'its', 'is', 'this', 'booth', 'on', 'with',"'s"]
 #(taken from natlinkmain, to prevent import:)
-baseDirectory = natqh.getUnimacroUserDirectory()
-unimacroDirectory = natqh.getUnimacroDirectory()
+baseDirectory = unimacroutils.getUnimacroUserDirectory()
+unimacroDirectory = unimacroutils.getUnimacroDirectory()
 FilterFileName=baseDirectory+'\\filtered.txt'
 FilteredWords=natbj.Union(FilteredWords, ReadFilteredWords(FilterFileName))
 
@@ -96,7 +88,7 @@ showAll = 1  # reset if no echo of exclusive commands is wished
 
 ancestor = natbj.IniGrammar
 class UtilGrammar(ancestor):
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message'] # are set in this module
 
     name = 'control'
@@ -155,7 +147,7 @@ class UtilGrammar(ancestor):
     def initialize(self):
         # temp set allResults to 0, disabling the messages trick:
         if not self.load(self.gramSpec, allResults=showAll):
-            return None
+            return
         natbj.RegisterControlObject(self)
         self.emptyList('message')
         allGramNames = self.getUnimacroGrammarNames()
@@ -165,7 +157,7 @@ class UtilGrammar(ancestor):
         self.activateAll()
         self.setMode(Normal)
         self.startExclusive = self.exclusive # exclusive state at start of recognition!
-##        if natqh.getUser() == 'martijn':
+##        if unimacroutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
 
@@ -221,8 +213,8 @@ class UtilGrammar(ancestor):
             natbj.ClearPendingMessage()
             self.DisplayMessage(mes)
             return
-        natqh.doPendingBringUps()  # if there were
-        natqh.doPendingExecScripts()  # if there were
+        unimacroutils.doPendingBringUps()  # if there were
+        unimacroutils.doPendingExecScripts()  # if there were
 
         if self.startExclusive and self.exclusive and showAll:
             # display recognition results for exclusive grammars
@@ -255,9 +247,8 @@ class UtilGrammar(ancestor):
     def gotResults_checkalphabet(self,words,fullResults):
         """check the exact spoken versions of the alphabet in spokenforms
         """
-        import spokenforms
-        version = natqh.getDNSVersion()
-        spok = spokenforms.SpokenForms(self.language, version)
+        version = unimacroutils.getDNSVersion()
+        _spok = spokenforms.SpokenForms(self.language, version)
         alph = 'alphabet'
         ini = spokenforms.ini
         for letter in utilsqh.ascii_lowercase:
@@ -375,7 +366,7 @@ class UtilGrammar(ancestor):
                 #gram.mayBeSwitchedOn = 1
                 gram.ini.write()
                 print('reload grammar "%s" after 1 seconds (switching on)'% gram.getName())
-                natqh.Wait(1)
+                unimacroutils.Wait(1)
             else:
                 print('reload grammar "%s"'% gram.getName())
                 
@@ -384,19 +375,18 @@ class UtilGrammar(ancestor):
             natlinkmain.loadModule(modName)
             #print 'reloaded "%s"'% modName
             return 1
-        elif funcName == 'switchOff':
+        if funcName == 'switchOff':
             if gram.mayBeSwitchedOn:
                 gram.ini.set('general', 'initial on', 0)
                 gram.ini.writeIfChanged()
                 gram.mayBeSwitchedOn = 0
-                result =  func()
+                _result =  func()
                 print('grammar "%s" switched off'% gram.getName())
-            else:
-                result = func()
-                print('grammar "%s" switched off (again)'% gram.getName())
-        else:
-            raise ValueError('switching on/off should have as function "switchOn" or "switchOff", not: %s'% func)
-
+                return 1
+            _result = func()
+            print('grammar "%s" switched off (again)'% gram.getName())
+            return 1
+        raise ValueError('switching on/off should have as function "switchOn" or "switchOff", not: %s'% func)
             
     def gotResults_showexclusive(self,words,fullResults):
 
@@ -439,7 +429,7 @@ class UtilGrammar(ancestor):
             T.append('... reset exclusive mode')
             self.DisplayMessage(' '.join(T))
             natbj.GlobalResetExclusiveMode()
-            natqh.Wait(1)
+            unimacroutils.Wait(1)
             self.DisplayMessage('reset exclusive mode OK')
         else:
             self.DisplayMessage('no exclusive grammars')
@@ -486,15 +476,6 @@ class UtilGrammar(ancestor):
             if not self.hasCommon(words, 'grammar'):
                 grammar.showInifile()
                 return
-                try:
-                    grammar.showInifile()
-                    return
-                except AttributeError:
-                    try:
-                        grammar.showGrammar()
-                        return
-                    except AttributeError:
-                        pass
         
         # now show the grammar in the browser application:      
         if gramName:
@@ -522,7 +503,7 @@ class UtilGrammar(ancestor):
         if Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
             activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
-            otherGrammars = [k for k in natlinkmain.loadedFiles.keys()]
+            otherGrammars = natlinkmain.loadedFiles.keys()
             for g in natbj.loadedGrammars:
                 gram = natbj.loadedGrammars[g]
                 result = getattr(gram, 'isActive')
@@ -582,7 +563,7 @@ class UtilGrammar(ancestor):
         if self.hasCommon(words, 'actions'):
             actions.editActions(comingFrom=self, name="edit actions")
             return
-        elif self.hasCommon(words, 'spoken forms'):
+        if self.hasCommon(words, 'spoken forms'):
             actions.Message('Warning: spoken forms lists do NOT refresh automatically.\n\nA restart of NatSpeak is required after you edited the "spokenforms.ini" file')
             spokenforms.editSpokenForms(comingFrom=self, name="edit spoken forms", language=self.language)
             return
@@ -594,10 +575,10 @@ class UtilGrammar(ancestor):
             grammar = grammars[gramName]
             if self.hasCommon(words, 'grammar'):
                 module = grammar.__module__
-                filename = natqh.getModuleFilename(module)
+                filename = unimacroutils.getModuleFilename(module)
                 print('open for edit file: ', filename)
                 self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
-                natqh.setCheckForGrammarChanges(1)
+                unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
                 try:
@@ -634,11 +615,11 @@ class UtilGrammar(ancestor):
             t = {'nld': ['Grammatica "%s" is uitgeschakeld'% name,
                          '', 
                          '"Schakel in %s" om te activeren'% name]}[self.language]
-            title = {'nld': 'Grammatica %s'% name}[self.language]
+            # title = {'nld': 'Grammatica %s'% name}[self.language]
         except KeyError:
             t = ['Grammar "%s" is switched off'% name,
                  '"Switch On Grammar %s" to activate'% name]
-            title = 'Grammar %s'% name
+            # title = 'Grammar %s'% name
         if natbj.loadedMessageGrammar:
             t = ';  '.join(t)
             self.DisplayMessage(t)
@@ -649,6 +630,7 @@ class UtilGrammar(ancestor):
     def getUnimacroGrammarNames(self):
         """get all the names of active or wrong Unimacro grammar names
         """
+        #pylint:disable=R0201
         wrongNames = set(natlinkmain.wrongFiles.keys())
         loadedNames = set(natlinkmain.loadedFiles.keys())
         # print("wrong names: ", wrongNames)
@@ -659,9 +641,9 @@ class UtilGrammar(ancestor):
         loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
         return loadedandwrongmodules
 
-class MessageDictGrammar(natut.DictGramBase):
+class MessageDictGrammar(natlinkutils.DictGramBase):
     def __init__(self):
-        natut.DictGramBase.__init__(self)
+        natlinkutils.DictGramBase.__init__(self)
 
     def initialize(self):
         print('initializing/loading DictGrammar!!')
@@ -670,7 +652,7 @@ class MessageDictGrammar(natut.DictGramBase):
 
     def unload(self):
         natbj.UnRegisterMessageObject(self)
-        natut.DictGramBase.unload(self)
+        natlinkutils.DictGramBase.unload(self)
         
     def gotResults(self, words):
         pass
@@ -693,14 +675,17 @@ else:
     utilGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global utilGrammar, messageDictGrammar
-    if utilGrammar: utilGrammar.unload()
+    if utilGrammar:
+        utilGrammar.unload()
     utilGrammar = None
     if messageDictGrammar:
         messageDictGrammar.unload()
     messageDictGrammar = None
     
-def changeCallback(type,args):
+def changeCallback(type, args):
+    #pylint:disable=W0603, W0622
     global utilGrammar
     # Whenever the mic is turned off, the intercept mode is turned off.
     # and any special modes, except training
@@ -712,7 +697,7 @@ def changeCallback(type,args):
         #This could be done anywhere, but not within natlinkutilsbj
         #Because that module is 'imported from'.
         if utilGrammar.interceptMode:
-            CallAllGrammarObjects('setInterceptMode',[0])
+            natbj.CallAllGrammarObjects('setInterceptMode',[0])
         
         
     

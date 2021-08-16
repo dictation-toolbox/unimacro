@@ -47,14 +47,14 @@ If just input notes are given, the strategy of insert/update of notes is
   
 """
 
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlink
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 from itertools import cycle
 from unimacro import actions
 import re
@@ -83,9 +83,9 @@ class ThisGrammar(ancestor):
         winHandle = moduleInfo[2]
         if self.prevHandle == winHandle: return
         self.prevHandle = winHandle
-        if moduleInfo[0].lower().find('frescobaldi.exe') > 0 and natqh.isTopWindow(moduleInfo[2]):
+        if moduleInfo[0].lower().find('frescobaldi.exe') > 0 and unimacroutils.isTopWindow(moduleInfo[2]):
             if self.frescobaldi is None:
-                progInfo = natqh.getProgInfo(moduleInfo)
+                progInfo = unimacroutils.getProgInfo(moduleInfo)
                 self.frescobaldi = actions.get_instance_from_progInfo(progInfo)
                 if not self.frescobaldi:
                     raise Exception("frescobaldi, cannot get frescobaldi actions module")
@@ -122,7 +122,7 @@ class ThisGrammar(ancestor):
         self.justLeft = self.justRight = None # to be filled with getPrevNext()
         self.inMiddleOfWord = None
         if self.hasSelection:
-            print 'hasSelection, selected text: %s'% natqh.getClipboard()
+            print 'hasSelection, selected text: %s'% unimacroutils.getClipboard()
         self.hasAllInfoNext = False ## set to true if nextlines end with double \n
         self.hasAllInfoPrev = False ## set to true if prevlines contains a double \n so starts with ir
         
@@ -260,8 +260,8 @@ class ThisGrammar(ancestor):
         """here figure {figures}+"""
         # start with the pointer in the music pane
         # always click
-        natqh.buttonClick()
-        natqh.visibleWait()
+        unimacroutils.buttonClick()
+        unimacroutils.visibleWait()
         self.hadFigure = 1
 
         selection = self.getFigurePart()
@@ -368,7 +368,7 @@ class ThisGrammar(ancestor):
         ###
         ### position at correct position, possibly put a space.
         if self.hasCommon(words, 'here'):
-            natqh.buttonClick()
+            unimacroutils.buttonClick()
         self.getPrevNext()
         # position at left of word
         while self.inMiddleOfWord:
@@ -390,7 +390,7 @@ class ThisGrammar(ancestor):
         # leave next|previous for the moment, assume always count from the beginning      
         DIR = 'right'
         if self.hasCommon(words, 'here'):
-            natqh.buttonClick()
+            unimacroutils.buttonClick()
         try:
             nStr = self.getNumbersFromSpoken(words)[0] # returns a string or None
             n = int(nStr)
@@ -654,7 +654,7 @@ class ThisGrammar(ancestor):
        
     def getFigurePart(self):
         # go left then right for selecting the note at the cursor position
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         self.getPrevNext()
         if self.justRight != "<":
             # go left until < has been reached:
@@ -674,10 +674,10 @@ class ThisGrammar(ancestor):
                 break
         else:
             print 'getFigurePart, did not find ">"'
-            natqh.restoreClipboard()
+            unimacroutils.restoreClipboard()
             return
         result = t
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
         return result
         
         

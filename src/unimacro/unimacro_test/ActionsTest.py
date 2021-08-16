@@ -10,7 +10,7 @@ import sys
 unimacrodir = path('./..').normpath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
 from natlinkcore import natlink
 from unimacro import actions
@@ -116,7 +116,7 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         action("W 0.5")
         modInfo = natlink.getCurrentModule()
         handle = modInfo[2]
-        self.assert_ (not natqh.isTopWindow(handle), "dialog should be open now")
+        self.assert_ (not unimacroutils.isTopWindow(handle), "dialog should be open now")
 
         # do Notepad and kill, without text in it, so NO SaveAs dialog:
         action("BRINGUP Notepad")

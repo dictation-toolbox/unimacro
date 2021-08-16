@@ -13,11 +13,11 @@
 
 from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from unimacro.actions import doKeystroke as keystroke
-from unimacro.actions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 
 ancestor = natbj.IniGrammar
@@ -26,7 +26,7 @@ class ThisGrammar(ancestor):
     
     only to be switched on if dialog is there, if dialog is gone, the grammar rules set is deactivated
     """    
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     name = "natspeak dialog"
     
     setRecentFolderDialog = ["chooserfd", "okcancelrfd"]
@@ -52,7 +52,7 @@ class ThisGrammar(ancestor):
         if hndle == self.prevHndle:
             return
         self.prevHndle = hndle
-        if natqh.matchModule('natspeak'):
+        if unimacroutils.matchModule('natspeak'):
             # try to reach data from _folders grammar: 
             self.foldersGram = natbj.GetGrammarObject('folders')
             #print 'self.foldersGram: %s'% self.foldersGram
@@ -60,7 +60,7 @@ class ThisGrammar(ancestor):
                 return
             dTitle = self.foldersGram.dialogWindowTitle
             dRange = self.foldersGram.dialogNumberRange
-            if dTitle and natqh.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
+            if dTitle and unimacroutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
                 self.activateSet(self.setRecentFolderDialog)
                 self.setNumbersList('number', dRange)
                 return
@@ -88,10 +88,10 @@ class ThisGrammar(ancestor):
     def exitDialog(self):
         """finish the open dialog, normally by pressing enter"""
         dTitle = self.foldersGram.dialogWindowTitle
-        if dTitle and natqh.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
-            natqh.rememberWindow()
+        if dTitle and unimacroutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
+            unimacroutils.rememberWindow()
             keystroke("{enter}") # exit dialog.
-        natqh.waitForNewWindow()
+        unimacroutils.waitForNewWindow()
         
         
 # standard stuff:

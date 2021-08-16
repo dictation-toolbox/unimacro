@@ -24,19 +24,19 @@ import time
 import os
 import os.path
 import sys
-from unimacro.actions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
-language = natqh.getLanguage()        
+language = unimacroutils.getLanguage()        
 # center mouse after taskswitch (not good with XP and choice boxes in taskbar)
 #
 ancestor=natbj.DocstringGrammar
 class ThisGrammar(ancestor):
     
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
     name = "show numbers plus"
     prevHndle = None
 
@@ -101,7 +101,7 @@ class ThisGrammar(ancestor):
             return
         
         # if module changes, reset mode:
-        prog, title, topchild, hndle = natqh.getProgInfo(moduleInfo)
+        prog, title, topchild, hndle = unimacroutils.getProgInfo(moduleInfo)
         if topchild == 'child':
             self.prevTopHndle = self.prevHndle
         elif self.prevTopHndle != moduleInfo[2]:
@@ -199,19 +199,19 @@ class ThisGrammar(ancestor):
             cmd = 'DOACTIONTRAY=(%s, %s)'% (self.taskbar, self.clicktype)
             self.command(cmd)
             # see if stacked tray shows up
-            className = natqh.getClassName()
+            className = unimacroutils.getClassName()
             #print 'className: %s'% className
             if className == "TaskListThumbnailWnd":
                 if self.debug:
                     print('stacked taskbar, display numbers again')
                 cmd = 'SHOWNUMBERS'
                 self.command(cmd)
-                natqh.visibleWait()
+                unimacroutils.visibleWait()
             self.mode = None
 
         if self.inwindow:
             # intercept when you are in the stacked explorer (taskbar) windows:
-            className = natqh.getClassName()
+            className = unimacroutils.getClassName()
             #print 'classname: %s'% className
             if className == "TaskListThumbnailWnd":
                 self.doAlternativeClick(className, self.inwindow)
@@ -229,8 +229,8 @@ class ThisGrammar(ancestor):
         if self.centerMouse:
             if self.debug:
                 print('center mouse')
-            natqh.Wait()
-            natqh.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+            unimacroutils.Wait()
+            unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
         # must check this:
         if self.mode == 'continue':
             hndle = natlink.getCurrentModule()[2]

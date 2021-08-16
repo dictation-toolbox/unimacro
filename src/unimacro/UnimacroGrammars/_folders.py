@@ -76,8 +76,8 @@ import unimacro.messagefunctions as mess
 import natlinkcore.natlinkclipboard
 #, win32com
 from natlinkcore import natlinkcorefunctions # getExtendedEnv
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 from natlinkcore.pathqh import getValidPath
 from unimacro.actions import do_YESNO as YesNo
 from unimacro.actions import Message, UnimacroBringUp
@@ -91,8 +91,7 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 # for getting unicode explorer window titles:
@@ -135,7 +134,7 @@ ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
     """grammar for quickly going to folders, files and websites
     """    
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     name = "folders"
     iniIgnoreGrammarLists = ['subfolders', 'subfiles']
         # 'recentfolders' is filled via self.in inicngingData
@@ -429,7 +428,7 @@ class ThisGrammar(ancestor):
         # these are for automatic tracking the current folder:
         self.trackAutoFolders = self.ini.getBool('general', 'automatic track folders')
         self.trackAutoFiles = self.ini.getBool('general', 'automatic track files')
-        windowsVersion = natqh.getWindowsVersion()
+        windowsVersion = unimacroutils.getWindowsVersion()
         if (self.trackAutoFiles or self.trackAutoFolders) and  windowsVersion in ('XP', '2000', 'NT4', 'NT351', '98'):
             print('_folders: the options for "automatic track files" and "automatic track folders" of a directory probably do not work for this Windows version: %s'% windowsVersion)
             
@@ -618,7 +617,7 @@ class ThisGrammar(ancestor):
             f = mess.getFolderFromCabinetWClass(hndle)
             # if f and f.startswith("search-ms"):
             #     keystroke("{esc}")
-            #     natqh.Wait()
+            #     unimacroutils.Wait()
             #     f = mess.getFolderFromDialog(hndle, className)
             if not f:
                 print("getActiveFolder, CabinetWClass failed: %s"% hndle)
@@ -1003,14 +1002,14 @@ class ThisGrammar(ancestor):
         """get current website and open with websitecommands rule
         
         """
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         action('SSK {alt+d}{extend}{shift+exthome}{ctrl+c}')
         action("VW")
-        self.wantedWebsite = natqh.getClipboard()
+        self.wantedWebsite = unimacroutils.getClipboard()
         self.wantedWebsite = self.wantedWebsite.rstrip("/")
         self.catchRemember = "website"
         print('this website: %s'% self.wantedWebsite)
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
         if self.hasCommon(words, "remember"):
             ## dgndictation is not used at the moment!!
             if self.nextRule == "dgndictation":
@@ -1433,7 +1432,7 @@ class ThisGrammar(ancestor):
             else:
                 result = self.wantedWebsite.split()[-1]
         print('namepathcopy, result: %s (type: %s)'% (result, type(result)))
-        natqh.setClipboard(result, 13)   # 13 unicode!!
+        unimacroutils.setClipboard(result, 13)   # 13 unicode!!
 
     def gotResults_remember(self, words, fullResults):
         """treat the remember function, filling items in ini files
@@ -1547,8 +1546,8 @@ class ThisGrammar(ancestor):
             if not self.doWaitForMouseToStop():
                 print('_folders, thisfile, mouse did not stop, cannot click')
                 return
-            natqh.buttonClick(button, nClick)
-            natqh.visibleWait()
+            unimacroutils.buttonClick(button, nClick)
+            unimacroutils.visibleWait()
 
         # print 'filenames: %s'% self.get_selected_filenames()
         self.wantedFile = None
@@ -1562,12 +1561,12 @@ class ThisGrammar(ancestor):
         #         print "warning, thisfile: no valid file found"
         #             
         # else:
-        natqh.saveClipboard()
-        natqh.Wait()
+        unimacroutils.saveClipboard()
+        unimacroutils.Wait()
         keystroke("{ctrl+c}")
-        natqh.Wait()
+        unimacroutils.Wait()
         paths1 = natlinkclipboard.Clipboard.get_system_folderinfo()
-        natqh.restoreClipboard() 
+        unimacroutils.restoreClipboard() 
 
         if paths1:
             paths1 = [p for p in paths1 if os.path.isfile(p)]
@@ -1711,20 +1710,20 @@ class ThisGrammar(ancestor):
             if not self.doWaitForMouseToStop():
                 print("_folders, command thisfolder: doWaitForMouseToStop fails")
                 return
-            natqh.buttonClick(button, nClick)
-            natqh.visibleWait()
+            unimacroutils.buttonClick(button, nClick)
+            unimacroutils.visibleWait()
 
         # now got attention, go ahead:
         self.wantedFolder = None        
-        natqh.saveClipboard()
-        natqh.Wait()
+        unimacroutils.saveClipboard()
+        unimacroutils.Wait()
         keystroke("{ctrl+c}")
-        natqh.Wait()
+        unimacroutils.Wait()
         paths1 = natlinkclipboard.Clipboard.Get_folderinfo()
         if paths1:
             paths1 = [p for p in paths1 if os.path.isdir(p)]
         paths2 = get_selected_files(folders=True)
-        natqh.Wait()
+        unimacroutils.Wait()
         if paths1 and paths2:
             if paths1 == paths2:
                 paths = paths1
@@ -1765,7 +1764,7 @@ class ThisGrammar(ancestor):
         upn = self.getNumberFromSpoken(words[-1])
         #print 'folderup: %s'% upn
         m = natlink.getCurrentModule()
-        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
+        prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
         hndle = m[2]
         Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
@@ -1793,9 +1792,9 @@ class ThisGrammar(ancestor):
             action("<<filenameenter>>; {shift+tab}")
             action("{backspace %s}"% upn)
         elif browser:
-            natqh.saveClipboard()
+            unimacroutils.saveClipboard()
             keystroke('{alt+d}{extend}{shift+exthome}{ctrl+c}')
-            t = natqh.getClipboard()
+            t = unimacroutils.getClipboard()
             prefix, path = t.split('://')
             T = path.split('/')
             if len(T) > upn:
@@ -1805,7 +1804,7 @@ class ThisGrammar(ancestor):
             
             keystroke(prefix + '://' + '/'.join(T))
             keystroke('{enter}')
-            natqh.restoreClipboard()
+            unimacroutils.restoreClipboard()
         elif IamExplorer:
             if not self.activeFolder:
                 self.activeFolder = mess.getFolderFromCabinetWClass(hndle)
@@ -1984,7 +1983,7 @@ class ThisGrammar(ancestor):
         ##special case for citrix
         """
         if self.citrixApps:
-            prog = natqh.getProgInfo()[0]
+            prog = unimacroutils.getProgInfo()[0]
             
             print('citrixApps: %s app: %s'% (self.citrixApps, prog))
             if prog in self.citrixApps:
@@ -1999,7 +1998,7 @@ class ThisGrammar(ancestor):
             self.DisplayMessage('file does not exist: %s'% f)
             return
         m = natlink.getCurrentModule()
-        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
+        prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
        
         # istop logic, with functions from action.py module, settings from:
         # child behaves like top = natspeak: dragon-balk
@@ -2027,7 +2026,7 @@ class ThisGrammar(ancestor):
             mode = 'open'
 
         if self.CopyNamePath:
-            natqh.setClipboard(f)
+            unimacroutils.setClipboard(f)
             return
         if self.Paste:
             action("SCLIP %s"%f)
@@ -2039,12 +2038,12 @@ class ThisGrammar(ancestor):
             print("Open file from child window: %s"% f)
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
-            natqh.saveClipboard()
+            unimacroutils.saveClipboard()
             keystroke('{Ctrl+x}')
             keystroke(f)
             action('<<filenameexit>>')
             keystroke('{Ctrl+v}')
-            natqh.restoreClipboard()
+            unimacroutils.restoreClipboard()
             keystroke('{Shift+Tab}')
         else:
             # top or top behaviourthis
@@ -2163,7 +2162,7 @@ class ThisGrammar(ancestor):
             self.openFolderDefault(f)
             return                    
         
-        prog = natqh.getProgInfo()[0]
+        prog = unimacroutils.getProgInfo()[0]
         if self.citrixApps:
             
             print('citrixApps: %s app: %s'% (self.citrixApps, prog))
@@ -2200,12 +2199,12 @@ class ThisGrammar(ancestor):
             return  # 
         if self.CopyNamePath:
             print('put path on clipboard: "%s"'% f)
-            natqh.setClipboard(f)
+            unimacroutils.setClipboard(f)
             return
 
         m = natlink.getCurrentModule()
         istop = self.getTopOrChild( m, childClass="#32770" )
-        prog, title, topchild, classname, hndle = natqh.getProgInfo(modInfo=m)
+        prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
         if not hndle:
             print('_folders, gotoFolder: no window handle found, return')
         # Iam2x = prog == '2xexplorer'
@@ -2234,12 +2233,12 @@ class ThisGrammar(ancestor):
             print("_folders, child window, comes ever here???")
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
-            natqh.saveClipboard()
+            unimacroutils.saveClipboard()
             keystroke('{Ctrl+x}')
             keystroke(f)
             action('<<filenameexit>>')
             keystroke('{Ctrl+v}')
-            natqh.restoreClipboard()
+            unimacroutils.restoreClipboard()
             keystroke('{Shift+Tab}')
             return
 
@@ -2287,7 +2286,7 @@ class ThisGrammar(ancestor):
             if len(exactList) > 1:
                 print('warning, 2 matching windows: %s'% exactList)
             t, h = exactList[0]
-            natqh.SetForegroundWindow(h)
+            unimacroutils.SetForegroundWindow(h)
         elif overList:
 ##            print 'over List %s' % (overList)
             # eg f = d:\\a\\b
@@ -2296,7 +2295,7 @@ class ThisGrammar(ancestor):
             # later make choice list of where to go
             if len(overList) == 1:
                 t, h = overList[0]
-                natqh.SetForegroundWindow(h)
+                unimacroutils.SetForegroundWindow(h)
             lenMin = 999
             for t, h in overList:
 ##                    print 'nearList: %s'% nearList
@@ -2310,7 +2309,7 @@ class ThisGrammar(ancestor):
             if thisHandle == toHandle:
                 self.gotoInThisComputer(f)
             else:
-                natqh.SetForegroundWindow(take)
+                unimacroutils.SetForegroundWindow(take)
         elif underList:
             # eg f = d:\\a\\b\\c
             # elementes of underList are d:\\a d:\\a\\b etc.
@@ -2323,7 +2322,7 @@ class ThisGrammar(ancestor):
                 if len(t) > lenMax:
                     take = h
                     lenMax = len(t)
-            if natqh.SetForegroundWindow(take):
+            if unimacroutils.SetForegroundWindow(take):
                 self.gotoInThisComputer(f)
 
         elif restList:
@@ -2334,7 +2333,7 @@ class ThisGrammar(ancestor):
 ##            print 'take: ', `take`
             if take:
                 t, h = take
-                if natqh.SetForegroundWindow(h):
+                if unimacroutils.SetForegroundWindow(h):
                     self.gotoInThisComputer(f)
                 else:
                     print('could not set foregroundwindow: %s'% h)
@@ -2444,7 +2443,7 @@ class ThisGrammar(ancestor):
         name = "git %s %s"% (command, path)
         print('future git %s, %s'% (name, args))
         ## does not work (yet)...
-        # natqh.AppBringUp(name, self.doGit, args)
+        # unimacroutils.AppBringUp(name, self.doGit, args)
         
 #                     return 1
 
@@ -2455,7 +2454,7 @@ class ThisGrammar(ancestor):
         command = 'AppBringUp "%s"'% self.xxExplorer
 ##                    print 'starting 2xExplorer: %s'% command
         natlink.execScript(command)
-        natqh.Wait(1.0)
+        unimacroutils.Wait(1.0)
         keystroke("{alt+space}{extdown 4}{enter}")
 
     def gotoInThisComputer(self, f):
@@ -2523,12 +2522,12 @@ class ThisGrammar(ancestor):
 
         
     def doStartWindowsExplorer(self):
-        natqh.rememberWindow()
+        unimacroutils.rememberWindow()
         startExplorer = self.ini.get('general', 'start windows explorer')
         action(startExplorer)
         try:
-            natqh.waitForNewWindow(50, 0.05)  # 2,5 seconds max
-        except natqh.NatlinkCommandTimeOut:
+            unimacroutils.waitForNewWindow(50, 0.05)  # 2,5 seconds max
+        except unimacroutils.NatlinkCommandTimeOut:
             print('Error with action "start windows explorer" (%s) from command in grammar + "_folders".' % \
                   startExplorer)
             print('Correct in ini file by using the command: ' + {'enx': "Edit Folders",
@@ -2721,7 +2720,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
 def changeCallback(type, args):
     """special behaviour for martijn"""
     if ((type == 'mic') and (args=='on')):
-        user = natqh.getUser()
+        user = unimacroutils.getUser()
 
 ## different functions#########################################3
 outlookApp = None

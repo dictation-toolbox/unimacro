@@ -38,8 +38,8 @@ import re
 from natlinkcore import natlink
 
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 
@@ -59,7 +59,7 @@ class ThisGrammar(ancestor):
     modes = ['normal', 'password', 'latex', 'math']
     exclusiveModes = ['password', 'latex']  # never make 'normal' exclusive!
     
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     # take from natlinkutilsbj:
     ICAlphabet = natbj.getICAlphabet(language=language)
     iniIgnoreGrammarLists = ['letter']
@@ -237,7 +237,7 @@ class ThisGrammar(ancestor):
                       
     def outputNumber(self, number):
         self.keystroke(number)
-        prog = natqh.getProgName()
+        prog = unimacroutils.getProgName()
         if prog in ['iexplore']:
             self.keystroke('{tab}{extdown}{extleft}')
         elif prog in ['natspeak']:
@@ -337,7 +337,7 @@ class ThisGrammar(ancestor):
          
         """
         if keys:
-            natut.playString(keys)
+            natlinkutils.playString(keys)
             self.numKeystrokes += len(keys)
 
     def cancelMode(self):

@@ -28,17 +28,17 @@ in the foreground
 
 
 from natlinkcore import natlink
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 # use extension Click by Voice
 visiblePause = 0.4
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -89,7 +89,7 @@ class ThisGrammar(ancestor):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        progInfo = natqh.getProgInfo(moduleInfo)
+        progInfo = unimacroutils.getProgInfo(moduleInfo)
         # print('progInfo: %s'% repr(progInfo))
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
@@ -216,7 +216,7 @@ class ThisGrammar(ancestor):
                 count -= 1
                 keys = '{ctrl+' + dir + '}'
                 keystroke(keys)
-                natqh.Wait(0.5) #0.3 seem too short for going back tabs in chrome
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back tabs in chrome
             
         if command:
             action(command)
@@ -246,7 +246,7 @@ class ThisGrammar(ancestor):
             while count > 0:
                 count= count -1
                 keystroke('{alt+%s}'%(dir))
-                natqh.Wait(0.5) #0.3 seem too short for going back pages in chrome
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back pages in chrome
             
         if command:
             action(command)
@@ -276,7 +276,7 @@ class ThisGrammar(ancestor):
             print('command: %s, commandparts: %s'% (command, commandparts))
         self.doOption(command)
         for additional in commandparts:
-            natqh.Wait(visiblePause)
+            unimacroutils.Wait(visiblePause)
             keystroke(additional)
         self.finishInputControl()
         
@@ -285,17 +285,17 @@ class ThisGrammar(ancestor):
     def getInputcontrol(self):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
-        natqh.Wait()   ## longer: natqh.Wait(visiblePause)
+        unimacroutils.Wait()   ## longer: unimacroutils.Wait(visiblePause)
         for i in range(10):
-            progInfo = natqh.getProgInfo()
+            progInfo = unimacroutils.getProgInfo()
             if progInfo.topchild == 'child':
                 if i: print('found input window after %s steps'% i)
                 break
-            natqh.Wait()
+            unimacroutils.Wait()
         else:
             print("_clickbyvoice failed to reach input window")
         # print("found input window of clickbyvoice")
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
         
         
     def doOption(self, option):
@@ -305,8 +305,8 @@ class ThisGrammar(ancestor):
     def finishInputControl(self):
         """press enter, after a little bit of waiting
         """
-        natqh.visibleWait()
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
+        unimacroutils.visibleWait()
         keystroke("{enter}")
         
     def fillInstanceVariables(self):

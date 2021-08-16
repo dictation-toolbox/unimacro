@@ -20,11 +20,11 @@
 
 from natlinkcore import natlink
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from unimacro.actions import doKeystroke as keystroke
-from unimacro.actions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 class ThisGrammar(natbj.DocstringGrammar):
     """more elaborate example of grammar with  docstrings defined rules
@@ -39,7 +39,7 @@ class ThisGrammar(natbj.DocstringGrammar):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        if natqh.matchModule('natspeak', wantedTitle='dragonpad',
+        if unimacroutils.matchModule('natspeak', wantedTitle='dragonpad',
                                 modInfo=moduleInfo):
             print('activate grammar %s'% self.name)
             self.activateAll()

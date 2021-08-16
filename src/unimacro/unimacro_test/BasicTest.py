@@ -14,7 +14,7 @@ unimacrodir = path('./..').normpath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
 
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
 from unimacro import actions
 action = actions.doAction
@@ -32,7 +32,7 @@ class BasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
 
     def test_Something_in_unimacro(self):
         print('testing something')
-        lang = natqh.getLanguage()
+        lang = unimacroutils.getLanguage()
         self.assert_equal("enx", lang, "testing should be done from an English speech profile, not: %s"% lang)
 
 # no main statement, run from command in _unimacrotest.py.

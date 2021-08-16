@@ -27,8 +27,8 @@ import TestCaseWithHelpers
 from natlinkcore import natlink
 import natlinkclipboard
 from unimacro import actions
-from unimacro.actions import doAction as action
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
 
 class TestError(Exception):

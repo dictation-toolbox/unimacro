@@ -15,14 +15,14 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 
 from natlinkcore import natlink
 import nsformat
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import natlinkcore.natlinkutils as natut
-import unimacro.natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from unimacro.actions import doAction as action
-from unimacro.actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
-language = natqh.getLanguage()        
+language = unimacroutils.getLanguage()        
 ICAlphabet = natbj.getICAlphabet(language=language)
 
 # import re
@@ -30,7 +30,7 @@ ICAlphabet = natbj.getICAlphabet(language=language)
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
 
 
     name = "latex"
@@ -198,7 +198,7 @@ class ThisGrammar(ancestor):
 
 
     def get_selection_that(self, line = 0):
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
 
         if line:
             action('<<selectline>><<cut>>')
@@ -215,11 +215,11 @@ class ThisGrammar(ancestor):
             if len(contents) == 0:
                 print('_latex, empty contents, no last dicatate utterance available')
                 
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
         return contents
 
     def view_selection_current_line(self):
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         keystroke('{ctrl+c}')
         contents = natlink.getClipboard()
         if len(contents) == 0:
@@ -227,7 +227,7 @@ class ThisGrammar(ancestor):
             keystroke('{end}{shift+home}')
             keystroke('{ctrl+c}')
             contents = natlink.getClipboard()
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
         return contents
 
 
