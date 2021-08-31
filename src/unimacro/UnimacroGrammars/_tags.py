@@ -15,7 +15,7 @@ __version__ = "$Rev: 606 $ on $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019)
 
 from natlinkcore import natlink
 from dtactions.unimacro import unimacroutils as natqh
-import natlinkcore.natlinkutils as natut as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action

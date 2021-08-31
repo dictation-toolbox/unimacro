@@ -38,7 +38,7 @@ import os
 import os.path
 import win32api
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action

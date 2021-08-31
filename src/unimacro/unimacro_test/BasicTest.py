@@ -15,8 +15,8 @@ if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
 
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
-from unimacro import actions
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroactions as actions
 action = actions.doAction
 
 import unittest

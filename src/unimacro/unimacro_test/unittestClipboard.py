@@ -26,10 +26,10 @@ if not unimacroFolder in sys.path:
 import TestCaseWithHelpers
 from natlinkcore import natlink
 import natlinkclipboard
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 
 class TestError(Exception):
     pass

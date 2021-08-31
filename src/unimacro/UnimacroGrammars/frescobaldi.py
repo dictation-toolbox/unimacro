@@ -49,14 +49,14 @@ If just input notes are given, the strategy of insert/update of notes is
 
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlink
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
 from itertools import cycle
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 import re
 import copy
 import time

@@ -29,7 +29,7 @@ in the foreground
 
 from natlinkcore import natlink
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action

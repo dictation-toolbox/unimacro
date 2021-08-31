@@ -2747,8 +2747,8 @@ noot mies
         
         returns nothing!, list L list changed in place
              """
-        if isinstance(L, list):
-            self.error('not a list in "removeFromList": %s'% L)
+        if not isinstance(L, list):
+            self.error(f'not a list in "removeFromList": "{L}", type: {type(L)}')
             return
 
         if not L:

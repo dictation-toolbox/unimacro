@@ -7,7 +7,8 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020
-"""with this grammar, you can reach folders, files and websites from any window.
+#pylint:disable=C0302
+r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
 can be called directly by name if they are in the foreground.
 
@@ -52,50 +53,41 @@ The git additional commands are only valid if you specify a valid git client in 
 (git executable) (I (Quintijn) take git, although I use TortoiseGit manually)
 
 """            
-import types
 import re
-import copy
-from natlinkcore import natlink
 import pickle    #recentfoldersDict
-import natlinkcore.nsformat # for "remember as"
 import os
 import sys
 import time
 import fnmatch
-import collections 
-import win32gui
-import win32con
-from win32com.client import Dispatch
-from pprint import pprint
+import ctypes
+
+import urllib.request
+import urllib.parse
+import urllib.error
+
 import pywintypes
-from natlinkcore import inivars  # for IniError
-from natlinkcore import utilsqh
+import win32gui
+from win32com.client import Dispatch
+
+from natlinkcore import natlink
 from natlinkcore.pathqh import path
-import natlinkcore.readwritefile
-import unimacro.messagefunctions as mess
-import natlinkcore.natlinkclipboard
-#, win32com
-from natlinkcore import natlinkcorefunctions # getExtendedEnv
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
 from natlinkcore.pathqh import getValidPath
-from unimacro.actions import do_YESNO as YesNo
-from unimacro.actions import Message, UnimacroBringUp
-from unimacro import actions
+from natlinkcore import natlinkcorefunctions # getExtendedEnv
+import unimacro.natlinkutilsbj as natbj
+
+from dtactions import messagefunctions
+from dtactions import natlinkclipboard
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
+from dtactions.unimacro.unimacroactions import UnimacroBringUp
+
 from unimacro_wxpythondialogs import InputBox
 
 thisDir = (path(__file__)).split()[0]
 
-import webbrowser
-import urllib.request
-import urllib.parse
-import urllib.error
-import natlinkcore.natlinkutils as natut
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
 
 # for getting unicode explorer window titles:
-import ctypes
 GetWindowText = ctypes.windll.user32.GetWindowTextW
 GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
 import win32clipboard
@@ -133,7 +125,8 @@ doRecentFolderCommand = True
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
     """grammar for quickly going to folders, files and websites
-    """    
+    """
+    #pylint:disable=R0902, R0904, 
     language = unimacroutils.getLanguage()
     name = "folders"
     iniIgnoreGrammarLists = ['subfolders', 'subfiles']
@@ -614,15 +607,15 @@ class ThisGrammar(ancestor):
         if not className: return
         f = None
         if className == "CabinetWClass":
-            f = mess.getFolderFromCabinetWClass(hndle)
+            f = messagefunctions.getFolderFromCabinetWClass(hndle)
             # if f and f.startswith("search-ms"):
             #     keystroke("{esc}")
             #     unimacroutils.Wait()
-            #     f = mess.getFolderFromDialog(hndle, className)
+            #     f = messagefunctions.getFolderFromDialog(hndle, className)
             if not f:
                 print("getActiveFolder, CabinetWClass failed: %s"% hndle)
         elif className == '#32770':
-            f = mess.getFolderFromDialog(hndle, className)
+            f = messagefunctions.getFolderFromDialog(hndle, className)
             if not f:
                 return
             # if not f:
@@ -1777,7 +1770,7 @@ class ThisGrammar(ancestor):
         if IamChild32770:
             print("IamChild32770: ", self.activeFolder)
             if not self.activeFolder:
-                self.activeFolder = mess.getFolderFromDialog(hndle, self.className)
+                self.activeFolder = messagefunctions.getFolderFromDialog(hndle, self.className)
                 print("IamChild32770 getFolderFromDialog: ", self.activeFolder)
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
@@ -1807,7 +1800,7 @@ class ThisGrammar(ancestor):
             unimacroutils.restoreClipboard()
         elif IamExplorer:
             if not self.activeFolder:
-                self.activeFolder = mess.getFolderFromCabinetWClass(hndle)
+                self.activeFolder = messagefunctions.getFolderFromCabinetWClass(hndle)
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
                 print('newfolder (up %s): %s'% (upn, newfolder))
@@ -2471,7 +2464,7 @@ class ThisGrammar(ancestor):
         """perform the keystrokes to go to a folder in a (#32770) Dialog
 
         """
-        activeFolder = self.activeFolder or mess.getFolderFromDialog(hndle, self.className)
+        activeFolder = self.activeFolder or messagefunctions.getFolderFromDialog(hndle, self.className)
         keystroke('{alt+d}')
         if os.path.isdir(f):
             folder, filename = f, None

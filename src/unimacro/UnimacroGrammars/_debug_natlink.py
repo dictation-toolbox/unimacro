@@ -6,7 +6,7 @@ Grammar to help with natlink hosted python debugging.
 from natlinkcore import natlink
 import natlinkpydebug as pd
 from dtactions.unimacro import unimacroutils as natqh
-import natlinkcore.natlinkutils as natut as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj as natbj
 # from natlinkcore import gramparser as gp

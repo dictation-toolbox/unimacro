@@ -27,7 +27,7 @@ from gramparser import GrammarError, SyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

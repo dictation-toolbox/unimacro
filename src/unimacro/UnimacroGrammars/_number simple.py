@@ -44,7 +44,7 @@ further comments in _number extended.py. Also see the page "number grammar" on t
 """
 from dtactions.unimacro.unimacroactions import doAction as action
 
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

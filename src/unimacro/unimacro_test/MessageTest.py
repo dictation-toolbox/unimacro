@@ -7,8 +7,8 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
       
 """
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
-from unimacro import actions
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroactions as actions
 action = actions.doAction
 
 import unittest

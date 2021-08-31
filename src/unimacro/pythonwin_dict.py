@@ -18,7 +18,7 @@ try with title "Title" (from testDialogForDicationGrammar.py) or
                "Script" having a new (non saved python script)
 """
 from natlinkcore import natlink
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 import win32ui
 import nsformat
 

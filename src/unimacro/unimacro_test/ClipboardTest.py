@@ -15,10 +15,10 @@ if unimacroDir not in sys.path:
     print("add unimacroDir to sys.path: %s"% unimacroDir)
     sys.path.append(unimacroDir)
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 
 import time
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 
 import unittest
 import UnimacroTestHelpers

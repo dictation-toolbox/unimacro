@@ -13,16 +13,16 @@ import sys
 unimacrodir = path('./..').normpath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 import unittest
 import TestCaseWithHelpers
 import re
 import types
 from natlinkcore import natlink
 from dtactions.unimacro import unimacroutils   
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 import win32gui
 reWhiteSpace = re.compile('\s+')
 

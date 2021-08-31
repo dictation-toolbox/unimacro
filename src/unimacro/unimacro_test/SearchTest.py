@@ -4,8 +4,8 @@
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
-from unimacro import actions
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroactions as actions
 actions.debugActions(1)
 
 import unittest

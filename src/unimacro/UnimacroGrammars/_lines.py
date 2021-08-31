@@ -51,12 +51,12 @@ import re
 # for checking base number:
 reNulls = re.compile('0+$')
 
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 class LinesError(Exception): pass
 
 

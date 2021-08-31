@@ -24,11 +24,11 @@ from natlinkcore import natlinkstatus
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
 from natlinkcore.pathqh import path
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

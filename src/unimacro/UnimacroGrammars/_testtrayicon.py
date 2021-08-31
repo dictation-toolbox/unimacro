@@ -1,4 +1,4 @@
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from natlinkcore import natlink
 import os
 import os.path

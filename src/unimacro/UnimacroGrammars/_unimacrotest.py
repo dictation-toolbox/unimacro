@@ -30,12 +30,12 @@ import os
 import sys
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-import natlinkcore.natlinkutils as natut
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import utilsqh
 import glob
-from unimacro import actions
+from dtactions.unimacro import unimacroactions as actions
 
 class UnittestGrammar(natbj.IniGrammar):
     language = unimacroutils.getLanguage()        
