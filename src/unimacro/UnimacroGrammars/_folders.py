@@ -7,7 +7,7 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020
-#pylint:disable=C0302
+#pylint:disable=C0302, W0613, W0702, R0912, R0914, R0915, R0201
 r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
 can be called directly by name if they are in the foreground.
@@ -54,43 +54,46 @@ The git additional commands are only valid if you specify a valid git client in 
 
 """            
 import re
+import copy
 import pickle    #recentfoldersDict
 import os
 import sys
 import time
 import fnmatch
-import ctypes
-
 import urllib.request
 import urllib.parse
 import urllib.error
-
-import pywintypes
+import ctypes    # get window text
+import traceback
+# from pprint import pprint
 import win32gui
 from win32com.client import Dispatch
 
 from natlinkcore import natlink
+# from natlinkcore import inivars  # for IniError
+# from natlinkcore import utilsqh
 from natlinkcore.pathqh import path
 from natlinkcore.pathqh import getValidPath
+# import natlinkcore.nsformat # for "remember as"
+# import natlinkcore.readwritefile
 from natlinkcore import natlinkcorefunctions # getExtendedEnv
-import unimacro.natlinkutilsbj as natbj
-
-from dtactions import messagefunctions
+from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
-from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
 from dtactions.unimacro.unimacroactions import UnimacroBringUp
-
-from unimacro_wxpythondialogs import InputBox
+from dtactions.unimacro import unimacroutils
+# from dtactions.unimacro.unimacroactions import Message
+# from dtactions.unimacro import unimacroactions as actions
+import unimacro.natlinkutilsbj as natbj
+# from unimacro.unimacro_wxpythondialogs import InputBox
+# import natlinkcore.natlinkutils as natut
 
 thisDir = (path(__file__)).split()[0]
-
 
 # for getting unicode explorer window titles:
 GetWindowText = ctypes.windll.user32.GetWindowTextW
 GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
-import win32clipboard
 
 # for substituting environment variable like %HOME% in a file path:
 # and %DESKTOP% in a file path.
@@ -126,7 +129,7 @@ ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
     """grammar for quickly going to folders, files and websites
     """
-    #pylint:disable=R0902, R0904, 
+    #pylint:disable=R0902, R0904, C0116, W0201
     language = unimacroutils.getLanguage()
     name = "folders"
     iniIgnoreGrammarLists = ['subfolders', 'subfiles']
@@ -201,7 +204,7 @@ class ThisGrammar(ancestor):
         if self.checkForChanges:
             self.checkInifile() # refills grammar lists and instance variables
                                 # if something changed.
-            if type(self.checkForChanges) == int and self.checkForChanges > 0:
+            if isinstance(self.checkForChanges, int) and self.checkForChanges > 0:
                 self.checkForChanges -= 1
               
         if self.mayBeSwitchedOn == 'exclusive':
@@ -210,7 +213,7 @@ class ThisGrammar(ancestor):
         hndle = moduleInfo[2]
         try:
             className = win32gui.GetClassName(hndle)
-        except pywintypes.error as details:
+        except:
             print("no classname found")
             className = ""
 
@@ -263,12 +266,13 @@ class ThisGrammar(ancestor):
         overload, because the list sites is special:reversed
         the section [site] must exist,on the right side is to spoken form.
         """
+        #pylint:disable=R0911, R0912
         #print 'fill list', listName
         if listName == 'sites':
             if not siteRoot:
                 print('sites rules ignored')
                 self.emptyList(listName)
-                return #  skip the site part
+                return None #  skip the site part
             self.sitesDict = self.getListOfSites(siteRoot)
             items = list(self.sitesDict.keys())
             self.setList(listName, items)
@@ -276,24 +280,22 @@ class ThisGrammar(ancestor):
             self.sitesInstances = {}  # to be filled with instance of a site
             return items
             
-        elif listName == 'folders':
+        if listName == 'folders':
             if self.foldersDict:
                 items = list(self.foldersDict.keys())
                 self.foldersSet = { self.substituteFolder(f) for f in self.foldersDict.values()}
                 # print("foldersSet: %s"% self.foldersSet)
                 self.setList('folders', items)
                 return items
-            else:
-                print('no folders to set list to')
-                self.emptyList('folders')
+            print('no folders to set list to')
+            self.emptyList('folders')
         elif listName == 'subfolders':
             if self.subfoldersDict:
                 items = list(self.subfoldersDict.keys())
                 self.setList('subfolders', items)
                 return items
-            else:
-                print('no subfolders to set list to')
-                self.emptyList('subfolders')
+            print('no subfolders to set list to')
+            self.emptyList('subfolders')
 
         elif listName == 'files':
             if self.filesDict:
@@ -305,17 +307,16 @@ class ThisGrammar(ancestor):
                 items = list(self.recentfoldersDict.keys())
                 self.setList('recentfolders', items)
                 return items
-            else:
-                print('no recentfolders in iniChangingData.ini')
-                self.emptyList('recentfolders')
+            print('no recentfolders in iniChangingData.ini')
+            self.emptyList('recentfolders')
 
         elif listName in ['gitfilecommands', 'gitfoldercommands']:
             if self.doGit:
                 return ancestor.fillList(self, listName)
-            else:
-                self.emptyList(listName)
+            self.emptyList(listName)
         else:
             return ancestor.fillList(self, listName)
+        return None
 
     def dumpRecentFoldersDict(self):
         """for making the dict of recent folders persistent
@@ -326,19 +327,16 @@ class ThisGrammar(ancestor):
         """for getting the dict of recent folders from previous session
         """
         result = loadFromPickle(self.pickleChangingData)
-        if result and type(result) is dict:
+        if result and isinstance(result, dict):
             return result
-        else:
-            return {}
-
-
-
+        return {}
 
     def fillInstanceVariables(self):
         """fills the necessary instance variables
           take the lists of folders, virtualdrives (optional) and remotedrives (optional).
         
         """
+        #pylint:disable=R0914
         self.citrixApps = self.ini.getList('general', 'citrix apps')
         if self.citrixApps:
             print('_folders does special action for citrixApps: %s'% self.citrixApps)
@@ -360,7 +358,7 @@ class ThisGrammar(ancestor):
         self.recentfoldersDict = {}
         inipath = self.ini.getFilename()
         if inipath.endswith('.ini'):
-            changingDataIniPath = inipath.replace(".ini", "changingdata.pickle")
+            _changingDataIniPath = inipath.replace(".ini", "changingdata.pickle")
             self.pickleChangingData = inipath.replace(".ini", "changingdata.pickle")
         else:
             self.pickleChangingData = ""
@@ -520,7 +518,8 @@ class ThisGrammar(ancestor):
         no return, self.virtualDriveDict is filled.
         if no progress, make the remaining virtual drives obsolete...
         """
-        if not wantedVirtualDrives: return ## nothing done
+        if not wantedVirtualDrives:
+            return ## nothing done
         lenPrevious = 0
         #checking the paths of virtualDriveList:
         while wantedVirtualDrives and lenPrevious != len(wantedVirtualDrives):
@@ -554,7 +553,7 @@ class ThisGrammar(ancestor):
             folder = self.substituteFolder(possiblePath)
             if os.path.isdir(folder):
                 return os.path.normpath(folder)
-                
+        return None 
 
     def acceptVirtualDrivesFolder(self, vd, realfolder, foldername=None):
         """check validity of virtualdrive subfolder and put or remove from inifile
@@ -600,33 +599,34 @@ class ThisGrammar(ancestor):
             hndle = curmod[2]
         if not hndle:
             # print("getActiveFolder, not a foreground hndle found: %s"% hndle)
-            return
+            return None
         if className is None:
             className = win32gui.GetClassName(hndle)
         # print 'getActiveFolder, className: %s'% className
-        if not className: return
+        if not className:
+            return None
         f = None
         if className == "CabinetWClass":
-            f = messagefunctions.getFolderFromCabinetWClass(hndle)
+            f = mess.getFolderFromCabinetWClass(hndle)
             # if f and f.startswith("search-ms"):
             #     keystroke("{esc}")
             #     unimacroutils.Wait()
-            #     f = messagefunctions.getFolderFromDialog(hndle, className)
+            #     f = mess.getFolderFromDialog(hndle, className)
             if not f:
                 print("getActiveFolder, CabinetWClass failed: %s"% hndle)
         elif className == '#32770':
-            f = messagefunctions.getFolderFromDialog(hndle, className)
+            f = mess.getFolderFromDialog(hndle, className)
             if not f:
-                return
+                return None
             # if not f:
             #     print "getActiveFolder, #32770 failed: %s"% hndle
         else:
             # print 'class for activeFolder: %s'% className
-            return
+            return None
         if not f:
             if className == 'CabinetWClass':
                 print('_folders, getActiveFolder, no folder found in className %s'% className)
-            return
+            return None
         if os.path.isdir(f):
             nf = os.path.normpath(f)
             # print("getActiveFolder: %s"% nf)
@@ -637,7 +637,8 @@ class ThisGrammar(ancestor):
             # print("getActiveFolder realFolder for %s: %s"% (f, realFolder))
             return realFolder
         print('_folders, getActiveFolder, could not find folder for %s'% f)
-
+        return None
+    
     def fillListsForActiveFolder(self, activeFolder):
         """fill list of files and subfolders
         also set activeFolder and className
@@ -762,7 +763,8 @@ class ThisGrammar(ancestor):
             #except inivars.IniError:
             #    return
 
-        if not spoken: return
+        if not spoken:
+            return
         
         for sp in spoken:
             self.filesDict[sp] = vd + ':/' +  f
@@ -779,7 +781,8 @@ class ThisGrammar(ancestor):
         (QH, March 2020)
         """
         activeFolder = self.getActiveFolder(hndle, className)
-        if not activeFolder: return
+        if not activeFolder:
+            return
         
         # activeFolder = os.path.normcase(activeFolder)
         if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
@@ -799,7 +802,7 @@ class ThisGrammar(ancestor):
             print("shrink recentfoldersDict with %s items to %s"% (buffer, self.trackFoldersHistory))
             while len(self.recentfoldersDict) >= self.trackFoldersHistory:
                 keysList = list(self.recentfoldersDict.keys())
-                removeItem = self.recentfoldersDict.pop(keysList[0])
+                _removeItem = self.recentfoldersDict.pop(keysList[0])
                 # print('_folders, remove from recent folders: %s (%s)'% (keysList[0], removeItem))
             # print("refilling recentfolders list with %s items'"% len(self.recentfoldersDict))
             self.setList('recentfolders', list(self.recentfoldersDict.keys()))
@@ -809,7 +812,8 @@ class ThisGrammar(ancestor):
             #     # self.pickleChangingData.set("recentfolders", key, value)
             # self.pickleChangingData.writeIfChanged()
 
-        if not Spoken: return
+        if not Spoken:
+            return
         if Spoken in self.recentfoldersDict:
             spokenFolder = self.recentfoldersDict[Spoken]
             if spokenFolder == Folder:
@@ -856,16 +860,16 @@ class ThisGrammar(ancestor):
     def displayRecentFolders(self):
         """display the list of recent folders
         """
-        mess = ["_folders, recent folders:"]
+        message = ["_folders, recent folders:"]
         for name, value in self.recentfoldersDict.items():
-            mess.append('- %s: %s'% (name, value))
-        mess.append('-'*20)
-        mess = '\n'.join(mess)
-        if mess == self.previousDisplayRecentFolders:
+            message.append('- %s: %s'% (name, value))
+        message.append('-'*20)
+        message = '\n'.join(mess)
+        if message == self.previousDisplayRecentFolders:
             print("recent folders, no change")
             return
-        self.previousDisplayRecentFolders = mess
-        print(mess)
+        self.previousDisplayRecentFolders = message
+        print(message)
         
         
     # def gotoRecentFolder(self, chooseNum):
@@ -895,7 +899,6 @@ class ThisGrammar(ancestor):
         mainly for private use, a lot of folders reside in the root folder,
         siteRoot.  They all have an input folder and a output folder.
 
-
         """
         reverseOldValues = {'ignore': []}
         for k in self.ini.get('folders'):
@@ -910,7 +913,7 @@ class ThisGrammar(ancestor):
             reverseVirtualDrives.setdefault(val, []).append(k)
             
 ##        print reverseOldValues
-        allFolders = self.envDict()  #  natlinkcorefunctions.getAllFolderEnvironmentVariables()  
+        allFolders = copy.copy(self.envDict)  #  natlinkcorefunctions.getAllFolderEnvironmentVariables()  
         kandidates = {}
         ignore = reverseOldValues['ignore']
         for (k,v) in list(allFolders.items()):
@@ -922,16 +925,15 @@ class ThisGrammar(ancestor):
                 vPercented = "%" + k + "%"
                 if oldV == v:
                     continue
-                elif oldV == vPercented:
+                if oldV == vPercented:
                     kPrevious = reverseOldValues[vPercented]
 ##                    print 'vPercented: %s, kPrevious: %s'% (vPercented, kPrevious)
                     if  vPercented in reverseOldValues:
                         if k in kPrevious or kSpeakable in kPrevious:
                             continue
-                        else:
-                            print('already in there: %s (%s), but spoken form changed to %s'% \
-                              (k, v, kPrevious))
-                            continue
+                        print('already in there: %s (%s), but spoken form changed to %s'% \
+                          (k, v, kPrevious))
+                        continue
                 else:
                     print('different for %s: old: %s, new: %s'% (k, oldV, v))
             kandidates[k] = v
@@ -1064,8 +1066,8 @@ class ThisGrammar(ancestor):
     #         else:
     #             self.recentfoldersDict[name] = folder
     #             return   # no setList needed
-            
-        self.setList('recentfolders', list(self.recentfoldersDict.keys()))
+    ## TODOQH::       
+        # self.setList('recentfolders', list(self.recentfoldersDict.keys()))
         
     def getDuplicateFolders(self, wantedFolder):
         """get (spoken, folder) list for this wanted folder
@@ -1084,9 +1086,8 @@ class ThisGrammar(ancestor):
         """
         if isinstance(somepath, path):
             return str(somepath)
-        else:
-            p = path(somepath)
-            return str(p)
+        p = path(somepath)
+        return str(p)
     
     def getFolderBasenameRemember(self, folderPath):
         """extract the spoken name from the folder path
@@ -1159,14 +1160,14 @@ class ThisGrammar(ancestor):
         if self.hasCommon("SHOW", words[-1]):
             self.displayRecentFolders()
             return
-        elif self.hasCommon("RESET", words[-1]):
+        if self.hasCommon("RESET", words[-1]):
             self.resetRecentFolders()
             print("Reset recent folders list")
             return
-        elif self.hasCommon("START", words[-1]):
+        if self.hasCommon("START", words[-1]):
             self.startRecentFolders()
             return
-        elif self.hasCommon("STOP", words[-1]):
+        if self.hasCommon("STOP", words[-1]):
             self.stopRecentFolders()
             return
 
@@ -1242,8 +1243,8 @@ class ThisGrammar(ancestor):
                 website = os.path.join(str(site.hAbs), 'index.html')
             elif command == 'online':
                 sitePrefix = site.sitePrefix
-                if type(sitePrefix) == dict:
-                    for k, v in sitePrefix.items():
+                if isinstance(sitePrefix, dict):
+                    for v in sitePrefix.values():
                         sitePrefix = v
                         break
                     
@@ -1264,32 +1265,31 @@ class ThisGrammar(ancestor):
             if folder:
                 self.wantedFolder = folder
                 return
-            elif website:
+            if website:
                 self.wantedWebsite = website
                 return
-            else:
-                print('no valid folder or website for nextRule')
-                return
-        elif folder:
+            print('no valid folder or website for nextRule')
+            return
+        if folder:
             self.gotoFolder(folder)
             self.wantedFolder = None
         elif website:
             self.gotoWebsite(website)
             self.wantedWebsite = None
 
+
     def getSiteInstance(self, siteName):
         """return pageopen function of site instance, or None
         """
         try:
             site = __import__(siteName)
-        except ImportError as msg:
-            import traceback
+        except ImportError:
             print('cannot import module %s'% siteName)
             print(traceback.print_exc())
             currentDir = '.' in sys.path
             print('currentDir in sys.path: %s'% currentDir)
             print('sys.path: %s'% sys.path) 
-            return
+            return None
         if 'pagesopen' in dir(site):
             try:
                 po = site.pagesopen()
@@ -1770,7 +1770,7 @@ class ThisGrammar(ancestor):
         if IamChild32770:
             print("IamChild32770: ", self.activeFolder)
             if not self.activeFolder:
-                self.activeFolder = messagefunctions.getFolderFromDialog(hndle, self.className)
+                self.activeFolder = mess.getFolderFromDialog(hndle, self.className)
                 print("IamChild32770 getFolderFromDialog: ", self.activeFolder)
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
@@ -1800,7 +1800,7 @@ class ThisGrammar(ancestor):
             unimacroutils.restoreClipboard()
         elif IamExplorer:
             if not self.activeFolder:
-                self.activeFolder = messagefunctions.getFolderFromCabinetWClass(hndle)
+                self.activeFolder = mess.getFolderFromCabinetWClass(hndle)
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
                 print('newfolder (up %s): %s'% (upn, newfolder))
@@ -2464,7 +2464,7 @@ class ThisGrammar(ancestor):
         """perform the keystrokes to go to a folder in a (#32770) Dialog
 
         """
-        activeFolder = self.activeFolder or messagefunctions.getFolderFromDialog(hndle, self.className)
+        activeFolder = self.activeFolder or mess.getFolderFromDialog(hndle, self.className)
         keystroke('{alt+d}')
         if os.path.isdir(f):
             folder, filename = f, None
