@@ -1,20 +1,20 @@
 """
 Grammar to help with natlink hosted python debugging.
 """
-
+#pylint:disable=W0611, W0613, C0115, C0116, R0201
 
 from natlinkcore import natlink
-import natlinkpydebug as pd
-from dtactions.unimacro import unimacroutils as natqh
+from natlinkcore import natlinkpydebug as pd
 from natlinkcore import natlinkutils
+from natlinkcore import gramparser as gp
+from natlinkcore import nsformat
+
+import unimacro.natlinkutilsbj as natbj
+
 from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj as natbj
-# from natlinkcore import gramparser as gp
 from dtactions.unimacro.unimacroactions import doAction as action
-import nsformat
 
 ancestor = natbj.IniGrammar  #QH1
-
 class DebugGrammar(ancestor):
     # language = unimacroutils.getLanguage()
     name = "Natlink Debug"
@@ -34,7 +34,7 @@ class DebugGrammar(ancestor):
     #     ancestor.__init__(self,self.gramSpec,self.name)  ## should be ancestor.__init__(self) only. but not needed.
     
     def initialize(self):
-        print(f"debug initialize, by loading self.gramSpec")
+        print('debug initialize, by loading self.gramSpec')
         self.load(self.gramSpec)
         self.switchOnOrOff()   ## based on the ini settings, by default, on
         
@@ -69,12 +69,14 @@ class DebugGrammar(ancestor):
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 debug_grammar = DebugGrammar()
 if debug_grammar.gramSpec:
-    print(f'debug_grammar initialize')
+    print('debug_grammar initialize')
     debug_grammar.initialize()
 else:
-    print(f'debug_grammar not initialize, no gramSpec found')
+    print('debug_grammar not initialize, no gramSpec found')
     debug_grammar = None
 
 def unload():
+    #pylint:disable=W0603
     global debug_grammar
     debug_grammar = None
+    

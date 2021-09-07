@@ -788,6 +788,7 @@ class GrammarX(GrammarXAncestor):
             print('exclusive are: %s'% list(exclusiveGrammars.keys()))
 
     def switchOnOrOff(self, **kw):
+        print('{self.name}, switchOnOrOff')
         result = None
         if self.mayBeSwitchedOn == 'exclusive':
             print('switch on exclusive: %s'% self.name)
@@ -849,19 +850,23 @@ class GrammarX(GrammarXAncestor):
             print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
             return None
         if self.mayBeSwitchedOn:
-            # print('switch all on: %s'% repr(kw))
+            if kw:
+                print(f'{self.name}, switch on all rules, kw: {kw}')
+            else:
+                print(f'{self.name}, switch on all rules')
             self.activateAll(**kw)
             return 1
         # else:
         print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
         return None
 
-    def switchOff(self, force=None):
+    def switchOff(self, **kw):
         """switches grammar off, deactivates all rules
 
         must be overloaded if more specific behaviour is wished
         """
         #pylint:disable=
+        force = kw.get('force')
         if force:
             self.mayBeSwitchedOn = 0
         self.deactivateAll()
@@ -1773,6 +1778,8 @@ class IniGrammar(IniGrammarAncestor):
         allKeys = self.ini.get('grammar words')
         print(f'natlinkutilsbj, removeObsoleteGrammarWords allKeys: {allKeys}')
         for k in allKeys:
+            print('removeObsoleteGrammarWords, all vars:')
+            print(f'{dir(self)}')
             if k not in self.allGrammarKeywordsLower:
                 v = self.ini.get('grammar words', k)
                 self.ini.delete('grammar words', k)
@@ -1824,7 +1831,7 @@ noot mies
             return "'" + t + "'"  
         return t
 
-    def switchOn(self, fillLists=1, **kw):
+    def switchOn(self, **kw):
         """switches grammar on, activates all rules, fills lists
 
         this version assumes all lists are filled at switching on time.
@@ -1833,6 +1840,9 @@ noot mies
         # if you want rules dynamically activated in gotBegin,
         # the following line should be skipped in the overloaded function,
         # and the variable self.prevModInfo should be set to None
+        fillLists = kw.get('fillLists')
+        if fillLists:
+            del kw['fillLists']
         if not self.__inherited.switchOn(self, **kw):
             print('switching on "%s" failed'% self.name)
             return
@@ -1841,10 +1851,10 @@ noot mies
         # if you want to fill lists dynamically, you should skip
         # next line your overloaded function, and fill your lists
         # inside gotBegin, whenever self.prevModInfo is changed
-        if not fillLists:
-            # is used in grammar commands, see there
-##            print 'skip filling lists: %s'% self.name
-            return
+#         if not fillLists:
+#             # is used in grammar commands, see there
+# ##            print 'skip filling lists: %s'% self.name
+#             return
         
         # try:
         self.fillGrammarLists()
@@ -2987,7 +2997,7 @@ noot mies
         # pass progInfo to the actions, to keep them from changing inside the stuff:
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo(modInfo)
-        prog, _title, _topchild, _classname, _hndle = progInfo
+        _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
         elif prog == 'winword':
@@ -3089,7 +3099,7 @@ noot mies
         if not progInfo:
             return None # no information
         # old info:
-        prog, title, topchild, _classname, _hndle = progInfo
+        _progpath, prog, title, topchild, _classname, _hndle = progInfo
         nprogInfo = unimacroutils.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
@@ -3109,7 +3119,7 @@ noot mies
         global comingFrom
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
-        prog, _title, _topchild, _classname, _hndle = progInfo
+        _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
             ac = app.ActiveCell
@@ -3125,7 +3135,7 @@ noot mies
         #pylint:disable=R0201
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
-        prog, _title, _topchild, _classname, _hndle = progInfo
+        _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
         elif prog == 'winword':

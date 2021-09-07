@@ -48,7 +48,7 @@ import win32clipboard
 import namelist # for name phrases
 import natlinkcore.nsformat
 
-from natlinkcore import natlinkutils
+import natlinkcore.natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -518,7 +518,7 @@ class ThisGrammar(ancestor):
     def gotResults_browsewith(self,words,fullResults):
         """show page in another browser"""
         m = natlink.getCurrentModule()
-        prog, title, topchild = unimacroutils.getProgInfo(modInfo=m)
+        _progpath, prog, title, topchild = unimacroutils.getProgInfo(modInfo=m)
         Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
         browser = prog in ['iexplore', 'firefox','opera', 'netscp', 'chrome']

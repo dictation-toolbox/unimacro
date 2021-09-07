@@ -51,7 +51,7 @@ import re
 # for checking base number:
 reNulls = re.compile('0+$')
 
-from natlinkcore import natlinkutils
+import natlinkcore.natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -152,7 +152,7 @@ class ThisGrammar(ancestor):
         
         if self.lineNumbersModuloHundred:
             self.app = actions.get_instance_from_progInfo(self.progInfo)
-            prog = self.progInfo[0]
+            prog = self.progInfo.prog
             if self.app:
                 self.currentLine = self.app.getCurrentLineNumber()
                 #if self.currentLine:
@@ -439,7 +439,7 @@ class ThisGrammar(ancestor):
         
     def gotResults(self,words,fullResults):
         comment = 'command: %s'% ' '.join(words)
-        self.prog = self.progInfo[0]
+        self.prog = self.progInfo.prog
         self.collectNumber()
         #print 'lines command: %s (direction: %s)'% (comment, self.lastDirection)
         #print 'type line: %s'% type(self.line)

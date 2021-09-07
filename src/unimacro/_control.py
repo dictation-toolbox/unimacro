@@ -96,8 +96,7 @@ class UtilGrammar(ancestor):
 ##    exclusiveSet = ['showexclusive', 'message']
     # commands for controlling module actions
     specialList = []
-    if actions:
-        specialList.append("actions")
+    specialList.append("actions")
     if spokenforms:
         specialList.append("'spoken forms'")
     if specialList:

@@ -10,7 +10,7 @@ class AllActions:
     def reset(self, progInfo=None):
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
-        self.prog, self.topTitle, self.topchild, self.className, self.topHandle = progInfo
+        self.progPath, self.prog, self.topTitle, self.toporchild, self.className, self.topHandle = progInfo
         self.progInfo = None
         
     def update(self, newProgInfo=None):
@@ -20,7 +20,7 @@ class AllActions:
             return
         # print('allactions: new prog info, overload for your specific program: %s'% self.prog)
         self.progInfo = newProgInfo
-        self.prog, self.topTitle, self.topchild, self.className, self.topHandle = newProgInfo
+        self.progPath, self.prog, self.topTitle, self.toporchild, self.className, self.topHandle = newProgInfo
         
     def getCurrentLineNumber(self):
         pass

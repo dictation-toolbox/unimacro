@@ -464,7 +464,7 @@ class ThisGrammar(ancestor):
             isTop = (self.progInfo[2] == 'top')
             ma = getMetaAction('pagestart', progInfo=self.progInfo)
             if not ma:
-                print('no metaactions defined for pagestart, stop command %s'% self.progInfo[0])
+                print('no metaactions defined for pagestart, stop command %s'% self.progInfo.prog)
                 if isTop:
                     if self.through:
                         keystroke(" page %s-%s"% (self.page, self.through))
@@ -476,7 +476,7 @@ class ThisGrammar(ancestor):
 
             action("<<pagestart>>")
             keystroke(self.page)
-            if self.progInfo[0] == 'pdf24-creator' and self.through == '':
+            if self.progInfo.prog == 'pdf24-creator' and self.through == '':
                 self.through = self.page
 
             if self.through:

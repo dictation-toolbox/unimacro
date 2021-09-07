@@ -1757,7 +1757,7 @@ class ThisGrammar(ancestor):
         upn = self.getNumberFromSpoken(words[-1])
         #print 'folderup: %s'% upn
         m = natlink.getCurrentModule()
-        prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
+        _progpath, prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
         hndle = m[2]
         Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
@@ -1976,7 +1976,8 @@ class ThisGrammar(ancestor):
         ##special case for citrix
         """
         if self.citrixApps:
-            prog = unimacroutils.getProgInfo()[0]
+            progInfo = unimacroutils.getProgInfo()
+            prog = progInfo.prog
             
             print('citrixApps: %s app: %s'% (self.citrixApps, prog))
             if prog in self.citrixApps:
@@ -2197,7 +2198,7 @@ class ThisGrammar(ancestor):
 
         m = natlink.getCurrentModule()
         istop = self.getTopOrChild( m, childClass="#32770" )
-        prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
+        _progpath, prog, title, topchild, classname, hndle = unimacroutils.getProgInfo(modInfo=m)
         if not hndle:
             print('_folders, gotoFolder: no window handle found, return')
         # Iam2x = prog == '2xexplorer'

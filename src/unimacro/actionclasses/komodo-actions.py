@@ -6,8 +6,8 @@ now special (QH) metaactions for very special tasks on selections of a file only
 import win32gui
 import ctypes
 import win32api
-import unimacro.messagefunctions as mf
-from .actionbases import AllActions
+from dtactions import messagefunctions as mf
+from dtactions.unimacro.actionclasses.actionbases import AllActions
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
 import natlinkclipboard
@@ -47,7 +47,7 @@ class KomodoActions(AllActions):
     def getCurrentLineNumber(self, handle=None):
         debug = 0
         t1 = time.time()
-        if self.topchild == "child":
+        if self.toporchild == "child":
             return 0
         cb = natlinkclipboard.Clipboard(save_clear=True, debug=debug)  # clear "debug" to get rid of timing line
         shortcutkey = "{alt+shift+n}{ctrl+c}"
@@ -69,7 +69,7 @@ class KomodoActions(AllActions):
         print("starting metaaction gotoline")
         debug = 0
         t1 = time.time()
-        if self.topchild == "child":
+        if self.toporchild == "child":
             return 0
         cb = natlinkclipboard.Clipboard(save_clear=True, debug=debug)  # clear "debug" to get rid of timing line
         cb.set_text(str(linenum))  ## this one needs testing in natlinkclipboard TODOQH
