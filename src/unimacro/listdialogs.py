@@ -297,7 +297,7 @@ def GetDumpedData(FileName):
 
 
 def DeferredSelectFromListDialog(List, Titles, defer, size=defaultSize):
-    from natlinkcore import natlink
+    import natlink
     DumpData((List, Titles, defer, size), RequestFileName)
     SetMic('off')
     AppBringUp('Server',Exec=PythonServerExe,Args='/app DialogServer.py /listdialog')

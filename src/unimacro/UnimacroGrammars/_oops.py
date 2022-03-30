@@ -52,10 +52,10 @@ turned on.
 """
 
 
-from natlinkcore import natlink
+import natlink
 import win32gui
-from natlinkcore import utilsqh
-from natlinkcore import natlinkutils
+from dtactions.unimacro import utilsqh
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
@@ -548,8 +548,10 @@ def changeCallback(type,args):
         thisGrammar.cancelMode()
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
+
 

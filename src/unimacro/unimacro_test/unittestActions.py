@@ -18,17 +18,17 @@ import os.path
 import time
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
-from natlinkcore import natlink
-from natlinkcore import natlinkmain
-from natlinkcore import natlinkstatus
+import natlink
+from natlink import loader
+from natlink import natlinkstatus
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
-from natlinkcore.pathqh import path
+from natlink.pathqh import path
 from dtactions.unimacro import unimacroactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

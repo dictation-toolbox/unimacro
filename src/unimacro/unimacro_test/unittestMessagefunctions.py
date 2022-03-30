@@ -30,7 +30,7 @@ import sys
 import os
 import os.path
 import win32clipboard
-from natlinkcore.pathqh import path
+from natlink.pathqh import path
 
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = [path(r"C:\natlinkGIT3\unimacro")]
@@ -57,7 +57,7 @@ import os.path
 import time
 import traceback        # for printing exceptions
 from struct import pack
-from natlinkcore import natlink
+import natlink
 import win32gui
 import win32ui
 from messagefunctions import *

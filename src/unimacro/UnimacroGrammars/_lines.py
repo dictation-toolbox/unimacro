@@ -45,13 +45,13 @@ import os
 import sys
 import types
 import re
-from natlinkcore import natlink
-from natlinkcore import inivars
+import natlink
+from natlink import inivars
 import re
 # for checking base number:
 reNulls = re.compile('0+$')
 
-import natlinkcore.natlinkutils as natut
+from natlink import natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -768,6 +768,8 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None 
+

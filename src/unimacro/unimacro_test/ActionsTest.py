@@ -4,15 +4,15 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-from natlinkcore.pathqh import path
+from natlink.pathqh import path
 from pprint import pprint
 import sys
 unimacrodir = path('./..').normpath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
-from natlinkcore import natlink
+from natlink import natlinkutils
+import natlink
 from dtactions.unimacro import unimacroactions as actions
 # reload(actions)
 action = actions.doAction

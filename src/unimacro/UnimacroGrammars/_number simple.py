@@ -44,7 +44,7 @@ further comments in _number extended.py. Also see the page "number grammar" on t
 """
 from dtactions.unimacro.unimacroactions import doAction as action
 
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
@@ -124,6 +124,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None 

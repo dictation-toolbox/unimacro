@@ -40,14 +40,14 @@ grammar.
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro.unimacroactions import doAction as action
 
 import os
 import os.path
 import sys
 import time         # for clock
-from natlinkcore import natlink
+import natlink
 import natlinktimer
 import types
 
@@ -944,6 +944,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
@@ -955,3 +956,4 @@ def changeCallback(type,args):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
+

@@ -32,11 +32,11 @@ import sys
 import re
 import pickle
 
-from natlinkcore import natlink
-from natlinkcore.natlinkutils import *
+import natlink
+from natlink.natlinkutils import *
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 import D_
 

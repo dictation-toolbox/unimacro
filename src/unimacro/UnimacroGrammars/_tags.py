@@ -1,30 +1,30 @@
-__version__ = "$Rev: 606 $ on $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $ by $Author: quintijn $"
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
-# (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
-#
-#  _tags.py: make HTML tags
-#
-# written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-# august 2003
-#
-"""grammar that makes html tags, as defined in an inifile
-
 """
+This file is part of a Github project (formerly a SourceForge project)
+called "unimacro" see http://qh.antenna.nl/unimacro
+(c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
+    or the file COPYRIGHT.txt in the natlink\natlink directory 
 
-from natlinkcore import natlink
-from dtactions.unimacro import unimacroutils as natqh
-from natlinkcore import natlinkutils
+  _tags.py: make HTML tags
+
+written by: Quintijn Hoogenboom (QH softwaretraining & advies)
+august 2003/March 2022 (python3)
+#
+"""
+#pylint:disable=C0116, W0603, W0613, W0201
+import natlink
+import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
-import nsformat
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions from dtactions import natlinkclipboard
 
 language = unimacroutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
+    """grammar that makes html tags, as defined in an inifile
+    """
+
     language = unimacroutils.getLanguage()        
     iniIgnoreGrammarLists = ['character']
 
@@ -93,24 +93,8 @@ class ThisGrammar(ancestor):
         # see of something selected, leave clipboard intact 
         unimacroutils.saveClipboard()
         keystroke('{ctrl+x}')  # try to cut the selection
-        contents = natlink.getClipboard().replace('\r','').strip()
+        contents = natlinkclipboard.Clipboard.Get_text().replace('\r','').strip()
         unimacroutils.restoreClipboard()
-        
-        leftText = rightText = leftTextDict = rightTextDict = ""
-        #if contents:
-        #    # strip from clipboard contents:
-        #    contents, leftText, rightText = self.stripFromBothSides(contents)
-        #if self.dictated.strip():
-        #    contents, leftTextDict, rightTextDict = self.stripFromBothSides(self.dictated)
-        #elif self.dictated:
-        #    # the case of only a space-bar:
-        #    leftTextDict = self.dictated
-        #
-        #lSpacing = leftText + leftTextDict
-        #rSpacing = rightTextDict + rightText
-        #
-        #if lSpacing:
-        #    keystroke(lSpacing)
         
         keystroke(pleft)
         if contents:
@@ -118,34 +102,10 @@ class ThisGrammar(ancestor):
             keystroke('{ctrl+v}')
         keystroke(pright)
 
-        #if rSpacing:
-        #    keystroke(rSpacing)
-
         if not contents:
             # go back so you stand inside the brackets:
             nLeft = len(pright)
             keystroke('{ExtLeft %s}'% nLeft)
-    #
-    #
-    #def stripFromBothSides(self, text):
-    #    """strip whitespace from left side and from right side and return the three parts
-    #    
-    #    input: text
-    #    output: stripped, leftSpacing, rightSpacing
-    #    """
-    #    leftText = rightText = ""
-    #    lSpaces = len(text) - len(text.lstrip())
-    #    leftText = rightText = ""
-    #    if lSpaces:
-    #        leftText = text[:lSpaces]
-    #    text = text.lstrip()
-    #    rSpaces = len(text) - len(text.rstrip())
-    #    if rSpaces:
-    #        rightText = text[-rSpaces:]
-    #    text = text.rstrip()
-    #    return text, leftText, rightText
-    #
-
 
     def fillDefaultInifile(self, ini):
         """filling entries for default ini file
@@ -191,19 +151,23 @@ def stripSpokenForm(w):
     pos = w.find('\\')
     if pos == -1:
         return w
-    elif pos == 0:
+    if pos == 0:
         return ' '
-    else:
-        return w[:pos]
+    return w[:pos]
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
+if natlink.isNatSpeakRunning():
+    thisGrammar = ThisGrammar()
+    if thisGrammar.gramSpec:
+        thisGrammar.initialize()
+    else:
+        thisGrammar = None
+    
+    def unload():
+    #pylint:disable=W0603
+        global thisGrammar
+        if thisGrammar:
+            thisGrammar.unload()
+        thisGrammar = None
 
-def unload():
-    global thisGrammar
-    if thisGrammar: thisGrammar.unload()
-    thisGrammar = None
+

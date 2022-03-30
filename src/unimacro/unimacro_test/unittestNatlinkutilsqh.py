@@ -14,7 +14,7 @@ import types
 import os
 import os.path
 import TestCaseWithHelpers
-from natlinkcore import natlink
+import natlink
 from dtactions.unimacro import unimacroutils as natqh
 
 def getBaseFolder(globalsDict=None):

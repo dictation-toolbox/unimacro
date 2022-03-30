@@ -15,7 +15,7 @@
 import sys
 import os
 import os.path
-from natlinkcore import natlink
+import natlink
 import math
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro import unimacroutils as natqh

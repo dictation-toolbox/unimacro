@@ -17,19 +17,19 @@ import os
 import os.path
 import time
 import win32gui
-from natlinkcore.pathqh import path
+from natlink.pathqh import path
 
 thisDir = path('.')
 unimacroFolder = (thisDir/'..').normpath()
 if not unimacroFolder in sys.path:
     sys.path.append(unimacroFolder)
 import TestCaseWithHelpers
-from natlinkcore import natlink
-import natlinkclipboard
+import natlink
+from dtactions import natlinkclipboard
 from dtactions.unimacro import unimacroactions as actions
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 
 class TestError(Exception):
     pass

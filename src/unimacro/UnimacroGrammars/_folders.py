@@ -69,14 +69,14 @@ import traceback
 import win32gui
 from win32com.client import Dispatch
 
-from natlinkcore import natlink
-# from natlinkcore import inivars  # for IniError
-# from natlinkcore import utilsqh
-from natlinkcore.pathqh import path
-from natlinkcore.pathqh import getValidPath
+import natlink
+# from natlink import inivars  # for IniError
+# from natlink import utilsqh
+from natlink.pathqh import path
+from natlink.pathqh import getValidPath
 # import natlinkcore.nsformat # for "remember as"
 # import natlinkcore.readwritefile
-from natlinkcore import natlinkcorefunctions # getExtendedEnv
+import natlinkcorefunctions # getExtendedEnv
 from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
 from dtactions.unimacro.unimacroactions import doAction as action

@@ -27,9 +27,9 @@ in the foreground
 """
 
 
-from natlinkcore import natlink
+import natlink
 from dtactions.unimacro import unimacroutils
-import natlinkcore.natlinkutils as natut
+from natlink import natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -336,6 +336,8 @@ else:
     thisGrammar = None
     
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
+

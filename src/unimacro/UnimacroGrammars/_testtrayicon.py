@@ -1,5 +1,5 @@
-from natlinkcore import natlinkutils
-from natlinkcore import natlink
+from natlink import natlinkutils
+import natlink
 import os
 import os.path
 import time
@@ -73,6 +73,8 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
+

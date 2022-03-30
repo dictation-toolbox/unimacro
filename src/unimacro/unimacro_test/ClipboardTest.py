@@ -8,14 +8,14 @@
 #   (that you want to preserve) before these tests are run.
 #   performed.
 import sys
-from natlinkcore.pathqh import path
+from natlink.pathqh import path
 thisDir = path('.')
 unimacroDir=(thisDir/'..').normpath()
 if unimacroDir not in sys.path:
     print("add unimacroDir to sys.path: %s"% unimacroDir)
     sys.path.append(unimacroDir)
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 
 import time
 from dtactions.unimacro import unimacroactions as actions

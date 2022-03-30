@@ -3,19 +3,19 @@ Grammar to help with natlink hosted python debugging.
 """
 #pylint:disable=W0611, W0613, C0115, C0116, R0201
 
-from natlinkcore import natlink
-from natlinkcore import natlinkpydebug as pd
-from natlinkcore import natlinkutils
-from natlinkcore import gramparser as gp
-from natlinkcore import nsformat
+import natlink
+import natlinkpydebug as pd
+from natlink import natlinkutils
+from natlink import gramparser as gp
+from natlink import nsformat
 
-import unimacro.natlinkutilsbj as natbj
+# import unimacro.natlinkutilsbj as natbj
 
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doAction as action
+# from dtactions.unimacro import unimacroutils
+# from dtactions.unimacro.unimacroactions import doAction as action
 
-ancestor = natbj.IniGrammar  #QH1
-class DebugGrammar(ancestor):
+# ancestor = natbj.IniGrammar  #QH1
+class DebugGrammar(natlinkutils.GrammarBase):
     # language = unimacroutils.getLanguage()
     name = "Natlink Debug"
     gramSpec = """
@@ -36,7 +36,7 @@ class DebugGrammar(ancestor):
     def initialize(self):
         print('debug initialize, by loading self.gramSpec')
         self.load(self.gramSpec)
-        self.switchOnOrOff()   ## based on the ini settings, by default, on
+        self.activateAll() 
         
 
 
@@ -80,3 +80,4 @@ def unload():
     global debug_grammar
     debug_grammar = None
     
+

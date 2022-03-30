@@ -10,7 +10,7 @@ from dtactions import messagefunctions as mf
 from dtactions.unimacro.actionclasses.actionbases import AllActions
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
-import natlinkclipboard
+from dtactions import natlinkclipboard
 import time
 
 

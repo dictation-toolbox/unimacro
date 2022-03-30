@@ -7,8 +7,8 @@
 # for a variable number of words grammar
 # Quintijn, June 28, 2009
 
-from natlinkcore import natlink
-from natlinkcore import natlinkutils
+import natlink
+from natlink import natlinkutils
 
 
 ancestor = natlinkutils.GrammarBase
@@ -54,8 +54,10 @@ thisGrammar = ThisGrammar()
 thisGrammar.initialize()
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
         
     thisGrammar = None
+

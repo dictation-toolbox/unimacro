@@ -49,10 +49,10 @@ If just input notes are given, the strategy of insert/update of notes is
 
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlinkcore import natlink
+import natlink
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
 from itertools import cycle
@@ -703,6 +703,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None

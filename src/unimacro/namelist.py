@@ -17,7 +17,7 @@ try:
     set
 except AttributeError:
     from sets import Set as set
-from natlinkcore.pathqh import path
+from natlink.pathqh import path
 
 # complete words that need a spoken form:
 needsSpokenForm = {}

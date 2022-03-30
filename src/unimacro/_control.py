@@ -10,17 +10,25 @@
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003
 #pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107
+#pylint:disable=E1101
+
+import sys
 import os
-from natlinkcore import natlink
-from natlinkcore import natlinkutils
-from natlinkcore import natlinkmain
-# from natlinkmain import loadedFiles, unloadModule, loadModule
-from natlinkcore import utilsqh
-# new name new locations:
+import filecmp
+import shutil
+import string
+import natlink
+from natlink import loader
+from natlink import natlinkstatus
+
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroactions as actions
 
-import natlinkutilsbj as natbj
+from unimacro import natlinkutilsbj as natbj
+
+
+status = natlinkstatus.NatlinkStatus()
+natlinkmain = loader.NatlinkMain()
 
 # extra commands for controlling actions module:
 try:
@@ -56,8 +64,9 @@ def ReadFilteredWords(Filename):
 FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
                  'if', 'its', 'is', 'this', 'booth', 'on', 'with',"'s"]
 #(taken from natlinkmain, to prevent import:)
-baseDirectory = unimacroutils.getUnimacroUserDirectory()
-unimacroDirectory = unimacroutils.getUnimacroDirectory()
+baseDirectory = status.getUnimacroUserDirectory()
+unimacroDirectory = status.getUnimacroDirectory()
+
 FilterFileName=baseDirectory+'\\filtered.txt'
 FilteredWords=natbj.Union(FilteredWords, ReadFilteredWords(FilterFileName))
 
@@ -88,7 +97,7 @@ showAll = 1  # reset if no echo of exclusive commands is wished
 
 ancestor = natbj.IniGrammar
 class UtilGrammar(ancestor):
-    language = unimacroutils.getLanguage()
+    language = status.get_language()
     iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message'] # are set in this module
 
     name = 'control'
@@ -250,7 +259,7 @@ class UtilGrammar(ancestor):
         _spok = spokenforms.SpokenForms(self.language, version)
         alph = 'alphabet'
         ini = spokenforms.ini
-        for letter in utilsqh.ascii_lowercase:
+        for letter in string.ascii_lowercase:
             spoken = ini.get(alph, letter, '')
             if not spoken:
                 print('fill in in "%s_spokenform.ini", [alphabet] spoken for: "%s"'% (self.language, letter))
@@ -364,14 +373,17 @@ class UtilGrammar(ancestor):
                 gram.ini.set('general', 'initial on', 1)
                 #gram.mayBeSwitchedOn = 1
                 gram.ini.write()
-                print('reload grammar "%s" after 1 seconds (switching on)'% gram.getName())
-                unimacroutils.Wait(1)
+                unimacroutils.Wait(0.1)
             else:
                 print('reload grammar "%s"'% gram.getName())
+
+            gram.unload()
+            gram.initialize()
                 
-            modName = gram.__module__
-            natlinkmain.unloadModule(modName)
-            natlinkmain.loadModule(modName)
+            # modName = gram.__module__
+            # modPath = gram.__module__.__file__
+            # natlinkmain.unload_module(modName)
+            # natlinkmain.load_or_reload_module(modPath, force_load=True)
             #print 'reloaded "%s"'% modName
             return 1
         if funcName == 'switchOff':
@@ -379,14 +391,13 @@ class UtilGrammar(ancestor):
                 gram.ini.set('general', 'initial on', 0)
                 gram.ini.writeIfChanged()
                 gram.mayBeSwitchedOn = 0
-                _result =  func()
+                gram.unload()
                 print('grammar "%s" switched off'% gram.getName())
                 return 1
-            _result = func()
             print('grammar "%s" switched off (again)'% gram.getName())
             return 1
         raise ValueError('switching on/off should have as function "switchOn" or "switchOff", not: %s'% func)
-            
+         
     def gotResults_showexclusive(self,words,fullResults):
 
         All = 0
@@ -463,8 +474,7 @@ class UtilGrammar(ancestor):
 
         grammars = natbj.loadedGrammars
         gramNames = list(grammars.keys())
-        print(f"_control, gramNames: {gramNames}")
-        
+        print(f'_control, gramNames: {gramNames}')
         gramName = self.hasCommon(words, gramNames)
         if gramName:
             grammar = grammars[gramName]
@@ -503,6 +513,13 @@ class UtilGrammar(ancestor):
             #print 'collect and show active, non-active and non-Unimacro grammars'
             activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
             otherGrammars = natlinkmain.loadedFiles.keys()
+            
+            print(f'loadedGrammars (natbj): {natbj.loadedGrammars}')
+            print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
+            allGramNames = self.getUnimacroGrammarNames()
+            self.setList('gramnames', allGramNames)
+            print(f'for being sure, set all active grammars in list "gramnames": "{allGramNames}"')
+
             for g in natbj.loadedGrammars:
                 gram = natbj.loadedGrammars[g]
                 result = getattr(gram, 'isActive')
@@ -572,9 +589,16 @@ class UtilGrammar(ancestor):
         gramName = self.hasCommon(words[-1:], gramNames)
         if gramName:
             grammar = grammars[gramName]
+            print(f'grammar: {gramName}: {grammar}')
             if self.hasCommon(words, 'grammar'):
-                module = grammar.__module__
-                filename = unimacroutils.getModuleFilename(module)
+                moduleName = grammar.__module__
+                print(f'try __module__: {moduleName}')
+                if moduleName in sys.modules:
+                    module = sys.modules[moduleName]
+                else:
+                    print(f'not in sys.modules: {moduleName}')
+                    return 
+                filename = module.__file__
                 print('open for edit file: ', filename)
                 self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
                 unimacroutils.setCheckForGrammarChanges(1)
@@ -626,48 +650,98 @@ class UtilGrammar(ancestor):
             t = t.replace('; ', '\n')
             actions.Message(t)
 
+    def UnimacroControlPostLoad(self):
+        newKeys = natbj.getRegisteredGrammarNames()
+        print(f'_control, postLoad: newKeys: {newKeys}')
+        prevSet = set(self.Lists['gramnames'])
+        newSet = set(natbj.getRegisteredGrammarNames())
+        if prevSet != newSet:
+            print(f'setting new grammar names list: {list(newSet)}')
+            self.setList('gramnames', list(newSet))
+            
     def getUnimacroGrammarNames(self):
         """get all the names of active or wrong Unimacro grammar names
         """
         #pylint:disable=R0201
-        wrongNames = set(natlinkmain.wrongFiles.keys())
-        loadedNames = set(natlinkmain.loadedFiles.keys())
-        # print("wrong names: ", wrongNames)
-        # print("\nloaded names: ", loadedNames)
+        wrongNames = set() #set(natlinkmain.wrongFiles.keys())
+        loadedNames = set() #set(natlinkmain.loadedFiles.keys())
 
-        unimacroPyFiles = [f for f in os.listdir(unimacroDirectory) if f.endswith('.py')]
-        # print("\n===unimacroPyFiles", unimacroPyFiles)
+        grammarsDirectory = status.getUnimacroGrammarsDirectory()
+        unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
+        print("\n===unimacroPyFiles", unimacroPyFiles)
+        # print(f'wrongNames" {wrongNames}')
+        # print(f'loadedNames" {loadedNames}')
         loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
         return loadedandwrongmodules
 
-class MessageDictGrammar(natlinkutils.DictGramBase):
-    def __init__(self):
-        natlinkutils.DictGramBase.__init__(self)
-
-    def initialize(self):
-        print('initializing/loading DictGrammar!!')
-        self.load()
-        natbj.RegisterMessageObject(self)
-
-    def unload(self):
-        natbj.UnRegisterMessageObject(self)
-        natlinkutils.DictGramBase.unload(self)
+    def checkUnimacroGrammars(self):
+        """see if there are any changed grammar files with respect to original file in release
         
-    def gotResults(self, words):
-        pass
-        #print 'messageDictGrammar: heard dictation:  %s '% words
+        sync with ...
+        """
+        join, isdir, isfile, listdir = os.path.join, os.path.isdir, os.path.isfile, os.listdir
+        u_dir = status.getUnimacroDirectory()
+        # u_user_dir = status.getUnimacroUserDirectory()
+        u_grammars_dir = status.getUnimacroGrammarsDirectory()
+        u_original_grammars_dir = join(u_dir, "UnimacroGrammars")
+        assert isdir(u_original_grammars_dir)
+        originalPyFiles = [f for f in listdir(u_original_grammars_dir) if f.endswith('.py')]
+        txtFiles = [f for f in listdir(u_grammars_dir) if f.endswith('.txt')]
+        activePyFiles = [f for f in listdir(u_grammars_dir) if f.endswith('.py')]
+        
+        for f in originalPyFiles:
+            org_path = join(u_original_grammars_dir, f)
+            txt_file = f.replace('.py', '.txt')
+            txt_path = join(u_grammars_dir, txt_file)
+            py_path = join(u_grammars_dir, f)
+            nice_name = f[:-3]   # strip off .py
+            checkOriginalFileWithActualTxtPy(nice_name, org_path, txt_path, py_path)
+            
+        for f in txtFiles:
+            f_py = f.replace('.txt', '.py')
+            if f_py not in originalPyFiles:
+                print(f'txt file "{f}" in ActiveGrammars, but py file {f_py} not in UnimacroGrammars')
+                shutil.remove(f)
+                
+        for f in activePyFiles:
+            f_txt = f.replace('.py', '.txt')
+            if not isfile(f_txt):
+                print(f'py file "{f}" in ActiveGrammars, but not txt file {f_txt}, so grammar is not in UnimacroGrammars')
+               
+        
+        
+
+
+# class MessageDictGrammar(natlinkutils.DictGramBase):
+#     def __init__(self):
+#         natlinkutils.DictGramBase.__init__(self)
+# 
+#     def initialize(self):
+#         print('initializing/loading DictGrammar!!')
+#         self.load()
+#         natbj.RegisterMessageObject(self)
+# 
+#     def unload(self):
+#         natbj.UnRegisterMessageObject(self)
+#         natlinkutils.DictGramBase.unload(self)
+#         
+#     def gotResults(self, words):
+#         pass
+#         #print 'messageDictGrammar: heard dictation:  %s '% words
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-messageDictGrammar = MessageDictGrammar()
-messageDictGrammar.initialize()
-print('messageDictGrammar initialized')
+# messageDictGrammar = MessageDictGrammar()
+# messageDictGrammar.initialize()
+# print('messageDictGrammar initialized')
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 utilGrammar = UtilGrammar()
 if utilGrammar.gramSpec:
     utilGrammar.initialize()
+    natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
+    # utilGrammar.checkUnimacroGrammars()
     
 else:
     print('grammar _control has no specification for this language---------')
@@ -675,13 +749,14 @@ else:
 
 def unload():
     #pylint:disable=W0603
-    global utilGrammar, messageDictGrammar
+    global utilGrammar  #, messageDictGrammar
     if utilGrammar:
+        natlinkmain.delete_post_load_callback(utilGrammar.UnimacroControlPostLoad)
         utilGrammar.unload()
     utilGrammar = None
-    if messageDictGrammar:
-        messageDictGrammar.unload()
-    messageDictGrammar = None
+    # if messageDictGrammar:
+    #     messageDictGrammar.unload()
+    # messageDictGrammar = None
     
 def changeCallback(type, args):
     #pylint:disable=W0603, W0622
@@ -699,4 +774,26 @@ def changeCallback(type, args):
             natbj.CallAllGrammarObjects('setInterceptMode',[0])
         
         
+def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
+    """check if grammar has been copied, and changed, with copy of .txt as intermediate
     
+    org_path: path to python file in UnimacroGrammars, the original grammars
+    txt_path: initially copy of org_path, user area, ActiveGrammars, handled if new release has changes
+    py_path:  actual state of active grammar, noted if changes are made
+    
+    """
+    isfile = os.path.isfile
+    if not isfile(txt_path):
+        shutil.copyfile(org_path, txt_path)
+    org_txt_equal = filecmp.cmp(org_path, txt_path)
+    
+    if not isfile(py_path):
+        # print(f'not activated grammar "{name}"')
+        return 
+    txt_py_equal = filecmp.cmp(txt_path, py_path)
+    if txt_py_equal:
+        if org_txt_equal:
+            # all equal
+            return
+        # new                 
+

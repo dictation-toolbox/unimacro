@@ -25,15 +25,15 @@ __version__ = "$Rev: 561 $ on $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015)
 #
 
 import unittest
-from natlinkcore import natlink
+import natlink
 import os
 import sys
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlinkcore import utilsqh
+from dtactions.unimacro import utilsqh
 import glob
 from dtactions.unimacro import unimacroactions as actions
 
@@ -194,7 +194,10 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
+
+

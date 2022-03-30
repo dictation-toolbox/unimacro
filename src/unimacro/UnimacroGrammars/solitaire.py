@@ -30,7 +30,7 @@
 Extensive use is made of mouse (dragging) routines.
 """
 
-from natlinkcore import natlink
+import natlink
 import win32gui
 import types
 import time
@@ -38,7 +38,7 @@ import os
 import os.path
 import win32api
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -357,6 +357,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None

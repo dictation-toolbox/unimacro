@@ -1,7 +1,7 @@
 #Copyright Ben Staniford (ben@staniford.net)
 #I do not know status of this presently (Quintijn)
-from natlinkcore import natlink
-from natlinkcore.natlinkutils import *
+import natlink
+from natlink.natlinkutils import *
 
 import re
 

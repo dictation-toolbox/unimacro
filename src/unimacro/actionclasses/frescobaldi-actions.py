@@ -5,7 +5,7 @@ now works with copy and so getting the wanted contents of text around the cursor
 """
 from dtactions.unimacro.actionclasses.actionbases import AllActions
 import pprint
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils as natqh
 import time
 

@@ -21,8 +21,8 @@ Move tasks to other display other to a corner of the current monitor
 """
 #
 #
-from natlinkcore import natlink
-from natlinkcore import nsformat # for give name
+import natlink
+from natlink import nsformat # for give name
 
 import time
 import os
@@ -32,7 +32,7 @@ import unimacro.monitorfunctions
 import sys
 import types
 
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -1154,6 +1154,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
@@ -1164,3 +1165,4 @@ def changeCallback(type,args):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
+

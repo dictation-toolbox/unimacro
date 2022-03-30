@@ -15,8 +15,8 @@ from pywin.mfc import dialog
 from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
-from natlinkcore import natlink
-from natlinkcore.natlinkutils import *
+import natlink
+from natlink.natlinkutils import *
 from natlinkutilsbj import SetMic
 import listdialogs
 import D_

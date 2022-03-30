@@ -9,9 +9,9 @@ __version__ = "$Rev: 429 $ on $Date: 2011-05-31 16:21:03 +0200 (di, 31 mei 2011)
 """
 
 
-from natlinkcore import natlink
+import natlink
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
+from natlink import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import pprint
@@ -244,6 +244,8 @@ else:
     thisGrammar = None
     
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
+
