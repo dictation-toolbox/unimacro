@@ -16,7 +16,7 @@ import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions from dtactions import natlinkclipboard
+from dtactions.natlinkclipboard import Clipboard
 
 language = unimacroutils.getLanguage()        
 
@@ -91,15 +91,14 @@ class ThisGrammar(ancestor):
         pright = '</%s>' % endTag
 
         # see of something selected, leave clipboard intact 
-        unimacroutils.saveClipboard()
+        cb =  Clipboard(save_clear=True)
         keystroke('{ctrl+x}')  # try to cut the selection
-        contents = natlinkclipboard.Clipboard.Get_text().replace('\r','').strip()
-        unimacroutils.restoreClipboard()
+        contents = cb.Get_text()   #.replace('\r','').strip()
         
         keystroke(pleft)
         if contents:
             #print 'contents: |%s|'% repr(contents)
-            keystroke('{ctrl+v}')
+            keystroke(contents)
         keystroke(pright)
 
         if not contents:
@@ -156,7 +155,7 @@ def stripSpokenForm(w):
     return w[:pos]
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-if natlink.isNatSpeakRunning():
+if natlink.isNatSpeakRunning(): 
     thisGrammar = ThisGrammar()
     if thisGrammar.gramSpec:
         thisGrammar.initialize()
@@ -164,10 +163,8 @@ if natlink.isNatSpeakRunning():
         thisGrammar = None
     
     def unload():
-    #pylint:disable=W0603
         global thisGrammar
         if thisGrammar:
             thisGrammar.unload()
         thisGrammar = None
-
 
