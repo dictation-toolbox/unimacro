@@ -104,7 +104,7 @@ class ThisGrammar(ancestor):
         if not contents:
             # go back so you stand inside the brackets:
             nLeft = len(pright)
-            keystroke('{ExtLeft %s}'% nLeft)
+            keystroke('{left %s}'% nLeft)
 
     def fillDefaultInifile(self, ini):
         """filling entries for default ini file
