@@ -7,7 +7,8 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020
-#pylint:disable=C0302, W0613, W0702, R0912, R0914, R0915, R0201
+#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0914, R0915, R0201
+#pylint:disable=E1101
 r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
 can be called directly by name if they are in the foreground.
@@ -65,6 +66,7 @@ import urllib.parse
 import urllib.error
 import ctypes    # get window text
 import traceback
+from pathlib import Path
 # from pprint import pprint
 import win32gui
 from win32com.client import Dispatch
@@ -72,14 +74,12 @@ from win32com.client import Dispatch
 import natlink
 # from natlink import inivars  # for IniError
 # from natlink import utilsqh
-from natlink.pathqh import path
-from natlink.pathqh import getValidPath
-# import natlinkcore.nsformat # for "remember as"
-# import natlinkcore.readwritefile
-import natlinkcorefunctions # getExtendedEnv
+from dtactions.unimacro.utilsqh import getValidPath
+import dtactions.unimacro.extenvvars
 from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
 from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
 from dtactions.unimacro.unimacroactions import UnimacroBringUp
 from dtactions.unimacro import unimacroutils
@@ -89,7 +89,7 @@ import unimacro.natlinkutilsbj as natbj
 # from unimacro.unimacro_wxpythondialogs import InputBox
 # import natlinkcore.natlinkutils as natut
 
-thisDir = (path(__file__)).split()[0]
+thisDir = str(Path(__file__).parent)
 
 # for getting unicode explorer window titles:
 GetWindowText = ctypes.windll.user32.GetWindowTextW
@@ -110,11 +110,10 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 
 # extra for sites (QH)
 try:
-    siteRoot = getValidPath('(C|D):\\projects\\sitegen')
+    siteRoot = str(getValidPath('(C|D):\\projects\\sitegen'))
 except OSError:
     siteRoot = None
 if siteRoot:
-    siteRoot = siteRoot.normpath()
     print("grammar _folder: do specific site commands (QH private)")
     if not siteRoot in sys.path:
         print('append to sys.path: %s'% siteRoot)
@@ -185,7 +184,7 @@ class ThisGrammar(ancestor):
         gramSpec += """<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|HIDE|RESET|START|STOP) [<foldercommands>];"""
 
     def initialize(self):
-        self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
+        # self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
         self.subfiles = self.subfiles = self.activeFolder = None  # for catching on the fly in explorer windows (CabinetClassW)
         self.className = None
         self.dialogWindowTitle = "" # for recent folders dialog, grammar in natspeak.py
@@ -548,7 +547,7 @@ class ThisGrammar(ancestor):
         also make alternative paths possible  like (C|D):/Documents
         """
         # natlinkcorefunctions.printAllEnvVariables()
-        vd = natlinkcorefunctions.expandEnvVariables(vd)
+        vd = extenvvars.expandEnvVariables(vd)
         for possiblePath in loop_through_alternative_paths(vd):
             folder = self.substituteFolder(possiblePath)
             if os.path.isdir(folder):
@@ -632,7 +631,7 @@ class ThisGrammar(ancestor):
             # print("getActiveFolder: %s"% nf)
             return nf
         # print("folder in getActiveFolder: %s"% f)
-        realFolder = natlinkcorefunctions.getFolderFromLibraryName(f)
+        realFolder = extenvvars.getFolderFromLibraryName(f)
         if realFolder:
             # print("getActiveFolder realFolder for %s: %s"% (f, realFolder))
             return realFolder
@@ -1033,11 +1032,7 @@ class ThisGrammar(ancestor):
     def getFileBasenameRemember(self, filePath):
         """extract the website main from a file path
         """
-        if isinstance(filePath, path):
-            namePart = filePath.split()[-1]
-        else:
-            namePart = os.path.split(filePath)[-1]
-        namePart = os.path.splitext(namePart)[0]
+        namePart = Path(filePath).stem
         spokenList = self.spokenforms.generateMixedListOfSpokenForms(namePart)
        
         if not spokenList:
@@ -1084,21 +1079,15 @@ class ThisGrammar(ancestor):
     def cleanpath(self, somepath):
         """normalise path, and lowercase
         """
-        if isinstance(somepath, path):
-            return str(somepath)
-        p = path(somepath)
-        return str(p)
+        p = str(Path(somepath))
+        return p
     
     def getFolderBasenameRemember(self, folderPath):
         """extract the spoken name from the folder path
         """
-         # print('getFolderBasenameRemember, folderPath: %s'% folderPath)
-        if isinstance(folderPath, path):
-            namePart = folderPath.split()[-1]
-        else:
-            namePart = os.path.split(folderPath)[-1]
+        folderPath = Path(folderPath)
+        namePart = folderPath.name
         spokenList = self.spokenforms.generateMixedListOfSpokenForms(namePart)
-        # print('namePart: %s, spokenList: %s'% (namePart, spokenList))
         if not spokenList:
             return namePart
         if len(spokenList) > 1:
@@ -1296,10 +1285,9 @@ class ThisGrammar(ancestor):
                 return po
             except:
                 print('"pagesopen" failed for site %s'% siteName)
-                return
-        else:
-            print('no function "pagesopen" in module: %s'% siteName)
-            return
+                return None
+        print('no function "pagesopen" in module: %s'% siteName)
+        return None
         
     def findFolderWithIndex(self, root, allowed, ignore=None):
         """get the first folder with a file index.html"""
@@ -1310,7 +1298,7 @@ class ThisGrammar(ancestor):
                 os.path.isfile(os.path.join(tryF, 'index.html')) or \
                 os.path.isfile(os.path.join(tryF, 'index.txt'))):
                 return tryF
-        if ignore and type(ignore) == list:
+        if ignore and isinstance(ignore, (list, tuple)):
             # look in listdir and take first that is not to be ignored:
             try:
                 List = os.listdir(root)
@@ -1322,6 +1310,7 @@ class ThisGrammar(ancestor):
                 tryF = os.path.join(root, d)
                 if os.path.isdir(tryF) and os.path.isfile(os.path.join(tryF, 'index.html')):
                     return tryF
+        return None
 
     def gotResults_folder(self, words, fullResults):
         """collects the given command words and try to find the given folder
@@ -1468,14 +1457,13 @@ class ThisGrammar(ancestor):
         inifile = self.ini._file
         inifile = inifile.replace("\\", "/")
         text = '\n\n'.join(texts)
-        title = "bla bla bla" # not used
         if not self.checkForChanges:
             self.checkForChanges = 10  # switch this on 10 utterances
         pausetime = 3
         # reset variables, no action in gotResults:
         self.wantedFile = self.wantedFolder = self.wantedWebsite = ""
         print(f'thisDir: {thisDir}')
-        DNSIniDir = path('%DNSINIDIR%')
+        DNSIniDir = extenvvars.path('%DNSINIDIR%')
         UnimacroDirectory = path('%UNIMACRODIRECTORY%')
         print(f'UnimacroDirectory: {UnimacroDirectory}')
         UnimacroGrammarsDirectory = path('%UNIMACROGRAMMARSDIRECTORY%')
@@ -1847,10 +1835,8 @@ class ThisGrammar(ancestor):
             vd = self.substituteFolder(vd)
             if rest:
                 return os.path.normpath(os.path.join(vd, rest))
-            else:
-                return os.path.normpath(vd)
-        else:
-            return os.path.normpath(folder)
+            return os.path.normpath(vd)
+        return os.path.normpath(folder)
 
     def substituteEnvVariable(self,folder):
         """honor environment variables like %HOME%, %PROGRAMFILES%

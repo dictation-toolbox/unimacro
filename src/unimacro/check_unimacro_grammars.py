@@ -6,6 +6,7 @@
 import os
 import shutil
 import filecmp
+from pathlib import Path        
 from natlink import natlinkstatus
 status = natlinkstatus.NatlinkStatus()
 
@@ -32,17 +33,19 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
         if org_txt_equal:
             # all equal
             return
-        print(f'new release of grammar file, copy to ActiveGrammars {name}')
+        print(f'\tnew release of grammar file, copy to ActiveGrammars {name}')
         shutil.copyfile(org_path, txt_path)
         shutil.copyfile(txt_path, py_path)
         return
     # txt_py not equal
     if org_txt_equal:
-        print(f'grammar file {name} in ActiveGrammars changed, please copy to UnimacroGrammars if you are a developer\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
+        print(f'grammar {name} in ActiveGrammars changed, please copy to UnimacroGrammars if you are a developer\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
+        if Path(py_path).is_symlink():
+            pass
         return
     # changes AND new release:
-    print(f'changes of grammar file {name}, both in UnimacroGrammars and ActiveGrammars')
-    print(f'check (yours): {py_path} and {org_path}')
+    print(f'changes of grammar {name}, both in UnimacroGrammars and ActiveGrammars')
+    print(f'check (yours): {py_path} and (release) {org_path}')
     
         
 
