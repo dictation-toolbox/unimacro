@@ -8,7 +8,16 @@ import shutil
 import filecmp
 from pathlib import Path        
 from natlink import natlinkstatus
+try:
+    from unimacro.__init__ import get_site_packages_dir
+except ModuleNotFoundError:
+    print('Run this module after "build_package" and "flit install --symlink"\n')
+
 status = natlinkstatus.NatlinkStatus()
+sitePackagesDir = get_site_packages_dir(__file__)
+workDir = str(Path(sitePackagesDir).resolve())
+have_symlinks = (workDir != sitePackagesDir)
+    
 
 def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     """check if grammar has been copied, and changed, with copy of .txt as intermediate
@@ -39,16 +48,16 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
         return
     # txt_py not equal
     if org_txt_equal:
-        print(f'grammar {name} in ActiveGrammars changed, please copy to UnimacroGrammars if you are a developer\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
-        if Path(py_path).is_symlink():
-            pass
+        if have_symlinks:
+            print(f'grammar {name} in ActiveGrammars changed, copy to UnimacroGrammars\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
+            shutil.copyfile(py_path, org_path)
+            shutil.copyfile(org_path, txt_path)
+        else:
+            print(f'grammar {name} in ActiveGrammars changed, cannot copy to UnimacroGrammars because you are not developing in symlink mode (with "flit install --symlink")')
         return
     # changes AND new release:
     print(f'changes of grammar {name}, both in UnimacroGrammars and ActiveGrammars')
     print(f'check (yours): {py_path} and (release) {org_path}')
-    
-        
-
 
 def _test_grammar_files():
     join, listdir = os.path.join, os.listdir
@@ -57,6 +66,8 @@ def _test_grammar_files():
     ugrammarsdir = status.getUnimacroGrammarsDirectory()
     uoriginalgrammarsdir = join(udir, "UnimacroGrammars")
     originalPyFiles = [f for f in listdir(uoriginalgrammarsdir) if f.endswith('.py')]
+    
+    
     # txtFiles = [f for f in listdir(ugrammarsdir) if f.endswith('.txt')]
     # activePyFiles = [f for f in listdir(ugrammarsdir) if f.endswith('.py')]
         
