@@ -34,8 +34,8 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     
     if not isfile(py_path):
         if not org_txt_equal:
-            print(f'new release of not activated grammar {name}\n\tcopy {org_path} to {txt_path}')
-        # print(f'not activated grammar "{name}"')
+            print(f'\tnew release of not activated grammar {name}\n\t\tcopy {org_path} to {txt_path}')
+            shutil.copyfile(org_path, txt_path)
         return 
     txt_py_equal = filecmp.cmp(txt_path, py_path)
     if txt_py_equal:
@@ -49,15 +49,18 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     # txt_py not equal
     if org_txt_equal:
         if have_symlinks:
-            print(f'grammar {name} in ActiveGrammars changed, copy to UnimacroGrammars\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
+            print(f'****grammar {name} in ActiveGrammars changed, copy to UnimacroGrammars\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
             shutil.copyfile(py_path, org_path)
             shutil.copyfile(org_path, txt_path)
         else:
-            print(f'grammar {name} in ActiveGrammars changed, cannot copy to UnimacroGrammars because you are not developing in symlink mode (with "flit install --symlink")')
+            print(f'****grammar {name} in ActiveGrammars changed, cannot copy to UnimacroGrammars because you are not developing in symlink mode (with "flit install --symlink")')
         return
     # changes AND new release:
-    print(f'changes of grammar {name}, both in UnimacroGrammars and ActiveGrammars')
-    print(f'check (yours): {py_path} and (release) {org_path}')
+    if have_symlinks:
+        print(f'****changes of grammar {name}, both in UnimacroGrammars and ActiveGrammars\n\tcheck (yours): {py_path} and (release) {org_path}')
+    else:
+        print(f'****changes of grammar {name}, both in UnimacroGrammars and ActiveGrammars,\n\tbut beware, you are not in "symlink" mode (with "flit install --symlink")\n\t\tcheck (yours): {py_path} and (release) {org_path}')
+        
 
 def _test_grammar_files():
     join, listdir = os.path.join, os.listdir
