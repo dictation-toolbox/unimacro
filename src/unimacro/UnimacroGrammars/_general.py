@@ -86,7 +86,6 @@ elif language == 'nld':
                  }
 else:
     nameList = {}
-        
 
 switchDirection = {
       "{Up}":      "{Down}",
@@ -98,7 +97,7 @@ modes = ['spell', 'command', 'numbers', 'normal', 'dictation', 'dictate']
 normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase', 'batch',
              'comment', 'documentation', 'modes', 'variable', 'search',
              'highlight',         # for Shane, enable, because Vocola did not fix _anything yet
-             'browsewith', 'hyphenatephrase', 'pastepart',
+             'hyphenatephrase', 'pastepart',
              'password']
 #normalSet = ['hyphenatephrase']  # skip 'openuser'
 
@@ -697,39 +696,39 @@ class ThisGrammar(ancestor):
             m = natlink.getCurrentModule()
             hwnd = m[2]
             p = unimacroutils.getProgInfo(m)
-            topchild = p[2] == 'top'
+            toporchild = p.toporchild == 'top'
+            # ProgInfo = collections.namedtuple('ProgInfo', 'progpath prog title toporchild classname hndle'.split(' '))
             T.append('---from unimacroutils.getProgInfo:')
-            T.append('0 prog: %s'% p[0])
-            T.append('1 title: %s'% p[1])
-            T.append('2 topchild: %s'% p[2])
-            T.append('3 classname: %s'% p[3])
+            T.append(f'0 progpath:\t{p.progpath}')
+            T.append(f'1 prog:\t{p.prog}')
+            T.append(f'2 title:\t {p.title}')
+            T.append(f'3 toporchild:\t{p.toporchild}')
+
             childClass = "#32770"
             overruleIsTop = self.getTopOrChild(m, childClass=childClass)
-                
-            T.append('4 hndle: %s'% p[4])
-
-            if topchild != overruleIsTop:
+            if toporchild != overruleIsTop:
                 T.append('')
                 if overruleIsTop:
                     T.append("**** treat as TOP window although it is a child window")
                 else:
                     T.append("**** treat as CHILD window although it is a top window")
 
-
+            T.append(f'4 classname:\t{p.classname}')
+            T.append(f'5 hndle:\t{p.hndle}')
 
             T.append('')
             T.append('---from getCurrentModule:')
-            T.append('0 program path: %s'% m[0])
-            T.append('1 window title: %s'% m[1])
-            T.append('2 window handle: %s'% m[2])
+            T.append(f'0 program path:\t"{m[0]}"')
+            T.append(f'1 window title:\t"{m[1]}"')
+            T.append(f'2 window handle:\t{m[2]}')
             T.append('')
             T.append('---from GetClassName:')
-            T.append('class name: %s'% win32gui.GetClassName(hwnd))
+            T.append(f'class name:\t"{win32gui.GetClassName(hwnd)}"')
 
         elif self.hasCommon(words,'user'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
-            T.append('user:\t\t%s'% status.get_user())
-            T.append('language:\t%s'% self.language)
+            T.append(f'user:\t"{status.get_user()}"')
+            T.append(f'language:\t"{self.language}"')
             extra = []
             # extra.append(r'cd d:\natlink\miscscripts   (or different folder)')
             # extra.append(r'python trainuser.py d:\natlink\recordings\recordingcode "user name" "%s" "%s"'%\
@@ -738,13 +737,13 @@ class ThisGrammar(ancestor):
             
         elif self.hasCommon(words,'unimacro'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
-            T.append('DNSVersion:\t\t%s  (%s)'% (version, type(version)))
+            T.append(f'DNSVersion:\t{version} (type: {type(version)})')
             wVersion = status.getWindowsVersion()
-            T.append('WindowsVersion:\t\t%s (%s)'% (wVersion, type(wVersion)))
-            T.append('UnimacroDirectory:\t%s'% status.getUnimacroDirectory())
-            T.append('UnimacroUserDirectory:\t%s'% status.getUnimacroUserDirectory())
-            T.append('UnimacroGrammarsDirectory:\t%s'% status.getUnimacroGrammarsDirectory())
-            T.append('DNSuserDirectory:\t%s'% status.getUserDirectory())
+            T.append(f'WindowsVersion:\t{wVersion} (type: {type(wVersion)})')
+            T.append(f'UnimacroDirectory:\t"{status.getUnimacroDirectory()}"')
+            T.append(f'UnimacroUserDirectory:\t"{status.getUnimacroUserDirectory()}"')
+            T.append(f'UnimacroGrammarsDirectory:\t"{status.getUnimacroGrammarsDirectory()}"')
+            T.append(f'DNSuserDirectory:\t"{status.getUserDirectory()}"')
         elif self.hasCommon(words,'path'):
             T.append('the python path:')
             T.append(pprint.pformat(sys.path))

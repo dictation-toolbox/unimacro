@@ -3060,10 +3060,13 @@ noot mies
         """
         if modInfo is None:
             modInfo = natlink.getCurrentModule()
+
+        # ProgInfo = collections.namedtuple('ProgInfo', 'progpath prog title toporchild classname hndle'.split(' '))
+
         progInfo = unimacroutils.getProgInfo(modInfo=modInfo)
 
         
-        istop = (progInfo.topchild == 'top')
+        istop = (progInfo.toporchild == 'top')
         if istop:
             if actions.topWindowBehavesLikeChild( modInfo ):
                 istop = False
