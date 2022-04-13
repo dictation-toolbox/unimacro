@@ -30,7 +30,7 @@ import sys
 import os
 import os.path
 import win32clipboard
-from pathqh import path
+from natlink.pathqh import path
 
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = [path(r"C:\natlinkGIT3\unimacro")]
@@ -61,7 +61,7 @@ import natlink
 import win32gui
 import win32ui
 from messagefunctions import *
-import messagefunctions as mess
+import unimacro.messagefunctions as mess
 import TestCaseWithHelpers
 class TestError(Exception):pass
 
@@ -95,12 +95,12 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     #    """tests the contents of the clipboard"""
     #    text = text or "clipboard contents not as expected"
     #    meHndle = win32gui.GetForegroundWindow()
-    #    natqh.SetForegroundWindow(self.app)
+    #    unimacroutils.SetForegroundWindow(self.app)
     #    time.sleep(0.05)
     #    activateMenuItem(self.app, W["commandcut"])
     #    time.sleep(0.05)
     #    t = getClipboard()
-    #    natqh.SetForegroundWindow(meHndle)
+    #    unimacroutils.SetForegroundWindow(meHndle)
     #    
     #    text = text + '\nExpected: %s\nGot: %s\n'% (expected, t)
     #    self.assert_(t == expected, text)
@@ -137,7 +137,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     #
     #        if meHndle:
     #            try:
-    #                natqh.SetForegroundWindow(meHndle)
+    #                unimacroutils.SetForegroundWindow(meHndle)
     #            except:
     #                pass
     #        self.__class__.app = appWindows[0]
@@ -168,7 +168,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
 
         if meHndle:
             try:
-                natqh.SetForegroundWindow(meHndle)
+                unimacroutils.SetForegroundWindow(meHndle)
             except:
                 pass
         self.__class__.app = appWindow

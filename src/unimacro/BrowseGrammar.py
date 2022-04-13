@@ -46,8 +46,8 @@ import os
 import copy
 import re
 import types
-import natlinkutils
-import gramparser  # for splitApartLines
+from natlink import natlinkutils
+from natlink import gramparser  # for splitApartLines
 
 ListCode = 0    # List
 SeqCode = 1     # sequence

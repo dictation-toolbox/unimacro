@@ -5,7 +5,7 @@
 import win32gui
 import ctypes
 import win32api
-import messagefunctions
+import unimacro.messagefunctions
 import as
 import mf
 from .actionbases import MessageActions

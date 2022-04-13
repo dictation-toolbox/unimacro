@@ -5,10 +5,10 @@ configuring instructions for Visual Studio at the bottom of this file
 getting the current line number!
 """
 import time
-from .actionbases import AllActions
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import natlinkclipboard
+from dtactions.unimacro.actionclasses.actionbases import AllActions
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions import natlinkclipboard
 
 class  CodeActions(AllActions):
     def __init__(self, progInfo):
@@ -17,7 +17,7 @@ class  CodeActions(AllActions):
     def getCurrentLineNumber(self, handle=None):
         debug - 0
         t1 = time.time()
-        if self.topchild == "child":
+        if self.toporchild == "child":
             return 0
         cb = natlinkclipboard.Clipboard(save_clear=True, debug=debug)  # clear "debug" to get rid of timing line
         # via the command palette:

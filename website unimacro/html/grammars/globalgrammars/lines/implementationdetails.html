@@ -99,6 +99,10 @@ gotoline n = EMACS goto-line; n{enter}<br>
 [excel]<br>
 gotoline n = {ctrl+g}; n:n{enter}<br>
 <br>
+[komodo]<br>
+gotoline n = {Ctrl+g}; W; n;{enter}<br>
+realhome = {alt+home}<br>
+<br>
 [pythonwin]<br>
 gotoline n = {ctrl+g}; n{enter}; {home}<br>
 <br>
@@ -136,7 +140,7 @@ line numbers modulo hundred = T</p>
 <p class="pre">var editor = require(&ldquo;ko/editor&rdquo;);<br>
 var linenum = editor.getLineNumber(editor.getCursorPosition());<br>
 var clipboard = require(&ldquo;sdk/clipboard&rdquo;);<br>
-clipboard.set(String(linenum));</p>
+clipboard.set(linenum.toString());</p>
 <ul><li>Probably you need to restart Dragon, and you can try the feature.</li><li>Note: when you want set/clear debug information (about the timing issues), change line 48 of the file <strong>komodo-actions.py</strong> in the folder <strong>actionclasses</strong> (debug=1 or debug=0).</li></ul>
 
 <h3>Emacs (special!)</h3>
@@ -165,7 +169,7 @@ selectparaup n = {shift+ctrl+up n}<br></p>
 m("antenna.nl", "q.hoogenboom", "information about: Implementation details", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

@@ -86,7 +86,7 @@ Now paste the following code in the Userscript:
 var editor = require("ko/editor");
 var linenum = editor.getLineNumber(editor.getCursorPosition());
 var clipboard = require("sdk/clipboard");
-clipboard.set(String(linenum));
+clipboard.set(linenum.toString());
 ::
 
 -Probably you need to restart Dragon, and you can try the feature.

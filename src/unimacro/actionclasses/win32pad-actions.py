@@ -2,7 +2,7 @@
 
 see http://www.gena01.com/win32pad/, the only select and say notepad like window with line numbers
 """
-import messagefunctions
+import unimacro.messagefunctions
 import as
 import mf
 from .actionbases import MessageActions

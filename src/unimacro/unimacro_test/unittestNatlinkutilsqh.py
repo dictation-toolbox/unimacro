@@ -15,7 +15,7 @@ import os
 import os.path
 import TestCaseWithHelpers
 import natlink
-import natlinkutilsqh as natqh
+from dtactions.unimacro import unimacroutils as natqh
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.
@@ -69,23 +69,23 @@ class UnittestNatlinkutilsqh(TestCaseWithHelpers.TestCaseWithHelpers):
                 raise ValueError(" TEST ERROR, test of matchTitle fails because of invalid otherCaseTestWord: %s"% otherCaseTestWord)
 
         ## default case:
-        got = natqh.matchTitle(testword, modInfo=modInfo)
-        exp = natqh.getProgName(modInfo)
+        got = unimacroutils.matchTitle(testword, modInfo=modInfo)
+        exp = unimacroutils.getProgName(modInfo)
         self.assert_equal(exp, got, "matchTitle should be OK with testword: %s and window title: %s"% (testword, title))
-        got = natqh.matchTitle(testword, modInfo=modInfo)
-        exp = natqh.getProgName(modInfo)
+        got = unimacroutils.matchTitle(testword, modInfo=modInfo)
+        exp = unimacroutils.getProgName(modInfo)
         self.assert_equal(exp, got, "matchTitle should be OK with otherCaseTestWord: %s and window title: %s"% (otherCaseTestWord, title))
 
         ## rare different cases, all less important:
-        got = natqh.matchTitle(otherCaseTestWord, modInfo=modInfo, caseExact=1)
+        got = unimacroutils.matchTitle(otherCaseTestWord, modInfo=modInfo, caseExact=1)
         exp = False
         self.assert_equal(exp, got, "matchTitle should fail with caseExact True: testword: %s and window title: %s"% (otherCaseTestWord, title))
 
         ## should match exact title, False!
-        got = natqh.matchTitle(otherCaseTestWord, modInfo=modInfo, titleExact=1)
+        got = unimacroutils.matchTitle(otherCaseTestWord, modInfo=modInfo, titleExact=1)
         exp = False
         self.assert_equal(exp, got, "matchTitle should fail with titleExact True: testword: %s and window title: %s"% (otherCaseTestWord, title))
-        got = natqh.matchTitle(testword, modInfo=modInfo, titleExact=1)
+        got = unimacroutils.matchTitle(testword, modInfo=modInfo, titleExact=1)
         exp = False
         self.assert_equal(exp, got, "matchTitle should fail with titleExact True: testword: %s and window title: %s"% (testword, title))
 
@@ -93,8 +93,8 @@ class UnittestNatlinkutilsqh(TestCaseWithHelpers.TestCaseWithHelpers):
 
         ## now for the whole title:
         wholeTitle = title
-        exp = natqh.getProgName(modInfo)
-        got = natqh.matchTitle(wholeTitle, modInfo=modInfo)
+        exp = unimacroutils.getProgName(modInfo)
+        got = unimacroutils.matchTitle(wholeTitle, modInfo=modInfo)
         self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
         otherWholeTitle = wholeTitle.upper()
         if wholeTitle == otherWholeTitle:
@@ -102,29 +102,29 @@ class UnittestNatlinkutilsqh(TestCaseWithHelpers.TestCaseWithHelpers):
             if wholeTitle == otherWholeTitle:
                 raise ValueError(" TEST ERROR, test of matchTitle wholeTitle fails because of invalid otherWholeTitle: %s"% otherWholeTitle)
 
-        got = natqh.matchTitle(wholeTitle, modInfo=modInfo, titleExact=1)
+        got = unimacroutils.matchTitle(wholeTitle, modInfo=modInfo, titleExact=1)
         self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
-        got = natqh.matchTitle(wholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
+        got = unimacroutils.matchTitle(wholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
         self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
 
-        got = natqh.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1)
+        got = unimacroutils.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1)
         self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
   
-        got = natqh.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
+        got = unimacroutils.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
         exp = False
         self.assert_equal(exp, got, "matchTitle should fail with whole title %s\nand window title: %s"% (wholeTitle, title))
-        got = natqh.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
+        got = unimacroutils.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
         self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
                 
         ## now for a list of possible test words:
         ListOfTestWords = ["xxxyyy", testword]
-        exp = natqh.getProgName(modInfo)
-        got = natqh.matchTitle(ListOfTestWords, modInfo=modInfo)
+        exp = unimacroutils.getProgName(modInfo)
+        got = unimacroutils.matchTitle(ListOfTestWords, modInfo=modInfo)
 
 
         ListOfTestWords = ["xxxyyy", otherCaseTestWord]
         exp = False
-        got = natqh.matchTitle(ListOfTestWords, modInfo=modInfo, caseExact=1)
+        got = unimacroutils.matchTitle(ListOfTestWords, modInfo=modInfo, caseExact=1)
             
 def log(t):
     print(t)

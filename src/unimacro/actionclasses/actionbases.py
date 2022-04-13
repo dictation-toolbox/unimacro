@@ -1,6 +1,6 @@
 # actions classes for specific programs, base classes first:
-import messagefunctions as mess
-import natlinkutilsqh as natqh
+import unimacro.messagefunctions as mess
+from dtactions.unimacro import unimacroutils as natqh
 
 class AllActions:
     def __init__(self, progInfo):
@@ -9,18 +9,18 @@ class AllActions:
     # init same as reset:        
     def reset(self, progInfo=None):
         if progInfo is None:
-            progInfo = natqh.getProgInfo()
-        self.prog, self.topTitle, self.topchild, self.className, self.topHandle = progInfo
+            progInfo = unimacroutils.getProgInfo()
+        self.progPath, self.prog, self.topTitle, self.toporchild, self.className, self.topHandle = progInfo
         self.progInfo = None
         
     def update(self, newProgInfo=None):
         if newProgInfo is None:
-            newProgInfo = natqh.getProgInfo()
+            newProgInfo = unimacroutils.getProgInfo()
         if newProgInfo == self.progInfo:
             return
         # print('allactions: new prog info, overload for your specific program: %s'% self.prog)
         self.progInfo = newProgInfo
-        self.prog, self.topTitle, self.topchild, self.className, self.topHandle = newProgInfo
+        self.progPath, self.prog, self.topTitle, self.toporchild, self.className, self.topHandle = newProgInfo
         
     def getCurrentLineNumber(self):
         pass

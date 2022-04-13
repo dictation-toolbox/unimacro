@@ -17,7 +17,7 @@ import os
 import os.path
 import time
 import win32gui
-from pathqh import path
+from natlink.pathqh import path
 
 thisDir = path('.')
 unimacroFolder = (thisDir/'..').normpath()
@@ -25,11 +25,11 @@ if not unimacroFolder in sys.path:
     sys.path.append(unimacroFolder)
 import TestCaseWithHelpers
 import natlink
-import natlinkclipboard
-import actions
-from actions import doAction as action
-import natlinkutilsqh
-import natlinkutils
+from dtactions import natlinkclipboard
+from dtactions.unimacro import unimacroactions as actions
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro import unimacroutils
+from natlink import natlinkutils
 
 class TestError(Exception):
     pass
@@ -252,7 +252,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         docxFile2 = "natlink.docx"
         docxPath2 = os.path.normpath( os.path.join(testFilesDir, docxFile2))
         if not os.path.isfile(docxPath2):
-            raise IOError('file does not exist: %s'% docxPath2)
+            raise OSError('file does not exist: %s'% docxPath2)
         result = actions.AutoHotkeyBringUp(app=None, filepath=docxPath2)
         if result:
             pPath, wTitle, hndle = result

@@ -1,0 +1,23 @@
+Changes with new Python 3 release of Natlink
+
+-Registry setting, in the Python area of registry, pointing to the path where natlinkmain.py is found, is no longer needed. It will be removed at first run of the config program.
+-Directory layout of the Natlink Core directory has been changed: most things now reside in the *natlinkcore* directory, which is directly in the site-packages after pip install.
+--The ConfigureNatlink directory is a subdirectory of *natlinkcore*.
+--The configure scripts are in the Python Scripts directory, and these scripts can be started from the Windows Start Menu.
+--Schematic directory layout:
+:CODE:
+(python)\Lib\site-packages\natlinkcore
+    - natlinkmain.py
+    - natlinkstatus.py
+    - ...
+    - natlink.pyd (after the config program did run)
+    - PYD: subdirectory where the different natlink....pyd files are kept.
+           For Python38-32 and Dragon 15, natlink_3.8_Ver15.pyd is taken
+           (copied to natlinkcore/natlink.pyd and registered as dll/pyd)
+    - ConfigureNatlink: the scripts that configure natlink, with GUI or with and CLI (Command Line Interface)
+::
+ 
+- When importing natlink in a grammar file, use *from natlinkcore import natlink* (instead of import natlink)
+
+   
+    
