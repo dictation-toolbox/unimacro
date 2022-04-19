@@ -25,7 +25,7 @@ from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
-
+from unimacro import check_unimacro_grammars
 
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
@@ -695,7 +695,7 @@ class UtilGrammar(ancestor):
             txt_path = join(u_grammars_dir, txt_file)
             py_path = join(u_grammars_dir, f)
             nice_name = f[:-3]   # strip off .py
-            checkOriginalFileWithActualTxtPy(nice_name, org_path, txt_path, py_path)
+            check_unimacro_grammars.checkOriginalFileWithActualTxtPy(nice_name, org_path, txt_path, py_path)
             
         for f in txtFiles:
             f_py = f.replace('.txt', '.py')
@@ -741,7 +741,7 @@ utilGrammar = UtilGrammar()
 if utilGrammar.gramSpec:
     utilGrammar.initialize()
     natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
-    # utilGrammar.checkUnimacroGrammars()
+    utilGrammar.checkUnimacroGrammars() 
     
 else:
     print('grammar _control has no specification for this language---------')

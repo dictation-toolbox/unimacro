@@ -1,9 +1,9 @@
 """check the current state of the unimacro grammar files with the released versions
 
 """
+#pylint:disable=R0912
 import os
 import shutil
-import filecmp
 import difflib
 import subprocess
 from pathlib import Path        
