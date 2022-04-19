@@ -23,7 +23,7 @@ sitePackagesDir = get_site_packages_dir(__file__)
 import os
 import sys
 
-__version__ = '0.0.3.10'   ## Quintijn testing
+__version__ = '0.0.3.11'   ## unimacro basically working, clipboard and unimacro actions not yet...
 
 def get_site_packages_dir(fileOfModule):
     """get directory of calling module, if possible in site-packages
