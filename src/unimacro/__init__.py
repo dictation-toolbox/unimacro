@@ -23,7 +23,7 @@ sitePackagesDir = get_site_packages_dir(__file__)
 import os
 import sys
 
-__version__ = '0.3.13'   ## enhance for pip
+__version__ = '0.3.14'   ## enhance for pip 
 #             '0.0.3.12'   ## enhancing synchronise grammars mechanism and _numbers_simple.py
 # __version__ = '0.0.3.11'   ## unimacro basically working, clipboard and unimacro actions not yet...
 
