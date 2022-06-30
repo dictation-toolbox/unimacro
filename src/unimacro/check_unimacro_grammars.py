@@ -117,35 +117,46 @@ def cleanup_files(activedir):
     for f in cleanupFiles:
         os.remove(os.path.join(activedir, f))
 
-
-def _test_grammar_files():
-    join, listdir = os.path.join, os.listdir
-    udir = status.getUnimacroDirectory().lower()
-    uactivegrammarsdir = status.getUnimacroGrammarsDirectory()
-
-    if udir != sitePackagesDir:
-        raise ValueError(f'UnimacroDirectory "{udir}" should be equal to {sitePackagesDir}')
-    if have_symlinks:
-        uoriginalgrammarsdir = join(workDir, "UnimacroGrammars")
-    else:
-        uoriginalgrammarsdir = status.getUnimacroGrammarsDirectory()
-
-    originalPyFiles = [f for f in listdir(uoriginalgrammarsdir) if f.endswith('.py')]
-    # txtFiles = [f for f in listdir(ugrammarsdir) if f.endswith('.txt')]
-    # activePyFiles = [f for f in listdir(ugrammarsdir) if f.endswith('.py')]
-
-    cleanup_files(uactivegrammarsdir)        
-        
+def checkUnimacroGrammars():
+    """see if there are any changed grammar files with respect to original file in release
+    
+    sync with ...
+    """
+    join, isdir, isfile, listdir = os.path.join, os.path.isdir, os.path.isfile, os.listdir
+    u_dir = status.getUnimacroDirectory()
+    # u_user_dir = status.getUnimacroUserDirectory()
+    u_grammars_dir = status.getUnimacroGrammarsDirectory()
+    u_original_grammars_dir = join(u_dir, "UnimacroGrammars")
+    assert isdir(u_original_grammars_dir)
+    originalPyFiles = [f for f in listdir(u_original_grammars_dir) if f.endswith('.py')]
+    txtFiles = [f for f in listdir(u_grammars_dir) if f.endswith('.txt')]
+    activePyFiles = [f for f in listdir(u_grammars_dir) if f.endswith('.py')]
+    
     for f in originalPyFiles:
-        orgpath = join(uoriginalgrammarsdir, f)
-        txtfile = f.replace('.py', '.txt')
-        txtpath = join(uactivegrammarsdir, txtfile)
-        pypath = join(uactivegrammarsdir, f)
-        nicename = f[:-3]   # strip off .py
-        checkOriginalFileWithActualTxtPy(nicename, orgpath, txtpath, pypath)
-
+        org_path = join(u_original_grammars_dir, f)
+        txt_file = f.replace('.py', '.txt')
+        txt_path = join(u_grammars_dir, txt_file)
+        py_path = join(u_grammars_dir, f)
+        nice_name = f[:-3]   # strip off .py
+        checkOriginalFileWithActualTxtPy(nice_name, org_path, txt_path, py_path)
+        
+    for f in txtFiles:
+        f_py = f.replace('.txt', '.py')
+        if f_py not in originalPyFiles:
+            print(f'txt file "{f}" in ActiveGrammars, but py file {f_py} not in UnimacroGrammars')
+            shutil.remove(f)
+            
+    for f in activePyFiles:
+        f_txt = f.replace('.py', '.txt')
+        if not isfile(f_txt):
+            if f in originalPyFiles:
+                nice_name = f[:-3]   # strip off .py
+                org_path = join(u_original_grammars_dir, f)
+                txt_path = join(u_grammars_dir, f_txt)
+                py_path = join(u_grammars_dir, f)
+                checkOriginalFileWithActualTxtPy(nice_name, org_path, txt_path, py_path)
 
         
 if __name__ == "__main__":
-    _test_grammar_files()   
+    checkUnimacroGrammars()   
 

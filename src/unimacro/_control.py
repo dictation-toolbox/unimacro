@@ -652,11 +652,11 @@ class UtilGrammar(ancestor):
 
     def UnimacroControlPostLoad(self):
         newKeys = natbj.getRegisteredGrammarNames()
-        print(f'_control, postLoad: newKeys: {newKeys}')
+        # print(f'_control, postLoad: newKeys: {newKeys}')
         prevSet = set(self.Lists['gramnames'])
         newSet = set(natbj.getRegisteredGrammarNames())
         if prevSet != newSet:
-            print(f'setting new grammar names list: {list(newSet)}')
+            # print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNames(self):
@@ -668,7 +668,7 @@ class UtilGrammar(ancestor):
 
         grammarsDirectory = status.getUnimacroGrammarsDirectory()
         unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
-        print("\n===unimacroPyFiles", unimacroPyFiles)
+        # print("\n===unimacroPyFiles", unimacroPyFiles)
         # print(f'wrongNames" {wrongNames}')
         # print(f'loadedNames" {loadedNames}')
         loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
@@ -679,38 +679,7 @@ class UtilGrammar(ancestor):
         
         sync with ...
         """
-        join, isdir, isfile, listdir = os.path.join, os.path.isdir, os.path.isfile, os.listdir
-        u_dir = status.getUnimacroDirectory()
-        # u_user_dir = status.getUnimacroUserDirectory()
-        u_grammars_dir = status.getUnimacroGrammarsDirectory()
-        u_original_grammars_dir = join(u_dir, "UnimacroGrammars")
-        assert isdir(u_original_grammars_dir)
-        originalPyFiles = [f for f in listdir(u_original_grammars_dir) if f.endswith('.py')]
-        txtFiles = [f for f in listdir(u_grammars_dir) if f.endswith('.txt')]
-        activePyFiles = [f for f in listdir(u_grammars_dir) if f.endswith('.py')]
-        
-        for f in originalPyFiles:
-            org_path = join(u_original_grammars_dir, f)
-            txt_file = f.replace('.py', '.txt')
-            txt_path = join(u_grammars_dir, txt_file)
-            py_path = join(u_grammars_dir, f)
-            nice_name = f[:-3]   # strip off .py
-            check_unimacro_grammars.checkOriginalFileWithActualTxtPy(nice_name, org_path, txt_path, py_path)
-            
-        for f in txtFiles:
-            f_py = f.replace('.txt', '.py')
-            if f_py not in originalPyFiles:
-                print(f'txt file "{f}" in ActiveGrammars, but py file {f_py} not in UnimacroGrammars')
-                shutil.remove(f)
-                
-        for f in activePyFiles:
-            f_txt = f.replace('.py', '.txt')
-            if not isfile(f_txt):
-                print(f'py file "{f}" in ActiveGrammars, but not txt file {f_txt}, so grammar is not in UnimacroGrammars')
-               
-        
-        
-
+        check_unimacro_grammars.checkUnimacroGrammars()
 
 # class MessageDictGrammar(natlinkutils.DictGramBase):
 #     def __init__(self):

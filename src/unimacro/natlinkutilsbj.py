@@ -2257,10 +2257,10 @@ noot mies
                                         self.language +"_inifiles")
         inifile = os.path.join(commandDir, modName + '.ini')
         if not os.path.isfile(inifile):
-            print('Cannot find inifile: %s'% inifile)
+            print('\tCannot find inifile: %s'% inifile)
             self.lookForExampleInifile(commandDir, modName + '.ini')
             if not os.path.isfile(inifile):
-                print('cannot find an example inifile for %s'% modName)
+                print('\tcannot find an example inifile for %s'% modName)
                 self.inifile = inifile
                 self.TryToMakeDefaultInifile(commandDir,modName + '.ini', self.language)
                 if not  os.path.isfile(inifile):
@@ -2274,9 +2274,8 @@ noot mies
                 commandWord = commandText[self.language]
             except KeyError:
                 commandWord = "edit"
-            self.name = self.getName()
-            self.message('===Created new inifile for grammar "%s"\n===Please edit this file by calling the command "%s %s"'%
-                         (modName, commandWord, self.name))
+            name = self.getName()
+            self.message(f'===Created new inifile for grammar "{modName}"\n===Please edit this file by calling the command "{commandWord} {name}"')
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
@@ -2360,7 +2359,7 @@ noot mies
         if not os.path.isfile(inifile):
             if inifileSamples:
                 sample = inifileSamples[0]
-                print('take sample inifile: %s'% sample)
+                print('\ttake sample inifile: %s'% sample)
                 shutil.copyfile(sample, inifile)
             else:
                 print('could not find a valid sample inifile "%s" in directories: %s'%\
@@ -2551,7 +2550,9 @@ noot mies
 
     def getName(self):
         if "name" in dir(self):
-            return self.name
+            name = self.name
+            if name:
+                return self.name
         
         n = self.__module__
         if n[0] == "_":

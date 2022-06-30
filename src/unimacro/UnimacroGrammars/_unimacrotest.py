@@ -12,18 +12,7 @@ or all (call unimacro test all)
 instance variables that are passed to all tests:
 -self.doAll (so the test knows it is a single test or a complete suite)
 
-
 """
-__version__ = "$Rev: 561 $ on $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015) $ by $Author: quintijn $"
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
-# (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
-#
-# This module was written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-# (started march 2007)
-#
-
 import unittest
 import natlink
 import os
@@ -31,11 +20,14 @@ import sys
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlink import natlinkutils
+from natlink import natlinkstatus
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro import utilsqh
 import glob
 from dtactions.unimacro import unimacroactions as actions
+
+status = natlinkstatus.NatlinkStatus()
 
 class UnittestGrammar(natbj.IniGrammar):
     language = unimacroutils.getLanguage()        
@@ -79,7 +71,7 @@ class UnittestGrammar(natbj.IniGrammar):
         the result (the testNames) can then be filled in the list {tests}
         self.allTests (dict) contains the names: files entries
         """
-        self.testFolder = os.path.join(unimacroutils.getUnimacroDirectory(), "unimacro_test")
+        self.testFolder = os.path.join(status.getUnimacroDirectory(), "unimacro_test")
         testFiles = glob.glob(os.path.join(self.testFolder, "*test.py"))
 ##        print 'testFiles: %s'% testFiles
         testNames = list(map(self.extractTestName, testFiles))
