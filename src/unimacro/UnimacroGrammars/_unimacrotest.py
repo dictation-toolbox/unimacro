@@ -133,7 +133,6 @@ class UnittestGrammar(natbj.IniGrammar):
         suite = unittest.makeSuite(testClass, 'test')
         return suite
 
-
     def checkSysPath(self, folder):
         """add to sys.path if not present yet"""
         if folder in sys.path:

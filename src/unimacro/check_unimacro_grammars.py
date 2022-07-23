@@ -54,10 +54,10 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     if org_txt_equal:
         if have_symlinks:
             org_path_resolved = str(Path(org_path).resolve())
-            print(f'****grammar {name} in (the active) UnimacroGrammars directory changed.')
-            print(f'--------This new version "{py_path}" is copied to \n\t{org_path} and to\n\t{txt_path}')
-            print('\tThe changes will be saved when you commit and push your git repository of unimacro.')
-            print(f'--------If you want to undo your changes, revert in git,\n\tand copy manually back "{org_path}"\n\tto "{py_path}"\n--------')
+            print(f'****grammar "{name}" in (the active) UnimacroGrammars directory has been changed.')
+            print(f'--------This new version "{py_path}" is copied to \n\t"{org_path_resolved}" and to\n\t"{txt_path}".')
+            print(f'\tThe changes will be saved when you commit and push your git clone of unimacro, "{workDir}".')
+            print(f'--------If you want to undo your changes, revert in git ("{workDir}"),\n\tand copy manually back "{org_path_resolved}"\n\tto "{py_path}".\n--------')
             shutil.copyfile(py_path, org_path_resolved)
             shutil.copyfile(org_path_resolved, txt_path)
         else:
