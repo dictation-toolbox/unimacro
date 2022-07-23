@@ -26,7 +26,7 @@ dictate again and
 
 """
 #pylint:disable=C0115, C0116, W0201, W0613
-from natlink import nsformat
+from natlinkcore import nsformat
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke

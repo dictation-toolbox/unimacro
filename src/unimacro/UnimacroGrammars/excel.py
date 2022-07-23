@@ -11,7 +11,7 @@ __version__ = "$Rev: 429 $ on $Date: 2011-05-31 16:21:03 +0200 (di, 31 mei 2011)
 
 import natlink
 from dtactions.unimacro import unimacroutils
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import pprint

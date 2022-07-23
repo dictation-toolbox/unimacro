@@ -46,11 +46,11 @@ from pathlib import Path
 import win32com
 
 import natlink
-from natlink import loader
-from natlink import gramparser # for translation with GramScannerReverse
-from natlink import natlinkstatus
-from natlink import natlinkutils
-from natlink import readwritefile
+from natlinkcore import loader
+from natlinkcore import gramparser # for translation with GramScannerReverse
+from natlinkcore import natlinkstatus
+from natlinkcore import natlinkutils
+from natlinkcore import readwritefile
 
 # for IniGrammar:
 # was natlinkutilsqh:
@@ -3531,10 +3531,3 @@ def splitList(L, n):
     if O:
         yield O
 
-if __name__ == "__main__":
-    # try:
-    #     natlink.natConnect()
-    #     BrowseShow()
-    # finally:
-    #     natlink.natDisconnect()
-    pass

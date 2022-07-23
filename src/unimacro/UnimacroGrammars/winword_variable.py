@@ -8,7 +8,7 @@
 # Quintijn, June 28, 2009
 
 import natlink
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 
 
 ancestor = natlinkutils.GrammarBase

@@ -13,18 +13,15 @@ instance variables that are passed to all tests:
 -self.doAll (so the test knows it is a single test or a complete suite)
 
 """
-import unittest
-import natlink
 import os
 import sys
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
-from natlink import natlinkutils
-from natlink import natlinkstatus
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro import utilsqh
+import unittest
 import glob
+import natlink
+from natlinkcore import natlinkstatus
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import utilsqh
 from dtactions.unimacro import unimacroactions as actions
 
 status = natlinkstatus.NatlinkStatus()
@@ -117,6 +114,12 @@ class UnittestGrammar(natbj.IniGrammar):
     def addUnitTest(self, test, fileName):
         """do one of the unittests"""
 ##        actions.Message("starting test %s"% fileName)
+
+        test_path = os.path.join(sys.prefix, 'Lib', 'site-packages', 'unimacro', 'unimacro_test')
+        if not os.path.isdir(test_path):
+            raise OSError(f'cannot add unittest for Unimacro, test_path invalid: "{test_path}"')
+        if not test_path in sys.path:
+            sys.path.append(test_path)
         modName = os.path.basename(fileName)
         modName = utilsqh.removeFromEnd(modName, ".py", ignoreCase=1)
     
@@ -126,7 +129,7 @@ class UnittestGrammar(natbj.IniGrammar):
             testClass = getattr(testMod, testClassName)
         except AttributeError:
             print('****cannot find test class in test module, skipping test: %s'% testClassName)
-            return
+            return None
         suite = unittest.makeSuite(testClass, 'test')
         return suite
 

@@ -19,16 +19,16 @@ import time
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
 import natlink
-from natlink import loader
-from natlink import natlinkstatus
+from natlinkcore import loader
+from natlinkcore import natlinkstatus
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
-from natlink.pathqh import path
+from pathlib import Path
 from dtactions.unimacro import unimacroactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
@@ -58,13 +58,13 @@ def getBaseFolder(globalsDict=None):
         print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
-thisDir = path(getBaseFolder(globals()))
+thisDir = Path(getBaseFolder(globals()))
 
 natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
                      # with spurious error (if set to 1), missing gotBegin and all that...
 logFileName = os.path.join(thisDir, "testresult.txt")
 
-testFilesDir = path(thisDir)/'test_clipboardfiles'
+testFilesDir = Path(thisDir)/'test_clipboardfiles'
 if testFilesDir.isdir():
     print("test files for Bringup: %s"% testFilesDir)
 else:

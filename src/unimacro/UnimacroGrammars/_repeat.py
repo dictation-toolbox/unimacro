@@ -40,7 +40,7 @@ grammar.
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro.unimacroactions import doAction as action
 
 import os

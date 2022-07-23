@@ -46,12 +46,12 @@ import sys
 import types
 import re
 import natlink
-from natlink import inivars
+from natlinkcore import inivars
 import re
 # for checking base number:
 reNulls = re.compile('0+$')
 
-from natlink import natlinkutils as natut
+from natlinkcore import natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action

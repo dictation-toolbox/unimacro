@@ -5,9 +5,9 @@ Grammar to help with natlink hosted python debugging.
 
 import natlink
 import natlinkpydebug as pd
-from natlink import natlinkutils
-from natlink import gramparser as gp
-from natlink import nsformat
+from natlinkcore import natlinkutils
+from natlinkcore import gramparser as gp
+from natlinkcore import nsformat
 
 # import unimacro.natlinkutilsbj as natbj
 

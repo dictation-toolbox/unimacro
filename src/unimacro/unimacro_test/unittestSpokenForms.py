@@ -22,7 +22,7 @@ for extraPath in extraPaths:
         if extraPath not in sys.path:
             sys.path.append(extraPath)
 import spokenforms
-from natlink import inivars
+from natlinkcore import inivars
 from dtactions.unimacro import utilsqh
 import TestCaseWithHelpers
 class TestError(Exception):pass

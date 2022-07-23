@@ -72,8 +72,6 @@ import win32gui
 from win32com.client import Dispatch
 
 import natlink
-# from natlink import inivars  # for IniError
-# from natlink import utilsqh
 from dtactions.unimacro.utilsqh import getValidPath
 import dtactions.unimacro.extenvvars
 from dtactions import messagefunctions as mess

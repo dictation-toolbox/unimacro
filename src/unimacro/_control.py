@@ -18,8 +18,8 @@ import filecmp
 import shutil
 import string
 import natlink
-from natlink import loader
-from natlink import natlinkstatus
+from natlinkcore import loader
+from natlinkcore import natlinkstatus
 
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroactions as actions

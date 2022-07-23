@@ -10,7 +10,7 @@
 #   (that you want to preserve) before these tests are run.
 #
 from dtactions.unimacro import unimacroutils
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroactions as actions
 action = actions.doAction
 

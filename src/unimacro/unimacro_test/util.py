@@ -305,14 +305,14 @@ def remove_common(first, second):
     n = find_common(f,s)
     return f[n:]
 
-def common_path(first, second):
+def common_Path(first, second):
     f = full_split(first)
     s = full_split(second)
     n = find_common(f,s)
     return f[:n]
 
 def relative_name(path, head, prefix=''):
-    common = common_path(path, head)
+    common = common_Path(path, head)
     whole_head = full_split(head)
     if (whole_head != common):
         return path

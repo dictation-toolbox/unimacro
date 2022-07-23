@@ -36,7 +36,7 @@ import natlink
 from natlink.natlinkutils import *
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 import D_
 

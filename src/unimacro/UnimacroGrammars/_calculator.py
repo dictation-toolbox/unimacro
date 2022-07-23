@@ -37,7 +37,7 @@ the grammars _number simple and _number extended.
 import copy
 from dtactions.unimacro.unimacroactions import doAction as action
 
-from natlink import natlinkutils as natut
+from natlinkcore import natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

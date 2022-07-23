@@ -18,7 +18,7 @@ import string
 import operator
 from functools import reduce
 
-from natlink import natlinkstatus
+from natlinkcore import natlinkstatus
 
 from dtactions.unimacro import inivars
 from dtactions.unimacro import utilsqh

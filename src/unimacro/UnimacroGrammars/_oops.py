@@ -55,7 +55,7 @@ turned on.
 import natlink
 import win32gui
 from dtactions.unimacro import utilsqh
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

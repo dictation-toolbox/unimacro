@@ -20,7 +20,7 @@ others continuously.
 import time
 import os
 import sys
-from natlink import inivars
+from natlinkcore import inivars
 import types
 import copy
 import natlink
@@ -28,7 +28,7 @@ import nsformat
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
 
-from natlink import natlinkutils as natut
+from natlinkcore import natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

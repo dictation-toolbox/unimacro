@@ -15,7 +15,7 @@
 import natlink
 import nsformat
 from dtactions.unimacro import unimacroutils
-from natlink import natlinkutils as natut
+from natlinkcore import natlinkutils as natut
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action

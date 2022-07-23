@@ -30,13 +30,13 @@ import sys
 import os
 import os.path
 import win32clipboard
-from natlink.pathqh import path
+from pathlib import Path
 
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
-extraPaths = [path(r"C:\natlinkGIT3\unimacro")]
+extraPaths = [Path(r"C:\natlinkGIT3\unimacro")]
 for extraPath in extraPaths:
     extraPath.isdir()
-    extraNorm = extraPath.normpath()
+    extraNorm = extraPath.normPath()
     if extraNorm not in sys.path:
         sys.path.append(extraNorm)
 # little trick to keep testers apart (do not bother)

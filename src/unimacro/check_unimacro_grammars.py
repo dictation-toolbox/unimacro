@@ -1,13 +1,13 @@
 """check the current state of the unimacro grammar files with the released versions
 
 """
-#pylint:disable=R0912
+#pylint:disable=R0912, R0914
 import os
 import shutil
 import difflib
 import subprocess
 from pathlib import Path        
-from natlink import natlinkstatus
+from natlinkcore import natlinkstatus
 try:
     from unimacro.__init__ import get_site_packages_dir
 except ModuleNotFoundError:
@@ -53,10 +53,13 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     # txt_py not equal
     if org_txt_equal:
         if have_symlinks:
-            print(f'****grammar {name} in ActiveGrammars changed, copy to UnimacroGrammars\n\t{py_path} to {org_path}\n\tand {py_path} to {txt_path}')
-            print(f'--------if you want to revert, revert in git,\n\tand copy manually back "{org_path}"\n\tto "{py_path}"\n--------')
-            shutil.copyfile(py_path, org_path)
-            shutil.copyfile(org_path, txt_path)
+            org_path_resolved = str(Path(org_path).resolve())
+            print(f'****grammar {name} in (the active) UnimacroGrammars directory changed.')
+            print(f'--------This new version "{py_path}" is copied to \n\t{org_path} and to\n\t{txt_path}')
+            print('\tThe changes will be saved when you commit and push your git repository of unimacro.')
+            print(f'--------If you want to undo your changes, revert in git,\n\tand copy manually back "{org_path}"\n\tto "{py_path}"\n--------')
+            shutil.copyfile(py_path, org_path_resolved)
+            shutil.copyfile(org_path_resolved, txt_path)
         else:
             print(f'****grammar {name} in ActiveGrammars changed, cannot copy to UnimacroGrammars because you are not developing in symlink mode (with "flit install --symlink")')
         return
@@ -144,7 +147,7 @@ def checkUnimacroGrammars():
         f_py = f.replace('.txt', '.py')
         if f_py not in originalPyFiles:
             print(f'txt file "{f}" in ActiveGrammars, but py file {f_py} not in UnimacroGrammars')
-            shutil.remove(f)
+            os.remove(f)
             
     for f in activePyFiles:
         f_txt = f.replace('.py', '.txt')

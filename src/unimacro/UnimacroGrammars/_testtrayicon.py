@@ -1,4 +1,4 @@
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 import natlink
 import os
 import os.path

@@ -22,14 +22,14 @@ import time
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
 import natlink
-from natlink import loader
-from natlink import natlinkstatus
-from natlink import inivars
+from natlinkcore import loader
+from natlinkcore import natlinkstatus
+from natlinkcore import inivars
 from gramparser import GrammarError, SyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj

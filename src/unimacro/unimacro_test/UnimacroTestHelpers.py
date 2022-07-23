@@ -7,10 +7,10 @@
 #   NaturallySpeaking should be running with nothing in the editor window
 #   (that you want to preserve) before these tests are run.
 #   performed.
-from natlink.pathqh import path
+from pathlib import Path
 from pprint import pprint
 import sys
-unimacrodir = path('./..').normpath()
+unimacrodir = Path('./..').normPath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
 from dtactions.unimacro import unimacroactions as actions
@@ -20,9 +20,9 @@ import re
 import types
 import natlink
 from dtactions.unimacro import unimacroutils   
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 
-from natlink import natlinkutils
+from natlinkcore import natlinkutils
 import win32gui
 reWhiteSpace = re.compile('\s+')
 
