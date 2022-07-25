@@ -51,7 +51,7 @@ from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
 import natlink
-from natlinkutils import *
+from natlink.natlinkutils import *
 from natlinkutilsbj import SetMic,GrammarFileName
 from operator import methodcaller
 # hopelijk: QH

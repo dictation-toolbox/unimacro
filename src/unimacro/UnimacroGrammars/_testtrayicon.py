@@ -1,4 +1,4 @@
-import natlinkutils
+from natlinkcore import natlinkutils
 import natlink
 import os
 import os.path
@@ -73,6 +73,8 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
+

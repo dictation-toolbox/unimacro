@@ -33,10 +33,11 @@ import re
 import pickle
 
 import natlink
-from natlinkutils import *
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
+from natlink.natlinkutils import *
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
 import D_
 
 # extra commands for controlling actions module:
@@ -75,7 +76,7 @@ def ReadFilteredWords(Filename):
 FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
                  'if', 'its', 'is', 'this', 'booth', 'on', 'with',"'s"]
 #(taken from natlinkmain, to prevent import:)
-baseDirectory = natqh.getUnimacroUserDirectory()
+baseDirectory = unimacroutils.getUnimacroUserDirectory()
 FilterFileName=baseDirectory+'\\filtered.txt'
 FilteredWords=natbj.Union(FilteredWords, ReadFilteredWords(FilterFileName))
 
@@ -106,7 +107,7 @@ if 'VCODE_HOME' in os.environ:
 
 ancestor = natbj.IniGrammar
 class UtilGrammar(ancestor):
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message'] # are set in this module
 
     name = 'control'
@@ -150,7 +151,7 @@ class UtilGrammar(ancestor):
         self.setMode(Normal)
         self.doMessages = None
         self.startExclusive = self.exclusive # exclusive state at start of recognition!
-##        if natqh.getUser() == 'martijn':
+##        if unimacroutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
 
@@ -197,7 +198,7 @@ class UtilGrammar(ancestor):
                 natbj.ClearPendingMessage()
                 self.DisplayMessage(mes)
                 return
-            natqh.doPendingBringUps()  # if there were
+            unimacroutils.doPendingBringUps()  # if there were
 
         if self.startExclusive and self.exclusive and showAll:
             # display recognition results for exclusive grammars
@@ -308,7 +309,7 @@ class UtilGrammar(ancestor):
             if self.doMessages:
                 self.DisplayMessage(' '.join(T))
             natbj.GlobalResetExclusiveMode()
-            natqh.Wait(1)
+            unimacroutils.Wait(1)
             if self.doMessages:
                 self.DisplayMessage('reset exclusive mode OK')
         else:
@@ -397,10 +398,10 @@ class UtilGrammar(ancestor):
             grammar = grammars[gramName]
             if self.hasCommon(words, 'grammar'):
                 module = grammar.__module__
-                filename = natqh.getModuleFilename(module)
+                filename = unimacroutils.getModuleFilename(module)
                 #print 'open for edit file: %s'% filename
                 self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
-                natqh.setCheckForGrammarChanges(1)
+                unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
                 try:
@@ -450,9 +451,9 @@ class UtilGrammar(ancestor):
         else:
             actions.Message(t)
 
-class MessageDictGrammar(natut.DictGramBase):
+class MessageDictGrammar(natlinkutils.DictGramBase):
     def __init__(self):
-        natut.DictGramBase.__init__(self)
+        natlinkutils.DictGramBase.__init__(self)
 
     def initialize(self):
         print('initializing/loading DictGrammar!!')
@@ -461,7 +462,7 @@ class MessageDictGrammar(natut.DictGramBase):
 
     def unload(self):
         natbj.UnRegisterMessageObject(self)
-        natut.DictGramBase.unload(self)
+        natlinkutils.DictGramBase.unload(self)
         
     def gotResults(self, words):
 ##        pass

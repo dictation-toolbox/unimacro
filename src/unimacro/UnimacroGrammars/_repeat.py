@@ -37,10 +37,11 @@ grammar.
 """
 
 #
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
-from actions import doAction as action
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from natlinkcore import natlinkutils
+from dtactions.unimacro.unimacroactions import doAction as action
 
 import os
 import os.path
@@ -105,7 +106,7 @@ Counts = ['1','2','3','4','5','6','7','8','9','10','11','12','13',
 # in "hold on"
 showAll = 1
 
-language = natqh.getLanguage()        
+language = unimacroutils.getLanguage()        
 normalSet = ['startMoving', 'startMousing', 'startRepeating', 'startSearching']
 ############################################################################
 #
@@ -268,9 +269,9 @@ class ThisGrammar(ancestor):
                 debugPrint('switch of dragging')
                 xPos,yPos = natlink.getCursorPos()
                 if self.drag == 2:
-                    natlink.playEvents([(natut.wm_rbuttonup,xPos,yPos)])
+                    natlink.playEvents([(natlinkutils.wm_rbuttonup,xPos,yPos)])
                 else:
-                    natlink.playEvents([(natut.wm_lbuttonup,xPos,yPos)])
+                    natlink.playEvents([(natlinkutils.wm_lbuttonup,xPos,yPos)])
                 self.drag = 0
             elif self.state == 'searching':
                 self.stopSearch()
@@ -388,14 +389,14 @@ class ThisGrammar(ancestor):
                 else:
                     debugPrint('invalid direction in scrollcommand: %s'% self.curDir)
                 if keyBefore:
-                    natut.playString("{"+keyBefore+"}")
+                    natlinkutils.playString("{"+keyBefore+"}")
                 self.startScroll = 0
             self.setTrayIcon(1)
-            natut.playString("{"+key+nowCount+"}")
+            natlinkutils.playString("{"+key+nowCount+"}")
         
         elif self.state == 'selecting':
             self.setTrayIcon(1)
-            natut.playString("{shift+"+key+nowCount+"}")
+            natlinkutils.playString("{shift+"+key+nowCount+"}")
         elif self.state == 'repeating':
             self.setTrayIcon(1)
             self.repeatNow()
@@ -412,7 +413,7 @@ class ThisGrammar(ancestor):
                 if res == -2:
                     # missing search, did cancel mode
                     return
-            natqh.visibleWait()
+            unimacroutils.visibleWait()
             self.insideCommand = 0
         elif self.state == 'mousing':
             self.setTrayIcon(1)
@@ -595,9 +596,9 @@ class ThisGrammar(ancestor):
             else:
                 self.cancelMode()
             if self.hasCommon(words, ['click', 'klik']):
-                natut.buttonClick()
+                natlinkutils.buttonClick()
             elif self.hasCommon(words, ['double click', 'dubbel klik']):
-                natut.buttonClick('left', 2)
+                natlinkutils.buttonClick('left', 2)
 
     def gotResults_endSearching(self,words,fullResults):
         if self.nDir or self.Count or self.nSpeed != None:
@@ -633,7 +634,7 @@ class ThisGrammar(ancestor):
         b = r = ''
         for w in words:
             if b and r:
-                natut.playString("{"+r+b+"}")
+                natlinkutils.playString("{"+r+b+"}")
                 b = r = ''
             if w in ['go on', 'ga door', 'ga verder', 'verder']:
                 debugPrint('going on')
@@ -654,7 +655,7 @@ class ThisGrammar(ancestor):
             elif w in ['document']:
                 r = 'ctrl+ext'
         if b and r:
-            natut.playString("{"+r+b+"}")
+            natlinkutils.playString("{"+r+b+"}")
             b = r = ''
             
     def gotResults_changeSearching(self,words,fullResults):
@@ -746,10 +747,10 @@ class ThisGrammar(ancestor):
             xPos,yPos = natlink.getCursorPos()
             if self.hasCommon(words, ["SNELMENU",'RIGHT']):
                 self.drag = 2
-                natlink.playEvents([(natut.wm_rbuttondown,xPos,yPos)])
+                natlink.playEvents([(natlinkutils.wm_rbuttondown,xPos,yPos)])
             else:
                 self.drag = 1
-                natlink.playEvents([(natut.wm_lbuttondown,xPos,yPos)])
+                natlink.playEvents([(natlinkutils.wm_lbuttondown,xPos,yPos)])
 
     def gotResults_startRepeating(self,words,fullResults):
         self.state = 'repeating'
@@ -834,7 +835,7 @@ class ThisGrammar(ancestor):
         if xPos >= xSize: xPos = xSize - 1
         if yPos < 0: yPos = 0
         if yPos >= ySize: yPos = ySize - 1
-        natlink.playEvents([(natut.wm_mousemove,xPos,yPos)])
+        natlink.playEvents([(natlinkutils.wm_mousemove,xPos,yPos)])
 
 
     # This turns on the tray icon depending on the movement direction.
@@ -931,7 +932,7 @@ def debugPrint(t):
     debugFile.flush()
 
 
-iconDirectory = os.path.join(natqh.getUnimacroDirectory(), 'icons')
+iconDirectory = os.path.join(unimacroutils.getUnimacroDirectory(), 'icons')
 if not os.path.isdir(iconDirectory):
     raise Exception('icon folder not present (for repeat and waiting icon): %s'% iconDirectory)
 
@@ -943,6 +944,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
@@ -954,3 +956,4 @@ def changeCallback(type,args):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
+

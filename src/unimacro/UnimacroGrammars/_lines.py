@@ -46,17 +46,17 @@ import sys
 import types
 import re
 import natlink
-import inivars
+from natlinkcore import inivars
 import re
 # for checking base number:
 reNulls = re.compile('0+$')
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import actions
+from natlinkcore import natlinkutils as natut
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro import unimacroactions as actions
 class LinesError(Exception): pass
 
 
@@ -65,7 +65,7 @@ counts = list(range(1,20)) + list(range(20,50,5)) + list(range(50,100,10)) + lis
 
 ancestor = natbj.DocstringGrammar
 class ThisGrammar(ancestor):
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
     iniIgnoreGrammarLists = ['count', 'taskcount', 'taskapplication'] # are set in this module
                                                 # taskcount and taskapplication only in very special
                                                 # case, see Arnoud...
@@ -124,8 +124,8 @@ class ThisGrammar(ancestor):
         self.maxBase = 0
         self.base = 0
 
-        progInfo = natqh.getProgInfo(modInfo=moduleInfo)
-        if natqh.matchWindow(self.ignore, progInfo=progInfo):
+        progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
+        if unimacroutils.matchWindow(self.ignore, progInfo=progInfo):
 ##            print 'progInfo in ignore, skipping: %s'% self.ignore
             return
         if self.windowPolicy(moduleInfo, progInfo):
@@ -152,7 +152,7 @@ class ThisGrammar(ancestor):
         
         if self.lineNumbersModuloHundred:
             self.app = actions.get_instance_from_progInfo(self.progInfo)
-            prog = self.progInfo[0]
+            prog = self.progInfo.prog
             if self.app:
                 self.currentLine = self.app.getCurrentLineNumber()
                 #if self.currentLine:
@@ -428,7 +428,7 @@ class ThisGrammar(ancestor):
 
     def gotResults_before(self,words,fullResults):
         if self.hasCommon(words, 'here'):
-            natut.buttonClick('left', 1)
+            natlinkutils.buttonClick('left', 1)
 
     def gotResults_base(self,words,fullResults):
         if self.hasCommon(words, ['off']):
@@ -439,7 +439,7 @@ class ThisGrammar(ancestor):
         
     def gotResults(self,words,fullResults):
         comment = 'command: %s'% ' '.join(words)
-        self.prog = self.progInfo[0]
+        self.prog = self.progInfo.prog
         self.collectNumber()
         #print 'lines command: %s (direction: %s)'% (comment, self.lastDirection)
         #print 'type line: %s'% type(self.line)
@@ -457,7 +457,7 @@ class ThisGrammar(ancestor):
         if self.line:
             intLine = int(self.line)
             #print 'intLine: %s, currentLine: %s'% (intLine, self.currentLine)
-            if intLine >= 100 or self.line.startswith('0'):
+            if len(self.line) > 2:
                 self.line = intLine # always absolute
             elif self.currentLine:
                 intLine = getLineRelativeTo(intLine, self.currentLine)
@@ -721,11 +721,11 @@ class ThisGrammar(ancestor):
 
             
     def windowPolicy(self, modInfo, progInfo=None): 
-        progInfo = progInfo or natqh.getProgInfo(modInfo)
+        progInfo = progInfo or unimacroutils.getProgInfo(modInfo)
 ##        print 'window policy------progInfo: ', `progInfo`
-        if natqh.matchWindow(self.activateRules, progInfo=progInfo):
+        if unimacroutils.matchWindow(self.activateRules, progInfo=progInfo):
 ##            print 'matching activate: %s'% self.activateRules
-            if not natqh.matchWindow(self.deactivateRules, progInfo=progInfo):
+            if not unimacroutils.matchWindow(self.deactivateRules, progInfo=progInfo):
                 return 1
 ##        else:
 ##            print 'no positive match, deactivate:  %s'% self.activateRules
@@ -768,6 +768,8 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None 
+

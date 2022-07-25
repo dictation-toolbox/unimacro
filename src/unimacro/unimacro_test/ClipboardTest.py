@@ -8,17 +8,17 @@
 #   (that you want to preserve) before these tests are run.
 #   performed.
 import sys
-from pathqh import path
-thisDir = path('.')
-unimacroDir=(thisDir/'..').normpath()
+from pathlib import Path
+thisDir = Path('.')
+unimacroDir=(thisDir/'..').normPath()
 if unimacroDir not in sys.path:
     print("add unimacroDir to sys.path: %s"% unimacroDir)
     sys.path.append(unimacroDir)
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils
 
 import time
-import actions
+from dtactions.unimacro import unimacroactions as actions
 
 import unittest
 import UnimacroTestHelpers
@@ -63,15 +63,15 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
         actions.doAction("<<selectall>>;<<copy>>;{ctrl+end}")
         time.sleep(4)
         actions.doAction('CLIPSAVE')
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         self.assert_equal("", t, "Clipboard should be empty now" ) 
         actions.doAction("<<copy>>")
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         self.assert_equal("", t, "Clipboard should still be empty" ) 
         testActionResult(0, "CLIPISNOTEMPTY")
         ## with empty clipboard restore goes automatically: 
         actions.doAction("CLIPRESTORE")
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         self.assert_equal("testing", t, "Clipboard should filled again" ) 
 
     def tttest_Non_Empty_clipboard_and_restore(self):
@@ -83,14 +83,14 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
         actions.doKeystroke("testing")
         actions.doAction("<<selectall>><<copy>>{ctrl+end}")
         actions.doAction('CLIPSAVE')
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         self.assert_equal("", t, "Clipboard should be empty now" ) 
         actions.doAction("{shift+left 2}<<copy>>{ctrl+end}")
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         self.assert_equal("ng", t, "Clipboard should contain two letters now" ) 
         testActionResult(1, "CLIPISNOTEMPTY")
         actions.doAction("CLIPRESTORE")
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         self.assert_equal("testing", t, "Clipboard should filled now" ) 
 
     def tttest_complete_CLIP_action(self):
@@ -113,7 +113,7 @@ class ClipboardTest(UnimacroTestHelpers.UnimacroTestHelpers):
         actions.doAction("<<selectall>><<copy>>{ctrl+end}")
         actions.doAction('CLIPSAVE; <<copy>>{ctrl+end}; CLIPISNOTEMPTY; {ctrl+end}abcd<<paste>>defg; CLIPRESTORE; <<paste>>')
         testWindowContents("testing")
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         # ??? x after testing in test procedure artefact::
         self.assert_equal("testing", t, "Clipboard should filled again now" ) 
         

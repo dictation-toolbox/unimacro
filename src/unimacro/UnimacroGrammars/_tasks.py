@@ -1,5 +1,3 @@
-__version__ = "$Rev: 606 $ on $sitegeate: 2014-01-27 13:37:09 +0100 (ma, 27 jan 2014) $ by $Author: quintijn $"
-# This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
@@ -32,9 +30,9 @@ import monitorfunctions
 import sys
 import types
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+import natlinkutils as natut
+import natlinkutilsqh as natqh
+import natlinkutilsbj as natbj
 from actions import doAction as action
 from actions import doKeystroke as keystroke
 from actions import setPosition

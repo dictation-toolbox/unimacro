@@ -4,16 +4,16 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-from pathqh import path
+from pathlib import Path
 from pprint import pprint
 import sys
-unimacrodir = path('./..').normpath()
+unimacrodir = Path('./..').normPath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils
 import natlink
-import actions
+from dtactions.unimacro import unimacroactions as actions
 # reload(actions)
 action = actions.doAction
 
@@ -116,7 +116,7 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         action("W 0.5")
         modInfo = natlink.getCurrentModule()
         handle = modInfo[2]
-        self.assert_ (not natqh.isTopWindow(handle), "dialog should be open now")
+        self.assert_ (not unimacroutils.isTopWindow(handle), "dialog should be open now")
 
         # do Notepad and kill, without text in it, so NO SaveAs dialog:
         action("BRINGUP Notepad")

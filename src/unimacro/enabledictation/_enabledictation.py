@@ -53,18 +53,19 @@ import sys
 import types
 import re
 #print 'sys.path: %s'% sys.path
-import messagefunctions as mess
+import unimacro.messagefunctions as mess
 import windowparameters
 
 defaultWaitTime = 0.2  # change to slow down or speed up actions.
 
 import natlink
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
 
 from time import sleep  
 
@@ -108,7 +109,7 @@ class VoiceDictation:
                 dct = self.dictObj
                 dct.deactivate()
                 self.dctactive = 0
-            prog, title, topchild, hndle = natqh.getProgInfo(moduleInfo)
+            prog, title, topchild, hndle = unimacroutils.getProgInfo(moduleInfo)
             print('changing app to: "%s", %s'% (prog, hndle))
             self.app, self.ctrl = None, None
             if prog in self.WindowsParameters:
@@ -272,7 +273,7 @@ class VoiceDictation:
         D("setting selection to pos %s, %s"% (selStart, selEnd))
         self.setSelection(selStart,selEnd)
         #if getFocus:
-        #    natqh.SetForegroundWindow(self.app)
+        #    unimacroutils.SetForegroundWindow(self.app)
         if not self.scratchThatCommand:
             self.scratchinfo.append( [(selStart, selEnd), newText,
                                   (delStart, delEnd), self.lastSelText])

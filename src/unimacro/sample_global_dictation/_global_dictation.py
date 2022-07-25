@@ -62,7 +62,7 @@ import sys
 import types
 import re
 #print 'sys.path: %s'% sys.path
-import messagefunctions as mess
+import unimacro.messagefunctions as mess
 try:
     # this is a little module for easy changing of test application
     # the file testermod.py (NOT included in svn) holds something like:
@@ -83,12 +83,13 @@ testMode = 1
 defaultWaitTime = 0.2  # change to slow down or speed up actions.
 
 import natlink
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
 
 from time import sleep  
 
@@ -169,7 +170,7 @@ class VoiceDictation:
         if meHndle:
             # try to get focus back to originating window
             try:
-                natqh.SetForegroundWindow(meHndle)
+                unimacroutils.SetForegroundWindow(meHndle)
             except: pass
             appHndle = appWindows[0]
         self.__class__.app = appHndle
@@ -236,12 +237,12 @@ class VoiceDictation:
         if hndle == self.app:
             return
         self.saveFocus()  # for next occurrence, mostly already done from gotBegin
-        natqh.SetForegroundWindow(self.app)
+        unimacroutils.SetForegroundWindow(self.app)
         for i in range(10):
             controlHndle = win32gui.GetForegroundWindow()
             if controlHndle == self.app: return hndle
             time.sleep(0.1)
-        raise IOError('could not aquire focus for %s'% self.app)
+        raise OSError('could not aquire focus for %s'% self.app)
 
     def looseFocus(self, hndle=None):
         """return the focus to window with hndle, or saved handle
@@ -272,7 +273,7 @@ class VoiceDictation:
             hndle = self.nonFocusHndles.pop()
             try:
                 print('loosing focus, to:%s (rest: %s)'% (hndle, self.nonFocusHndles))          
-                natqh.SetForegroundWindow(hndle)
+                unimacroutils.SetForegroundWindow(hndle)
                 self.wait()
                 self.nonFocusHndles.append(hndle)
                 return
@@ -402,7 +403,7 @@ class VoiceDictation:
         dct.setLock(0)
         self.inOnTextChange = 0
         if getFocus:
-            natqh.SetForegroundWindow(self.app)
+            unimacroutils.SetForegroundWindow(self.app)
         
 
     def insertText(self, delStart, delEnd, newText):
@@ -424,7 +425,7 @@ class VoiceDictation:
         D("setting selection to pos %s, %s"% (selStart, selEnd))
         self.setSelection(selStart,selEnd)
         #if getFocus:
-        #    natqh.SetForegroundWindow(self.app)
+        #    unimacroutils.SetForegroundWindow(self.app)
         if not self.scratchThatCommand:
             self.scratchinfo.append( [(selStart, selEnd), newText,
                                   (delStart, delEnd), self.lastSelText])

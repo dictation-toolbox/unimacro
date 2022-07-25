@@ -3,8 +3,8 @@ import time
 import os
 import os.path
 from pythoncom import com_error
-from .actionbases import AllActions
-import natlinkutilsqh as natqh
+from dtactions.unimacro.actionclasses.actionbases import AllActions
+from dtactions.unimacro import unimacroutils as natqh
 
 
 class ExcelActions(AllActions):
@@ -69,7 +69,7 @@ class ExcelActions(AllActions):
     def checkForChanges(self, progInfo=None):
         """return 1 if book, sheet or position has changed since previous call
         """
-        progInfo = progInfo or natqh.getProgInfo()
+        progInfo = progInfo or unimacroutils.getProgInfo()
         changed = 0
         if not self.app:
             self.progInfo = progInfo

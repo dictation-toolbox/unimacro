@@ -1,29 +1,9 @@
+#
 # (unimacro - natlink macro wrapper/extensions)
-# (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
-#                    Ben Staniford (ben_staniford@users.sourceforge.net)
-#                    Bart Jan van Os (bjvo@users.sourceforge.net)
-#
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net).
-#
-# "unimacro" is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, see:
-# http://www.gnu.org/licenses/gpl.txt
-#
-# "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
-# "unimacro" makes use of another SourceForge project "natlink",
-# which has the following copyright notice:
-#
-# Python Macro Language for Dragon NaturallySpeaking
-#   (c) Copyright 1999 by Joel Gould
-#   Portions (c) Copyright 1999 by Dragon Systems, Inc.
-#
 # _number.py 
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-#  August 2003
-# 
+#  August 2003//April 2022 (python3)
+#
 """smart and reliable number dictation
 
 the number part of the grammar was initially provided by Joel Gould in
@@ -42,16 +22,15 @@ QH september 2013: rewriting of the functions, ruling out optional command words
 
 further comments in _number extended.py. Also see the page "number grammar" on the Unimacro we
 """
-from actions import doKeystroke as keystroke
-
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+#pylint:disable=C0115, C0116, W0613
+from dtactions.unimacro import unimacroutils
+from dtactions.sendkeys import sendkeys as keystroke
+import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
 
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
@@ -66,6 +45,10 @@ class ThisGrammar(ancestor):
 <number> = <integer> | Minus <integer> | <float> | Minus <float>;
 """+number_rules+"""
     """
+    def __init__(self):
+        self.minus = False
+        self.number = False
+        super().__init__()
   
     def initialize(self):
         if not self.language:
@@ -104,10 +87,11 @@ class ThisGrammar(ancestor):
             
                       
     def outputNumber(self, number):
+        #pylint:disable=R0201
         keystroke(number)
         #Step 5:
         # Here some extra postprocessing for different programs:
-        prog = natqh.getProgName()
+        prog = unimacroutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:  # DragonPad
@@ -123,6 +107,8 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None 

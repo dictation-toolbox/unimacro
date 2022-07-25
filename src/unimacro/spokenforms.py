@@ -1,30 +1,8 @@
-# (unimacro - natlink macro wrapper/extensions)
-# (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
-#                    Ben Staniford (ben_staniford@users.sourceforge.net)
-#                    Bart Jan van Os (bjvo@users.sourceforge.net)
-#
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net).
-#
-# "unimacro" is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, see:
-# http://www.gnu.org/licenses/gpl.txt
-#
-# "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
-# "unimacro" makes use of another SourceForge project "natlink",
-# which has the following copyright notice:
-#
-# Python Macro Language for Dragon NaturallySpeaking
-#   (c) Copyright 1999 by Joel Gould
-#   Portions (c) Copyright 1999 by Dragon Systems, Inc.
-#
 # _spokenforms.py 
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-#  June 2011
+#  June 2011/March 2022
 #
-
+#pylint:disable=C0115, C0116, R0912, R0914, R0915, R0911
 """This module contains a class spokenforms that maintains spoken forms
 for numbers, thus making it possible to use spoken forms for all numbers lists
 in Unimacro grammars which need numbers 
@@ -33,19 +11,22 @@ tested with unittestSpokenForms.py (in unimacro_test directory of Unimacro)
 """
 import re
 import os
-import sys
-import types
-import shutil
 import os.path
-import copy
+import sys
+import shutil
+import string
 import operator
-import win32api
-import inivars
-import natlinkstatus
-import utilsqh
 from functools import reduce
 
-class NumbersError(Exception): pass
+from natlinkcore import natlinkstatus
+
+from dtactions.unimacro import inivars
+from dtactions.unimacro import utilsqh
+
+class NumbersError(Exception):
+    pass
+
+status = natlinkstatus.NatlinkStatus()
 
 # for generateMixedListOfSpokenForms:
 reNonAlphaNumeric = re.compile(r'\W+')
@@ -129,6 +110,7 @@ ini = None
 def resetSpokenformsGlobals():
     """utility function for unittest, to ensure there is a fresh start
     """
+    #pylint:disable=W0603
     global currentlanguage, ini, inifile
     currentlanguage = ini = inifile = None
     
@@ -137,6 +119,7 @@ def checkSpokenformsInifile(language):
     
     print message if no valid file found and return False 
     """
+    #pylint:disable=W0603
     global currentlanguage, ini, inifile
     if language and language == currentlanguage and ini:
         return inifile # all OK
@@ -161,14 +144,13 @@ def checkSpokenformsInifile(language):
                 shutil.copyfile(sampleinifile, inifile)
                 if os.path.isfile(inifile):
                     break
-                else:
-                    print('cannot copy sample spokenforms inifile to: "%s"'% inifile)
-                    inifile = None
-                    return
+                print('cannot copy sample spokenforms inifile to: "%s"'% inifile)
+                inifile = None
+                return None
         else:
             print('no valid sample "%s" file found in one of %s sample directories:\n|%s|'% \
                       (filename, len(sampleDirectories), sampleDirectories))
-            return
+            return None
     # now assume valid inifile:
     try:
         ini = inivars.IniVars(inifile)
@@ -180,35 +162,30 @@ def checkSpokenformsInifile(language):
         print('\n\n===please edit %s (open by hand)'% inifile)
         #win32api.ShellExecute(0, "open", inifile, None , "", 1)    
     else:
-        return inifile 
-
-oldversioninifile = 'spokenforms.ini' # new with language prefix...
-for dir in (userDirectory,): ### baseDirectory):
-    old = os.path.join(dir, oldversioninifile)
-    if os.path.isfile(old):
-        print('remove "%s" from directory (obsolete): %s'% (old, dir))
-        os.remove(old)
+        return inifile
+    return None
 
 def openInifile(inifilepath):
+    #pylint:disable=W0603
     global inifile, ini
-    if os.path.isfile(inifilepath):
-        inifile = inifilepath
-        try:
-            ini = inivars.IniVars(inifile)
-        except inivars.IniError:
-            
-            print('Error in numbers inifile: %s'% inifile)
-            m = str(sys.exc_info()[1])
-            print('message: %s'% m)
-            pendingMessage = 'Please repair spokenforms.ini file\n\n' + m
-            ini = None
-            print('please edit %s (open by hand)'% inifile)
-            #win32api.ShellExecute(0, "open", inifile, None , "", 1)
-        else:
-            return ini
-    else:
+    if not os.path.isfile(inifilepath):
         ini = inifile = None
         print('no inifile spokenforms.ini found. Please repair')
+        return None
+    try:
+        ini = inivars.IniVars(inifilepath)
+    except inivars.IniError:
+        
+        print('Error in numbers inifile: %s'% inifilepath)
+        m = str(sys.exc_info()[1])
+        print('message: %s'% m)
+        # pendingMessage = 'Please repair spokenforms.ini file\n\n' + m
+        ini = None
+        print('please edit %s (open by hand)'% inifilepath)
+        return None
+        #win32api.ShellExecute(0, "open", inifile, None , "", 1)
+    else:
+        return ini
 
 def editSpokenForms(comingFrom=None, name=None, language=None):
     """show the spokenforms.ini file in a editor
@@ -217,16 +194,16 @@ def editSpokenForms(comingFrom=None, name=None, language=None):
         print('editSpokenForms: call with language is required!')
         return
     
-    inifile = checkSpokenformsInifile(language)
-    if not inifile:
+    inifilepath = checkSpokenformsInifile(language)
+    if not inifilepath:
         print('editSpokenForms: no valid spokenforms inifile for language "%s" available'% language)
         return        
     if comingFrom:
         name=name or ""
-        comingFrom.openFileDefault(inifile, name=name)
+        comingFrom.openFileDefault(inifilepath, name=name)
     else:
-        print('inifile: ', inifile)
-        print('please edit (open by hand): %s'% inifile)
+        print('inifile: ', inifilepath)
+        print('please edit (open by hand): %s'% inifilepath)
     #win32api.ShellExecute(0, "open", inifile, None , "", 1)
     print('note: you need to restart Dragon after editing the spoken forms inifile.')
     
@@ -274,12 +251,12 @@ class SpokenForms:
         self.s2n.clear()
         if ini is None:
             print('no inifile for numbers spoken forms')
-            return
+            return False
         # section in spokenforms.ini file:
         section = "numbers"
         if not section in ini.get():
             print('no section in spokenforms.ini for language: %s'% section)
-            return
+            return False
         for k in ini.get(section):
             v = ini.get(section, k)
             try:
@@ -365,7 +342,7 @@ class SpokenForms:
             self.spoken2punct[k] = v
             self.punct2spoken.setdefault(v, []).append(k)
         
-        return 1
+        return True
     
     def correctLettersForDragonVersion(self, spoken):
         """convert A to A. in NatSpeak <= 10 and B. int B for Dragon 11
@@ -380,19 +357,17 @@ class SpokenForms:
         """
         if n in self.n2s:
             return self.n2s[n]
-        else:
-            spokenforms = self.generateSpokenFormsFromNumber(n)
-            if spokenforms:
-                self.n2s[n] = spokenforms
-                return spokenforms
-            else:
-                return 
+        spokenforms = self.generateSpokenFormsFromNumber(n)
+        if spokenforms:
+            self.n2s[n] = spokenforms
+            return spokenforms
+        return None
     
     def getMixedCharactersList(self, ListOfChars=None):
         """return a list of strings with either the number or the spoken forms
         """
         if ListOfChars is None:
-            ListOfChars = utilsqh.ascii_lowercase
+            ListOfChars = string.ascii_lowercase
         L = []
         for s in ListOfChars:
             if s in self.char2spoken:
@@ -436,15 +411,15 @@ class SpokenForms:
 
         if n < 100:
             print('should not come here for %s, all numbers below 100 should be in ini file'%n)
-            return
+            return None
         if n < 1000:
             if n == 100:
                 print('should %s take from n2s'% n)
                 return s
-            elif s.endswith('00'):
+            if s.endswith('00'):
                 digitstrings = self.n2s[int(s[0])]
                 return [d+' '+hundred for d in digitstrings]
-            elif s[1] == '0':
+            if s[1] == '0':
                 # one oh three 103 etc
                 sp1 = self.n2s[int(s[0])]
                 sp2 = self.n2s[int(s[2])]
@@ -455,26 +430,25 @@ class SpokenForms:
                     sp1 = ['%s %s'% (d, hundred) for d in self.n2s[int(s[0])]]
                 spList.extend(['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2])
                 return spList
-            elif s[0] == '1':
+            if s[0] == '1':
                 # hundred ... or  one ...
                 sp = self.n2s[int(s[1:])]
                 spList = ['%s %s'% (hundred, s) for s in sp]
                 spList.extend(['%s %s'% (one, s) for s in sp])
                 return spList
-            else:
-                sp1 = self.n2s[int(s[0])]
-                sp2 = self.n2s[int(s[1:])]
-                spList = ['%s %s %s'% (s1, hundred, s2) for s1 in sp1 for s2 in sp2]
-                spList.extend(['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2])
-                return spList
-        elif n < 10000:
+            sp1 = self.n2s[int(s[0])]
+            sp2 = self.n2s[int(s[1:])]
+            spList = ['%s %s %s'% (s1, hundred, s2) for s1 in sp1 for s2 in sp2]
+            spList.extend(['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2])
+            return spList
+        if n < 10000:
             if n == '1000':
                 print('should %s take from n2s'% n)
                 return s
-            elif s.endswith('000'):
+            if s.endswith('000'):
                 digitstrings = self.n2s[int(s[0])]
                 return [d+' '+thousand for d in digitstrings]
-            elif s[1:3] == '00':
+            if s[1:3] == '00':
                 # one oh three 103 etc
                 sp1 = self.n2s[int(s[0])]
                 sp2 = self.n2s[int(s[3])]
@@ -486,7 +460,7 @@ class SpokenForms:
                 spList.extend(['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2])
                 return spList
                     
-            elif s[1] == '0':
+            if s[1] == '0':
                 # thousand ... or  ten ...
                 if s[0] == '1':
                     sp1 = self.n2s[1000]
@@ -499,15 +473,15 @@ class SpokenForms:
                 sp1 = self.n2s[int(s[0:2])]
                 spList.extend(['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2])
                 return spList
+            sp1 = self.n2s[int(s[0:2])]
+            if s[2] == '0':
+                sp2 = ['%s %s'% (oh, d) for d in self.n2s[int(s[3])]]
             else:
-                sp1 = self.n2s[int(s[0:2])]
-                if s[2] == '0':
-                    sp2 = ['%s %s'% (oh, d) for d in self.n2s[int(s[3])]]
-                else:
-                    sp2 = self.n2s[int(s[2:4])]
-                spList = ['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2]
-                return spList
-       
+                sp2 = self.n2s[int(s[2:4])]
+            spList = ['%s %s'% (s1, s2) for s1 in sp1 for s2 in sp2]
+            return spList
+        return None
+    
     def generateMixedListOfSpokenForms(self, s):
         """return spoken forms with at number places spoken forms replaced
             use for filenames with numbers in it
@@ -572,14 +546,14 @@ class SpokenForms:
                 if spok:
                     result.append(spok)
         for item in result:
-            if type(item) == list:
+            if isinstance(item, list):
                 if Result:
-                    Result = ['%s %s'% (i,j) for i in Result for j in item]
+                    Result = ['%s %s'% (i,j) for i in result for j in item]
                 else:
-                    Result = [j for j in item]
+                    Result = item
             else:
                 if Result:
-                    Result = ['%s %s'% (r, item) for r in Result]
+                    Result = ['%s %s'% (r, item) for r in result]
                 else:
                     Result = [item]
         if prevResult:
@@ -602,8 +576,7 @@ class SpokenForms:
                 if key in D:
                     if D[key] == v:
                         continue
-                    else:
-                        print("warning, double entry %s (%s and %s), take latter"% (key, D[key], v))
+                    print("warning, double entry %s (%s and %s), take latter"% (key, D[key], v))
                 D[key] = v
         return D
     
@@ -617,6 +590,7 @@ class SpokenForms:
             return first
         if first in originalList:
             return first
+        return None
     
     def getPunctuationFromSpoken(self, spoken, originalList=None):
         """try to retrieve the called character from the dict spoken2char in this class
@@ -629,6 +603,7 @@ class SpokenForms:
                 return first
         else:
             return first
+        return None
 
     def getNumberFromSpoken(self, spoken, originalList=None, asStr=None):
         """try to retrieve the called number from the dict s2n in this class
@@ -638,8 +613,6 @@ class SpokenForms:
 
         passing a list of words is handled in natlinkutilsbj.        
         """
-        if type(spoken) == bytes:
-            spoken = utilsqh.convertToUnicode(spoken)
         first = self.s2n.get(spoken, None)
         if originalList:
             orig = list(map(int, originalList))
@@ -648,13 +621,13 @@ class SpokenForms:
                     first = int(spoken)
                 except ValueError:
                     pass
-            if first != None and first in orig:
+            if first is not None and first in orig:
                 if asStr:
                     first = str(first)
                 return first
         else:
             # take result anyway:
-            if first != None:
+            if first is not None:
                 if asStr:
                     first = str(first)
                 return first
@@ -663,10 +636,10 @@ class SpokenForms:
                 n = int(spoken)
                 if asStr:
                     return str(n)
-                else:
-                    return n
+                return n
             except ValueError:
                 pass
+        return None
     
     def filldictsAboveHundred(self, num):
         """make spoken forms for numbers above 100
@@ -683,12 +656,13 @@ class SpokenForms:
             self.n2s[1000] = thousand
             for t in thousand:
                 self.s2n[t] = 1000
-            return
+            return None
 
         snum = str(num)
         self.n2s[num] = [snum]
         self.s2n[snum] = num
-        return
+        return None
+        ## TODO QH
         h, rest = num / 100, num%100
         hundred = ini.getList(prefixSection, 'hundred', None) or ['hundred']
         if rest:
@@ -717,6 +691,7 @@ class SpokenForms:
         self.n2s[num] = spokenlist
         for sp in spokenlist:
             self.s2n[sp] = num
+        return None
             
     def sortedByNumbersValues(self, grammarsList, valueSpokenDict=None):
         """return sorted list if this is a numbers list (sorted by the number value)
@@ -731,13 +706,11 @@ class SpokenForms:
         for g in grammarsList:
             value = self.getNumberFromSpoken(g)
             if value is None:
-                return
+                return None
             dec.setdefault(value, []).append(g)
         if valueSpokenDict:
             return dec
-        else:
-            return reduce(operator.add, list(dec.values()))
-        return []
+        return reduce(operator.add, list(dec.values()))
         
 
     ## function to give numerical list:
@@ -757,6 +730,7 @@ class SpokenForms:
     Note:
         0-360 or number1to360 gives [0, 10, ..., 360]
         """
+        #pylint:disable=R0201
         #print 'try to fill numbers list: "%s"'% listName
         try:
             return globals()[listName]
@@ -794,6 +768,7 @@ class SpokenForms:
         return L
 
 def _test():
+    #pylint:disable=C0415
     import doctest
     doctest.testmod()
 

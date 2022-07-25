@@ -18,7 +18,7 @@ try with title "Title" (from testDialogForDicationGrammar.py) or
                "Script" having a new (non saved python script)
 """
 import natlink
-natut = __import__('natlinkutils')
+from natlinkcore import natlinkutils
 import win32ui
 import nsformat
 
@@ -74,7 +74,7 @@ class VoiceDictation:
             self.ctrl.ReplaceSel(newText)
             self.ctrl.SetSel(selStart,selEnd)
         else:
-            natut.playString(newText)
+            natlinkutils.playString(newText)
         self.dictObj.setLock(0)
 
     def updateState(self):
@@ -147,7 +147,7 @@ class VoiceDictation:
             self.__class__.dictObj = None
             self.__class__.ctrl = None
 
-class CommandGrammar(natut.GrammarBase):
+class CommandGrammar(natlinkutils.GrammarBase):
 
     gramSpec = """
         <OK> exported = OK | okay;
@@ -173,7 +173,7 @@ class CommandGrammar(natut.GrammarBase):
         # terminate dictObj:
         self.dictObj.terminate()
         self.prevHandle = winHandle
-        if natut.matchWindow(moduleInfo, 'pythonwin', wantedTitle):
+        if natlinkutils.matchWindow(moduleInfo, 'pythonwin', wantedTitle):
             if not self.isActive():
                 self.dictObj.initialize(hndle=winHandle)
                 print('activate (exclusive: %s) Pythonwin command grammar with dictate box, handle: %s'% \
@@ -195,21 +195,21 @@ class CommandGrammar(natut.GrammarBase):
 
     def gotResults_OK(self, words, fullResults):
         print('heard command:  %s '% words)
-        natut.playString("{tab}{enter}")
+        natlinkutils.playString("{tab}{enter}")
 
     def gotResults_scratch(self, words, fullResults):
         print('heard command:  %s '% words)
         i,j = self.txt.GetSel()
         if i < j:
-            natut.playString("{backspace}")
+            natlinkutils.playString("{backspace}")
 
     def gotResults_clear(self, words, fullResults):
         print('heard command:  %s '% words)
         self.txt.Clear()
 
-##class DictGrammar(natut.DictGramBase):
+##class DictGrammar(natlinkutils.DictGramBase):
 ##    def __init__(self):
-##        natut.DictGramBase.__init__(self)
+##        natlinkutils.DictGramBase.__init__(self)
 ##
 ##    def initialize(self):
 ##        print 'initializing/loading DictGrammar!!'
@@ -232,7 +232,7 @@ class CommandGrammar(natut.GrammarBase):
 ##            return
 ##        self.dictObj.terminate()
 ##        self.prevHandle = winHandle
-##        if natut.matchWindow(moduleInfo, 'pythonwin', wantedTitle):
+##        if natlinkutils.matchWindow(moduleInfo, 'pythonwin', wantedTitle):
 ##            if not self.isActive:
 ##                if not self.dictObj:
 ##                    self.dictObj.initialize(ctrl=None, hndle=winHandle)

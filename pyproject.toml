@@ -9,9 +9,9 @@ author-email = "q.hoogenboom@antenna.nl"
 home-page = "https://qh.antenna.nl/unimacro/"
 description-file = "README.md"
 
-requires=["natlink",
-		  "debugpy >= 1.2.0",
-		  "pywin32 >= 300"]
+requires=["dtactions",
+          "debugpy >= 1.2.0",
+	"pywin32 >= 300"]
 		  
 		
 classifiers=[	"Development Status :: 4 - Beta",
@@ -20,7 +20,7 @@ classifiers=[	"Development Status :: 4 - Beta",
 				]
 				
 requires-python = ">=3.8"
-keywords="dragon,speech,dictation,dictation-toolobx,unimacro,natlink"
+keywords="dragon,speech,dictation,dictation-toolbox,unimacro,natlink"
 
 [tool.flit.scripts]
 

@@ -54,10 +54,11 @@ turned on.
 
 import natlink
 import win32gui
-import utilsqh
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from dtactions.unimacro import utilsqh
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
 import time
 import copy
 import sys
@@ -66,13 +67,13 @@ import operator
 logHour = -1
 logFile = ''
 
-language = natqh.getLanguage()
-version = natqh.getDNSVersion()
-UUDirectory = natqh.getUnimacroUserDirectory()
+language = unimacroutils.getLanguage()
+version = unimacroutils.getDNSVersion()
+UUDirectory = unimacroutils.getUnimacroUserDirectory()
 # print 'language: %s (%s)'% (language, type(language))
 # print 'version: %s (%s)'% (version, type(version))
 # print 'getUnimacroUserDirectory: %s (%s)'% (UUDirectory, type(UUDirectory))
-logFolder = os.path.join(UUDirectory, language + "_log", natqh.getUser())
+logFolder = os.path.join(UUDirectory, language + "_log", unimacroutils.getUser())
 print('_oops, logfolder: %s'% logFolder)
  
 def getLogFileName():
@@ -88,7 +89,7 @@ def getLogFileName():
 ChooseList = ['1','2','3','4','5','6','7','8','9','10']
 
 # get language for different language versions:
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 #  Number of times the correction is executed when choosing weak
 #    (default), middle or strong
@@ -102,23 +103,23 @@ choiceStrong = 15
 #  FORMATS and FormatComments MUST MATCH!
 FORMATS = {
     # for letters in advance of a variable:
-    1: ( natqh.wf_TurnCapitalizationModeOn |
-           natqh.wf_TurnOffSpacingBetweenWords |
-           natqh.wf_DoNotApplyFormattingToThisWord
+    1: ( unimacroutils.wf_TurnCapitalizationModeOn |
+           unimacroutils.wf_TurnOffSpacingBetweenWords |
+           unimacroutils.wf_DoNotApplyFormattingToThisWord
           ),
     # for continuing after a variable:
-    2: ( natqh.wf_RestoreNormalCapitalization |
-            natqh.wf_RestoreNormalSpacing
+    2: ( unimacroutils.wf_RestoreNormalCapitalization |
+            unimacroutils.wf_RestoreNormalSpacing
           ),
     # for continuing after a variable + extra space:
-    3:  ( natqh.wf_RestoreNormalCapitalization |
-            natqh.wf_RestoreNormalSpacing |
-            natqh.wf_AddAnExtraSpaceFollowingThisWord
+    3:  ( unimacroutils.wf_RestoreNormalCapitalization |
+            unimacroutils.wf_RestoreNormalSpacing |
+            unimacroutils.wf_AddAnExtraSpaceFollowingThisWord
           ), 
     # for continuing after a variable, no space before:
-    4: ( natqh.wf_RestoreNormalCapitalization |
-            natqh.wf_RestoreNormalSpacing |
-            natqh.wf_NoSpacePreceedingThisWord
+    4: ( unimacroutils.wf_RestoreNormalCapitalization |
+            unimacroutils.wf_RestoreNormalSpacing |
+            unimacroutils.wf_NoSpacePreceedingThisWord
           )
     }
 
@@ -129,7 +130,7 @@ if language == 'nld':
         3: 'herstel + spatie (als "spatie")',
         4: 'herstel + geen spatie ervoor (als ":")'
     }
-    if natqh.getDNSVersion() >= 7:
+    if unimacroutils.getDNSVersion() >= 7:
         ScratchThatCommand = ['schrap', 'dat']
     else:
         ScratchThatCommand = ['Schrap', 'dat']
@@ -142,7 +143,7 @@ else:
         3: 'restore and add a space (like "space-bar")',
         4: 'restore, but no space before (like ":")'
     }
-    if natqh.getDNSVersion() >= 7:
+    if unimacroutils.getDNSVersion() >= 7:
         ScratchThatCommand = ['scratch', 'that']
     else:
         ScratchThatCommand = ['Scratch', 'That']
@@ -280,16 +281,16 @@ class ThisGrammar(ancestor):
 ##        t0 = time.time()
 ##        try:fellow,hellohellohellohello hellohello,fellow hello hello hello
 ##        try:
-##            natqh.SetForegroundWindow(self.messageHndle)
+##            unimacroutils.SetForegroundWindow(self.messageHndle)
 ##        except:
-        natqh.switchToWindowWithTitle("Messages from Python Macros")
+        unimacroutils.switchToWindowWithTitle("Messages from Python Macros")
 ##            self.messageHndle = natlink.getCurrentModule()[2]
 ##            print 'new handle for message window: %s'% self.messageHndle
 ##        print 'time to switch:', time.time() - t0
         if not self.lastResObj:
             print('no object to Oops')
-            natqh.Wait(0.1)
-            natqh.returnFromMessagesWindow()
+            unimacroutils.Wait(0.1)
+            unimacroutils.returnFromMessagesWindow()
             return
         #  Go through the alternatives in the results object
         SingleWord = 0  # so formatting can be done
@@ -332,23 +333,23 @@ class ThisGrammar(ancestor):
         self.oopsFlag = 3
         self.activateSet(['inoops'],exclusive=1)
         self.setList('chooselist', ChooseList[:i])
-        natqh.switchToWindowWithTitle("Messages from Python Macros")
+        unimacroutils.switchToWindowWithTitle("Messages from Python Macros")
 
     def gotResults_inoops(self,words,fullResults):
         nCorr = choiceWeak
         choice = 0
         if not self.lastResObj:
             self.cancelMode()
-            natqh.returnFromMessagesWindow()
+            unimacroutils.returnFromMessagesWindow()
             
         if self.hasCommon(words, 'Cancel'):
             texts = dict(nld='oeps geannuleerd')
             t = texts.get(self.language, 'oops canceled')
             self.DisplayMessage(t)
             print('cancelling exclusive oops mode')
-            natqh.Wait()
+            unimacroutils.Wait()
             self.cancelMode()
-            natqh.returnFromMessagesWindow()
+            unimacroutils.returnFromMessagesWindow()
             return
         choice = 0
         if self.hasCommon(words, 'OK'):
@@ -374,9 +375,9 @@ class ThisGrammar(ancestor):
             choice = int(words[-1])
         if not choice:
             print('no valid choice given')
-            natqh.Wait(0.2)
+            unimacroutils.Wait(0.2)
             self.cancelMode()
-            natqh.returnFromMessagesWindow()
+            unimacroutils.returnFromMessagesWindow()
             return
         try:
             newWords = self.lastResObj.getWords(choice-1)
@@ -449,7 +450,7 @@ class ThisGrammar(ancestor):
                 self.newWord = newWords[0]
                 props = natlink.getWordInfo(self.newWord)
                 print('properties of %s: %x' % (self.newWord, props))
-                p = natqh.ListOfProperties(props)
+                p = unimacroutils.ListOfProperties(props)
                 if p:
                     for pp in p:
                         print(pp)
@@ -469,7 +470,7 @@ class ThisGrammar(ancestor):
             time.sleep(2.0)
         time.sleep(1.0)
         self.cancelMode()
-        natqh.returnFromMessagesWindow()
+        unimacroutils.returnFromMessagesWindow()
         #  Like in DragonDictate, when the word was not a command but a
         #    dictate word, the last phrase is scratched and replaced by the new
         #    text or the new command.
@@ -483,9 +484,9 @@ class ThisGrammar(ancestor):
         if self.lastResObj:
             fstring = ''
             if self.hasCommon(words, 'Cancel'):
-                natqh.Wait()
+                unimacroutils.Wait()
                 self.cancelMode()
-                natqh.returnFromMessagesWindow()
+                unimacroutils.returnFromMessagesWindow()
                 return
             try:
                 fNum = int(words[-1])
@@ -507,7 +508,7 @@ class ThisGrammar(ancestor):
             self.newWord = ""
         time.sleep(1.0)
         self.cancelMode()
-        natqh.returnFromMessagesWindow()
+        unimacroutils.returnFromMessagesWindow()
 
     def cancelMode(self):
         #print "end of oops exclusive mode", also called when microphone is toggled.
@@ -547,8 +548,10 @@ def changeCallback(type,args):
         thisGrammar.cancelMode()
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
+
 

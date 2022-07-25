@@ -35,16 +35,17 @@ Also see the page "number grammar" on the Unimacro site and
 the grammars _number simple and _number extended.
 """
 import copy
-from actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import natlinkutils as natut
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     normalRules = ['calcnormal', 'cancel']
     calcRules = ['calccalc', 'cancel'] # exclusive
     continueRules = ['calccontinue', 'cancel'] # exclusive
@@ -86,10 +87,10 @@ class ThisGrammar(ancestor):
         if self.checkForChanges:
             self.checkInifile()
         if self.prevModInfo != moduleInfo:
-            progInfo = natqh.getProgInfo(modInfo=moduleInfo)
+            progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
             self.prevModInfo = moduleInfo
             self.cancelMode()
-            self.prog = progInfo[0]
+            self.prog = progInfo.prog
             if self.prog == 'calc':
                 self.activeSet = None
             else:
@@ -323,6 +324,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None

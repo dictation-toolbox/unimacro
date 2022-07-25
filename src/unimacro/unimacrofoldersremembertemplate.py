@@ -5,7 +5,7 @@ is put in the _folders.ini config file.
 
 import wx
 import time
-import inivars
+from natlinkcore import inivars
 
 prompt = """$prompt$"""  # readable text
 text = """$text$"""          # input text, the key of the 

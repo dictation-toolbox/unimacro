@@ -19,7 +19,7 @@ import os.path
 
 # trick in order to be sure the unimacro directory is in sys.path:
 thisDir = os.path.dirname(__file__)
-unimacroDir = os.path.normpath(os.path.join(thisDir, '..'))
+unimacroDir = os.path.normPath(os.path.join(thisDir, '..'))
 if os.path.isdir(unimacroDir):
     if unimacroDir not in sys.path:
         sys.path.append(unimacroDir)

@@ -6,9 +6,9 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-import actions
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroactions as actions
 import natlink
 import unittest
 import time
@@ -61,7 +61,7 @@ class BringupTest(UnimacroTestHelpers.UnimacroTestHelpers):
         actions.UnimacroBringUp("dragonpad")
         time.sleep(2)
         self.assert_mod_partoftitle('natspeak', 'DragonPad', " when bringing up DragonPad")
-        natut.playString("this should last 2 seconds")
+        natlinkutils.playString("this should last 2 seconds")
         time.sleep(2)
         actions.do_KW()
 

@@ -16,7 +16,7 @@ from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
 import natlink
-from natlinkutils import *
+from natlink.natlinkutils import *
 from natlinkutilsbj import SetMic
 import listdialogs
 import D_
@@ -110,7 +110,7 @@ class SelectGrammar(GrammarBase):
                 chars=chars+'\\'                
             else:
                 chars=chars+c
-        natut.playString(chars)
+        natlinkutils.playString(chars)
         if self.dlg:
             self.dlg.setCurrentAtTop()
 

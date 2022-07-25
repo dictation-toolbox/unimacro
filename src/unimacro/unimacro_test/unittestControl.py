@@ -8,10 +8,10 @@
 #   the site mechanism (of Qh private) in which modules of a website generating program
 #   are tested specifically
 #
-from pathqh import path
+from pathlib import Path
 from pprint import pprint
 import sys
-unimacrodir = path('./..').normpath()
+unimacrodir = Path('./..').normPath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
 

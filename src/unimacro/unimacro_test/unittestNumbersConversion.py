@@ -20,17 +20,18 @@ import time
 import traceback        # for printing exceptions
 import TestCaseWithHelpers
 import natlink
-import natlinkmain
-import natlinkstatus
+from natlinkcore import loader
+from natlinkcore import natlinkstatus
 from gramparser import GrammarError, SyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-from actions import doKeystroke as keystroke
-from actions import doAction as action
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 class TestError(Exception):
     pass

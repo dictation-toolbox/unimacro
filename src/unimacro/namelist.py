@@ -9,15 +9,9 @@ the spoken forms for "-" seem to be not needed anymore.
 Can be run from inputoutput.py (function namelist) or unimacro (function namelistUnimacro) 
 
 """
-import os
-import os.path
-import pprint
 import re
-try:
-    set
-except AttributeError:
-    from sets import Set as set
-from pathqh import path
+from pathlib import Path
+import string
 
 # complete words that need a spoken form:
 needsSpokenForm = {}
@@ -60,13 +54,14 @@ def namelist(inputfile, outputfile):
     voornamenList = ['jan']
     for line in open(inputfile):
         tt = cleanLine(line)
-        if not tt: continue
+        if not tt:
+            continue
         tt = tt.split()
         firstName = ""
         secondName = ""
         if len(tt) < 1:
             continue
-        elif len(tt) == 1:
+        if len(tt) == 1:
             secondName = tt
         elif len(tt) == 2:
             firstName = tt[:1]
@@ -93,7 +88,7 @@ def namelist(inputfile, outputfile):
             fullNames.add(str(fullName))
     total = [_f for _f in list(fullNames | firstNames | secondNames) if _f]
     total.sort()
-    outFile = open(outputfile, 'w').write('\n'.join(total))
+    open(outputfile, 'w').write('\n'.join(total))
 
 def namelistUnimacro(inputstring, ini=None):
     """Take a string as input, and get the several words lists as language dependent.
@@ -113,7 +108,7 @@ def namelistUnimacro(inputstring, ini=None):
     if ini:
         voornamenList =ini.getList("name phrase", "secondchristiannames") or []
         inbetweenwords = ini.getList("name phrase", "inbetweenwords") or []
-        spokenFormKeys = ini.get("spoken forms")
+        # spokenFormKeys = ini.get("spoken forms")
         for k in spokenForms:
             spokenForms[k] = ini.get("spoken forms", k)
 ##        regularFormKeys = ini.get("regular forms")
@@ -121,13 +116,14 @@ def namelistUnimacro(inputstring, ini=None):
 ##            regularForms[k] = ini.get("regular forms", k)
     
     tt = cleanLine(inputstring)
-    if not tt: return 
+    if not tt:
+        return None
     tt = tt.split()
     firstName = ""
     secondName = ""
     if len(tt) < 1:
-        return 
-    elif len(tt) == 1:
+        return None
+    if len(tt) == 1:
         secondName = tt
     elif len(tt) == 2:
         firstName = tt[:1]
@@ -161,7 +157,7 @@ def namelistUnimacro(inputstring, ini=None):
 
 
 class WrittenSpoken:
-    """Analyse the written\spoken for input
+    r"""Analyse the written\spoken for input
 
 !!Note the doubling of backslashes, due to doctest functioning!    
 
@@ -204,7 +200,7 @@ combinations:
     
     """
 
-    def __init__(self, input, spokenForms=None, regularForms=None, inbetweenWords=None):
+    def __init__(self, Input, spokenForms=None, regularForms=None, inbetweenWords=None):
         self.needsSpokenForm = spokenForms or needsSpokenForm
         self.regularForm = regularForms or regularForm
         self.inbetweenWords = inbetweenWords or inBetweenWords  # from formal parms or global (Dutch)
@@ -212,20 +208,20 @@ combinations:
 ##        print 'needsSpokenForm: %s'% self.needsSpokenForm
 ##        print 'regularForm: %s'% self.regularForm
         
-        if isinstance(input, WrittenSpoken):
-            input = str(input)
-        if input.find('\\') > 0:
-            self.written =  input.split('\\')[0]
-            self.spoken =  input.split('\\')[ - 1]
-        elif input.find('-') > 0:
-            parts = input.split('-')
+        if isinstance(Input, WrittenSpoken):
+            Input = str(Input)
+        if Input.find('\\') > 0:
+            self.written =  Input.split('\\')[0]
+            self.spoken =  Input.split('\\')[ - 1]
+        elif Input.find('-') > 0:
+            parts = Input.split('-')
             results = list(map(WrittenSpoken, parts))
             written = [r.written for r in results]
             spoken = [r.spoken for r in results]
             self.written = '-'.join(written)
             self.spoken = ' '.join(spoken)
-        elif input.find(' ') > 0:
-            parts = input.split(' ')
+        elif Input.find(' ') > 0:
+            parts = Input.split(' ')
             results = list(map(WrittenSpoken, parts))
             written = [r.written for r in results]
             spoken = [r.spoken for r in results]
@@ -233,14 +229,14 @@ combinations:
             self.spoken = ' '.join(spoken)
         else:
             # capitalize NOT if in inbetweenWords:
-            if input in self.inbetweenWords:
-                self.written = input
+            if Input in self.inbetweenWords:
+                self.written = Input
             else:
-                self.written = input.capitalize()
-            self.spoken = self.getSpokenForm(input)
+                self.written = Input.capitalize()
+            self.spoken = self.getSpokenForm(Input)
             
-            if input.lower() in needsSpokenForm:
-                self.spoken = needsSpokenForm[input.lower()]
+            if Input.lower() in needsSpokenForm:
+                self.spoken = needsSpokenForm[Input.lower()]
 
     def __add__(self, other):
         new = WrittenSpoken(self)
@@ -261,7 +257,7 @@ combinations:
             result = self.written
         else:
             result = self.written  + '\\' + self.spoken
-        if result[0] in utilsqh.lowercase:
+        if result[0] in string.ascii_lowercase:
             result = result[0].capitalize() + result[1:]
         return result
 
@@ -292,32 +288,22 @@ def cleanLine(line):
         line = line.replace(" -", "-")
 
     if line.find("_") >= 0:
-        return
-    if line[0] in utilsqh.digits:
-        return
+        return None
+    if line[0] in string.digits:
+        return None
     return line
 
-
-def runPanel(frame, notebook):
-    """add functions to controlpanel"""
-    print('starting cp %s'% __name__)
-    from controlpanel import ControlPanel
-    cp = ControlPanel(notebook, frame, -1, __name__)
-    cp.addFunction(namelist, 'inputfile, outputfile')
-    cp.addDefaults()
-    print('started cp %s'% __name__)
-    return cp
-
 def _test():
+    #pylint:disable=C0415
     import doctest
     doctest.master = None
     return  doctest.testmod()
 
 def _testrun():
     # need files on computer QH for this, sorry...
-    dir = path('d:/projects/unittest/namelist')
-    infile = dir/'names input.txt'
-    outfile = dir/'names output.txt'
+    _dir = Path('C:/projects/unittest/namelist')
+    infile = _dir/'names input.txt'
+    outfile = _dir/'names output.txt'
     namelist(infile, outfile)
 
 if __name__ == "__main__":

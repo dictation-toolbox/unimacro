@@ -2,7 +2,7 @@
 import re
 import sys
 import copy
-import utilsqh
+from dtactions.unimacro import utilsqh
 
 reNote = re.compile(r"""([a-g](?:as|es|is|s|f)?)  # the notename also with flat (bf == b flat, english)
                         ([,']*)                 # elevation (octave up/down                        

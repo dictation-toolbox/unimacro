@@ -45,22 +45,23 @@ as "30", "3".
 QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
-from actions import doKeystroke as keystroke
-from actions import doAction as action
-from actions import getMetaAction
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
+from unimacro.actions import getMetaAction
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+
 import iban  # special module for banknumber (European mainly I think)
-import types
+import types  
 
 # Note: lists number1to99 and number1to9 and n1-9 and n20-90 etc. are taken from function getNumberList in natlinkutilsbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
     try:
@@ -253,7 +254,7 @@ class ThisGrammar(ancestor):
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
-        self.progInfo = natqh.getProgInfo(moduleInfo)
+        self.progInfo = unimacroutils.getProgInfo(moduleInfo)
   
     def initialize(self):
         if not self.language:
@@ -463,7 +464,7 @@ class ThisGrammar(ancestor):
             isTop = (self.progInfo[2] == 'top')
             ma = getMetaAction('pagestart', progInfo=self.progInfo)
             if not ma:
-                print('no metaactions defined for pagestart, stop command %s'% self.progInfo[0])
+                print('no metaactions defined for pagestart, stop command %s'% self.progInfo.prog)
                 if isTop:
                     if self.through:
                         keystroke(" page %s-%s"% (self.page, self.through))
@@ -475,7 +476,7 @@ class ThisGrammar(ancestor):
 
             action("<<pagestart>>")
             keystroke(self.page)
-            if self.progInfo[0] == 'pdf24-creator' and self.through == '':
+            if self.progInfo.prog == 'pdf24-creator' and self.through == '':
                 self.through = self.page
 
             if self.through:
@@ -535,7 +536,7 @@ class ThisGrammar(ancestor):
             number = str(number)
 
         keystroke(number)
-        prog = natqh.getProgName()
+        prog = unimacroutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:
@@ -574,6 +575,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None 

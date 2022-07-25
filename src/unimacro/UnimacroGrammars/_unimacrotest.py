@@ -12,31 +12,22 @@ or all (call unimacro test all)
 instance variables that are passed to all tests:
 -self.doAll (so the test knows it is a single test or a complete suite)
 
-
 """
-__version__ = "$Rev: 561 $ on $Date: 2015-11-01 18:03:43 +0100 (zo, 01 nov 2015) $ by $Author: quintijn $"
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
-# (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
-#
-# This module was written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-# (started march 2007)
-#
-
-import unittest
-import natlink
 import os
 import sys
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-import utilsqh
+import unittest
 import glob
-import actions
+import natlink
+from natlinkcore import natlinkstatus
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import utilsqh
+from dtactions.unimacro import unimacroactions as actions
+
+status = natlinkstatus.NatlinkStatus()
 
 class UnittestGrammar(natbj.IniGrammar):
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
     name = 'unimacro test'
     iniIgnoreGrammarLists = ['tests'] # are set in this module
     gramSpec = """
@@ -77,7 +68,7 @@ class UnittestGrammar(natbj.IniGrammar):
         the result (the testNames) can then be filled in the list {tests}
         self.allTests (dict) contains the names: files entries
         """
-        self.testFolder = os.path.join(natqh.getUnimacroDirectory(), "unimacro_test")
+        self.testFolder = os.path.join(status.getUnimacroDirectory(), "unimacro_test")
         testFiles = glob.glob(os.path.join(self.testFolder, "*test.py"))
 ##        print 'testFiles: %s'% testFiles
         testNames = list(map(self.extractTestName, testFiles))
@@ -97,7 +88,7 @@ class UnittestGrammar(natbj.IniGrammar):
         super(UnittestGrammar, self).showInifile(commandExplanation=commandExplanation)
 
     def doUnitTests(self, tests):
-        self.checkSysPath(self.testFolder)  # append unimacro_test if needed
+        # self.checkSysPath(self.testFolder)  # append unimacro_test if needed
         suiteAll = None
         self.activeTests = []
 
@@ -123,6 +114,12 @@ class UnittestGrammar(natbj.IniGrammar):
     def addUnitTest(self, test, fileName):
         """do one of the unittests"""
 ##        actions.Message("starting test %s"% fileName)
+
+        test_path = os.path.join(sys.prefix, 'Lib', 'site-packages', 'unimacro', 'unimacro_test')
+        if not os.path.isdir(test_path):
+            raise OSError(f'cannot add unittest for Unimacro, test_path invalid: "{test_path}"')
+        if not test_path in sys.path:
+            sys.path.append(test_path)
         modName = os.path.basename(fileName)
         modName = utilsqh.removeFromEnd(modName, ".py", ignoreCase=1)
     
@@ -132,10 +129,9 @@ class UnittestGrammar(natbj.IniGrammar):
             testClass = getattr(testMod, testClassName)
         except AttributeError:
             print('****cannot find test class in test module, skipping test: %s'% testClassName)
-            return
+            return None
         suite = unittest.makeSuite(testClass, 'test')
         return suite
-
 
     def checkSysPath(self, folder):
         """add to sys.path if not present yet"""
@@ -192,7 +188,10 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
+
+

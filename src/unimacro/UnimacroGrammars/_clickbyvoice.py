@@ -28,16 +28,17 @@ in the foreground
 
 
 import natlink
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils as natut
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 # use extension Click by Voice
 visiblePause = 0.4
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -57,6 +58,13 @@ class ThisGrammar(ancestor):
 <shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
 <hidenumbers> exported = (hide) (numbers) [after {n1-20}];
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
+
+# is already in _tasks grammar:
+# <navigatetabs> exported = ((next|previous) tab) [{n1-20} | {tabcommands}]|
+#                            (tab (back|forward) [{n1-20} | {tabcommands}]);
+# <numberedtabs> exported = tab {n1-n20} [{tabcommands}];
+# <tabactions> exported = tab {tabcommands};
+
 
 <navigatepages> exported = ((next|previous|{pagecommands}) page)|
                             (page (back|forward) [{n1-20}]) |
@@ -81,7 +89,7 @@ class ThisGrammar(ancestor):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        progInfo = natqh.getProgInfo(moduleInfo)
+        progInfo = unimacroutils.getProgInfo(moduleInfo)
         # print('progInfo: %s'% repr(progInfo))
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
@@ -162,6 +170,56 @@ class ThisGrammar(ancestor):
         self.doOption(self.hideNumbers)
         self.finishInputControl()
 
+    def gotResults_tabactions(self,words,fullResults):
+        """do an actions to the current tab (doc)"""
+        # print(f'tabactions words: {words}')
+        command = self.getFromInifile(words, 'tabcommands')
+            
+        if command:
+            action(command)
+
+    def gotResults_numberedtabs(self,words,fullResults):
+        """go to a numbered tab (doc) and do an optional action"""
+        print(f'numberedtabs: {words}')
+        command = self.getFromInifile(words, 'tabcommands')
+
+        counts = self.getNumbersFromSpoken(words)
+        if not counts:
+            print(f'_clickbyvoice, numberedtabs, no valid tab number found: {words}')
+            return
+            
+        if command:
+            action(command)
+
+    def gotResults_navigatetabs(self,words,fullResults):
+        """go to next or previous tab(s) (documents) and refresh possibly"""
+        print(f'navigate tabs: {words}')
+        dir = None
+        command = self.getFromInifile(words, 'tabcommands',noWarning=1)
+        
+        if self.hasCommon(words, ['next', 'verder', 'volgende', 'vooruit', 'forward']):
+            dir = 'tab'
+        elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
+            dir = 'shift+tab'
+        else:
+            print(f'no direction found in command: {words}')
+        
+        counts = self.getNumbersFromSpoken(words)
+        if counts:
+            count = counts[0]
+        else:
+            count = 1
+##        print 'tabs:     dir: %s, count: |%s|, command: |%s|'% (dir, counlinker balkt, command)
+
+        if dir:        
+            while count > 0:
+                count -= 1
+                keys = '{ctrl+' + dir + '}'
+                keystroke(keys)
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back tabs in chrome
+            
+        if command:
+            action(command)
 
     def gotResults_navigatepages(self,words,fullResults):
         """go to next or previous page(s) and refresh possibly"""
@@ -188,7 +246,7 @@ class ThisGrammar(ancestor):
             while count > 0:
                 count= count -1
                 keystroke('{alt+%s}'%(dir))
-                natqh.Wait(0.5) #0.3 seem too short for going back pages in chrome
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back pages in chrome
             
         if command:
             action(command)
@@ -218,7 +276,7 @@ class ThisGrammar(ancestor):
             print('command: %s, commandparts: %s'% (command, commandparts))
         self.doOption(command)
         for additional in commandparts:
-            natqh.Wait(visiblePause)
+            unimacroutils.Wait(visiblePause)
             keystroke(additional)
         self.finishInputControl()
         
@@ -227,17 +285,17 @@ class ThisGrammar(ancestor):
     def getInputcontrol(self):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
-        natqh.Wait()   ## longer: natqh.Wait(visiblePause)
+        unimacroutils.Wait()   ## longer: unimacroutils.Wait(visiblePause)
         for i in range(10):
-            progInfo = natqh.getProgInfo()
+            progInfo = unimacroutils.getProgInfo()
             if progInfo.topchild == 'child':
                 if i: print('found input window after %s steps'% i)
                 break
-            natqh.Wait()
+            unimacroutils.Wait()
         else:
             print("_clickbyvoice failed to reach input window")
         # print("found input window of clickbyvoice")
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
         
         
     def doOption(self, option):
@@ -247,8 +305,8 @@ class ThisGrammar(ancestor):
     def finishInputControl(self):
         """press enter, after a little bit of waiting
         """
-        natqh.visibleWait()
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
+        unimacroutils.visibleWait()
         keystroke("{enter}")
         
     def fillInstanceVariables(self):
@@ -278,6 +336,8 @@ else:
     thisGrammar = None
     
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
+

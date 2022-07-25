@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>technical details, Working with subversion</title>
+<meta charset="UTF-8">
+<meta name="description" content="Natlink and Unimacro, for a Dragon NaturallySpeaking macro facility">
+<meta name="keywords" content="Installation, Natlink/Vocola/Unimacro, Install, python, 27, technical, details, Working, subversion, Working with subversion, technical details, Install for python 27, Installation Natlink/Vocola/Unimacro">
+<meta name="author" content="QH software, training & advies, 2002/2017 (informatie: info at sitegen.nl)">
+<link rel="stylesheet" href="../../../../unimacro.css" type="text/css" title="unimacro.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../../../unimacroie6.css" type="text/css" title="unimacroie6.css">
+<![endif]-->
+<!--[if IE 7]>
+<link rel="stylesheet" href="../../../../unimacroie7.css" type="text/css" title="unimacroie7.css">
+<![endif]-->
+<!--[if IE 8]>
+<link rel="stylesheet" href="../../../../unimacroie8.css" type="text/css" title="unimacroie8.css">
+<![endif]-->
+<!--[if IE 9]>
+<link rel="stylesheet" href="../../../../unimacroie9.css" type="text/css" title="unimacroie9.css">
+<![endif]-->
+<script language="javascript" src="../../../../unimacro.js" type="text/javascript"></script><link href="/unimacro/favicon.ico" rel="shortcut icon" type="image/x-icon"></head>
+<body onload="afterLoad();" onresize="onResize();"><div class="header" id="header"><!-- === start of header === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="body" width="100%">
+<tr><td class="banner">Unimacro</td><td width="30%">&nbsp;</td></tr></table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td height="15"></td></tr></table>
+<div class="topmenuwide"><table border="0" cellspacing="0" class="menu" width="100%"><tr><td align="center" class="topon" height="28" onclick="location='../../../index.html';" onmouseout="status='';" onmouseover="status='Installation Natlink/Vocola/Unimacro';"><a href="../../../index.html">Installation Natlink/Vocola/Unimacro</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../../../features/index.html';" onmouseout="status='';" onmouseover="status='Features';"><a href="../../../../features/index.html">Features</a></td><td class="topspacer" height="28" width="5">&nbsp;</td><td align="center" class="topoff" height="28" onclick="location='../../../../grammars/index.html';" onmouseout="status='';" onmouseover="status='Grammars';"><a href="../../../../grammars/index.html">Grammars</a></td><td class="topspacer" height="28" width="5">&nbsp;</td>
+<td align="center" class="topoff" height="28" onclick="location='../../../../aboutunimacro/index.html';" onmouseout="status='';" onmouseover="status='About';"><a href="../../../../aboutunimacro/index.html">About</a></td></tr></table></div>
+<table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../../index.html">home</a> > <a href="../../../index.html">installation natlink/vocola/unimacro</a> > <a href="../../installationstableversionpython2.html">install for python 27</a> > <a href="../index.html">technical details</a> > working with subversion</td></tr></table></td></tr></table>
+
+<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<table class="leftmenu" cellspacing="0" width="100%">
+<tr><td class="lefton" colspan="4"><a href="../../installationstableversionpython2.html">Install for python 27</a></td></tr>
+    
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../installationstableversionpython2.html">Installation stable version python2</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../configuration.html">Configuration</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../howtostart.html">How to start</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../logofchanges/index.html">Log of changes</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../problemswithinstallation.html">Problems with installation</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../problemswithnatlink.html">problems with NatLink</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../speechmodel.html">Speech Model</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../inifilestrategy.html">Ini file strategy</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../configureadministratorrights.html">Configure administrator rights</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="3"><a href="../../settinghome/index.html">Setting HOME</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="lefton" colspan="3"><a href="../index.html">Technical details</a></td></tr>
+        
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../natlinkstatus.html">Natlinkstatus</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../natlinkconfigfunctions.html">Natlinkconfigfunctions</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../natlinkcorefunctions.html">Natlinkcorefunctions</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../configuregui.html">configure GUI</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../batchmodeforconfiguration.html">Batch mode for configuration</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../installer.html">Installer</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../natlinkmainvocolamain.html">Natlinkmain_vocola_main</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../natlinkmain.html">Natlinkmain</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../natlinkutils.html">Natlinkutils</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../nsformat.html">Nsformat</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../testingnatlink.html">Testing natlink</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="lefton" colspan="2">Working with subversion</td></tr>
+            
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="checkoutexample.html">Checkout example</a></td></tr>
+
+<tr><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="back" width="20">&nbsp;</td><td class="leftoff"><a href="relocateexample.html">Relocate example</a></td></tr>
+
+<tr><td class="leftoff" colspan="4"><a href="../../../installationexperimentalversionpython3.html">Installation experimental version python3</a></td></tr>
+
+<tr><td class="leftoff" colspan="4"><a href="../../../logofchangespython3.html">log of changes Python 3</a></td></tr>
+</table>
+
+<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Working with subversion (SVN)</h1>
+<h1>Migration to new repositories</h1>
+<h3>Summary</h3>
+<p>The new repositories for the projects NatLink, Unimacro and Voicecode are:</p>
+<ul><li>NatLink: https://svn.code.sf.net/p/natlink/code</li><li>Unimacro: https://svn.code.sf.net/p/unimacro/code</li><li>Voicecode: https://svn.code.sf.net/p/voicecode/code</li></ul>
+
+<p>and in all three repositories the <strong>trunk</strong> is used.</p>
+
+<p>In all three cases you will be prompted for username (sourceforge id) and password. I am not aware of an anonymous login possibility.</p>
+
+<h3>Unimacro</h3>
+<p>Unimacro has on February 12, 2013 been moved to a new location. See new address above and more details below. For those who were on subversion for Unimacro before can do a "relocate" to <strong>https://svn.code.sf.net/p/unimacro/code</strong> and then click on the three dots and choose <strong>trunk</strong>. See <a href="relocateexample.html">example</a>.</p>
+
+<h3>NatLink</h3>
+<p>NatLink has been moved to a new location (10 March 2013). Subversion update seems to work as normal, but when you commit things you will get the following message (assuming you use TortoiseSVN):</p>
+
+<p><img src="subversionerrormessagenatlink.png" alt="subversionerrormessagenatlink" height="635" title="NatLink subversion error message" width="783"></p>
+
+<p>You can do a subversion relocate to:</p>
+<p><img src="subversionnatlinkrelocate.png" alt="subversionnatlinkrelocate" height="478" width="738"></p>
+
+<p>Then enter the new location (please type in, no paste): <strong>https://svn.code.sf.net/p/natlink/code</strong> and then click on the three dots and choose <strong>trunk</strong>. See <a href="relocateexample.html">example</a>.</p>
+
+<h3>VoiceCode</h3>
+<p>The same for voicecode (10 March 2013). Do a subversion relocate, and choose: <strong>https://svn.code.sf.net/p/voicecode/code</strong> and then click on the three dots and choose <strong>trunk</strong>. See <a href="relocateexample.html">example</a>.</p>
+
+<p>When all is succesfull, after having been prompted for your sourceforge password, you will get the following message:</p>
+
+<p><img src="voicecoderelocationsuccesfull.png" alt="voicecoderelocationsuccesfull" height="136" title="end of subversion relocate for voicecode repository" width="402"></p>
+
+<h1>Why and how to work with subversion</h1>
+<p>If you want more recent versions of files than the latest release, or if you want to contribute to NatLink, possibly Vocola, or Unimacro, you should get your files from SourceForge with subversion.</p>
+<ul><li>First you need a sourceforge id (USERNAME and password), as far as I know no anonymous checkout is possible. Goto <a href="https://sourceforge.net/" target="_blank">sourceforge</a> and click on  <strong>join</strong> top right.</li><li>Then get Tortoise SVN from tigris tortoisesvn.</li><li>Now remove the subdirectories of <strong>Unimacro</strong> and <strong>NatLink</strong> (in case of getting both with SVN) or either one of them. Leaving you in <strong>C:\NatLink</strong>. (Another starting point, like D:\NatLink is also possible and even recommended.)</li></ul>
+
+<p>These were the preliminaries. Now proceed (and study the <a href="checkoutexample.html">example</a>):</p>
+<ul><li>So now assume the root of NatLink is in <strong>C:\NatLink</strong>. And you have removed one or both subdirectories <strong>NatLink</strong> and <strong>Unimacro</strong>.</li></ul>
+
+<p>NatLink</p><ul><li>For <strong>NatLink</strong>: right click on <strong>C:\NatLink</strong> and choose <strong>SVN checkout</strong>.</li><li>Fill in for URL of repository (please type in, no paste): <strong>https://svn.code.sf.net/p/natlink/code</strong></li><li>click on the three dots and choose <strong>trunk*-choose for checkout directory *C:\NatLink\NatLink</strong></li><li>you are probably prompted twice for loging (sourceforge id) and password</li></ul>
+
+<p><img src="checkoutnatlink.png" alt="checking out NatLink with SVN (subversion)" height="444" title="checking out NatLink with SVN (subversion)" width="544"></p>
+
+<h3>Unimacro</h3><ul><li>For <strong>Unimacro</strong>: also right click on <strong>C:\NatLink</strong> and choose <strong>SVN checkout</strong>:</li><li>Fill in as repository (please type in, no paste): <strong>https://svn.code.sf.net/p/unimacro/code</strong>,</li><li>click on the three dots and choose <strong>trunk*-choose for checkout directory *C:\NatLink\NatLink</strong></li><li>choose as checkout directory <strong>C:\NatLink\Unimacro</strong>,</li><li>you are probably prompted twice for loging (sourceforge id) and password</li></ul>
+
+<p><img src="checkoutunimacro.png" alt="checking out Unimacro with SVN (subversion)" height="443" title="checking out Unimacro with SVN (subversion)" width="548"></p>
+
+<h3>Voicecode</h3><ul><li>Similar actions are needed to get Voicecode: right click on <strong>C:\NatLink</strong> and choose <strong>SVN checkout</strong>:</li><li>Fill in as repository (please type in, no paste): <strong>https://svn.code.sf.net/p/voicecode/code</strong>,</li><li>click on the three dots and choose <strong>trunk*-choose for checkout directory *C:\NatLink\NatLink</strong></li><li>choose as checkout directory <strong>C:\NatLink\Voicecode</strong>,</li><li>you are probably prompted twice for loging (sourceforge id) and password</li></ul>
+
+<p><img src="checkoutvoicecode.png" alt="checking out Voicecode with SVN (subversion)" height="391" title="checking out Voicecode with SVN (subversion)" width="468"></p>
+
+<p>Note: checking out Voicecode takes quite some time, you will be seeing the following for some time:</p>
+
+<p><img src="voicecodecheckouttakessometime.png" alt="checking out Voicecode takes some time" height="402" title="checking out Voicecode takes some time" width="824"></p>
+
+<h3>Directory layout</h3>
+<p>After checking out NatLink (which includes Vocola), Unimacro and Voicecode (only for voice coders), you will see the following directory layout:</p>
+
+<p><img src="directorylayoutaftersubversioncheckout.png" alt="directory layout after subversion checkout" height="290" title="directory layout after subversion checkout" width="535"></p>
+
+<h3>Vocola:</h3>
+<p>Note the Vocola files are in the NatLink repository.</p>
+<h3>Update</h3>
+<p>For updating you can right click on one of the folders and choose <strong>SVN update</strong>. You should do a separate Update for each of the three folders (if you checked them out).</p>
+
+<h3>Contribute: Commit</h3>
+<p>If you want to commit changes (contribute to one of the projects):</p>
+<ul><li>You probably are by now registered at <a href="https://sourceforge.net/account/registration/" target="_blank">SourceForge.net</a> by now,</li><li>You need to get permission from one of the repository administrators to do so. Mail to Quintijn, see email link at the bottom of this page.</li></ul>
+
+<p>If that has been done, you can also commit
+changes by right clicking on the correct folder and choose <strong>commit</strong>. Your password for SourceForge will be asked once.</p>
+
+<h1>How to find <strong>configurenatlink.py</strong> or <strong>natlinkconfigfunctions.py</strong></h1>
+
+<p>In case you checked out things in different folders, or didn't install the .exe installer before you took above steps, you will have to find the configure GUI or the configure command line interface in the Windows explorer.</p>
+
+<p>Go to <strong>C:\NatLink\NatLink\confignatlinkvocolaunimacro</strong>.</p>
+<ul><li>With the python file <strong>start_configurenatlink.py</strong> you can start the config program, in "elevated" mode. Just run this python file by double clicking on it in an explorer window.</li><li>With the file <strong>start_natlinkconfigfunctions.py</strong> you start the command line interface, also in elevated mode. (See link(/installation/technicaldetails/natlinkconfigfunctions.html, "instructions on natlinkconfigfunctions").</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+
+<table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
+<tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../../index.html">home</a> > <a href="../../../index.html">installation natlink/vocola/unimacro</a> > <a href="../../installationstableversionpython2.html">install for python 27</a> > <a href="../index.html">technical details</a> > working with subversion > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../../../sitemap.html#workingwithsubversion';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../../../sitemap.html#workingwithsubversion">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
+<script language="javascript" type="text/javascript"><!--
+m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
+
+// --></script>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;mrt 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+
+<!-- === end of footer === --></div>
+<script language="javascript" type="text/javascript"><!--
+function onResizeFunctions(){
+
+bodyHeight(170);
+
+}
+
+
+function onLoadFunctions(){
+
+onResizeFunctions();
+
+
+return;
+}
+
+
+// --></script>
+
+</body></html>

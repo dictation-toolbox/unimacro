@@ -20,19 +20,20 @@ others continuously.
 import time
 import os
 import sys
-import inivars
+from natlinkcore import inivars
 import types
 import copy
 import natlink
 import nsformat
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
+from natlinkcore import natlinkutils as natut
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
 
-language = natqh.getLanguage()        
+language = unimacroutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -59,7 +60,7 @@ class ThisGrammar(ancestor):
 """ 
 
     def __init__(self):
-        self.language = natqh.getLanguage()
+        self.language = unimacroutils.getLanguage()
         # here the grammar is not loaded yet, but the ini file is present
         self.startInifile()
         #print 'requireTimes: %s, simpleOrExtended: %s'% (self.requireTimes, self.doKeystrokesExtended)
@@ -125,11 +126,11 @@ class ThisGrammar(ancestor):
         if self.prevModule == moduleInfo:
             return
 
-        progInfo = natqh.getProgInfo(moduleInfo)       
+        progInfo = unimacroutils.getProgInfo(moduleInfo)       
 
         self.isIgnored = 0
 
-        if self.ignore and natqh.matchWindow(self.ignore, progInfo=progInfo):
+        if self.ignore and unimacroutils.matchWindow(self.ignore, progInfo=progInfo):
             self.isIgnored = 1
             return
 
@@ -204,8 +205,8 @@ class ThisGrammar(ancestor):
         #print '_keystrokes, do a "%s" mouse click'% button
         if not self.doWaitForMouseToStop():
             raise Exception("_keystrokes, mouse did not stop")
-        natqh.buttonClick(button, nClick)
-        natqh.visibleWait()
+        unimacroutils.buttonClick(button, nClick)
+        unimacroutils.visibleWait()
         self.hadClick = button             
 
     def subrule_contextmenu(self, words):
@@ -345,7 +346,7 @@ class ThisGrammar(ancestor):
             if not self.doMouseMoveStopClick():
                 print("you should move the mouse a bit at least!")
                 return
-        possibleButtons = natqh.joelsButtons
+        possibleButtons = unimacroutils.joelsButtons
         possibleClicks = ['1', '2', '3']
         clickrules = self.getFromInifile(words[0], 'click')
         #print 'clickrules: %s'% clickrules
@@ -372,8 +373,8 @@ class ThisGrammar(ancestor):
     
         if self.nextRule == 'contextmenu' and nClick == 1:
             button = 'right'
-        natqh.buttonClick(button, nClick, modifiers=self.mod)
-        natqh.visibleWait()
+        unimacroutils.buttonClick(button, nClick, modifiers=self.mod)
+        unimacroutils.visibleWait()
         self.hadClick = button
 
 
@@ -413,7 +414,7 @@ class ThisGrammar(ancestor):
     def gotResults_lastkey(self, words,fullResults):
         self.flush()
         self.flushAll()  
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
 
     def gotResults(self, words,fullResults):
         self.flush()
@@ -428,12 +429,12 @@ class ThisGrammar(ancestor):
         self.hadClick = 0
 
         if self.cap:
-            self.key = natqh.doCaps(self.key)
+            self.key = unimacroutils.doCaps(self.key)
 
         if self.mod:
-            self.key = natqh.doModifier(self.key, self.mod)
+            self.key = unimacroutils.doModifier(self.key, self.mod)
         if self.count != 1:
-            self.key = natqh.doCount(self.key, self.count)
+            self.key = unimacroutils.doCount(self.key, self.count)
        
         if type(self.key) == list:
             print('_keystrokes, flush: warning, self.key is list: %s'% self.key)
@@ -485,19 +486,19 @@ class ThisGrammar(ancestor):
             self.cap = 3
             
     def windowPolicy(self, modInfo=None, progInfo=None): 
-        progInfo = progInfo or natqh.getProgInfo(modInfo)
+        progInfo = progInfo or unimacroutils.getProgInfo(modInfo)
         #print 'window policy------progInfo: %s'% repr(progInfo)
         #print 'deactivaterules: %s'% self.deactivateRules
         #print 'activaterules: %s'% self.activateRules
         modeSet = []
         for mode in self.modes:
-            if natqh.matchWindow(self.modes[mode], progInfo=progInfo):
+            if unimacroutils.matchWindow(self.modes[mode], progInfo=progInfo):
                 modeSet.append(mode)
         self.modeSet = set(modeSet)
         if modeSet: return tuple(modeSet)
 
-        if natqh.matchWindow(self.activateRules, progInfo=progInfo):
-            if natqh.matchWindow(self.deactivateRules, progInfo=progInfo):
+        if unimacroutils.matchWindow(self.activateRules, progInfo=progInfo):
+            if unimacroutils.matchWindow(self.deactivateRules, progInfo=progInfo):
                 return 'inactive'
             return 'active'
         else:
@@ -618,6 +619,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
@@ -628,3 +630,4 @@ def changeCallback(type,args):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
+

@@ -37,11 +37,12 @@ import time
 import os
 import os.path
 import win32api
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
 
 #aantal carden en aantal stapelplaatsen:
@@ -59,7 +60,7 @@ deltaY = 14
 pauzesDelta = 0.1
 minPause = 0.5
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 ancestor = natbj.DocstringGrammar
 class ThisGrammar(ancestor):
@@ -110,7 +111,7 @@ class ThisGrammar(ancestor):
         winHandle = moduleInfo[2]
         if self.prevHandle == winHandle: return
         self.prevHandle = winHandle
-        if moduleInfo[0].lower().find('solitaire.exe') > 0 and natqh.isTopWindow(moduleInfo[2]):
+        if moduleInfo[0].lower().find('solitaire.exe') > 0 and unimacroutils.isTopWindow(moduleInfo[2]):
             if self.checkForChanges:
                 print('grammar solitaire (%s) checking the inifile'% self.name)
                 self.checkInifile()
@@ -159,13 +160,13 @@ class ThisGrammar(ancestor):
         "card {cnum}"
         k = self.getNumberFromSpoken(words[-1])
         self.moveTo(cardpos(k))
-        natqh.buttonClick()
+        unimacroutils.buttonClick()
 
     #  Draw a new card and position on the last opened card
     def rule_newcard(self, words):
         "'new card'|next|continue"
         self.moveTo(firstrowpos(1))
-        natqh.buttonClick()
+        unimacroutils.buttonClick()
         self.moveTo(firstrowpos(2))
         if self.hasCommon(words, 'continue'):
             timeEachMilliseconds = max(1, self.pauseTime)*500
@@ -183,7 +184,7 @@ class ThisGrammar(ancestor):
             pass
         elif self.hasCommon(words, 'higher'):
             d = -d
-        natqh.doMouse(0,2,0,d,0)
+        unimacroutils.doMouse(0,2,0,d,0)
 
     #  Deze grammatica regel stelt de waittijd na elk (deel) van een
     #    commando in. Zie "pauzes" bovenin dit standpunt
@@ -198,28 +199,28 @@ class ThisGrammar(ancestor):
         "to ((stack {snum})|{cnum})"
         
         to = self.getNumberFromSpoken(words[-1])
-        natqh.rememberMouse()
+        unimacroutils.rememberMouse()
 
         if self.hasCommon(words, 'stack'):
             to = firstrowpos(to+3)
         else:
             to = cardpos(to)
         self.dragTo(to)
-        natqh.cancelMouse()
-        natqh.buttonClick()
+        unimacroutils.cancelMouse()
+        unimacroutils.buttonClick()
 
     def rule_testposition(self, words):
         "test position ((stack {snum})|{cnum})"
         #test the stack and piles positions
         #lefttop = (0,0)
-        #natqh.doMouse(0, 5, 0,0, 'move')
-        #x, y = natqh.getMousePosition(1)
+        #unimacroutils.doMouse(0, 5, 0,0, 'move')
+        #x, y = unimacroutils.getMousePosition(1)
         #print 'screen x,y: %s, %s'% (x,y)
-        #x, y = natqh.getMousePosition(5)
+        #x, y = unimacroutils.getMousePosition(5)
         #print 'client: x,y: %s, %s'% (x,y)
         #time.sleep(2)
         to = self.getNumberFromSpoken(words[-1])
-        natqh.rememberMouse()
+        unimacroutils.rememberMouse()
 
         if self.hasCommon(words, 'stack'):
             to = firstrowpos(to+3)
@@ -235,7 +236,7 @@ class ThisGrammar(ancestor):
         #the first word is optional,and is recognised with the function
         #self.hasCommon, which can handle translations or synonyms
         print('cardnumto: %s'% words)
-        natqh.rememberMouse()
+        unimacroutils.rememberMouse()
         if self.hasCommon(words[0],['card']):
             ww = words[1:]
         else:
@@ -245,7 +246,7 @@ class ThisGrammar(ancestor):
         From = self.getNumberFromSpoken(words[0])
         self.moveTo(cardpos(From))        
 
-        natqh.rememberMouse()
+        unimacroutils.rememberMouse()
         to = self.getNumberFromSpoken(words[-1])
 
         # check if you go to a stack or another card column:        
@@ -254,15 +255,15 @@ class ThisGrammar(ancestor):
         else:
             to = cardpos(to)
         self.dragTo(to)
-        natqh.cancelMouse()
-        natqh.buttonClick()
+        unimacroutils.cancelMouse()
+        unimacroutils.buttonClick()
     
     def rule_cardto(self, words):
         "card to ((stack {snum})|{cnum})"
         #drag the last drawn card to a stack or to a pile
         print('cardto: %s'% words)
 
-        natqh.rememberMouse()
+        unimacroutils.rememberMouse()
         self.moveTo(firstrowpos(2))        
         to = self.getNumberFromSpoken(words[-1])
         
@@ -271,8 +272,8 @@ class ThisGrammar(ancestor):
         else:
             to = cardpos(to)
         self.dragTo(to)
-        natqh.cancelMouse()
-        natqh.buttonClick()
+        unimacroutils.cancelMouse()
+        unimacroutils.buttonClick()
     
     def gotResults(self,words,fullResults):
         """if stack auto, do after each move a {ctrl+a}"""
@@ -286,21 +287,21 @@ class ThisGrammar(ancestor):
     #   At the top of this file the increment of the pausing is given.
     def Wait(self, t=None):
         if not t:
-            natqh.Wait(self.pause*pauzesDelta+minPause)
+            unimacroutils.Wait(self.pause*pauzesDelta+minPause)
         else:
-            natqh.Wait(t)
+            unimacroutils.Wait(t)
 
     # move to the given position and have a short wait:
     def moveTo(self, pos):
-        natqh.doMouse(0,5, pos[0], pos[1], 'move')
+        unimacroutils.doMouse(0,5, pos[0], pos[1], 'move')
         self.Wait()
 
     # drag from current position to the new position
     # Pause a few times, dependent on the pause state.
     def dragTo(self, pos):
-        xold,yold = natqh.getMousePosition(5)
+        xold,yold = unimacroutils.getMousePosition(5)
         print('hold down: %s, %s'% (xold, yold))
-        natqh.doMouse(0,5,xold, yold, 'down')
+        unimacroutils.doMouse(0,5,xold, yold, 'down')
         xyincr = 50
         nstepsx = int(abs(pos[0]-xold)/xyincr)
         nstepsy = int(abs(pos[1]-yold)/xyincr)
@@ -312,15 +313,15 @@ class ThisGrammar(ancestor):
         for i in range(nsteps):
             x += xsteps
             y += ysteps
-            natqh.doMouse(0,5, x, y, 'move')
+            unimacroutils.doMouse(0,5, x, y, 'move')
             self.Wait(0.01)
         if x != pos[0] or y != pos[1]:
             print('final move: %s, %s, %s, %s'% (x, pos[0], y, pos[1]))
-            natqh.doMouse(0,5, pos[0], pos[1], 'move')
+            unimacroutils.doMouse(0,5, pos[0], pos[1], 'move')
             self.Wait(0.01)            
-        natqh.doMouse(0,5, pos[0], pos[1], 'move')
+        unimacroutils.doMouse(0,5, pos[0], pos[1], 'move')
         self.Wait(0.01)
-        natqh.releaseMouse()
+        unimacroutils.releaseMouse()
         self.Wait()
 
             
@@ -356,6 +357,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None

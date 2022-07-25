@@ -8,10 +8,10 @@
 # Quintijn, June 28, 2009
 
 import natlink
-natut = __import__('natlinkutils')
+from natlinkcore import natlinkutils
 
 
-ancestor = natut.GrammarBase
+ancestor = natlinkutils.GrammarBase
 class ThisGrammar(ancestor):
 
     gramSpec = """
@@ -34,7 +34,7 @@ class ThisGrammar(ancestor):
 
         self.prevInfo = moduleInfo
 
-        winHandle = natut.matchWindow(moduleInfo,'winword','Microsoft Word')
+        winHandle = natlinkutils.matchWindow(moduleInfo,'winword','Microsoft Word')
         if winHandle:
             if not self.isActive():
                 self.activateAll()
@@ -47,15 +47,17 @@ class ThisGrammar(ancestor):
         for w in words:
 ##            print 'got phword: %s'% w   # including the trigger words!
             L.append(w)
-        natut.playString(' '.join(L))
+        natlinkutils.playString(' '.join(L))
             
 # standard stuff:
 thisGrammar = ThisGrammar()
 thisGrammar.initialize()
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
         
     thisGrammar = None
+

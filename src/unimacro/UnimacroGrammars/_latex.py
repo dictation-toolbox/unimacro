@@ -1,7 +1,6 @@
 """Unimacro grammar to Dictate latex markup, as defined in an inifile
 
 """
-__version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
@@ -15,13 +14,14 @@ __version__ = "$Rev: 398 $ on $Date: 2011-03-07 14:50:15 +0100 (ma, 07 mrt 2011)
 
 import natlink
 import nsformat
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils as natut
+from dtactions.unimacro import unimacroutils
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doAction as action
 
-language = natqh.getLanguage()        
+language = unimacroutils.getLanguage()        
 ICAlphabet = natbj.getICAlphabet(language=language)
 
 # import re
@@ -29,7 +29,7 @@ ICAlphabet = natbj.getICAlphabet(language=language)
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
 
 
     name = "latex"
@@ -197,7 +197,7 @@ class ThisGrammar(ancestor):
 
 
     def get_selection_that(self, line = 0):
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
 
         if line:
             action('<<selectline>><<cut>>')
@@ -214,11 +214,11 @@ class ThisGrammar(ancestor):
             if len(contents) == 0:
                 print('_latex, empty contents, no last dicatate utterance available')
                 
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
         return contents
 
     def view_selection_current_line(self):
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         keystroke('{ctrl+c}')
         contents = natlink.getClipboard()
         if len(contents) == 0:
@@ -226,7 +226,7 @@ class ThisGrammar(ancestor):
             keystroke('{end}{shift+home}')
             keystroke('{ctrl+c}')
             contents = natlink.getClipboard()
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
         return contents
 
 
@@ -249,6 +249,8 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
+

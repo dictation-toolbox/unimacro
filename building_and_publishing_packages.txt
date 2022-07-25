@@ -28,6 +28,13 @@ will launch a windows powershell.
 enter the command "build-package".   That should work.  if you have untraccked git files you need to 
 address them by addding to .gitignore or adding to git.
 
+For developers of a repository: install the package with symlinks:
+With this trick you can change in your repository and test in the target configuration (in the site-packages).
+I suppose when you commit changes, you have to build your package again.
+
+the command: flit install --symlink
+
+
 
 To test  a package.
 
