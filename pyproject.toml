@@ -11,7 +11,8 @@ description-file = "README.md"
 
 requires=["dtactions",
           "debugpy >= 1.2.0",
-		"pywin32 >= 300"]
+		"pywin32 >= 300",
+		"natlinkcore"]
 		  
 		
 classifiers=[	"Development Status :: 4 - Beta",

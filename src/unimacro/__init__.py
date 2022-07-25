@@ -23,7 +23,7 @@ sitePackagesDir = get_site_packages_dir(__file__)
 import os
 import sys
 
-__version__ = '5.2.0'   ## enhance for pip 
+__version__ = '4.1.0'   
  
 def get_site_packages_dir(fileOfModule):
     """get directory of calling module, if possible in site-packages
