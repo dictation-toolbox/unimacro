@@ -47,7 +47,7 @@ If you wish to build or publish a package, there are:
 - publish_package_testpypi.ps1/.cmd to upload the packkage to the [Test Python Packaging Index](https://test.pypi.org/)
 
  
-
+BEFORE YOU PUBLISH review the version number of dependencies in pyproject.toml, see if you require newer ones.
 
 
 

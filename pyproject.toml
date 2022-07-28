@@ -9,10 +9,10 @@ author-email = "q.hoogenboom@antenna.nl"
 home-page = "https://qh.antenna.nl/unimacro/"
 description-file = "README.md"
 
-requires=["dtactions",
+requires=["dtactions >= 1.5.0",
           "debugpy >= 1.2.0",
 		"pywin32 >= 300",
-		"natlinkcore"]
+		"natlinkcore >= 5.2.1"]
 		  
 		
 classifiers=[	"Development Status :: 4 - Beta",
