@@ -34,6 +34,7 @@ addopts = "--capture=tee-sys "
 #you may want to run your tests without install natlinkcore with flit or pip
 pythonpath = [
     "src",
+	"src/unimacro",
     "src/unimacro/unimacro_test",
 ]
 testpaths= [
