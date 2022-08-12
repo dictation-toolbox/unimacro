@@ -39,6 +39,10 @@ pythonpath = [
 testpaths= [
       "src/unimacro/unimacro_test",
 ]
+python_files = [
+			"unittest*.py",
+			"test_*.py",
+	]
  
 
 [project.scripts]
