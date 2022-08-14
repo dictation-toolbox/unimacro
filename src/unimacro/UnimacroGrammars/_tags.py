@@ -14,7 +14,6 @@ august 2003/March 2022 (python3)
 import natlink
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.natlinkclipboard import Clipboard
 
@@ -57,7 +56,7 @@ class ThisGrammar(ancestor):
     def gotResults_tags(self,words,fullResults):
         self.letters = self.getFromInifile(words, 'tagname', noWarning=1)
         if not self.letters:
-            print('_tags, no valid tagname found: %s'% words)
+            print('_tags, no valid tagname found: {words}')
             return
         for w in words:
             char = self.getCharacterFromSpoken(w)
@@ -83,12 +82,12 @@ class ThisGrammar(ancestor):
         pleft = pright = ""
         if not tag:
             return
-        pleft = '<%s>' % tag
+        pleft = f'<{tag}>'
         if tag.find(' ') >= 0:
-            endTag  = ' '.split(tag)[0]
+            endTag  = ' '.split(tag, maxsplit=1)[0]
         else:
             endTag = tag
-        pright = '</%s>' % endTag
+        pright = f'</{endTag}>'
 
         # see of something selected, leave clipboard intact 
         cb =  Clipboard(save_clear=True)
@@ -104,7 +103,7 @@ class ThisGrammar(ancestor):
         if not contents:
             # go back so you stand inside the brackets:
             nLeft = len(pright)
-            keystroke('{left %s}'% nLeft)
+            keystroke(f'{{left {nLeft}}}')
 
     def fillDefaultInifile(self, ini):
         """filling entries for default ini file
@@ -136,8 +135,7 @@ class ThisGrammar(ancestor):
                 'script':  'script'
             }
         else:
-            print('-----filling ini file %s , invalid language: "%s"! '% \
-                  (self.__module__, self.language))
+            print('-----filling ini file {self.__module__}, invalid language: "{self.language}"!')
             ini.set('general', 'error', 'invalid language')
             return
         for k, v in list(tagNames.items()):

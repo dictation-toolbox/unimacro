@@ -58,7 +58,7 @@ class BracketsGrammar(ancestor):
         self.pleft = self.pright = '' # the left and right parts of the brackets
 
         if self.mayBeSwitchedOn == 'exclusive':
-            print('recog brackets, switch off mic: %s'% words)
+            print(f'recog brackets, switch off mic: {words}')
             natbj.SetMic('off')
 
     def importedrule_dgndictation(self, words):
@@ -72,7 +72,7 @@ class BracketsGrammar(ancestor):
 
             p = self.getFromInifile(w, 'brackets')
             if not p:
-                print('no valid brackets found for word: "%s"'% w)
+                print(f'no valid brackets found for word: "{w}"')
                 continue
             #print 'brackets, found: %s, %s'% (w, p)
             if len(p) > 2 and p.find("|") > 0:
@@ -106,7 +106,8 @@ class BracketsGrammar(ancestor):
         if self.between:
             cb = Clipboard(save_clear=True)
             action('<<cut>>')
-            text = cb.get_text(waiting_interval=0.1, waiting_iterations=3)
+            cb.wait_for_clipboard_change()
+            text = cb.get_text()
         else:
             text = ""
 
@@ -147,13 +148,10 @@ class BracketsGrammar(ancestor):
         if not text:
             # go back so you stand inside the (brackets):
             nLeft = len(self.pright) + len(rSpacing)
-            keystroke('{left %s}'% nLeft)
-# [(hello)]
+            keystroke(f'{{left {nLeft}}}')
+#
     def fillDefaultInifile(self, ini):
         """filling entries for default ini file
-
-complex
-
 
         """
         if self.language == 'nld':

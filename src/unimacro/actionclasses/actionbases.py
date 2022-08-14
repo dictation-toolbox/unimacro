@@ -1,6 +1,6 @@
-# actions classes for specific programs, base classes first:
-import unimacro.messagefunctions as mess
-from dtactions.unimacro import unimacroutils as natqh
+# actions classes for specific programs, base classes firstfrom:
+from dtactions import messagefunctions as mess
+from dtactions.unimacro import unimacroutils
 
 class AllActions:
     def __init__(self, progInfo):
@@ -11,6 +11,7 @@ class AllActions:
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
         self.progPath, self.prog, self.topTitle, self.toporchild, self.className, self.topHandle = progInfo
+        print(f'Unimacro, AllActions, self.prog: "{self.prog}"')
         self.progInfo = None
         
     def update(self, newProgInfo=None):

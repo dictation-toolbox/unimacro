@@ -12,7 +12,6 @@
 #pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107
 #pylint:disable=E1101
 
-import sys
 import os
 import filecmp
 import shutil
@@ -344,7 +343,7 @@ class UtilGrammar(ancestor):
             return
         if self.hasCommon(words, 'all grammars'):
             #print '%s all grammars:'% funcName
-            for g in natbj.loadedGrammars:
+            for g in natbj.loadedGrammars.item():
                 gram = natbj.loadedGrammars[g]
                 if gram == self:
                     print('no need to switch on _control (should always be on...)')
@@ -520,7 +519,7 @@ class UtilGrammar(ancestor):
             self.setList('gramnames', allGramNames)
             print(f'for being sure, set all active grammars in list "gramnames": "{allGramNames}"')
 
-            for g in natbj.loadedGrammars:
+            for g in natbj.loadedGrammars.items():
                 gram = natbj.loadedGrammars[g]
                 result = getattr(gram, 'isActive')
                 modName = gram.__module__
@@ -592,15 +591,16 @@ class UtilGrammar(ancestor):
             print(f'grammar: {gramName}: {grammar}')
             if self.hasCommon(words, 'grammar'):
                 moduleName = grammar.__module__
-                print(f'try __module__: {moduleName}')
-                if moduleName in sys.modules:
-                    module = sys.modules[moduleName]
+                if __file__.endswith(moduleName + '.py'):
+                    filepath = __file__
                 else:
-                    print(f'not in sys.modules: {moduleName}')
-                    return 
-                filename = module.__file__
-                print('open for edit file: ', filename)
-                self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
+                    unimacrogrammarsdir = status.getUnimacroGrammarsDirectory()
+                    filepath = os.path.join(unimacrogrammarsdir, moduleName + '.py')
+                    if not os.path.isfile(filepath):
+                        print(f'_control: cannot find grammar file for "{gramName}",\n\t{filepath} does not exist')
+                        return
+                print(f'open for edit file: "{filepath}"')
+                self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
                 unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
@@ -608,7 +608,7 @@ class UtilGrammar(ancestor):
                     grammar.switchOn()
                     grammar.editInifile()
                 except AttributeError:
-                    self.DisplayMessage('grammar "%s" has no method "editInifile"'% gramName)
+                    self.DisplayMessage(f'grammar "{gramName}" has no method "editInifile"')
                     return
         else:
             print('no grammar name found')
