@@ -49,6 +49,6 @@ python_files = [
 [project.scripts]
 
 [project.urls]
-Home = "https://qh.antenna.nl/unimacro/"
-
-		
+homepage = "https://qh.antenna.nl/unimacro/"
+repository="https://github.com/dictation-toolbox/unimacro"
+source="https://github.com/dictation-toolbox/unimacro"		
