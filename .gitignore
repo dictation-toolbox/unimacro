@@ -5,6 +5,7 @@ __pycache__/
 /unimacro_test/testresult.txt
 /_number extended.py
 /_repeat.py
+.vscode
 .vscode/launch.json
 /dist
 /configurenatlink_error.txt
