@@ -23,7 +23,7 @@ sitePackagesDir = get_site_packages_dir(__file__)
 import os
 import sys
 
-__version__ = '4.1.1'   
+__version__ = '4.1.2'   # requires the dtactions 1.5.5, with new sendkeys (from send_input, vocola)   
  
 def get_site_packages_dir(fileOfModule):
     """get directory of calling module, if possible in site-packages
