@@ -55,8 +55,6 @@ import natlink
 from natlinkcore.natlinkutils import *
 from natlinkcore import natlinkstatus
 from natlinkutilsbj import SetMic,GrammarFileName
-# hopelijk: QH
-
 
 from BrowseGrammar import *
 from listdialogs import ListDialog
@@ -65,8 +63,10 @@ import D_train
 
 status = natlinkstatus.NatlinkStatus()
 baseDirectory = status.getUnimacroGrammarsDirectory()
-print('baseDirectory: %s'% baseDirectory)
+# print('baseDirectory: %s'% baseDirectory)
 
+# seems to have gone from comctrl:
+LVCFMT_LEFT = 0
 
 
 class GramHierList(hierlist.HierList):
@@ -112,7 +112,7 @@ class GramHierList(hierlist.HierList):
         self.OpenNext(self.root,0,RulePath)
 
     def OpenStart(self):
-        if len(self.Start)==2:
+        if len(self.Start) == 2:
             _Rule, _Path, objPath=self.root.FindRulePath(self.Start)
             for o in objPath:
                 if not IsText(o):
@@ -157,7 +157,7 @@ class GrammarDialog(dialog.Dialog):
             win32con.WS_CHILD           | win32con.WS_BORDER |
             win32con.WS_VISIBLE         | win32con.WS_TABSTOP |
             commctrl.LVS_ALIGNLEFT      |
-            commctrl.LVS_REPORT         | LVS_EDITLABELS
+            commctrl.LVS_REPORT         | commctrl.LVS_EDITLABELS
             )
         t = [ [title, (0, 0, 500, 300), style, None, (8, "MS Sans Serif")],
             ["SysTreeView32", None, win32ui.IDC_LIST1, (0, 0, 1, 1), cs],
@@ -314,7 +314,9 @@ class GrammarDialog(dialog.Dialog):
         numCols = len(self.colHeadings)
         index = 0
         for col in self.colHeadings:
-            itemDetails = (commctrl.LVCFMT_LEFT, width*colw[index], col, 0)
+            ## change second variable to int, QH, 23092922::
+            itemDetails = (LVCFMT_LEFT, int(width*colw[index]), col, 0)
+            print(f'index: {index}, itemDetails: {itemDetails}')
             self.Syntax.InsertColumn(index, itemDetails)
             index = index + 1
         index = 0
