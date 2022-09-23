@@ -1,16 +1,20 @@
 #Bart Jan's work, needs testing presently
+#pylint:disable = W0612, W0702, C0321, R0913, C0209
+import time
+import pickle   
+
 from pywin.mfc import dialog
 from pywin.framework import dlgappcore, app
 import win32ui
 import win32con
 import commctrl
 import win32api
+from dtactions.unimacro.unimacroutils import AppBringUp
+
 from natlinkutilsbj import *
-import sys,os,pickle
-import time
-# hopelijk: QH
-from natlinkutilsqh import getUnimacroDirectory, AppBringUp
-baseDirectory = getUnimacroDirectory()
+status = natlinkstatus.NatlinkStatus()
+baseDirectory = status.getUnimacroGrammarsDirectory()
+print(f'baseDirectory: {baseDirectory}')
 
 
 IDC_NUMBERS=1010
@@ -323,15 +327,13 @@ def SelectFromListDialog(List, Titles, size=defaultSize, defer=None):
 ##        else:
         DeferredSelectFromListDialog(List, Titles, defer, size=size)
         return None
-    else:
-        dlg = MultiListDialog(str(Titles[0]), List, colHeadings=Titles[1:], size=size, resize=1)
-        #SwitchToDD()        
-        r=dlg.DoModal()
-        #SwitchToNat()        
-        if r==win32con.IDOK:
-            return dlg.Selection
-        else:
-            return None
+    dlg = MultiListDialog(str(Titles[0]), List, colHeadings=Titles[1:], size=size, resize=1)
+    #SwitchToDD()        
+    r=dlg.DoModal()
+    #SwitchToNat()        
+    if r==win32con.IDOK:
+        return dlg.Selection
+    return None
 
 def SelectFromDictionary(Dictionary, Titles, size=defaultSize, reverse=0, defer=None):
     return SelectFromListDialog(BuildDlgList(Dictionary, reverse), Titles, size=size, defer=defer)
@@ -357,8 +359,7 @@ def test2():
     dlg = MultiListDialog('Select', RefList, size=(400,200),okButton='Train', resize=1)
     if dlg.DoModal()==win32con.IDOK:
         return dlg.Selection
-    else:
-        return None
+    return None
 
 def test():
 ##    List=[(1),(2),(3),(4),(5)]#,(6),(7),(8),(9),(10),(11)]
@@ -366,8 +367,7 @@ def test():
     dlg = MultiListDialog('Select Special Grammars', List, 'Grammar')
     if dlg.DoModal()==win32con.IDOK:
         return dlg.Selection
-    else:
-        return None
+    return None
 
 def test_natspeak_on():
     #result = SelectFromListDialog(["foo","bar"], ["title 1", "title 2"], defer=1)
@@ -375,7 +375,7 @@ def test_natspeak_on():
 
 def test_folders_list():
     """only display, background"""
-    List=["d:\natlink\\unimacro", "d:\documenten"]
+    List=[r"C:\natlink\\unimacro", r"C:\documenten"]
     dlg = MultiListDialog('Say "recent file #"', List, ['directory'])
     hndle = dlg.CreateWindow()
     print('hnlde: %s'% hndle)

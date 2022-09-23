@@ -32,7 +32,7 @@ from pywin.mfc import dialog
 from pywin.framework import dlgappcore
 
 import natlink
-from natlink.natlinkutils import *
+from natlinkcore.natlinkutils import *
 from natlinkutilsbj import SetMic
 
 

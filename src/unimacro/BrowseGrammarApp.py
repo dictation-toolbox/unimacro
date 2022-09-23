@@ -22,6 +22,7 @@
 #
 # June 2020: adapt for python3, Quintijn Hoogenboom
 # Author: Bart Jan van Os, Version: 1.0
+#pylint:disable = C0209, W0622, C0321, W0612, W0702
 """This file implements a dialog/window to browse and train NatLink
 grammars
 
@@ -51,18 +52,21 @@ from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
 import natlink
-from natlink.natlinkutils import *
+from natlinkcore.natlinkutils import *
+from natlinkcore import natlinkstatus
 from natlinkutilsbj import SetMic,GrammarFileName
-from operator import methodcaller
 # hopelijk: QH
-from natlinkutilsqh import getUnimacroDirectory
-baseDirectory = getUnimacroDirectory()
-print('baseDirectory: %s'% baseDirectory)
+
 
 from BrowseGrammar import *
 from listdialogs import ListDialog
 import TrainDialog
 import D_train
+
+status = natlinkstatus.NatlinkStatus()
+baseDirectory = status.getUnimacroGrammarsDirectory()
+print('baseDirectory: %s'% baseDirectory)
+
 
 
 class GramHierList(hierlist.HierList):
@@ -109,7 +113,7 @@ class GramHierList(hierlist.HierList):
 
     def OpenStart(self):
         if len(self.Start)==2:
-            Rule,Path,objPath=self.root.FindRulePath(self.Start)
+            _Rule, _Path, objPath=self.root.FindRulePath(self.Start)
             for o in objPath:
                 if not IsText(o):
                     self.OpenRule(objPath)
@@ -118,8 +122,7 @@ class GramHierList(hierlist.HierList):
         HandlesFor=InverseDict(self.itemHandleMap)
         if item in HandlesFor:
             return HandlesFor[item]
-        else:
-            return None
+        return None
 
 
 IDC_EDIT=1000
@@ -205,7 +208,7 @@ class GrammarDialog(dialog.Dialog):
         return 1
 
     def OnOK(self):
-        if (self.LastFocused==IDC_SYNTAX):
+        if self.LastFocused==IDC_SYNTAX:
             self.ExpandSyntaxItem(self.SyntaxItem)
 
     def GotFocus(self,std, extra):
@@ -312,8 +315,7 @@ class GrammarDialog(dialog.Dialog):
         index = 0
         for col in self.colHeadings:
             itemDetails = (commctrl.LVCFMT_LEFT, width*colw[index], col, 0)
-            self.Syntax.In
-            sertColumn(index, itemDetails)
+            self.Syntax.InsertColumn(index, itemDetails)
             index = index + 1
         index = 0
 
@@ -456,7 +458,7 @@ class TrainGrammarDialog(GrammarDialog):
         self.SelItems=[0]
 
     def OnOK(self):
-        if (self.LastFocused==IDC_SYNTAX):
+        if self.LastFocused==IDC_SYNTAX:
             if len(self.SelItems)==1:
                 self.ExpandSyntaxItem(self.SelItems[0])
 
@@ -511,9 +513,8 @@ class TrainGrammarDialog(GrammarDialog):
         pass
 
     def onEdit(self,nID,code):
-        pass
         return
-        if (self.LastFocused==IDC_SYNTAX):
+        if self.LastFocused==IDC_SYNTAX:
             if len(self.SelItems)==1:
                 print(self.SelItems[0])
                 self.EditControl=self.Syntax.EditLabel(0)
@@ -546,8 +547,7 @@ class BrowseDialogApp(dlgappcore.DialogApp):
         win32ui.Enable3dControls()
         self.dlg = self.frame = self.CreateDialog()
         if self.frame is None:
-            raise error("No dialog was created by CreateDialog()")
-            return
+            raise Exception("No dialog was created by CreateDialog()")
         self.PreDoModal()
         self.dlg.PreDoModal()
         self.dlg.DoModal()
@@ -595,8 +595,8 @@ def CheckCreateApp():
 
 
 if __name__=='__main__':
-    pass
     demodlg()
     #demomodeless()
 else:
     CheckCreateApp()
+    
