@@ -24,7 +24,7 @@ from natlinkcore import inivars
 import types
 import copy
 import natlink
-import nsformat
+from natlinkcore import nsformat 
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doAction as action
 

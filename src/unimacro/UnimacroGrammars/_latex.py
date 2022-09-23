@@ -13,7 +13,7 @@
 #
 
 import natlink
-import nsformat
+from natlinkcore import nsformat 
 from dtactions.unimacro import unimacroutils
 from natlinkcore import natlinkutils as natut
 from dtactions.unimacro import unimacroutils

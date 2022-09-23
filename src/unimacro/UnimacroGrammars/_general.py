@@ -27,7 +27,7 @@ import natlink
 import natlinkstatus
 import win32gui
 import namelist # for name phrases
-import nsformat
+from natlinkcore import nsformat 
 
 import natlinkutils as natut
 from unimacro import natlinkutilsqh as natqh
