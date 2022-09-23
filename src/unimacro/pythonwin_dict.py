@@ -20,7 +20,7 @@ try with title "Title" (from testDialogForDicationGrammar.py) or
 import natlink
 from natlinkcore import natlinkutils
 import win32ui
-import nsformat
+from natlinkcore import nsformat 
 
 dictObj = None
 debugMode = 1
