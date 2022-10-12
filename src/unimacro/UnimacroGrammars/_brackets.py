@@ -32,6 +32,7 @@ from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.natlinkclipboard import Clipboard
 import unimacro.natlinkutilsbj as natbj
+import natlink
 
 language = unimacroutils.getLanguage()
 
@@ -201,17 +202,26 @@ the three parts
     return text, leftText, rightText
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-bracketsGrammar = BracketsGrammar()
-if bracketsGrammar.gramSpec:
-    bracketsGrammar.initialize()
-else:
-    bracketsGrammar = None
-
-
 def unload():
-    #pylint:disable=W0603
     #pylint:disable=W0603
     global bracketsGrammar
     if bracketsGrammar:
         bracketsGrammar.unload()
     bracketsGrammar = None
+
+
+if __name__ == "__main__":
+    natlink.natConnect()
+    try:
+        bracketsGrammar = BracketsGrammar()
+        bracketsGrammar.startInifile(modName = '_brackets')
+        bracketsGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+else:
+    bracketsGrammar = BracketsGrammar()
+    if bracketsGrammar.gramSpec:
+        bracketsGrammar.initialize()
+    else:
+        bracketsGrammar = None
+        

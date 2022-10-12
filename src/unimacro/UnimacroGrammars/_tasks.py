@@ -51,7 +51,7 @@ class ThisGrammar(ancestor):
                              #'switchapp', 'degrees', 'pixelcount',
                              'switchapp',
                              #'sizecount','percentcount', 'directionplus', 'direction',
-                             'directionplus', 'namedtask']
+                             'namedtask']
     name = "tasks"
     # task commands in docstring form in the rule functions below
     gramSpec = ["""
@@ -70,7 +70,7 @@ class ThisGrammar(ancestor):
         #print 'enableSearchCommands: %s'% self.enableSearchCommands
         if self.enableSearchCommands:
             self.gramSpec.append(self.searchRule)
-        ancestor._prog_infonit__(self)
+        ancestor.__init__(self)
         _name = self.getName()
 
 
@@ -87,7 +87,7 @@ class ThisGrammar(ancestor):
         self.setNumbersList('documentcount', self.documentCounts)
         self.setList('switchapp', self.switchApps)
         self.emptyList('namedtask')  # to be filled with task name command
-        #for moving the window:schakel in taken
+        #for moving the window:
         #self.pixelCounts = range(1, 21) + range(20, 201, 10)
         #self.setNumbersList('pixelcount', self.pixelCounts)
         #self.degreeCounts = range(0, 361,10)
@@ -101,12 +101,12 @@ class ThisGrammar(ancestor):
         # the keys of the inifile (fixed) are the resulting directions to be
         # worked with
         # for the task position etc commands:
-        self.directionsplus = self.iniGetInvertedDict('directionplusreverse')
-        self.setList('directionplus', list(self.directionsplus.keys()))
-        self.winkeyDown = 0  # for keeping down in stacked taskbar itemsals je zo graag
-#left|up|right|down|lefttop|righttop|rightbottom|leftbottom;
-        self.switchOnOrOff() # initialises lists from inifile, and switches on
-                         # if all goes well (and variable onOrOff == 1)
+        #left|up|right|down|lefttop|righttop|rightbottom|leftbottom;  
+        # self.directionsplus = self.iniGetInvertedDict('directionplusreverse')
+        # QH TODO, repair the direction things:
+        # self.setList('directionplus', list(self.directionsplus.keys()))
+        self.winkeyDown = 0  # for keeping down in stacked taskbar items
+        self.switchOnOrOff() # initialises lists from inifile, and switches on# if all goes well (and variable onOrOff == 1)
         print('IniGrammar tasks, all lists initialized...')
 
     def iniGetInvertedDict(self, section):
@@ -185,8 +185,8 @@ class ThisGrammar(ancestor):
         result = self.gotoTask(countOrApp)
         
         if result:
-            progprog_infonfo = unimacroutils.getProgInfo()
-            if progprog_infonfo.prog == 'explorer' and not progprog_infonfo.title:
+            prog_info = unimacroutils.getProgInfo()
+            if prog_info.prog == 'explorer' and not prog_info.title:
                 return # no centermouse!
             if self.centerMouse and not self.nextRule:
                 unimacroutils.Wait()
@@ -231,8 +231,8 @@ class ThisGrammar(ancestor):
                     unimacroutils.Wait()
                     unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
             else:
-                progprog_infonfo = unimacroutils.getProgInfo()
-                print('_tasks, could not switch to document: %s (program: %s)'% (count, progprog_infonfo.prog))
+                prog_info = unimacroutils.getProgInfo()
+                print('_tasks, could not switch to document: %s (program: %s)'% (count, prog_info.prog))
             
             if words[1] == words[-1]:
                 return
@@ -321,11 +321,11 @@ class ThisGrammar(ancestor):
         print('result after taskswitch: %s'% repr(result))
         # t2 = time.time() 
 
-        progprog_infonfo = result
+        prog_info = result
         #print 'switched to "%s" (%.2f)'%  (prog, t2-t1)
 
 
-        if progprog_infonfo.prog == 'explorer' and not progprog_infonfo.title:
+        if prog_info.prog == 'explorer' and not prog_info.title:
             return # no centermouse!
         if self.centerMouse:
             unimacroutils.Wait()
@@ -333,24 +333,24 @@ class ThisGrammar(ancestor):
 
         unimacroutils.Wait()
         # now do the postprocessing
-        prog = progprog_infonfo.prog
+        prog = prog_info.prog
         print('postprocessing for search: %s in app: %s'% (searchWord, prog))
         if prog in ['chrome', 'firefox','iexplore']:
             phrase = '"%s" site:nl'% searchWord
             keystroke("{ctrl+k}")
             keystroke(phrase + "{enter}")
-        elif progprog_infonfo.prog == 'dictionaryworkbench':
+        elif prog_info.prog == 'dictionaryworkbench':
             # hardcoded for Arnoud
             keystroke('{ctrl+f}')
             action("SCLIP %s"% searchWord)
             keystroke('{enter}')
         else:
             #t3 = time.time()
-            action("<<startsearch>>", progInfo=progprog_infonfo)
+            action("<<startsearch>>", progInfo=prog_info)
             #t4 = time.time()
-            keystroke(searchWord, progInfo=progprog_infonfo)
+            keystroke(searchWord, progInfo=prog_info)
             #t5 = time.time()
-            action("<<searchgo>>", progInfo=progprog_infonfo)
+            action("<<searchgo>>", progInfo=prog_info)
             #t6 = time.time()
             #print 'after searchaction: %s (%.2f, %.2f, %.2f, %.2f)'% (searchWord, t3-t2,
             #                                                    t4-t3, t5-t4, t6-t5)
@@ -392,8 +392,8 @@ class ThisGrammar(ancestor):
         else:
             print('thistask in _general, no valid action', words)
 
-        progprog_infonfo = unimacroutils.getProgInfo()
-        if progprog_infonfo.prog == 'explorer' and not progprog_infonfo.title:
+        prog_info = unimacroutils.getProgInfo()
+        if prog_info.prog == 'explorer' and not prog_info.title:
             return # no centermouse!
         
         if self.centerMouse:
@@ -438,7 +438,7 @@ class ThisGrammar(ancestor):
         
         """
         self.lastTaskCount = None
-        if type(countOrApp) in (bytes, str):
+        if isinstance(countOrApp, str):
             countBack = self.getNumberFromSpoken(countOrApp, self.taskCounts) # returns a string or None
         elif isinstance(countOrApp, int):
             countBack = countOrApp
@@ -484,11 +484,11 @@ class ThisGrammar(ancestor):
                     action('TASK %s'% countBack)
                 for _ in range(30):
                     # 40 x 0.1: 4 seconds...
-                    progprog_infonfo = unimacroutils.getProgInfo()
-                    if progprog_infonfo.prog == appName:
+                    prog_info = unimacroutils.getProgInfo()
+                    if prog_info.prog == appName:
                         break
-                    progprog_infonfo.classname = unimacroutils.getClassName()
-                    if progprog_infonfo.classname == "TaskListThumbnailWnd":
+                    prog_info.classname = unimacroutils.getClassName()
+                    if prog_info.classname == "TaskListThumbnailWnd":
                         return 1  # more items already available
                     unimacroutils.Wait()
                 else:
@@ -511,8 +511,8 @@ class ThisGrammar(ancestor):
     def goto_task_winkey(self, number):
         """switch to task with number, via the windows key"""
     ##    print 'action: goto task: %s'% number
-        progprog_infonfo = unimacroutils.getProgInfo()
-        prog, title = progprog_infonfo.prog, progprog_infonfo.title
+        prog_info = unimacroutils.getProgInfo()
+        prog, title = prog_info.prog, prog_info.title
         if prog == 'explorer' and not title:
             keystroke('{esc}')
             unimacroutils.shortWait()
@@ -536,25 +536,25 @@ class ThisGrammar(ancestor):
         print('self.winkeyDown: %s'% self.winkeyDown)
         return None
         
-    def rule_taskposition(self, words):
-        """
-        #commands for positioning (moving) and resizing tasks: 
-        (<taskswitch>|task) position <directionplus> 
-        """
-        # position task in one of the directions, width/height
-        # did also optional percent with <directionplus> <percent> switched off for the moment
-        # optional percentage of work area
-        self.taskmoveresize = 'position'
-        print('----task position')
+    # def rule_taskposition(self, words):
+    #     """
+    #     #commands for positioning (moving) and resizing tasks: 
+    #     (<taskswitch>|task) position <directionplus> 
+    #     """
+    #     # position task in one of the directions, width/height
+    #     # did also optional percent with <directionplus> <percent> switched off for the moment
+    #     # optional percentage of work area
+    #     self.taskmoveresize = 'position'
+    #     print('----task position')
         
-    def rule_taskmove(self, words):
-        """(<taskswitch> | task) move <directionplus>;
-        """
-        
-        # removed all the angle, pixels, centimeters, inches, percent out, too complicated for daily use I think...
-        # optional a specification
-        self.taskmoveresize = 'move'
-        print('----task move')
+    # def rule_taskmove(self, words):
+    #     """(<taskswitch> | task) move <directionplus>;
+    #     """
+    #     
+    #     # removed all the angle, pixels, centimeters, inches, percent out, too complicated for daily use I think...
+    #     # optional a specification
+    #     self.taskmoveresize = 'move'
+    #     print('----task move')
     
     #def rule_taskresize(self, words):
     #    """(<taskswitch> | (task)) (stretch|shrink)
@@ -590,15 +590,15 @@ class ThisGrammar(ancestor):
     #    self.directionplus = deg%360
     #    print 'angle/direction: %s'% self.directionplus
         
-    def subrule_directionplus(self, words):
-        '{directionplus}'
-        #get the direction
-        direction = words[0]
-        if direction in self.directionsplus:
-            self.directionplus = self.directionsplus[direction]
-        else:
-            self.directionplus = direction
-        print('direction: (plus) %s'% self.directionplus)
+    # def subrule_directionplus(self, words):
+    #     '{directionplus}'
+    #     #get the direction
+    #     direction = words[0]
+    #     if direction in self.directionsplus:
+    #         self.directionplus = self.directionsplus[direction]
+    #     else:
+    #         self.directionplus = direction
+    #     print('direction: (plus) %s'% self.directionplus)
 
     def rule_monitorfocus(self, words):
         'monitor {monitors}'
@@ -701,8 +701,8 @@ class ThisGrammar(ancestor):
         # getting the task positions (use with 1 and with another number)
         # position mouse on task number or clock and speak the command
         # first time only, or after changes of taskbar position
-        progprog_infonfo = unimacroutils.getProgInfo()
-        prog, title = progprog_infonfo.prog, progprog_infonfo.title
+        prog_info = unimacroutils.getProgInfo()
+        prog, title = prog_info.prog, prog_info.title
         if not prog:
             print('%s, no valid program for setting document position: %s (title:%s)'% (self.name, prog, title))
             return
@@ -830,15 +830,15 @@ class ThisGrammar(ancestor):
                 print('units: (adjusted) %s'% units)
     
                 try:
-                    func = getattr(monitorfunctions, '%s_window'% self.taskmoveresize, None)
+                    func = getattr(monitorfunctions, f'{self.taskmoveresize}_window', None)
                     if func:
-                        #print 'doing func: %s'% func
+                        print('doing func: {func}')
                         func(winHndle, direction=self.directionplus, amount=amount, units=units)
                     else:
                         print('invalid value for taskmoveresize: %s (could not find function)'% self.taskmoveresize)                
                 except ValueError:
                     print('error in monitorfunctions.%s_window'% self.taskmoveresize)
-                    print(sys.exc_proginfo()[1])
+                    print(sys.exc_info()[1])
 #keepinside=None, keepinsideall=1, monitor=None):
 
     def addTaskNameToDict(self, moduleInfo):
@@ -1126,11 +1126,7 @@ class ThisGrammar(ancestor):
 
             
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
+
 
 def unload():
     #pylint:disable = W0603
@@ -1145,3 +1141,22 @@ def changeCallback(Type,Args):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
+
+if __name__ == "__main__":
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        thisGrammar.startInifile() #modName = '_tasks')
+        thisGrammar.initialize()
+        Words = ['task', 'three']
+        # print(f'natbj.loadedGrammars: {natbj.loadedGrammars}')
+        thisGrammar.rule_taskswitch(Words)
+        # natlink.recognitionMimic(["task", "three"])
+    finally:
+        natlink.natDisconnect()
+else:
+    thisGrammar = ThisGrammar()
+    if thisGrammar.gramSpec:
+        thisGrammar.initialize()
+    else:
+        thisGrammar = None

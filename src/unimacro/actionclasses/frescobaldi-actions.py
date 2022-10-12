@@ -25,7 +25,7 @@ class FrescobaldiActions(AllActions):
     def playString(self, t):
         """send through to natlinkutils.self.playString
         """
-        natlinkutils.playString(t)
+        sendkeys(t)
 
     def getClipboard(self, sleep=0.05):
         """wait little longer if no result

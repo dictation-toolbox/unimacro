@@ -494,6 +494,7 @@ class TrainGrammarDialog(GrammarDialog):
                 self.goTrain(ToTrain)
 
     def onTrainSpecial(self,nID,code):
+        #pylint:disable=W0101
         return  ## just disable...
         Names=[]
         Keys=list(D_train.SpecialTraining.keys())
@@ -515,6 +516,7 @@ class TrainGrammarDialog(GrammarDialog):
         pass
 
     def onEdit(self,nID,code):
+        #pylint:disable=W0101
         return
         if self.LastFocused==IDC_SYNTAX:
             if len(self.SelItems)==1:

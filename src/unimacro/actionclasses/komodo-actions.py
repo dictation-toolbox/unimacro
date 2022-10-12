@@ -91,12 +91,12 @@ class KomodoActions(AllActions):
         """for doctest testing, put u in front of every string
         """
         print('metaaction_makeunicodestrings, for Komodo')
-        natlinkutils.playString("{ctrl+c}")
+        sendkeys("{ctrl+c}")
         t = unimacroutils.getClipboard()
         print('in: %s'% t)
         t = replaceStringToUnicode(t)
         unimacroutils.setClipboard(t)
-        natlinkutils.playString("{ctrl+v}{down}")
+        sendkeys("{ctrl+v}{down}")
 
 def _test():
     """do doctests, for changing function

@@ -110,7 +110,8 @@ class SelectGrammar(GrammarBase):
                 chars=chars+'\\'                
             else:
                 chars=chars+c
-        natlinkutils.playString(chars)
+        
+        sendkeys(chars)
         if self.dlg:
             self.dlg.setCurrentAtTop()
 

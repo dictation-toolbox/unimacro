@@ -27,8 +27,8 @@
 #   See the class BrowsableGrammar for documentation on the use of
 #   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
-#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902
-#pylint:disable=E1101
+#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, 
+
 """subclasses classes for natlink grammar files and utility functions
 
 """
@@ -62,6 +62,7 @@ from dtactions.unimacro.unimacroactions import UnimacroBringUp
 from dtactions.unimacro import utilsqh
 from dtactions.unimacro.utilsqh import formatListColumns
 from dtactions.unimacro import inivars
+from dtactions.sendkeys import sendsystemkeys
 
 from unimacro import BrowseGrammar
 from unimacro import D_
@@ -250,7 +251,7 @@ def getAllWords(fullResults):
 
 def ActivateDragonBarMenu():
     """activate the DragonBar"""
-    natlinkutils.playString("{NumKey-}", natlinkutils.hook_f_systemkeys)        
+    sendsystemkeys("{NumKey-}")        
 
 def SetMic(state):
     """switch on or off the microphone
@@ -294,7 +295,7 @@ def RegisterGrammarObject(GrammarObject):
     global loadedGrammars, grammarsChanged
     loadedGrammars[GrammarObject.GetName()] = GrammarObject
     grammarsChanged = 1
-
+ 
 
 def UnRegisterGrammarObject(GrammarObject):
     """unregisters a grammar object from the global variable
@@ -660,7 +661,6 @@ class GrammarX(GrammarXAncestor):
 
     def cancelMode(self):
         """overload for grammars that can go exclusive"""
-        #pylint:disable=R0201
         return
 
     #Now we can get info on the exclusive state
@@ -672,7 +672,6 @@ class GrammarX(GrammarXAncestor):
     
     def printExclusiveInfo(self):
         """global print info on exclusive grammar states"""
-        #pylint:disable=R0201
         if not exclusiveGrammars:
             print('no grammars are exclusive')
         else:
@@ -776,7 +775,7 @@ class GrammarX(GrammarXAncestor):
         return 1
 
     def DisplayMessage(self, MessageText, pauseAfter=0, alert=None, alsoPrint=1):
-        #pylint:disable=R0912, R0915, R0201
+        #pylint:disable=R0912, R0915
         print("DisplayMessage for the time being:\n%s"% MessageText)
 
 #         if self.inGotBegin:
@@ -896,7 +895,6 @@ class GrammarX(GrammarXAncestor):
     def message(self, mess):
         """only print to Messages window
         """
-        #pylint:disable=R0201
         print(mess)
 
     # progress report
@@ -919,7 +917,6 @@ class GrammarX(GrammarXAncestor):
         does not work when called from an action...
         
         """
-        #pylint:disable=R0201
         time.sleep(Time)
 
     def wait(self, multiple=1):
@@ -1113,7 +1110,6 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
     def GetDictionaries(self):
         """Overload to define Dictionaries; used in the grammar browser.
         """
-        #pylint:disable=R0201
         # Suppose you have a rule with a variable part (List or enumeration
         # of alternatives), and the gotResults function uses a dictionary
         # that defines different actions to be taken, dependent on the variable
@@ -1182,7 +1178,6 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         """only prepare the current state, should be followed by the BrowseShow
         
         """
-        #pylint:disable=R0201
         if Exclusive:
             print('browse for exclusive grammars only')
             All = 0
@@ -1202,15 +1197,12 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
     def BrowseShow(self):
         """show the grammars as prepared in the function BrowsePrepare
         """
-        #pylint:disable=R0201
         pypath = str(Path(__file__).parent)
         if pypath not in sys.path:
-            sys.path.append(pypath)
+            sys.path.insert(0, pypath)
         pypath = ';'.join(sys.path)
         os.environ['PYTHONPATH'] = pypath
         unimacroutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
-
-
 ###
 ##GlobalGrammarBaseAncestor=BrowsableGrammar    
 ##class GlobalGrammarBase(GlobalGrammarBaseAncestor):
@@ -1235,7 +1227,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
 ##        App=getBaseName(getCurrentModule(.lower()[0]))
 ##        if not (App in ['pythonwin']):        
 ##            AppBringUp('Pythonw',Exec=PythonwinExe)
-##        natlinkutils.playString('{Ctrl+l}'+module+'{Enter}')
+##        sendkeys('{Ctrl+l}'+module+'{Enter}')
 ##  
 ##LocalGrammarBaseAncestor=BrowsableGrammar    
 ##class LocalGrammarBase(BrowsableGrammar):
@@ -1245,7 +1237,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
 ##        App=getBaseName(getCurrentModule(.lower()[0]))
 ##        if not (App in ['pythonwin']):        
 ##            AppBringUp('Pythonw',Exec=PythonwinExe)
-##        natlinkutils.playString('{Ctrl+l}'+module+'{Enter}')
+##        sendkeys('{Ctrl+l}'+module+'{Enter}')
 ##
 IniGrammarAncestor=BrowsableGrammar    
 class IniGrammar(IniGrammarAncestor):
@@ -1508,7 +1500,6 @@ class IniGrammar(IniGrammarAncestor):
     def stripDefaultTranlations(self, D):
         """strip from D (self.gramWords) the synonyms which are equal to the gramWord itself
         """
-        #pylint:disable=R0201
         for k, v in list(D.items()):
             if len(v) == 1 and v[0] == k:
                 del D[k]
@@ -1705,7 +1696,6 @@ note mies
 noot mies
 
         """
-        #pylint:disable=R0201
         w = word.strip()
         w = word.strip('"\'')
         w = ' '.join(w.split())
@@ -1718,7 +1708,6 @@ noot mies
         this is the way from the inifile into the grammar
         
         """
-        #pylint:disable=R0201
         if t.find(' ') > 0:
             return "'" + t + "'"
         if t.find('-') > 0:
@@ -2222,10 +2211,9 @@ noot mies
         default: nothing happens, must be supplied by the calling grammar    
 
         """
-        #pylint:disable=R0201
         return
 
-    def startInifile(self):
+    def startInifile(self, modName=None):
         """loads the inifile for the grammar given.
 
         Is called at initialisation of this instance.
@@ -2244,12 +2232,14 @@ noot mies
         inifile, the full path of the inifile that is opened
         inifileDate, the date/time the inifile was last modified        
 
+        For debugging purposes, modName can be specified
+
         """
         # get default inifile name:
         self.checkForChanges = 1
         self.openedInifile = 0
         self.ignore = None
-        modName = self.__module__
+        modName = modName or self.__module__
         # baseDir = status.getUnimacroDirectory()
         userDir = status.getUnimacroUserDirectory()
         
@@ -2469,7 +2459,6 @@ noot mies
 
         
         """
-        #pylint:disable=R0201
         print('openWebsiteDefault: %s (openWith: %s)'% (website, openWith))
         # appname = "website %s"% website
         if openWith:
@@ -2850,7 +2839,6 @@ noot mies
 
     def stopSearch(self, progInfo=None):
         """action after the search"""
-        #pylint:disable=R0201
         if not progInfo:
             progInfo = unimacroutils.getProgInfo()
         if beforeOrAfter == 'before':
@@ -2870,12 +2858,11 @@ noot mies
             
     def getLastSearchDirection(self):
         """get global var lastSearchDirection"""
-        #pylint:disable=R0201
         return lastSearchDirection
 
     def setLastSearchDirection(self, direc):
         """set global var lastSearchDirection"""
-        #pylint:disable=W0603, R0201
+        #pylint:disable=W0603
         global lastSearchDirection
         if direc not in ['up', 'down']:
             raise UnimacroError('invalid search direction: "%s"'% direc)
@@ -2992,7 +2979,6 @@ noot mies
 
     def searchFailed(self, progInfo=None):
         """signal if search was fail, invalid string or end of document"""
-        #pylint:disable=R0201
         if not progInfo:
             return None # no information
         # old info:
@@ -3012,7 +2998,7 @@ noot mies
 
     def searchMarkSpot(self, progInfo=None):
         """Mark the place where you can return with searchGoBack"""
-        #pylint:disable=W0603, R0201
+        #pylint:disable=W0603
         global comingFrom
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
@@ -3029,7 +3015,6 @@ noot mies
 
     def searchGoBack(self, progInfo=None):
         """go back to previous place, excel or word"""
-        #pylint:disable=R0201
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
@@ -3093,7 +3078,6 @@ noot mies
         
         used at click command in several grammars (excel, keystrokes) and in _lines.
         """
-        #pylint:disable=R0201
         if actions.do_MOUSEISMOVING():
             if actions.do_WAITMOUSESTOP():
                 return 1
@@ -3210,7 +3194,6 @@ class DocstringGrammar(DocstringGrammarAncestor):
     def addSemicolonToRule(self, line):
         """add a semicolon after the line, before comments
         """
-        #pylint:disable=R0201
         parts = line.split("#", 1)
         if len(parts) == 1:
             line = line.rstrip()
@@ -3229,7 +3212,6 @@ class DocstringGrammar(DocstringGrammarAncestor):
         """remove consistent leading spaces from subsequent lines
         also remove empty first and/or empty last line
         """
-        #pylint:disable=R0201
         lenLeader = 11
         if not docList:
             return docList
