@@ -1199,7 +1199,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         """
         pypath = str(Path(__file__).parent)
         if pypath not in sys.path:
-            sys.path.insert(0, pypath)
+            sys.path.insert(0, pypath) 
         pypath = ';'.join(sys.path)
         os.environ['PYTHONPATH'] = pypath
         unimacroutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')

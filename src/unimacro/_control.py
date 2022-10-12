@@ -765,8 +765,9 @@ if __name__ == "__main__":
         utilGrammar.startInifile(modName = '_control')
         utilGrammar.initialize()
         Words = ['show', 'all', 'grammars']
+        FR = {}
         print(f'natbj.loadedGrammars: {natbj.loadedGrammars}')
-        utilGrammar.rule_taskswitch(Words)
+        utilGrammar.gotResults_show(Words, FR)
     finally:
         natlink.natDisconnect()
 else:
