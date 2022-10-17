@@ -63,14 +63,14 @@ class ThisGrammar(ancestor):
     # include only if searchinothertask is True (via .ini file) (enable search commands = T)
     searchRule = "<searchinothertask> exported = search ({taskcount}|{application}) | <before> search ({taskcount}|{application});"
 
-    def _prog_infonit__(self):
+    def __init__(self):
         """start the inifile and add to grammar if needed the searchRule
         """
+        ancestor.__init__(self)
         self.startInifile()
         #print 'enableSearchCommands: %s'% self.enableSearchCommands
         if self.enableSearchCommands:
-            self.gramSpec.append(self.searchRule)
-        ancestor.__init__(self)
+            self.gramSpec += '\n' + self.searchRule
         _name = self.getName()
 
 
@@ -1126,7 +1126,12 @@ class ThisGrammar(ancestor):
 
             
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-
+# print(f'_task grammar, __name__: {__name__}')
+thisGrammar = ThisGrammar()
+if thisGrammar.gramSpec:
+    thisGrammar.initialize()
+else:
+    thisGrammar = None
 
 def unload():
     #pylint:disable = W0603
@@ -1142,21 +1147,3 @@ def changeCallback(Type,Args):
     if thisGrammar:
         thisGrammar.cancelMode()
 
-if __name__ == "__main__":
-    natlink.natConnect()
-    try:
-        thisGrammar = ThisGrammar()
-        thisGrammar.startInifile() #modName = '_tasks')
-        thisGrammar.initialize()
-        Words = ['task', 'three']
-        # print(f'natbj.loadedGrammars: {natbj.loadedGrammars}')
-        thisGrammar.rule_taskswitch(Words)
-        # natlink.recognitionMimic(["task", "three"])
-    finally:
-        natlink.natDisconnect()
-else:
-    thisGrammar = ThisGrammar()
-    if thisGrammar.gramSpec:
-        thisGrammar.initialize()
-    else:
-        thisGrammar = None

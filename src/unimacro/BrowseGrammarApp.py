@@ -222,7 +222,7 @@ class GrammarDialog(dialog.Dialog):
         self.LayoutControls(w, h)
     
     def LayoutControls(self, w, h):
-        d=w/4
+        d=int(w/4)
         self.Tree.MoveWindow((0,0,d,h))
         self.Syntax.MoveWindow((d,0,w,h))
 
@@ -314,7 +314,7 @@ class GrammarDialog(dialog.Dialog):
         numCols = len(self.colHeadings)
         index = 0
         for col in self.colHeadings:
-            ## change second variable to int, QH, 23092922::
+            ## change second variable to int, QH, 23092022::
             itemDetails = (LVCFMT_LEFT, int(width*colw[index]), col, 0)
             print(f'index: {index}, itemDetails: {itemDetails}')
             self.Syntax.InsertColumn(index, itemDetails)
@@ -579,8 +579,8 @@ def CreateBrowseDialog():
     if Exclusive: Name='Exclusive Grammars (Active Rules)'
     elif All: Name='All Grammars'
     else:   Name='Active Grammars'
-    # dlg=GrammarDialog(Name,GramHierList(Grammars,Start))
-    dlg=TrainGrammarDialog(Name,GramHierList(Grammars,Start))
+    dlg=GrammarDialog(Name,GramHierList(Grammars,Start))
+    # dlg=TrainGrammarDialog(Name,GramHierList(Grammars,Start))
     return dlg
 
 
