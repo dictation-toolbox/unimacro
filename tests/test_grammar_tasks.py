@@ -21,6 +21,8 @@ def test_gototask(monkeypatch):
     
     natlink.natConnect()
     try:
+        # TODO Doug - get this working with the mock folder.
+        # challenge is all a bunch extra stuff is loaded or doesn't work when imported.
         thisGrammar = ThisGrammar()
         thisGrammar.startInifile() #modName = '_tasks')
         thisGrammar.initialize()
