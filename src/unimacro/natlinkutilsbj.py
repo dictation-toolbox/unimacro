@@ -2239,7 +2239,7 @@ noot mies
         self.checkForChanges = 1
         self.openedInifile = 0
         self.ignore = None
-        modName = modName or self.__module__
+        modName = modName or self.__module__.rsplit('.', maxsplit=1)[-1]
         # baseDir = status.getUnimacroDirectory()
         userDir = status.getUnimacroUserDirectory()
         
