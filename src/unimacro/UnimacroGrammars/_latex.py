@@ -243,14 +243,12 @@ def stringpaste(t):
 
 # standard stuff Joel (QH, Unimacro)
 thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
+thisGrammar.initialize()
 
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
 

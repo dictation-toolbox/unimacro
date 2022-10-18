@@ -1126,12 +1126,13 @@ class ThisGrammar(ancestor):
 
             
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-# print(f'_task grammar, __name__: {__name__}')
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
+print(f'_task grammar, __name__: {__name__}')
+# when testing, the __name__ parameter is like unimacro.UnimacroGrammars._tasks
+# only when called from Dragon/Natlink/loader, the name is "_tasks"
+# therefore next if statement:
+if __name__.find('.') == -1: 
+    thisGrammar = ThisGrammar()
     thisGrammar.initialize()
-else:
-    thisGrammar = None
 
 def unload():
     #pylint:disable = W0603
