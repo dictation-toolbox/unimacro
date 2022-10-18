@@ -389,14 +389,14 @@ class ThisGrammar(ancestor):
                 else:
                     debugPrint('invalid direction in scrollcommand: %s'% self.curDir)
                 if keyBefore:
-                    natlinkutils.playString("{"+keyBefore+"}")
+                    sendkeys("{"+keyBefore+"}")
                 self.startScroll = 0
             self.setTrayIcon(1)
-            natlinkutils.playString("{"+key+nowCount+"}")
+            sendkeys("{"+key+nowCount+"}")
         
         elif self.state == 'selecting':
             self.setTrayIcon(1)
-            natlinkutils.playString("{shift+"+key+nowCount+"}")
+            sendkeys("{shift+"+key+nowCount+"}")
         elif self.state == 'repeating':
             self.setTrayIcon(1)
             self.repeatNow()
@@ -634,7 +634,7 @@ class ThisGrammar(ancestor):
         b = r = ''
         for w in words:
             if b and r:
-                natlinkutils.playString("{"+r+b+"}")
+                sendkeys("{"+r+b+"}")
                 b = r = ''
             if w in ['go on', 'ga door', 'ga verder', 'verder']:
                 debugPrint('going on')
@@ -655,7 +655,7 @@ class ThisGrammar(ancestor):
             elif w in ['document']:
                 r = 'ctrl+ext'
         if b and r:
-            natlinkutils.playString("{"+r+b+"}")
+            sendkeys("{"+r+b+"}")
             b = r = ''
             
     def gotResults_changeSearching(self,words,fullResults):

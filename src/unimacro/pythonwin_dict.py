@@ -20,7 +20,7 @@ try with title "Title" (from testDialogForDicationGrammar.py) or
 import natlink
 from natlinkcore import natlinkutils
 import win32ui
-import nsformat
+from natlinkcore import nsformat 
 
 dictObj = None
 debugMode = 1
@@ -74,7 +74,7 @@ class VoiceDictation:
             self.ctrl.ReplaceSel(newText)
             self.ctrl.SetSel(selStart,selEnd)
         else:
-            natlinkutils.playString(newText)
+            sendkeys(newText)
         self.dictObj.setLock(0)
 
     def updateState(self):
@@ -195,13 +195,13 @@ class CommandGrammar(natlinkutils.GrammarBase):
 
     def gotResults_OK(self, words, fullResults):
         print('heard command:  %s '% words)
-        natlinkutils.playString("{tab}{enter}")
+        sendkeys("{tab}{enter}")
 
     def gotResults_scratch(self, words, fullResults):
         print('heard command:  %s '% words)
         i,j = self.txt.GetSel()
         if i < j:
-            natlinkutils.playString("{backspace}")
+            sendkeys("{backspace}")
 
     def gotResults_clear(self, words, fullResults):
         print('heard command:  %s '% words)

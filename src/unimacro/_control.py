@@ -679,6 +679,7 @@ class UtilGrammar(ancestor):
         
         sync with ...
         """
+        print('checkUnimacroGrammars!!')
         check_unimacro_grammars.checkUnimacroGrammars()
 
 # class MessageDictGrammar(natlinkutils.DictGramBase):
@@ -703,18 +704,6 @@ class UtilGrammar(ancestor):
 # messageDictGrammar = MessageDictGrammar()
 # messageDictGrammar.initialize()
 # print('messageDictGrammar initialized')
-
-
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-utilGrammar = UtilGrammar()
-if utilGrammar.gramSpec:
-    utilGrammar.initialize()
-    natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
-    utilGrammar.checkUnimacroGrammars() 
-    
-else:
-    print('grammar _control has no specification for this language---------')
-    utilGrammar = None
 
 def unload():
     #pylint:disable=W0603
@@ -766,3 +755,25 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
             return
         # new                 
 
+
+# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        utilGrammar = UtilGrammar()
+        utilGrammar.startInifile(modName = '_control')
+        utilGrammar.initialize()
+        Words = ['show', 'all', 'grammars']
+        FR = {}
+        print(f'natbj.loadedGrammars: {natbj.loadedGrammars}')
+        utilGrammar.gotResults_show(Words, FR)
+    finally:
+        natlink.natDisconnect()
+else:
+    # standard startup when Dragon starts:
+    print('control, standard startup')
+    utilGrammar = UtilGrammar()
+    utilGrammar.initialize()
+    natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
+    utilGrammar.checkUnimacroGrammars() 

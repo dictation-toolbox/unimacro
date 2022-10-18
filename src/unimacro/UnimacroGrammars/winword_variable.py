@@ -47,7 +47,7 @@ class ThisGrammar(ancestor):
         for w in words:
 ##            print 'got phword: %s'% w   # including the trigger words!
             L.append(w)
-        natlinkutils.playString(' '.join(L))
+        sendkeys(' '.join(L))
             
 # standard stuff:
 thisGrammar = ThisGrammar()
