@@ -508,43 +508,42 @@ class UtilGrammar(ancestor):
             Start=()
         # fix state at this moment (in case of Active grammars popup)
         self.BrowsePrepare(Start, All, Exclusive)
-        if Active:
+        if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
             activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
-            otherGrammars = natlinkmain.loadedFiles.keys()
+            otherGrammars = [] #  natlinkmain.loadedFiles.keys()
             
-            print(f'loadedGrammars (natbj): {natbj.loadedGrammars}')
-            print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
+            print(f'loadedGrammars (Unimacro): {natbj.loadedGrammars}')
+            # print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
             allGramNames = self.getUnimacroGrammarNames()
             self.setList('gramnames', allGramNames)
             print(f'for being sure, set all active grammars in list "gramnames": "{allGramNames}"')
-
-            for g in natbj.loadedGrammars.items():
-                gram = natbj.loadedGrammars[g]
+            
+            for grammar_name, gram in natbj.loadedGrammars.items():
+                # gram = natbj.loadedGrammars[g]
                 result = getattr(gram, 'isActive')
-                modName = gram.__module__
-                #print 'gram: %s, modName: %s, result: %s'% (gram, modName, result)
+                mod_name = gram.__module__
+                print(f'gram: {grammar_name}, module: {mod_name}')
                 if result:
-                    activeGrammars.append(g)
-                    if modName in otherGrammars:
-                        otherGrammars.remove(modName)
+                    activeGrammars.append(grammar_name)
+                    if mod_name in otherGrammars:
+                        otherGrammars.remove(mod_name)
                     else:
-                        print('cannot remove from otherGrammars: %s'% modName)
+                        print(f'cannot remove from otherGrammars: {mod_name}')
                 elif result == 0:
                     maySwitchOn = gram.mayBeSwitchedOn
                     if maySwitchOn:
-                        inactiveGrammars.append(g)
+                        inactiveGrammars.append(grammar_name)
                     else:
-                        switchedOffGrammars.append(g)
-                    #print 'gram: %s, name: %s'% (gram, modName)
-                    if modName in otherGrammars:
-                        otherGrammars.remove(modName)
+                        switchedOffGrammars.append(grammar_name)
+                    if mod_name in otherGrammars:
+                        otherGrammars.remove(mod_name)
                     else:
-                        print('cannot remove from otherGrammars: %s'% modName)
+                        print(f'cannot remove from otherGrammars: {mod_name}')
             if not activeGrammars:
                 msg = 'No Unimacro grammars are active'
             elif activeGrammars == [self.name]:
-                msg = 'No grammars are active (apart from "%s")'% self.name
+                msg = f'No grammars are active (apart from "{self.name}")'
             elif inactiveGrammars or switchedOffGrammars:
                 msg = 'Active Unimacro grammars:\n' + ', '.join(activeGrammars)
             else:
@@ -601,7 +600,7 @@ class UtilGrammar(ancestor):
                         return
                 print(f'open for edit file: "{filepath}"')
                 self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
-                unimacroutils.setCheckForGrammarChanges(1)
+                # unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
                 try:
@@ -770,10 +769,11 @@ if __name__ == "__main__":
         utilGrammar.gotResults_show(Words, FR)
     finally:
         natlink.natDisconnect()
-else:
+elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
     print('control, standard startup')
     utilGrammar = UtilGrammar()
     utilGrammar.initialize()
+    # set special function as a callback...
     natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
     utilGrammar.checkUnimacroGrammars() 

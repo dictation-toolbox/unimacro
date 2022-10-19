@@ -1125,14 +1125,6 @@ class ThisGrammar(ancestor):
             self.winkeyDown = 0
 
             
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-print(f'_task grammar, __name__: {__name__}')
-# when testing, the __name__ parameter is like unimacro.UnimacroGrammars._tasks
-# only when called from Dragon/Natlink/loader, the name is "_tasks"
-# therefore next if statement:
-if __name__.find('.') == -1: 
-    thisGrammar = ThisGrammar()
-    thisGrammar.initialize()
 
 def unload():
     #pylint:disable = W0603
@@ -1148,3 +1140,14 @@ def changeCallback(Type,Args):
     if thisGrammar:
         thisGrammar.cancelMode()
 
+# standard stuff Joel
+print(f'_task grammar, __name__: {__name__}')
+# -- when testing, the __name__ parameter is qualified, like unimacro.UnimacroGrammars._tasks
+# -- when called from Dragon/Natlink/loader, the name is "_tasks"
+if __name__ == "__main__":
+    # here code to interactive run this module
+    pass
+elif __name__.find('.') == -1:
+    # this is caught when this module is imported by the loader (when Dragon/Natlink starts)
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
