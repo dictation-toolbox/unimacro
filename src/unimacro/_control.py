@@ -754,8 +754,7 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
             return
         # new                 
 
-
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+# standard stuff Joel (adapted for python3, QH, unimacro):
 if __name__ == "__main__":
     ## interactive use, for debugging:
     natlink.natConnect()
@@ -771,7 +770,6 @@ if __name__ == "__main__":
         natlink.natDisconnect()
 elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
-    print('control, standard startup')
     utilGrammar = UtilGrammar()
     utilGrammar.initialize()
     # set special function as a callback...
