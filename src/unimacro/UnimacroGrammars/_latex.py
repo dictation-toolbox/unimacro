@@ -11,17 +11,17 @@
 # written by: Frank Olaf Sem-Jacobsen
 # March 2011
 #
-
+#pylint:disable = R0912, C0209, E1101
 import natlink
 from natlinkcore import nsformat 
+from natlinkcore import natlinkstatus
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils as natut
-from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
 
-language = unimacroutils.getLanguage()        
+status = natlinkstatus.NatlinkStatus()
+language = status.language
 ICAlphabet = natbj.getICAlphabet(language=language)
 
 # import re
@@ -29,8 +29,6 @@ ICAlphabet = natbj.getICAlphabet(language=language)
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
-    language = unimacroutils.getLanguage()        
-
 
     name = "latex"
     gramSpec = """
@@ -45,7 +43,7 @@ class ThisGrammar(ancestor):
     """
 
     def initialize(self):
-        if not self.language:
+        if not language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
 
@@ -133,7 +131,7 @@ class ThisGrammar(ancestor):
             keystroke('{end}')
         else:
             keystroke('{home}')
-            for i in range(0, squared):
+            for _ in range(0, squared):
                 keystroke('{right}')
             if present == 0:
                 keystroke('[')
@@ -180,13 +178,13 @@ class ThisGrammar(ancestor):
             keystroke('{up}')
             print('floating: %s'% self.floating)
         if self.reference:
-            stringpaste ('\\ref{%s}' % (self.makes_label(self.reference, self.dictation)))
+            stringpaste('\\ref{%s}' % (self.makes_label(self.reference, self.dictation)))
         if self.namereference:
-            stringpaste ('\\nameref{%s}' % (self.makes_label(self.namereference, self.dictation)))
+            stringpaste('\\nameref{%s}' % (self.makes_label(self.namereference, self.dictation)))
         if self.label_text:
-            stringpaste ('\\label{%s}' % (self.makes_label(self.label_text, self.dictation)))
+            stringpaste('\\label{%s}' % (self.makes_label(self.label_text, self.dictation)))
         if self.replace_text:
-            stringpaste (self.dictation)
+            stringpaste(self.dictation)
         
 
     def gotResults_dgndictation(self, words, fullResults):
@@ -231,26 +229,31 @@ class ThisGrammar(ancestor):
 
 
 
-    def makes_label(self, type, text):
-        return type + ':' + ''.join(text.split()).lower()
+    def makes_label(self, Type, Text):
+        return Type + ':' + ''.join(Text.split()).lower()
   
 def stringpaste(t):
     """paste via clipboard, to circumvent German keyboard issues
     """
     action('SCLIP "%s"'%t)
     
-
-
-# standard stuff Joel (QH, Unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
+# standard stuff Joel (QH, Unimacro, python3):
+try:
+    thisGrammar
+except NameError:
     thisGrammar = None
 
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
 
+if __name__ == "__main__":
+    # here code to interactive run this module
+    pass
+elif __name__.find('.') == -1:
+    # called from the loader, when starting Dragon/Natlink:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()

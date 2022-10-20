@@ -401,7 +401,7 @@ class UtilGrammar(ancestor):
                 filename = unimacroutils.getModuleFilename(module)
                 #print 'open for edit file: %s'% filename
                 self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
-                unimacroutils.setCheckForGrammarChanges(1)
+                # unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
                 try:
