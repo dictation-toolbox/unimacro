@@ -38,7 +38,7 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     
     if not isfile(py_path):
         if not org_txt_equal:
-            print(f'\tnew release of not activated grammar {name}\n\t\tcopy {org_path} to {txt_path}')
+            print(f'\tnew release of not activated grammar {name}\n\t\tcopy {org_path} to\n\t\t\t{txt_path}')
             shutil.copyfile(org_path, txt_path)
         return 
     txt_py_equal = not bool( get_diff(txt_path, py_path) )

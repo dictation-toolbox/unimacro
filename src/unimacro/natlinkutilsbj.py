@@ -686,7 +686,7 @@ class GrammarX(GrammarXAncestor):
                 result = self.switchOn(**kw)
                 self.setExclusive(1)
             elif self.mayBeSwitchedOn:
-                print(f'switch on: {self.name}')
+                # print(f'switch on: {self.name}')
                 result = self.switchOn(**kw)
             else:
                 if self.isActive():
@@ -752,9 +752,9 @@ class GrammarX(GrammarXAncestor):
             return None
         if self.mayBeSwitchedOn:
             if kw:
-                print(f'{self.name}, switch on all rules, kw: {kw}')
-            else:
-                print(f'{self.name}, switch on all rules')
+                print(f'{self.name}, switch rules, kw: {kw}')
+            # else:
+            #     print(f'{self.name}, switch on all rules')
             self.activateAll(**kw)
             return 1
         # else:

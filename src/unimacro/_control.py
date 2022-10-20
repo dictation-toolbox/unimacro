@@ -167,6 +167,7 @@ class UtilGrammar(ancestor):
 ##        if unimacroutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
+        print('---now starting other Unimacro grammars:')
 
     def unload(self):
         natbj.UnRegisterControlObject(self)
@@ -655,13 +656,12 @@ class UtilGrammar(ancestor):
         prevSet = set(self.Lists['gramnames'])
         newSet = set(natbj.getRegisteredGrammarNames())
         if prevSet != newSet:
-            # print(f'setting new grammar names list: {list(newSet)}')
+            print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNames(self):
         """get all the names of active or wrong Unimacro grammar names
         """
-        #pylint:disable=R0201
         wrongNames = set() #set(natlinkmain.wrongFiles.keys())
         loadedNames = set() #set(natlinkmain.loadedFiles.keys())
 
@@ -678,7 +678,7 @@ class UtilGrammar(ancestor):
         
         sync with ...
         """
-        print('checkUnimacroGrammars!!')
+        # print('checkUnimacroGrammars!!')
         check_unimacro_grammars.checkUnimacroGrammars()
 
 # class MessageDictGrammar(natlinkutils.DictGramBase):

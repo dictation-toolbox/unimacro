@@ -1,7 +1,7 @@
 """
 Grammar to help with natlink hosted python debugging.
 """
-#pylint:disable=W0611, W0613, C0115, C0116, R0201
+#pylint:disable=W0611, W0613, C0115, C0116
 
 import natlink
 import natlinkpydebug as pd

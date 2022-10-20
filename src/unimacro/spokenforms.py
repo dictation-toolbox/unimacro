@@ -730,7 +730,6 @@ class SpokenForms:
     Note:
         0-360 or number1to360 gives [0, 10, ..., 360]
         """
-        #pylint:disable=R0201
         #print 'try to fill numbers list: "%s"'% listName
         try:
             return globals()[listName]

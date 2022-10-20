@@ -1,13 +1,16 @@
-# This file is part of a SourceForge project called "unimacro" see
+# This file was part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
-#
+# Now in the dictation-toolbox: https://github.com/dictation-toolbox/unimacro
+
 # _lines.py 
 #  written by: Quintijn Hoogenboom (QH software, training & advies)
 #  August 2003
 #  add column: 23/4/2018
+#  get it working for python3, 2022 (QH)
 #
+#pylint:disable=R0904, R0912, C0209, R0915, R0913
 
 """lines can be selected, with or without line number, copied, moved etc
 
@@ -40,25 +43,21 @@ self.lastDirection gives the last selection direction, persistent
 
 For more information on this number part, see grammar _testnumbersspokenforms.py
 """
-import time
-import os
-import sys
-import types
 import re
-import natlink
-from natlinkcore import inivars
-import re
+
+from natlinkcore import natlinkutils
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro import inivars
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.sendkeys import sendkeys as keystroke
+from dtactions.unimacro import unimacroactions as actions
+
+class LinesError(Exception):
+    pass
+
 # for checking base number:
 reNulls = re.compile('0+$')
-
-from natlinkcore import natlinkutils as natut
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro import unimacroactions as actions
-class LinesError(Exception): pass
-
 
 counts = list(range(1,20)) + list(range(20,50,5)) + list(range(50,100,10)) + list(range(100, 1001, 100))
 #print 'counts: %s'% counts
@@ -196,14 +195,14 @@ class ThisGrammar(ancestor):
            <wordspecifyaction> | <before> <wordspecifyaction> |
            <wordspecifyaction> <afterwordoptional> | <before> <wordspecifyaction> <afterwordoptional>
         """
-        print("never comes here! %s"% words)
+        print(f'never comes here! {words}')
 
     
     def subrule_wordspec(self, words):
         """word | {n2-20} words | word (left|right) | {n2-20} words (left|right)
         """
         lenwords = len(words)
-        print("wordspec, got: %s (%s)"% (words, lenwords))
+        print(f'wordspec, got: {words} ({lenwords})')
         for i, w in enumerate(words):
             if self.hasCommon(w, 'word'):
                 self.count = 1
@@ -281,9 +280,9 @@ class ThisGrammar(ancestor):
         action("ALERT")
         if not action("WAITMOUSEMOVE"):
             action("ALERT 2")
-            return
+            return None
         if not action("WAITMOUSESTOP"):
-            return
+            return None
         action("ButtonClick")
         action("ALERT")
         return 1
@@ -364,7 +363,7 @@ class ThisGrammar(ancestor):
             self.previousLines = 1
             self.lastDirection = 'up'
         if self.hasCommon(words, ['next']):
-           self.nextLines = 1
+            self.nextLines = 1
         if self.hasCommon(words, ['line']):
             self.numlines = 1
         if self.hasCommon(words, ['lines']):
@@ -383,7 +382,7 @@ class ThisGrammar(ancestor):
             self.previousLines = 1
             self.lastDirection = 'up'
         if self.hasCommon(words, ['next']):
-           self.nextLines = 1
+            self.nextLines = 1
         if self.hasCommon(words, ['para']):
             self.numparas = 1
         if self.hasCommon(words, ['paras']):
@@ -534,14 +533,14 @@ class ThisGrammar(ancestor):
             if self.numlines > 1:
                 T.append('<<selectline>>')
                 T.append('<<selectdown %s>>' % (self.numlines-1,))
-            elif self.action != None:
+            elif self.action is not None:
                 # only when you call for a single line without action, NO
                 # selection is done
                 T.append('<<selectline>>')
 
-        t1 = time.time ()
+        # t1 = time.time ()
         action(''.join(T), comment=comment)
-        t2 = time.time ()
+        # t2 = time.time ()
 ##        print 'line select action: %s'% (t2-t1)
         T = []
         
@@ -553,7 +552,7 @@ class ThisGrammar(ancestor):
             return
         if isinstance(self.action, str):
             action(self.action, comment=comment)
-        elif type(self.action) == list:
+        elif isinstance(self.action, list):
             if self.action[0] == 'move':
                 T.append('<<cut>>')
             elif self.action[0] == 'copy':
@@ -614,9 +613,9 @@ class ThisGrammar(ancestor):
 ##            action('<<upafterpaste>>', comment=comment)
             T.append('<<afterlines>>')
         if T:
-            t1 = time.time ()
+            # t1 = time.time ()
             action(''.join(T), comment=comment)
-            t2 = time.time ()
+            # t2 = time.time ()
 ##            print 'line action action: %s'% (t2-t1)
 
     def fillDefaultInifile(self, ini=None):
@@ -727,6 +726,7 @@ class ThisGrammar(ancestor):
 ##            print 'matching activate: %s'% self.activateRules
             if not unimacroutils.matchWindow(self.deactivateRules, progInfo=progInfo):
                 return 1
+        return None
 ##        else:
 ##            print 'no positive match, deactivate:  %s'% self.activateRules
 ##        print 'window policy no match: %s'% modInfo[1]
@@ -748,28 +748,37 @@ def getLineRelativeTo(relativelinenum, currentLine, modulo=100, minLine=1, maxLi
         b = a + modulo
     else:
         b = a - modulo
-    if a < minLine: return b
-    if b < minLine: return a
+    if a < minLine:
+        return b
+    if b < minLine:
+        return a
     if maxLine:
-        if a > maxLine: return b
-        if b > maxLine: return a
+        if a > maxLine:
+            return b
+        if b > maxLine:
+            return a
 
     if abs(a-currentLine) < abs(b-currentLine):
         return a
-    else:
-        return b
+    return b
 
-
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
+# standard stuff Joel (QH, Unimacro, python3):
+try:
+    thisGrammar
+except NameError:
     thisGrammar = None
 
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None 
 
+if __name__ == "__main__":
+    # here code to interactive run this module
+    pass
+elif __name__.find('.') == -1:
+    # called from the loader, when starting Dragon/Natlink:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
