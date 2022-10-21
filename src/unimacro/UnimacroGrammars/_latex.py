@@ -12,12 +12,14 @@
 # March 2011
 #
 #pylint:disable = R0912, C0209, E1101
+import time
 import natlink
 from natlinkcore import nsformat 
 from natlinkcore import natlinkstatus
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
+from dtactions.natlinkclipboard import Clipboard
 import unimacro.natlinkutilsbj as natbj
 
 status = natlinkstatus.NatlinkStatus()
@@ -115,6 +117,10 @@ class ThisGrammar(ancestor):
                 
     def gotResults_options(self, words, fullResults):
         selection = self.view_selection_current_line()
+        if selection:
+            print(f'select_current_line: {selection}')
+        else:
+            print('no selection found')
         options = self.getFromInifile(words, 'options', noWarning=1)
         present = 1
         squared = selection.find(']')
@@ -216,15 +222,13 @@ class ThisGrammar(ancestor):
         return contents
 
     def view_selection_current_line(self):
-        unimacroutils.saveClipboard()
-        keystroke('{ctrl+c}')
-        contents = natlink.getClipboard()
+        cb = Clipboard()
+        contents = cb.copy_and_get_clipboard()
         if len(contents) == 0:
             print('no_space_by_existing selection')
             keystroke('{end}{shift+home}')
-            keystroke('{ctrl+c}')
-            contents = natlink.getClipboard()
-        unimacroutils.restoreClipboard()
+            time.sleep(0.3)
+            contents = cb.copy_and_get_clipboard()
         return contents
 
 
@@ -252,7 +256,16 @@ def unload():
 
 if __name__ == "__main__":
     # here code to interactive run this module
-    pass
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        thisGrammar.startInifile(modName = '_latex')
+        thisGrammar.initialize()
+        Words = ['add', 'option', 'draft']
+        FR = {}
+        thisGrammar.gotResults_options(Words, FR)
+    finally:
+        natlink.natDisconnect()
 elif __name__.find('.') == -1:
     # called from the loader, when starting Dragon/Natlink:
     thisGrammar = ThisGrammar()
