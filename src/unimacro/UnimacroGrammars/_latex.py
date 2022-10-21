@@ -1,7 +1,7 @@
 """Unimacro grammar to Dictate latex markup, as defined in an inifile
 
 """
-# This file is part of a SourceForge project called "unimacro" see
+# This file is/was part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
@@ -12,14 +12,12 @@
 # March 2011
 #
 #pylint:disable = R0912, C0209, E1101
-import time
 import natlink
 from natlinkcore import nsformat 
 from natlinkcore import natlinkstatus
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
-from dtactions.natlinkclipboard import Clipboard
 import unimacro.natlinkutilsbj as natbj
 
 status = natlinkstatus.NatlinkStatus()
@@ -94,7 +92,7 @@ class ThisGrammar(ancestor):
             contents = self.get_selection_that(line = 0)
         if self.hasCommon(words, ['line']):
             contents = self.get_selection_that(line = 1)
-
+        contents = contents.strip()
 
         stringpaste(Cmd)
         if pos > 0  or self.hasCommon(words, ['arguments']):
@@ -112,13 +110,14 @@ class ThisGrammar(ancestor):
             if label:
                 ## workaround for keystrokes: {{}
                 keystroke('{enter}')
-                stringpaste(r'\label{}%s}'% (self.makes_label(label, contents)))
+                stringpaste(r'\label{%s}'% (self.makes_label(label, contents)))
                 keystroke('{enter}')
                 
     def gotResults_options(self, words, fullResults):
         selection = self.view_selection_current_line()
         if selection:
-            print(f'select_current_line: {selection}')
+            pass
+            # print(f'select_current_line: {selection}')
         else:
             print('no selection found')
         options = self.getFromInifile(words, 'options', noWarning=1)
@@ -195,9 +194,9 @@ class ThisGrammar(ancestor):
 
     def gotResults_dgndictation(self, words, fullResults):
         """do with nsformat functions"""
-        print('got dgndictation: %s'% words)
+        # print('got dgndictation: %s'% words)
         self.dictation, dummy = nsformat.formatWords(words)  # state not needed in call
-        print('   result of nsformat:  %s'% repr(self.dictation))
+        # print('   result of nsformat:  %s'% repr(self.dictation))
 
 
     def get_selection_that(self, line = 0):
@@ -207,6 +206,7 @@ class ThisGrammar(ancestor):
             action('<<selectline>><<cut>>')
         else:
             action('<<cut>>')
+        action('W')
         contents = natlink.getClipboard().strip().replace('\r', '')
         if len(contents) == 0:
             if line:
@@ -214,23 +214,27 @@ class ThisGrammar(ancestor):
                 return ""
             action('HW select that')
             action('<<cut>>')
+            action('W')
             contents = natlink.getClipboard().strip().replace('\r', '')
             if len(contents) == 0:
-                print('_latex, empty contents, no last dicatate utterance available')
+                print('_latex, empty contents, no last dictate utterance available')
                 
         unimacroutils.restoreClipboard()
         return contents
 
     def view_selection_current_line(self):
-        cb = Clipboard()
-        contents = cb.copy_and_get_clipboard()
+        unimacroutils.saveClipboard()
+        keystroke('{ctrl+c}')
+        action('W')
+        contents = natlink.getClipboard()
         if len(contents) == 0:
-            print('no_space_by_existing selection')
+            # print('no_space_by_existing selection')
             keystroke('{end}{shift+home}')
-            time.sleep(0.3)
-            contents = cb.copy_and_get_clipboard()
+            keystroke('{ctrl+c}')
+            action('W')
+            contents = natlink.getClipboard()
+        unimacroutils.restoreClipboard()
         return contents
-
 
 
     def makes_label(self, Type, Text):
@@ -239,7 +243,8 @@ class ThisGrammar(ancestor):
 def stringpaste(t):
     """paste via clipboard, to circumvent German keyboard issues
     """
-    action('SCLIP "%s"'%t)
+    print(f'stringpaste: |{t}|')
+    action(f'SCLIP "{t}"')
     
 # standard stuff Joel (QH, Unimacro, python3):
 try:

@@ -1,6 +1,6 @@
 # This file was part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
-# (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
+# (c) copyright 2003 see https://qh.antenna.nl/unimacro/aboutunimacro/index.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
 # Now in the dictation-toolbox: https://github.com/dictation-toolbox/unimacro
 
