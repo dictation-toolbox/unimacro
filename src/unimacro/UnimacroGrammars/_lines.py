@@ -45,6 +45,7 @@ For more information on this number part, see grammar _testnumbersspokenforms.py
 """
 import re
 
+import natlink
 from natlinkcore import natlinkutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro import inivars
@@ -123,11 +124,11 @@ class ThisGrammar(ancestor):
         self.maxBase = 0
         self.base = 0
 
-        progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
-        if unimacroutils.matchWindow(self.ignore, progInfo=progInfo):
+        self.progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
+        if unimacroutils.matchWindow(self.ignore, progInfo=self.progInfo):
 ##            print 'progInfo in ignore, skipping: %s'% self.ignore
             return
-        if self.windowPolicy(moduleInfo, progInfo):
+        if self.windowPolicy(moduleInfo, self.progInfo):
             if self.mode != 'active':
                 self.activateAll()
                 self.mode = 'active'
@@ -144,14 +145,13 @@ class ThisGrammar(ancestor):
                 pass
 ##                print '%s, remains inactive'% self.getName()
         self.prevModInfo = moduleInfo
-        self.progInfo = progInfo
+        # self.progInfo = progInfo
 
     def gotResultsInit(self,words,fullResults):
         self.currentLine = None
         
         if self.lineNumbersModuloHundred:
             self.app = actions.get_instance_from_progInfo(self.progInfo)
-            prog = self.progInfo.prog
             if self.app:
                 self.currentLine = self.app.getCurrentLineNumber()
                 #if self.currentLine:
@@ -777,7 +777,23 @@ def unload():
 
 if __name__ == "__main__":
     # here code to interactive run this module
-    pass
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        thisGrammar.startInifile(modName = '_lines')
+        thisGrammar.initialize()
+        thisGrammar.progInfo = unimacroutils.getProgInfo()
+        seqsAndRules = [(['line'], 'linenum'), (['seven', 'two', 'three'], '__0to9')]
+        # ruleName: linenum, words: ['line'], FR: [('line', 'linenum'), ('seven', '__0to9'), ('two', '__0to9'), ('three', '__0to9')]
+        # ruleName: __0to9, words: ['seven', 'two', 'three'], FR: [('line', 'linenum'), ('seven', '__0to9'), ('two', '__0to9'), ('three', '__0to9')]
+        all_words = ['line', 'seven', 'two', 'three']
+        FR = [('line', 'linenum'), ('seven', '__0to9'), ('two', '__0to9'), ('three', '__0to9')]
+        thisGrammar.gotResultsInit(all_words, FR)
+        thisGrammar.gotResults_linenum(['line'], FR)
+        thisGrammar.gotResults___0to9(['seven', 'two', 'three'], FR)
+        thisGrammar.gotResults(all_words, FR)
+    finally:
+        natlink.natDisconnect()
 elif __name__.find('.') == -1:
     # called from the loader, when starting Dragon/Natlink:
     thisGrammar = ThisGrammar()

@@ -27,7 +27,8 @@
 #   See the class BrowsableGrammar for documentation on the use of
 #   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
-#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, 
+#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602
+#pylint:disable=E1101
 
 """subclasses classes for natlink grammar files and utility functions
 
@@ -1190,10 +1191,9 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         Grammars.Init(BrowseGrammar.RuleCode,title)
         CallAllGrammarObjects('InsertGrammarData',[Grammars,All,Exclusive])
         Data=(Grammars,Start,All,Exclusive)
-        GrammarFile=open(GrammarFileName,'wb')
-        pickle.dump(Data, GrammarFile)
-        GrammarFile.close()
-
+        with  open(GrammarFileName,'wb') as GrammarFile:
+            pickle.dump(Data, GrammarFile)
+# 
     def BrowseShow(self):
         """show the grammars as prepared in the function BrowsePrepare
         """
@@ -3258,6 +3258,8 @@ class DocstringGrammar(DocstringGrammarAncestor):
         the latter are only visited if the former fail.
         """
         ruleName, ruleWords = None, None
+        # print(f'seqsAndRules = {seqsAndRules}')
+
         for i, x in enumerate(seqsAndRules):
             if i == 0:
                 ruleName, self.nextRule = None, x[1]
@@ -3265,10 +3267,12 @@ class DocstringGrammar(DocstringGrammarAncestor):
             else:
                 self.prevRule, ruleName, self.nextRule = ruleName, self.nextRule, x[1]
                 self.prevWords, ruleWords, self.nextWords = ruleWords, self.nextWords, x[0]
+                # print(f'ruleName: {ruleName}, words: {ruleWords}, FR: {fullResults}')
                 self.doRuleIfExists( ruleName, ruleWords, fullResults)
 
         self.prevRule, ruleName, self.nextRule = ruleName, self.nextRule, None
         self.prevWords, ruleWords, self.nextWords = ruleWords, self.nextWords, []
+        # print(f'ruleName: {ruleName}, words: {ruleWords}, FR: {fullResults}')
         self.doRuleIfExists(ruleName, ruleWords, fullResults)
 
     def doRuleIfExists(self, ruleName, ruleWords, fullResults):
