@@ -149,15 +149,6 @@ class ThisGrammar(ancestor):
 
     def gotResultsInit(self,words,fullResults):
         self.currentLine = None
-        
-        if self.lineNumbersModuloHundred:
-            self.app = actions.get_instance_from_progInfo(self.progInfo)
-            if self.app:
-                self.currentLine = self.app.getCurrentLineNumber()
-                #if self.currentLine:
-                #    print 'current line number for prog: %s: %s'% (prog, self.currentLine)
-                #else:
-                #    print 'currentLine not found in app: %s'% prog
         self.previousLines = self.nextLines = 0
         self.firstPart = ''        
         self.line = 0
@@ -444,32 +435,27 @@ class ThisGrammar(ancestor):
         #print 'type line: %s'% type(self.line)
         #print 'base: %(base)s, line: %(line)s, through: %(through)s, ' \
         #      'movecopyto: %(movecopyto)s, action: %(action)s'% self.__dict__
+        ## self.movecopyto is returned as str, but should be converted to int,
+        ## possibly relative to current line number
         if self.movecopyto and self.action[1] == 'to':
-            intLine = int(self.movecopyto)
-            if intLine >= 100 or self.movecopyto.startswith('0'):
-                self.movecopyto = intLine # always absolute
-            elif self.currentLine:
-                intLine = getLineRelativeTo(intLine, self.currentLine)
-                self.movecopyto = intLine
+            if self.lineNumbersModuloHundred:
+                self.movecopyto = self.convertLineNumberModulo(self.movecopyto)
             else:
-                self.movecopyto = intLine
+                # absolute:
+                self.movecopyto = int(self.movecopyto)
         if self.line:
-            intLine = int(self.line)
-            #print 'intLine: %s, currentLine: %s'% (intLine, self.currentLine)
-            if len(self.line) > 2:
-                self.line = intLine # always absolute
-            elif self.currentLine:
-                intLine = getLineRelativeTo(intLine, self.currentLine)
-                print('getLineRelativeTo, old: %s new: %s (currentline: %s)'% (self.line, intLine, self.currentLine))
-                self.line = intLine
+            if self.lineNumbersModuloHundred:
+                self.line = self.convertLineNumberModulo(self.line)
             else:
-                self.line = intLine
+                # absolute:
+                self.line = int(self.line)
             
         if self.through:
             intThrough = int(self.through)
             if intThrough > self.line:
                 self.through = intThrough # always absolute
             else:
+                
                 if len(self.through) == 2:
                     modulo = 100
                 else:
@@ -617,6 +603,39 @@ class ThisGrammar(ancestor):
             action(''.join(T), comment=comment)
             # t2 = time.time ()
 ##            print 'line action action: %s'% (t2-t1)
+
+                
+    def convertLineNumberModulo(self, num_as_string):
+        """given the number as string, see if it is relative and convert to absolute number
+        
+        the value should be less than 100 or be prefixed with "0", and
+        self.lineNumbersModuloHundred should be True, and
+        the foreground app should be able to return the current line number
+                (presently for Komodo, Excel and Visual Studio ("code"))
+                
+        When currentline > 100, then "07" should be treated as relative...
+        """
+        intLine = int(num_as_string)
+        if not self.lineNumbersModuloHundred:
+            # should not be here
+            return intLine
+        
+        if intLine >= 100 or (intLine >= 10 and num_as_string.startswith('0')) or num_as_string.startswith('00'):
+            return intLine # always absolute
+        if not self.currentLine:
+            self.app = actions.get_instance_from_progInfo(self.progInfo)
+            if self.app:
+                self.currentLine = self.app.getCurrentLineNumber()
+            print(f'get current line number currentLine: {self.currentLine}')
+        if num_as_string.startswith('0'):
+            modulo = 100
+        elif intLine < 10:
+            modulo = 10
+        else:
+            modulo = 100
+        intLine = getLineRelativeTo(intLine, self.currentLine, modulo=modulo)
+        print(f'absolute: {intLine}, current: {self.currentLine}, modulo: {modulo}')
+        return intLine
 
     def fillDefaultInifile(self, ini=None):
         """initialize as a starting example the ini file
