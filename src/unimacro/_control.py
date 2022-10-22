@@ -9,7 +9,7 @@
 # _control.py, adapted version of_gramutils.py
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003
-#pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107
+#pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107, C0209, E0601, W0602
 #pylint:disable=E1101
 
 import os
@@ -38,37 +38,9 @@ except ImportError:
 
 tracecount = list(map(str, list(range(1, 10))))
 
-#Words that are 'filtered out' (actually: removed) in Filter Mode
-#See below for the different modes
-def ReadFilteredWords(Filename):
-    #reads all words from the Filtered words file    
-    #does not really belong here
-    try:
-        File=open(Filename,'r')
-    except:
-        return []
-    Words = File.readlines()
-    File.close()
-    for w in Words:
-        Words[Words.index(w)]=w[:-1]
-    freq={}        
-    for w in Words:
-        if w in freq:
-            freq[w]=freq[w]+1
-        else:
-            freq[w]=1
-    Words=list(freq.keys())
-    return Words
-
-FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
-                 'if', 'its', 'is', 'this', 'booth', 'on', 'with',"'s"]
 #(taken from natlinkmain, to prevent import:)
 baseDirectory = status.getUnimacroUserDirectory()
 unimacroDirectory = status.getUnimacroDirectory()
-
-FilterFileName=baseDirectory+'\\filtered.txt'
-FilteredWords=natbj.Union(FilteredWords, ReadFilteredWords(FilterFileName))
-
 
 #Constants for the UtilGrammar
 Normal=0
@@ -651,8 +623,6 @@ class UtilGrammar(ancestor):
             actions.Message(t)
 
     def UnimacroControlPostLoad(self):
-        newKeys = natbj.getRegisteredGrammarNames()
-        # print(f'_control, postLoad: newKeys: {newKeys}')
         prevSet = set(self.Lists['gramnames'])
         newSet = set(natbj.getRegisteredGrammarNames())
         if prevSet != newSet:
