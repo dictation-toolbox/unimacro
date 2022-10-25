@@ -30,7 +30,8 @@
 <table border="0" cellpadding="0" cellspacing="0" class="navline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">grammars</a> > <a href="../folders/index.html">global grammars</a> > <a href="index.html">latex</a> > syntax highlighting word</td></tr></table></td></tr></table>
 
-<!-- === end of header === --></div><div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
+<!-- === end of header === --></div>
+<div class="body" id="divbody"><table cellspacing="0" class="body" width="100%"><tr><td class="leftpart" id="leftpart" width="25%"><table cellspacing="0" class="leftpart" width="100%"><tr><td class="leftmenu" id="leftmenu"><!-- === left menu === -->
 <table class="leftmenu" cellspacing="0" width="100%">
 <tr><td class="leftoff" colspan="3"><a href="../../control/index.html">Control</a></td></tr>
 
@@ -60,8 +61,6 @@
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
 
-<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
-
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
@@ -75,91 +74,11 @@
 <tr><td class="leftoff" colspan="3"><a href="../../games/patience.html">Games</a></td></tr>
 </table>
 
-<!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>How to configure Word for latex highlighting</h1>
+<!-- == end of left menu == --></td></tr></table></td>
+<td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>How to configure Word for latex highlighting</h1>
 <p>For completeness, below is the necessary Visual Basic functions for rudimentary latex highlighting in Microsoft Word. By adding these three functions to the Word macro system, all files with the extension .tex will be automatically highlighted everytime they are opened (In Word 2010 click "review"-> "macros"->"create". Bind the AutoOpen function to a keyboard shortcut to reformat the documents during editing (file->options->customise ribbon, keyboard shortcuts: customise...). This came to great effect be combined with the "edit all latex" and "edit ready" commands from the <a href="../../../grammars/globalgrammars/edit/index.html"><strong>_edit</strong> grammar</a>.</p>
 
-<p class="pre">Sub AssociateStyle(pattern As String, style As String, colour As Long)<br>
-&lsquo;Associate Styles with headings and quotations<br>
-&lsquo;Ensure Tools/References/Microsoft VBscript Regular Expression 5.5 is on<br>
-<br>
-Dim regEx, Match<br>
-&lsquo;Dim Matches As MatchCollection<br>
-Dim str As String<br>
-Dim region As Range<br>
-<br>
-Set regEx = CreateObject(&ldquo;VBScript.RegExp&rdquo;)<br>
-regEx.pattern = pattern&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rsquo; Set pattern.<br>
-regEx.Global = True<br>
-regEx.MultiLine = True<br>
-<br>
-&lsquo;obtain matched RegExp.<br>
-Set Matches = regEx.Execute(ActiveDocument.Range.Text)<br>
-&lsquo;MsgBox (Len(ActiveDocument.Range.Text))<br>
-&lsquo;MsgBox (Matches.Count)<br>
-&lsquo;loop through and replace style<br>
-For Each Match In Matches<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Set region = ActiveDocument.Range(Match.FirstIndex, Match.FirstIndex + Len(Match.Value))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;If colour > -1 Then<br>
-&nbsp;&nbsp;&nbsp;&rsquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MsgBox (Match.Value)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&rsquo;&nbsp;&nbsp;&nbsp;&nbsp;MsgBox (Match.FirstIndex)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rsquo;&nbsp;&nbsp;&nbsp;MsgBox (Len(Match.Value))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;region.Font.ColorIndex = colour<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;region.style = _<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ActiveDocument.Styles(style)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;End If<br>
-Next<br>
-<br>
-End Sub<br>
-<br>
-Sub ReplaceMarkup(pattern As String, markup As String)<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Selection.Find.ClearFormatting<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Selection.Find.Replacement.ClearFormatting<br>
-&nbsp;&nbsp;&nbsp;&nbsp;With Selection.Find<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Text = pattern<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Replacement.Text = markup<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Forward = True<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Wrap = wdFindNo<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Format = False<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchCase = False<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchWholeWord = False<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchAllWordForms = False<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchSoundsLike = False<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchWildcards = True<br>
-&nbsp;&nbsp;&nbsp;&nbsp;End With<br>
-&nbsp;&nbsp;&nbsp;&nbsp;Selection.Find.Execute Replace:=wdReplaceAll<br>
-End Sub<br>
-<br>
-<br>
-Sub AutoOpen()<br>
-&rsquo;<br>
-&rsquo; AutoOpen Macro<br>
-&rsquo; Macro recorded 5/6/2009 by reagle<br>
-&rsquo;<br>
-FileName = ActiveDocument.FullName<br>
-Extension = Right(FileName, 3)<br>
-If Extension = &ldquo;tex&rdquo; Then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.WholeStory<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.Font.Name = &ldquo;Georgia&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.Font.Size = 12<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.ParagraphFormat.LineSpacing = 16<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.style = &ldquo;Body Text&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;Call ReplaceMarkup(&rdquo;\\emph\{(*)\}&rdquo;, &rdquo;&lt;&lt;\1>>&rdquo;)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;[{}]&rdquo;, &ldquo;Quote&rdquo;, wdGreen)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;\\.*?}&rdquo;, &ldquo;Quote&rdquo;, wdDarkBlue)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;^\\title{&rdquo;, &ldquo;Heading 1&rdquo;, -1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;^\\chapter{&rdquo;, &ldquo;Heading 1&rdquo;, -1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;^\\section{&rdquo;, &ldquo;Heading 1&rdquo;, -1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;^\\subsection{&rdquo;, &ldquo;Heading 2&rdquo;, -1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;^\\subsubsection{&rdquo;, &ldquo;Heading 3&rdquo;, -1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;^\\begin{quotation}&rdquo;, &ldquo;Quote&rdquo;, -1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;\$.*?\$&rdquo;, &ldquo;Quote&rdquo;, wdRed)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call AssociateStyle(&rdquo;[^\\]%.*?$&rdquo;, &ldquo;Quote&rdquo;, wdGray25)<br>
-<br>
-End If<br>
-<br>
-End Sub</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<p class="pre">&nbsp;<br>Sub&nbsp;AssociateStyle(pattern&nbsp;As&nbsp;String,&nbsp;style&nbsp;As&nbsp;String,&nbsp;colour&nbsp;As&nbsp;Long)<br>'Associate&nbsp;Styles&nbsp;with&nbsp;headings&nbsp;and&nbsp;quotations<br>'Ensure&nbsp;Tools/References/Microsoft&nbsp;VBscript&nbsp;Regular&nbsp;Expression&nbsp;5.5&nbsp;is&nbsp;on<br>&nbsp;<br>Dim&nbsp;regEx,&nbsp;Match<br>'Dim&nbsp;Matches&nbsp;As&nbsp;MatchCollection<br>Dim&nbsp;str&nbsp;As&nbsp;String<br>Dim&nbsp;region&nbsp;As&nbsp;Range<br>&nbsp;<br>Set&nbsp;regEx&nbsp;=&nbsp;CreateObject("VBScript.RegExp")<br>regEx.pattern&nbsp;=&nbsp;pattern&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;Set&nbsp;pattern.<br>regEx.Global&nbsp;=&nbsp;True<br>regEx.MultiLine&nbsp;=&nbsp;True<br>&nbsp;<br>'obtain&nbsp;matched&nbsp;RegExp.<br>Set&nbsp;Matches&nbsp;=&nbsp;regEx.Execute(ActiveDocument.Range.Text)<br>'MsgBox&nbsp;(Len(ActiveDocument.Range.Text))<br>'MsgBox&nbsp;(Matches.Count)<br>'loop&nbsp;through&nbsp;and&nbsp;replace&nbsp;style<br>For&nbsp;Each&nbsp;Match&nbsp;In&nbsp;Matches<br>&nbsp;&nbsp;&nbsp;&nbsp;Set&nbsp;region&nbsp;=&nbsp;ActiveDocument.Range(Match.FirstIndex,&nbsp;Match.FirstIndex&nbsp;+&nbsp;Len(Match.Value))<br>&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;colour&nbsp;>&nbsp;-1&nbsp;Then<br>&nbsp;&nbsp;&nbsp;'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MsgBox&nbsp;(Match.Value)<br>&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;&nbsp;&nbsp;&nbsp;MsgBox&nbsp;(Match.FirstIndex)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'&nbsp;&nbsp;&nbsp;MsgBox&nbsp;(Len(Match.Value))<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;region.Font.ColorIndex&nbsp;=&nbsp;colour<br>&nbsp;&nbsp;&nbsp;&nbsp;Else<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;region.style&nbsp;=&nbsp;_<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ActiveDocument.Styles(style)<br>&nbsp;&nbsp;&nbsp;&nbsp;End&nbsp;If<br>Next<br>&nbsp;<br>End&nbsp;Sub<br>&nbsp;<br>Sub&nbsp;ReplaceMarkup(pattern&nbsp;As&nbsp;String,&nbsp;markup&nbsp;As&nbsp;String)<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;Selection.Find.ClearFormatting<br>&nbsp;&nbsp;&nbsp;&nbsp;Selection.Find.Replacement.ClearFormatting<br>&nbsp;&nbsp;&nbsp;&nbsp;With&nbsp;Selection.Find<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Text&nbsp;=&nbsp;pattern<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Replacement.Text&nbsp;=&nbsp;markup<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Forward&nbsp;=&nbsp;True<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Wrap&nbsp;=&nbsp;wdFindNo<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.Format&nbsp;=&nbsp;False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchCase&nbsp;=&nbsp;False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchWholeWord&nbsp;=&nbsp;False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchAllWordForms&nbsp;=&nbsp;False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchSoundsLike&nbsp;=&nbsp;False<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.MatchWildcards&nbsp;=&nbsp;True<br>&nbsp;&nbsp;&nbsp;&nbsp;End&nbsp;With<br>&nbsp;&nbsp;&nbsp;&nbsp;Selection.Find.Execute&nbsp;Replace:=wdReplaceAll<br>End&nbsp;Sub<br>&nbsp;<br>&nbsp;<br>Sub&nbsp;AutoOpen()<br>'<br>'&nbsp;AutoOpen&nbsp;Macro<br>'&nbsp;Macro&nbsp;recorded&nbsp;5/6/2009&nbsp;by&nbsp;reagle<br>'<br>FileName&nbsp;=&nbsp;ActiveDocument.FullName<br>Extension&nbsp;=&nbsp;Right(FileName,&nbsp;3)<br>If&nbsp;Extension&nbsp;=&nbsp;"tex"&nbsp;Then<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.WholeStory<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.Font.Name&nbsp;=&nbsp;"Georgia"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.Font.Size&nbsp;=&nbsp;12<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.ParagraphFormat.LineSpacing&nbsp;=&nbsp;16<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Selection.style&nbsp;=&nbsp;"Body&nbsp;Text"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Call&nbsp;ReplaceMarkup("\\emph\{(*)\}",&nbsp;"<<\1>>")<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("[{}]",&nbsp;"Quote",&nbsp;wdGreen)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("\\.*?}",&nbsp;"Quote",&nbsp;wdDarkBlue)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("^\\title{",&nbsp;"Heading&nbsp;1",&nbsp;-1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("^\\chapter{",&nbsp;"Heading&nbsp;1",&nbsp;-1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("^\\section{",&nbsp;"Heading&nbsp;1",&nbsp;-1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("^\\subsection{",&nbsp;"Heading&nbsp;2",&nbsp;-1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("^\\subsubsection{",&nbsp;"Heading&nbsp;3",&nbsp;-1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("^\\begin{quotation}",&nbsp;"Quote",&nbsp;-1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("\$.*?\$",&nbsp;"Quote",&nbsp;wdRed)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Call&nbsp;AssociateStyle("[^\\]%.*?$",&nbsp;"Quote",&nbsp;wdGray25)<br>&nbsp;<br>End&nbsp;If<br>&nbsp;<br>End&nbsp;Sub</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">grammars</a> > <a href="../folders/index.html">global grammars</a> > <a href="index.html">latex</a> > syntax highlighting word > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../../sitemap.html#highlightinginmicrosoftword';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../../sitemap.html#highlightinginmicrosoftword">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -167,7 +86,7 @@ End Sub</p></td></tr></table></td></tr></table></div><div class="footer" id="foo
 m("antenna.nl", "q.hoogenboom", "information about: Syntax highlighting Word", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

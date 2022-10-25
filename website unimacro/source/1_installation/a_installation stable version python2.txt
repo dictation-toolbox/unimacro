@@ -23,8 +23,7 @@ Here is the final release for Python 2.7: 4.2
 witregel()
    
    Installing Python2.7.14
-
--Download link(https://sourceforge.net/projects/natlink/files/pythonfornatlink/python2.7.14/python2.7.1.exe/download, *Python 2.7.14, needed for Natlink*).
+-Download link(https://sourceforge.net/projects/natlink/files/pythonfornatlink/python2.7.14/python2.7.14.exe/download, *Python 2.7.14, needed for Natlink*).
 --This is a self-extracting zip file, with extension .exe.
 --This is nearly the latest release of python 2.7.
 
@@ -62,4 +61,4 @@ When you installed at *C:\Natlink* you will get the following directory structur
 --But... it does no harm to always start the config program in elevated mode.
 
 
-   Proceed with link("/installation/configuration.html", "the configuration")
+   Proceed with link("/installation/detailspython27version/configuration.html", "the configuration")

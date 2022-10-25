@@ -17,8 +17,7 @@ This will also be the final release for Python 2.7.
 
 Python 3 users can - for the time being - install Python 2.7 alongside, and run Natlink via this version. This does not disturb the working of Python 3.
 
-The implementation of Natlink with python3 is going pretty well. See link(/installation/installationexperimentalversionpython3.html, experimental install), when you want to go that way!
-
+The implementation of Natlink with python3 is going pretty well, but has taken far too much time. But... at the beginning of November 2022, we hope to release a pretty good pre-release! See link(/installation/installationexperimentalversionpython3.html, experimental install of Natlink with python3). 
 
 :ROW:
 

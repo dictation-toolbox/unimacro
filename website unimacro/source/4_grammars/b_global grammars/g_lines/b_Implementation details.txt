@@ -62,7 +62,7 @@ When you set this option to true in the _lines.ini file (say *edit lines*):
 line numbers modulo hundred = T
 ::
 
-You will be able to use this feature for Excel, win32pad and Visual Studio Code (New, February 2021).
+You will be able to use this feature for Excel, win32pad and Visual Studio Code and Komodo (New, February 2021).
 
 The clue is in the link(/features/actions/actionclassesforapplications.html, actions classes), which can provide, per application, the calling grammar with the current line number from the function *getCurrentLineNumber*. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.
 

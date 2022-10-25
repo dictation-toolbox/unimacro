@@ -68,18 +68,17 @@
 
 <p>This is done either</p><ul><li>automatically, functionality in <strong>natlinkutilsbj.py</strong>, see function <strong>fillGrammarLists</strong> or</li><li>in the <strong>initialize</strong> function of the grammar class. Call like:</li></ul>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;self.taskCounts = range(1, self.maxTaskNumber+1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;self.setNumbersList(&lsquo;taskcount&rsquo;, self.taskCounts)</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;self.taskCounts&nbsp;=&nbsp;range(1,&nbsp;self.maxTaskNumber+1)<br>&nbsp;&nbsp;&nbsp;&nbsp;self.setNumbersList('taskcount',&nbsp;self.taskCounts)</p>
 
 <p>where 'taskcount' is the name of the list in the grammar definition, and self.taskCounts the list of numbers that should be recognized.</p>
 <ul><li>note: in this second case you need to define lists that are not caught automatically in the automatic procedure, like:</li></ul>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;iniIgnoreGrammarLists = [&lsquo;windowcount&rsquo;, &lsquo;iconcount&rsquo;, &lsquo;taskcount&rsquo;]</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;iniIgnoreGrammarLists&nbsp;=&nbsp;['windowcount',&nbsp;'iconcount',&nbsp;'taskcount']</p>
 
 <h3>Recognition time</h3>
 <p>At recognition time the spoken forms can be converted back into numbers.</p>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;countBack = self.getNumberFromSpoken(countOrApp, self.taskCounts) # returns a string or None</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;countBack&nbsp;=&nbsp;self.getNumberFromSpoken(countOrApp,&nbsp;self.taskCounts)&nbsp;#&nbsp;returns&nbsp;a&nbsp;string&nbsp;or&nbsp;None</p>
 <ul><li>Here countOrApp is the word that was recognized, for example '3'.</li><li>The second parameter is optional. If you leave it away, among all known spoken forms will be searched.</li></ul>
 
 <h1>Function and Class of the module spokenforms.py</h1>
@@ -139,53 +138,28 @@ Example: input is the recognition &#091;'example', 'one', 'and', 'thirteen'&#093
 <p>(See also grammars _tasks.py, _lines.py)</p>
 <h3>Definition</h3>
 <p>Define the number lists as {n1-20} etc., example:</p>
-<p class="pre">&lt;wordspec> = word | {n2-20} words;</p>
+<p class="pre">&nbsp;<br><wordspec>&nbsp;=&nbsp;word&nbsp;|&nbsp;{n2-20}&nbsp;words;</p>
+
 <h3>At recognition time</h3>
 <p>In the callback function retrieve the number (or numbers) with above functions, which however can be called through wrappers in the IniGrammar class:</p>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def gotResults_wordspec(self,words,fullResults):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &ldquo;wordspec, got: &rdquo;, words<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;countList = self.getNumbersFromSpoken(words)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if countList:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count = countList[0]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count = 1&nbsp;&nbsp;# no count words found in recognition<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;count: %s&rsquo;% count</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;gotResults_wordspec(self,words,fullResults):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"wordspec,&nbsp;got:&nbsp;",&nbsp;words<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;countList&nbsp;=&nbsp;self.getNumbersFromSpoken(words)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;countList:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;=&nbsp;countList[0]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;=&nbsp;1&nbsp;&nbsp;#&nbsp;no&nbsp;count&nbsp;words&nbsp;found&nbsp;in&nbsp;recognition<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'count:&nbsp;%s'%&nbsp;count</p>
 
 <p>alternatively you can code:</p>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def gotResults_wordspec(self,words,fullResults):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &ldquo;wordspec, got: &rdquo;, words<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count = self.getNumberFromSpoken(words[0]) or 1<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;count: %s&rsquo;% count</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;gotResults_wordspec(self,words,fullResults):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"wordspec,&nbsp;got:&nbsp;",&nbsp;words<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;=&nbsp;self.getNumberFromSpoken(words[0])&nbsp;or&nbsp;1<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'count:&nbsp;%s'%&nbsp;count</p>
 
 <h2>Use in a grammar, more specific :</h2>
 <p>(See also grammars _tasks.py, this example is coded as a DocstringGrammar rule)</p>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def rule_taskswitch(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;#commands for switching tasks:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(task)({taskcount}|{application}|Back)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#switch to a task by number, application or Back<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count = words[1]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;countBack = self.getNumberFromSpoken(count, self.taskCounts) # returns a string or None<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if countBack:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass # a number is found<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass # proceed with count, which can be one of the applications defined else or &ldquo;Back&rdquo;</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;rule_taskswitch(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""#commands&nbsp;for&nbsp;switching&nbsp;tasks:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(task)({taskcount}|{application}|Back)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#switch&nbsp;to&nbsp;a&nbsp;task&nbsp;by&nbsp;number,&nbsp;application&nbsp;or&nbsp;Back<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count&nbsp;=&nbsp;words[1]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;countBack&nbsp;=&nbsp;self.getNumberFromSpoken(count,&nbsp;self.taskCounts)&nbsp;#&nbsp;returns&nbsp;a&nbsp;string&nbsp;or&nbsp;None<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;countBack:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass&nbsp;#&nbsp;a&nbsp;number&nbsp;is&nbsp;found<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass&nbsp;#&nbsp;proceed&nbsp;with&nbsp;count,&nbsp;which&nbsp;can&nbsp;be&nbsp;one&nbsp;of&nbsp;the&nbsp;applications&nbsp;defined&nbsp;else&nbsp;or&nbsp;"Back"</p>
 
 <p>At the top of the grammar the following line is inserted, which means the definition and activation of the mentioned lists is done in the grammar module itself:</p>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;iniIgnoreGrammarLists = [&lsquo;windowcount&rsquo;, &lsquo;iconcount&rsquo;, &lsquo;taskcount&rsquo;]</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;iniIgnoreGrammarLists&nbsp;=&nbsp;['windowcount',&nbsp;'iconcount',&nbsp;'taskcount']</p>
 
 <p>In the initialize function you define the lists yourself (in the function setNumbersList the connection with the numbers module is established)</p>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def initialize(self):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.load(self.gramSpec)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.switchOnOrOff()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.maxTaskNumber = 20<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.taskCounts = range(1, self.maxTaskNumber+1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.setNumbersList(&lsquo;taskcount&rsquo;, self.taskCounts)</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;initialize(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.load(self.gramSpec)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.switchOnOrOff()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.maxTaskNumber&nbsp;=&nbsp;20<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.taskCounts&nbsp;=&nbsp;range(1,&nbsp;self.maxTaskNumber+1)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.setNumbersList('taskcount',&nbsp;self.taskCounts)</p>
 
 <h3>Large numbers</h3>
 <p>These are handled in special grammar rules, see <a href="../../grammars/globalgrammars/number/index.html">_number.py</a></p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
@@ -196,7 +170,7 @@ Example: input is the recognition &#091;'example', 'one', 'and', 'thirteen'&#093
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

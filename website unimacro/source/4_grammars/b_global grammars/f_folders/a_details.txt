@@ -98,45 +98,6 @@ I (Quintijn) got on my computer a lot of folders after "D:/sites". Inside each o
 
 BUT: as long as the variable *siteRoot* in your python module file does not point to a valid folder, this part of the grammar is not activated.
 
-   2Xexplorer
-
-Provisions were made to find folders in the 2XExplorer window as well. Currently I forgot about these, but they could be made active if somebody wants to use this feature.  
-
-2Xeplorer seemed to be perfect for speech recognition, but there is no CVS control.  Also sometimes some windows functions seemed not to work correct.  Not giving the right focus for example.
-
-   Xplorer2
-   
-image(xplorer2.png, title="about screen of Xplorer2", class=imageleft)
-
-On request this program is also inserted as possibility to open folders with. See link(www.zakbat.com)
-
-break()
-
-For configuration first insert in the  &#091;general] section of folders:
-
-:CODE:
-[general]
-(...)
-use other explorer = xplorer2
-::
-
-and insert in *actions.ini* (say *edit actions*):
-
-:CODE:
-[bringup xplorer2]
-path = C:\Program Files\zabkat\xplorer2\xplorer2_UC.exe
-name = xplorer2_uc
-::
-
-After these changes, the folder commands for "top windows" will work with xplorer2 instead of the standard explorer.
-
-Drawback: automatic tracking of subfolders and files in a directory will not work. Also the recent folders list, as recently edit as option, will not respond on folders opened in xplorer2.
-
-See short demo:
-
-<iframe width="420" height="315" src="https://www.youtube.com/embed/ZlJEDDG2VYk" frameborder="0" allowfullscreen></iframe>
-
-
 break()
 
    Tracing files and folders automatically

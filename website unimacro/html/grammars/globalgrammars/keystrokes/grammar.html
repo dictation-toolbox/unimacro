@@ -60,8 +60,6 @@
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
 
-<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
-
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
@@ -78,23 +76,16 @@
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>The grammar definition</h1>
 <h3>Basics</h3>
 <p>The basic rule should have been:</p>
-<p class="pre">&lt;keys> exported = ({norepkey} | {repkey} [{count}])+;</p>
+<p class="pre">&nbsp;<br><keys>&nbsp;exported&nbsp;=&nbsp;({norepkey}&nbsp;|&nbsp;{repkey}&nbsp;[{count}])+;</p>
 
 <h3>Implementation</h3>
 <p>Because with these quasi-recursive rules there have been problems in the past (introduced several NatSpeak versions ago) this basic rule has been changed into (and enhanced with the &lt;before&gt; rule):</p>
 
-<p class="pre">&lt;keys> exported = &lt;firstkey> [&lt;stdkeys>+] ;<br>
-&lt;firstkey> = &lt;before>&nbsp;&nbsp;| &lt;stdkeys>;<br>
-&lt;stdkeys> = ...</p>
+<p class="pre">&nbsp;<br><keys>&nbsp;exported&nbsp;=&nbsp;<firstkey>&nbsp;[<stdkeys>+]&nbsp;;<br><firstkey>&nbsp;=&nbsp;<before>&nbsp;&nbsp;|&nbsp;<stdkeys>;<br><stdkeys>&nbsp;=&nbsp;...</p>
 
 <h3>And the further details are, including the  &lt;modifier&gt;: rule:</h3>
 
-<p class="pre">&lt;stdkeys> = [ &lt;modifiers> ] (&lt;repkey>[&lt;count>] | &lt;norepkey>);<br>
-&lt;repkey> =&nbsp;&nbsp;{repkey};<br>
-&lt;count> = {count};<br>
-&lt;norepkey> = {character} | {norepkey} | &lt;effkey>;<br>
-&lt;effkey> = ( Eff|Function ) {effcount};<br>
-&lt;modifiers>&nbsp;&nbsp;= (Cap | &lsquo;All-Caps&rsquo; | Shift | Control | Alt|halt) + ;</p>
+<p class="pre">&nbsp;<br><stdkeys>&nbsp;=&nbsp;[&nbsp;<modifiers>&nbsp;]&nbsp;(<repkey>[<count>]&nbsp;|&nbsp;<norepkey>);<br><repkey>&nbsp;=&nbsp;&nbsp;{repkey};<br><count>&nbsp;=&nbsp;{count};<br><norepkey>&nbsp;=&nbsp;{character}&nbsp;|&nbsp;{norepkey}&nbsp;|&nbsp;<effkey>;<br><effkey>&nbsp;=&nbsp;(&nbsp;Eff|Function&nbsp;)&nbsp;{effcount};<br><modifiers>&nbsp;&nbsp;=&nbsp;(Cap&nbsp;|&nbsp;'All-Caps'&nbsp;|&nbsp;Shift&nbsp;|&nbsp;Control&nbsp;|&nbsp;Alt|halt)&nbsp;+&nbsp;;</p>
 
 <h3>Lists</h3>
 <p>The lists  &#123;character&#125;, &#123;effcount&#125; and &#123;count&#125; are filled in the python file. The other lists, &#123;repkey&#125; and &#123;norepkey&#125; are filled from the configuration file, so are user configurable. Even for a specific <a href="modes.html">modes</a>.</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
@@ -105,7 +96,7 @@
 m("antenna.nl", "q.hoogenboom", "information about: grammar", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

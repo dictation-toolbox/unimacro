@@ -68,8 +68,6 @@
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
 
-<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
-
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
@@ -90,9 +88,8 @@
 <p>One detail has to be set into the <strong>actions.ini</strong> config file, when you upgraded from an older version of Unimacro (before July 2020).</p>
 <ul><li>Say "edit actions"</li><li>Goto the section of &#091;cmd] and set:</li></ul>
 
-<p class="pre">[cmd]<br>
-(...)<br>
-paste = SSK({ctrl+v})</p>
+<p class="pre">&nbsp;<br>[cmd]<br>(...)<br>paste&nbsp;=&nbsp;SSK({ctrl+v})</p>
+
 <p>This is needed because the cmd window wants "system keys", so the meta-action &lt;&lt;paste>> should be given with the Unimacro Shorthand Command <strong>SSK</strong>.</p>
 
 <h3>Top window behaviour</h3>
@@ -131,14 +128,12 @@ paste = SSK({ctrl+v})</p>
 <p>Example: I have my documents on <strong>C:\Documenten</strong>, but older documents I moved to <strong>C:\DocumentenOud</strong> (meaning "Documents Old").</p>
 
 <p>In the ini file I defined in virtualdrives (among others):</p>
-<p class="pre">[virtualdrives]<br>
-md = C:\Documenten<br>
-mdoud = C:\DocumentenOud</p>
+<p class="pre">&nbsp;<br>[virtualdrives]<br>md&nbsp;=&nbsp;C:\Documenten<br>mdoud&nbsp;=&nbsp;C:\DocumentenOud</p>
 
 <p>And I have all subfolders of documents (<strong>md</strong>) in the folders list. One of the folders is named "Quintijn".</p>
 
-<p class="pre">[virtualdrivesspoken]<br>
-documentenoud = mdoud</p>
+<p class="pre">&nbsp;<br>[virtualdrivesspoken]<br>documentenoud&nbsp;=&nbsp;mdoud</p>
+
 <p>Now when I call "folder Quintijn on documentenoud", the folder "C:\Documenten\Quintijn" is changed into "C:\DocumentenOud\Quintijn</p>
 
 <p>Likewise, you can call a file on a "remote" letter-drive or virtualdrive.</p>
@@ -148,8 +143,8 @@ Alternative file or folder names trick</p>
 
 <p>When you have different paths for files or folders on different computers, but you want to keep the _folders.ini definitions consistent, you can specify alternatives in the file or folder name:</p>
 
-<p class="pre">[folders]<br>
-Documents = (C|D):\Document(s|en)</p>
+<p class="pre">&nbsp;<br>[folders]<br>Documents&nbsp;=&nbsp;(C|D):\Document(s|en)</p>
+
 <p>In this case, Documents will point to C:\Documents, C:\Documenten, D:\Documents or D:\Documenten, the first exisiting folder is taken.</p>
 
 <p><p class="witregel">&nbsp;</p>
@@ -158,34 +153,6 @@ Sites trick</p>
 
 <p>BUT: as long as the variable <strong>siteRoot</strong> in your python module file does not point to a valid folder, this part of the grammar is not activated.</p>
 
-<h1>2Xexplorer</h1>
-<p>Provisions were made to find folders in the 2XExplorer window as well. Currently I forgot about these, but they could be made active if somebody wants to use this feature.</p>
-
-<p>2Xeplorer seemed to be perfect for speech recognition, but there is no CVS control.  Also sometimes some windows functions seemed not to work correct.  Not giving the right focus for example.</p>
-
-<h1>Xplorer2</h1>
-<p><img src="xplorer2.png" alt="xplorer2" class="imageleft" height="289" title="about screen of Xplorer2" width="502"></p>
-
-<p>On request this program is also inserted as possibility to open folders with. See www.zakbat.com</p>
-
-<p><br clear="all"></p>
-<p>For configuration first insert in the  &#091;general] section of folders:</p>
-
-<p class="pre">[general]<br>
-(...)<br>
-use other explorer = xplorer2</p>
-
-<p>and insert in <strong>actions.ini</strong> (say <strong>edit actions</strong>):</p>
-
-<p class="pre">[bringup xplorer2]<br>
-path = C:\Program Files\zabkat\xplorer2\xplorer2_UC.exe<br>
-name = xplorer2_uc</p>
-
-<p>After these changes, the folder commands for "top windows" will work with xplorer2 instead of the standard explorer.</p>
-
-<p>Drawback: automatic tracking of subfolders and files in a directory will not work. Also the recent folders list, as recently edit as option, will not respond on folders opened in xplorer2.</p>
-
-<p>See short demo:</p><iframe width="420" height="315" src="https://www.youtube.com/embed/ZlJEDDG2VYk" frameborder="0" allowfullscreen></iframe>
 <p><br clear="all"></p>
 <h1>Tracing files and folders automatically</h1>
 <p>From release 3.9 it is possible to include all folders and/or all files from some directory in your folders or files list. The directories you want to use for this trick should be specified as a
@@ -193,12 +160,7 @@ name = xplorer2_uc</p>
 
 <p>You can include these options by setting variables in this section &#091;general] of the configuration file. If more items are to be specified, separate them by a <strong>;</strong>. Example:</p>
 
-<p class="pre">[general]<br>
-track folders virtualdrives = md; pr; um; uu; vc<br>
-<br>
-track files virtualdrives = md; pr<br>
-ignore file patterns = ~*<br>
-track file extensions = .py; .doc; .xls; .txt</p>
+<p class="pre">&nbsp;<br>[general]<br>track&nbsp;folders&nbsp;virtualdrives&nbsp;=&nbsp;md;&nbsp;pr;&nbsp;um;&nbsp;uu;&nbsp;vc<br>&nbsp;<br>track&nbsp;files&nbsp;virtualdrives&nbsp;=&nbsp;md;&nbsp;pr<br>ignore&nbsp;file&nbsp;patterns&nbsp;=&nbsp;~*<br>track&nbsp;file&nbsp;extensions&nbsp;=&nbsp;.py;&nbsp;.doc;&nbsp;.xls;&nbsp;.txt</p>
 <ul><li>The mechanism works only on one level, so no recursiveness.</li><li>The virtual drives must be defined in the &#091;virtualdrives] section.</li><li>Subfolders are excluded if they contain anything else than lowercase letters and spaces.</li><li>Files can be included by specifying the extensions, or excluded by specifying the <strong>fnmatch</strong> (unix) like patterns.</li><li>When you edit the configuration file (say <strong>edit folders</strong>), you can tune the spoken forms, and optionally specify more spoken forms for a folder or a file (separated by <strong>;</strong>) or make the spoken form empty, the file of folder will be excluded from the grammars list.</li><li>Inspect the lists by saying <strong>show folders</strong>, or (more complete) by saying <strong>show all grammars</strong>.</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
@@ -207,7 +169,7 @@ track file extensions = .py; .doc; .xls; .txt</p>
 m("antenna.nl", "q.hoogenboom", "information about: details", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

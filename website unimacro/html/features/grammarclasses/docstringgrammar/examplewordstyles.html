@@ -80,37 +80,10 @@
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>example winword_styles_unimacro</h1>
 <h3>This little grammar is rewritten into Docstring grammar style.</h3>
 <h3>Instead of</h3>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;gramSpec = &rdquo;&rdquo;&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;showStyles> exported = show styles;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;updateStyles> exported = update styles;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;setStyle> exported = set style {style};<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;gramSpec&nbsp;=&nbsp;"""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<showStyles>&nbsp;exported&nbsp;=&nbsp;show&nbsp;styles;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<updateStyles>&nbsp;exported&nbsp;=&nbsp;update&nbsp;styles;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<setStyle>&nbsp;exported&nbsp;=&nbsp;set&nbsp;style&nbsp;{style};<br>&nbsp;&nbsp;&nbsp;&nbsp;"""</p>
 
 <h3>The rules now appear as:</h3>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def rule_updateStyles(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;update styles&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# possibility to &ldquo;manually&rdquo; update the styles list<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# not needed in normal use<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.updateStyles()<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;def rule_showStyles(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;show styles&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# print a list of all valid styles in the messages window<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if self.styles:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;styles in use: %s&rsquo;% self.styles.keys()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;no styles in use...&rsquo;<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;def rule_setStyle(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;set style {style}&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#apply a style to the cursor or selection<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;style = words[-1]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if style in self.styles:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;setting style %s&rsquo;% style<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sel = self.application.Selection<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sel.Style = style<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print &lsquo;style not in stylelist: %s&rsquo;% style</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;rule_updateStyles(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"update&nbsp;styles"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;possibility&nbsp;to&nbsp;"manually"&nbsp;update&nbsp;the&nbsp;styles&nbsp;list<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;not&nbsp;needed&nbsp;in&nbsp;normal&nbsp;use<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.updateStyles()<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;rule_showStyles(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"show&nbsp;styles"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;print&nbsp;a&nbsp;list&nbsp;of&nbsp;all&nbsp;valid&nbsp;styles&nbsp;in&nbsp;the&nbsp;messages&nbsp;window<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;self.styles:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'styles&nbsp;in&nbsp;use:&nbsp;%s'%&nbsp;self.styles.keys()<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'no&nbsp;styles&nbsp;in&nbsp;use...'<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;rule_setStyle(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"set&nbsp;style&nbsp;{style}"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#apply&nbsp;a&nbsp;style&nbsp;to&nbsp;the&nbsp;cursor&nbsp;or&nbsp;selection<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;style&nbsp;=&nbsp;words[-1]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;style&nbsp;in&nbsp;self.styles:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'setting&nbsp;style&nbsp;%s'%&nbsp;style<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sel&nbsp;=&nbsp;self.application.Selection<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sel.Style&nbsp;=&nbsp;style<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'style&nbsp;not&nbsp;in&nbsp;stylelist:&nbsp;%s'%&nbsp;style</p>
 <ul><li>Again, with the commands <strong>show word styles</strong> (Dutch: "toon weurd opmaakprofielen"), or with the command <strong>show all grammars</strong> (Dutch: "toon alle grammatica's") you can inspect the contents of the grammar.</li><li>This grammar is located in the <strong>DisabledGrammars</strong> folder if you installed from the combined NatLink/Unimacro/Vocola installer.</li></ul></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
@@ -119,7 +92,7 @@
 m("antenna.nl", "q.hoogenboom", "information about: example word styles", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

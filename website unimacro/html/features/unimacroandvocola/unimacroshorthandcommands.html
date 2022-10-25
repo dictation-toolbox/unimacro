@@ -82,42 +82,16 @@
 <h3>Example relative mouse positions</h3>
 <p>Next example lets the mouse visit the corners of the screen, active window or the client area of the active window. It remembers the previous mouse position and returns there after the excursion. (Instead of <strong>0</strong> as fourth parameter in the <strong>RMP</strong> function also <strong>noclick</strong> can be given.)</p>
 
-<p class="pre">include &ldquo;Unimacro.vch&rdquo;;<br>
-<br>
-&lt;area> := (world = 0 | window = 1 | client area = 5 );<br>
-<br>
-travel around the &lt;area> =<br>
-RM()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;RMP($1, 0, 0, 0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;RMP($1, -0.01, 0, 0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;RMP($1, -0.01, -0.01, 0) VW()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;RMP($1, 0, -0.01, 0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;RMP($1, 0, 0, 0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>
-CANCELMOUSE();</p>
+<p class="pre">&nbsp;<br>include&nbsp;"Unimacro.vch";<br>&nbsp;<br><area>&nbsp;:=&nbsp;(world&nbsp;=&nbsp;0&nbsp;|&nbsp;window&nbsp;=&nbsp;1&nbsp;|&nbsp;client&nbsp;area&nbsp;=&nbsp;5&nbsp;);<br>&nbsp;<br>travel&nbsp;around&nbsp;the&nbsp;<area>&nbsp;=<br>RM()<br>&nbsp;&nbsp;&nbsp;&nbsp;RMP($1,&nbsp;0,&nbsp;0,&nbsp;0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>&nbsp;&nbsp;&nbsp;&nbsp;RMP($1,&nbsp;-0.01,&nbsp;0,&nbsp;0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>&nbsp;&nbsp;&nbsp;&nbsp;RMP($1,&nbsp;-0.01,&nbsp;-0.01,&nbsp;0)&nbsp;VW()<br>&nbsp;&nbsp;&nbsp;&nbsp;RMP($1,&nbsp;0,&nbsp;-0.01,&nbsp;0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>&nbsp;&nbsp;&nbsp;&nbsp;RMP($1,&nbsp;0,&nbsp;0,&nbsp;0)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VW()<br>CANCELMOUSE();</p>
 
 <h3>Example moving the mouse around</h3>
 <p>Next example lets the mouse move in <strong>pixels</strong>, <strong>steps</strong> or <strong>jumps</strong>, relative to the current  position. These commands only work on the primary screen only (in case you work with mulptiple screens).</p>
 
-<p class="pre">include &ldquo;Unimacro.vch&rdquo;;<br>
-<br>
-&lt;mouse_units> := (pixels=1 | steps=10 | jumps=50);<br>
-<br>
-mouse left 1..20 &lt;mouse_units> = MP(2, Eval(-$1*$2), 0, 0);<br>
-mouse right 1..20 &lt;mouse_units> = MP(2, Eval($1*$2), 0, 0);<br>
-mouse up 1..20 &lt;mouse_units> = MP(2, 0, Eval(-$1*$2), 0);<br>
-mouse down 1..20 &lt;mouse_units> = MP(2, 0, Eval($1*$2), 0);</p>
+<p class="pre">&nbsp;<br>include&nbsp;"Unimacro.vch";<br>&nbsp;<br><mouse_units>&nbsp;:=&nbsp;(pixels=1&nbsp;|&nbsp;steps=10&nbsp;|&nbsp;jumps=50);<br>&nbsp;<br>mouse&nbsp;left&nbsp;1..20&nbsp;<mouse_units>&nbsp;=&nbsp;MP(2,&nbsp;Eval(-$1*$2),&nbsp;0,&nbsp;0);<br>mouse&nbsp;right&nbsp;1..20&nbsp;<mouse_units>&nbsp;=&nbsp;MP(2,&nbsp;Eval($1*$2),&nbsp;0,&nbsp;0);<br>mouse&nbsp;up&nbsp;1..20&nbsp;<mouse_units>&nbsp;=&nbsp;MP(2,&nbsp;0,&nbsp;Eval(-$1*$2),&nbsp;0);<br>mouse&nbsp;down&nbsp;1..20&nbsp;<mouse_units>&nbsp;=&nbsp;MP(2,&nbsp;0,&nbsp;Eval($1*$2),&nbsp;0);</p>
 
 <p>A different approach is to make one range, which increases the "gaps", in order to remain maintainable by NatSpeak:</p>
 
-<p class="pre">&lt;mouse_range> := (1|2|3|4|5|6|7|8|9|10|<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11|12|13|14|15|16|17|18|19|20|<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;25|30|35|40|45|50|60|70|80|90|100|<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;125|150|175|200|<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;250|300|350|400|450|500);<br>
-mouse left &lt;mouse_range> = MP(2, Eval(-$1), 0, 0);<br>
-mouse right &lt;mouse_range> = MP(2, $1, 0, 0);<br>
-mouse up &lt;mouse_range> = MP(2, 0, Eval(-$1), 0);<br>
-mouse down &lt;mouse_range> = MP(2, 0, $1, 0);</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<p class="pre">&nbsp;<br><mouse_range>&nbsp;:=&nbsp;(1|2|3|4|5|6|7|8|9|10|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11|12|13|14|15|16|17|18|19|20|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;25|30|35|40|45|50|60|70|80|90|100|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;125|150|175|200|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;250|300|350|400|450|500);<br>mouse&nbsp;left&nbsp;<mouse_range>&nbsp;=&nbsp;MP(2,&nbsp;Eval(-$1),&nbsp;0,&nbsp;0);<br>mouse&nbsp;right&nbsp;<mouse_range>&nbsp;=&nbsp;MP(2,&nbsp;$1,&nbsp;0,&nbsp;0);<br>mouse&nbsp;up&nbsp;<mouse_range>&nbsp;=&nbsp;MP(2,&nbsp;0,&nbsp;Eval(-$1),&nbsp;0);<br>mouse&nbsp;down&nbsp;<mouse_range>&nbsp;=&nbsp;MP(2,&nbsp;0,&nbsp;$1,&nbsp;0);</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > <a href="index.html">unimacro and vocola</a> > unimacro shorthand commands > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../sitemap.html#unimacroshorthandcommands';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../sitemap.html#unimacroshorthandcommands">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -125,7 +99,7 @@ mouse down &lt;mouse_range> = MP(2, 0, $1, 0);</p></td></tr></table></td></tr></
 m("antenna.nl", "q.hoogenboom", "information about: Unimacro Shorthand Commands", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

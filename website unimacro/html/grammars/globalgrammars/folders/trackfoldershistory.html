@@ -68,8 +68,6 @@
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
 
-<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
-
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
@@ -95,9 +93,8 @@
 
 <h3>Implementation</h3><ul><li>In the configuration file _folders.ini, you can set the variable <strong>track folders history</strong> to the number of items you want to have in your list:</li></ul>
 
-<p class="pre">[general]<br>
-(...)<br>
-track folders history = 20</p>
+<p class="pre">&nbsp;<br>[general]<br>(...)<br>track&nbsp;folders&nbsp;history&nbsp;=&nbsp;20</p>
+
 <p>Set to 0 or delete the option if you want to switch it off.
 From then the folders you call or visit manually are tracked.</p>
 <ul><li>The grammar folder uses the setTimerCallback function of NatLink, to visit the function manageRecentFoldersList each second. This time can be adjusted of course.</li><li>With the command <strong>recent folders</strong> a messagebox is shown with the list of recent folders. A special grammar <strong>natspeak_dialog.py</strong> handles this window. With <strong>choose #</strong> you can choose your option, or you can Cancel the window with <strong>OK</strong> or <strong>Cancel</strong>.</li><li>The <strong>natspeak dialog</strong> grammar (recent folders dialog) extracts information from the _folders grammar, so it knows how many numbers it should put in the {number} list.</li><li>This <strong>natspeak_dialog</strong> grammar is a Unimacro IniGrammar, and can be configured and for example translated. This has been done into Dutch. Simply say <strong>edit natspeak dialog</strong> (only after the dialog window has been displayed, otherwise the grammar is not loaded) to change things or say <strong>show natspeak dialog</strong> to show the options. (In Dutch <strong>bewerk natspeak dialoog</strong> of <strong>toon natspeak dialoog</strong>)</li></ul>
@@ -109,7 +106,7 @@ From then the folders you call or visit manually are tracked.</p>
 m("antenna.nl", "q.hoogenboom", "information about: track folders history", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

@@ -60,8 +60,6 @@
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
 
-<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
-
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
@@ -96,42 +94,21 @@
 <p>&nbsp;</p>
 <p>The latex commands can be defined as comprehensive templates together with placeholders. For simple commands with arguments, the curly braces are optional.</p>
 
-<p class="pre">[commands]<br>
-E. P. S. Figure = \epsfig{file=@contents}<br>
-author = \author<br>
-horizontal space = \hspace{}<br>
-include graphics = \includegraphics[width=@size\textwidth]{@contents}</p>
+<p class="pre">&nbsp;<br>[commands]<br>E.&nbsp;P.&nbsp;S.&nbsp;Figure&nbsp;=&nbsp;\epsfig{file=@contents}<br>author&nbsp;=&nbsp;\author<br>horizontal&nbsp;space&nbsp;=&nbsp;\hspace{}<br>include&nbsp;graphics&nbsp;=&nbsp;\includegraphics[width=@size\textwidth]{@contents}</p>
 
 <p>The placeholders are prefixed with an @ to avoid confusion with existing text, and defined in a separate section in the ini file.</p>
 
-<p class="pre">[placeholders]<br>
-caption = @caption<br>
-contents = @contents<br>
-label = @label<br>
-size = @size</p>
+<p class="pre">&nbsp;<br>[placeholders]<br>caption&nbsp;=&nbsp;@caption<br>contents&nbsp;=&nbsp;@contents<br>label&nbsp;=&nbsp;@label<br>size&nbsp;=&nbsp;@size</p>
 
 <p>The command to create latex commands can operate in three modes. If the keyword arguments is given, add arguments from the "arguments" section in the ini file is inserted between the curly braces following the command. If the keyword "that" is given, the command will select the last utterance using "select that" and use this as an argument to the command. A typical use is "emphasise that". Finally, if the keyword "line" is given, the command will use the contents of the line as an argument to the command. A typical use of this functionality is "section line" which makes the current line into a section heading.</p>
 
 <p>The "label" keyword to this command will cause an appropriate label to be added on the next line after the command itself. This is only applicable for the commands that also are listed in the "label" section of the ini file, in all other cases the "label" keyword will be ignored.</p>
 
-<p class="pre">[label]<br>
-chapter = chapter<br>
-paragraph = paragraph<br>
-section = section<br>
-subfigure = subfigure<br>
-subsection = subsection<br>
-subsubsection = subsubsection</p>
+<p class="pre">&nbsp;<br>[label]<br>chapter&nbsp;=&nbsp;chapter<br>paragraph&nbsp;=&nbsp;paragraph<br>section&nbsp;=&nbsp;section<br>subfigure&nbsp;=&nbsp;subfigure<br>subsection&nbsp;=&nbsp;subsection<br>subsubsection&nbsp;=&nbsp;subsubsection</p>
 
 <p>The floating environments used by the "begin" command can be anything that is used in a "begin" -- "end" context. The alternatives are defined in the appropriate "floating" section in the ini file.</p>
 
-<p class="pre">[floating]<br>
-algorithm = algorithm<br>
-align = align<br>
-bottom stuff = bottomstuff<br>
-corollary = corollary<br>
-definition = definition<br>
-document = document<br>
-enumerate = enumerate</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<p class="pre">&nbsp;<br>[floating]<br>algorithm&nbsp;=&nbsp;algorithm<br>align&nbsp;=&nbsp;align<br>bottom&nbsp;stuff&nbsp;=&nbsp;bottomstuff<br>corollary&nbsp;=&nbsp;corollary<br>definition&nbsp;=&nbsp;definition<br>document&nbsp;=&nbsp;document<br>enumerate&nbsp;=&nbsp;enumerate</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">grammars</a> > <a href="../folders/index.html">global grammars</a> > latex > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../../sitemap.html#latex';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../../sitemap.html#latex">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -139,7 +116,7 @@ enumerate = enumerate</p></td></tr></table></td></tr></table></div><div class="f
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

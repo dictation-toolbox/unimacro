@@ -61,43 +61,19 @@
 <h3>Other display</h3>
 <p>With the function <strong>move_to_monitor</strong> a window is moved to another monitor</p>
 
-<p class="pre">move_to_monitor(winHndle, newMonitor, oldMonitor, resize):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&ldquo;move window to another monitor<br>
-&nbsp;&nbsp;&nbsp;&nbsp;preserving position of restore_area as much as possible.<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;- get winHndle for example with winHndle = win32gui.GetForegroundWindow()<br>
-&nbsp;&nbsp;&nbsp;&nbsp;- get current monitor (oldMonitor) with get_nearest_monitor_window(winHndle)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;- get other monitor (in case of 2 monitors) with get_other_monitors(mon), and take<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the first of the list that is retured.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;resize: 0 if window is (assumed to be) fixed in size, can be found with:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;- window_can_be_resized(winHndle):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1 if a window can be resized (like Komodo etc). Not eg calc.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;</p>
+<p class="pre">&nbsp;<br>move_to_monitor(winHndle,&nbsp;newMonitor,&nbsp;oldMonitor,&nbsp;resize):<br>&nbsp;&nbsp;&nbsp;&nbsp;"""move&nbsp;window&nbsp;to&nbsp;another&nbsp;monitor<br>&nbsp;&nbsp;&nbsp;&nbsp;preserving&nbsp;position&nbsp;of&nbsp;restore_area&nbsp;as&nbsp;much&nbsp;as&nbsp;possible.<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;get&nbsp;winHndle&nbsp;for&nbsp;example&nbsp;with&nbsp;winHndle&nbsp;=&nbsp;win32gui.GetForegroundWindow()<br>&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;get&nbsp;current&nbsp;monitor&nbsp;(oldMonitor)&nbsp;with&nbsp;get_nearest_monitor_window(winHndle)<br>&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;get&nbsp;other&nbsp;monitor&nbsp;(in&nbsp;case&nbsp;of&nbsp;2&nbsp;monitors)&nbsp;with&nbsp;get_other_monitors(mon),&nbsp;and&nbsp;take<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;first&nbsp;of&nbsp;the&nbsp;list&nbsp;that&nbsp;is&nbsp;retured.<br>&nbsp;&nbsp;&nbsp;&nbsp;resize:&nbsp;0&nbsp;if&nbsp;window&nbsp;is&nbsp;(assumed&nbsp;to&nbsp;be)&nbsp;fixed&nbsp;in&nbsp;size,&nbsp;can&nbsp;be&nbsp;found&nbsp;with:<br>&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;window_can_be_resized(winHndle):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;1&nbsp;if&nbsp;a&nbsp;window&nbsp;can&nbsp;be&nbsp;resized&nbsp;(like&nbsp;Komodo&nbsp;etc).&nbsp;Not&nbsp;eg&nbsp;calc.<br>&nbsp;&nbsp;&nbsp;&nbsp;"""</p>
 
 <h3>Moving inside one monitor:</h3>
-<p class="pre">maximize_window(winHndle): just maximize<br>
-<br>
-minimize_window(winHndle): just minimize<br>
-<br>
-restore_window(winHndle, ...): placing in various spots and widths/heights<br>
-&nbsp;&nbsp;&nbsp;&nbsp;see at definition for parameters<br>
-<br>
-move_window(winHndle, ...)<br>
-<br>
-stretch_window(winHndle, ...)<br>
-<br>
-shrink_window(winHndle, ...)<br></p>
+<p class="pre">&nbsp;<br>maximize_window(winHndle):&nbsp;just&nbsp;maximize<br>&nbsp;<br>minimize_window(winHndle):&nbsp;just&nbsp;minimize<br>&nbsp;<br>restore_window(winHndle,&nbsp;...):&nbsp;placing&nbsp;in&nbsp;various&nbsp;spots&nbsp;and&nbsp;widths/heights<br>&nbsp;&nbsp;&nbsp;&nbsp;see&nbsp;at&nbsp;definition&nbsp;for&nbsp;parameters<br>&nbsp;<br>move_window(winHndle,&nbsp;...)<br>&nbsp;<br>stretch_window(winHndle,&nbsp;...)<br>&nbsp;<br>shrink_window(winHndle,&nbsp;...)<br>&nbsp;</p>
 
 <h3>Position of the taskbar</h3>
-<p class="pre">get_taskbar_position(): gives the placing of the taskbar (&lsquo;left&rsquo;, &lsquo;bottom&rsquo;, &lsquo;right&rsquo;, &lsquo;top&rsquo;).</p>
+<p class="pre">&nbsp;<br>get_taskbar_position():&nbsp;gives&nbsp;the&nbsp;placing&nbsp;of&nbsp;the&nbsp;taskbar&nbsp;('left',&nbsp;'bottom',&nbsp;'right',&nbsp;'top').</p>
 
 <p>This can be used for NatSpeak/Unimacro keystroke macros which can depend on this position (for example stacked taskbar windows in Window 7 Aero Peek view).</p>
 
 <h3>Getting mouse positions of monitor</h3>
 <p>(new, December 2017)</p>
-<p class="pre">get_current_monitor_rect ( pos )&nbsp;&nbsp;and<br>
-<br>
-get_current_monitor_rect_work( pos)<br></p>
+<p class="pre">&nbsp;<br>get_current_monitor_rect&nbsp;(&nbsp;pos&nbsp;)&nbsp;&nbsp;and<br>&nbsp;<br>get_current_monitor_rect_work(&nbsp;pos)<br>&nbsp;</p>
 
 <p>Pass the current mouse position as a tuple (xpos,ypos)</p>
 <p>Returns the rect tuple of the monitor, with <strong>_work</strong> only the work area, so excluding task bar or Dragon bar.</p>
@@ -110,7 +86,7 @@ get_current_monitor_rect_work( pos)<br></p>
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

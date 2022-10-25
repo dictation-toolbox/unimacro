@@ -81,12 +81,10 @@
 
 <p>If the action is empty, it will be skipped. For example a fairly obscure meta action <strong>afterlines</strong> is normally empty:</p>
 
-<p class="pre">[default]<br>
-afterlines =</p>
+<p class="pre">&nbsp;<br>[default]<br>afterlines&nbsp;=</p>
 <p>For emacs there is a very special treatment (which does something with toggling line numbers):</p>
 
-<p class="pre">[emacs]<br>
-afterlines = {alt+x}setnu-mode{enter}; {alt+x}setnu-mode{enter}</p>
+<p class="pre">&nbsp;<br>[emacs]<br>afterlines&nbsp;=&nbsp;{alt+x}setnu-mode{enter};&nbsp;{alt+x}setnu-mode{enter}</p>
 
 <p>The other way round (set in the <strong>&#091;default]</strong> section, but empty in some program section) is also possible.</p>
 
@@ -99,9 +97,7 @@ afterlines = {alt+x}setnu-mode{enter}; {alt+x}setnu-mode{enter}</p>
 
 <p>In the section <strong>&#091;general]</strong> of the <strong>actions.ini</strong> file these two types of behavior can be specified, see example:</p>
 
-<p class="pre">[general]<br>
-child behaves like top = natspeak: dragon-balk, dragonbar<br>
-top behaves like child = komodo: find, komodo</p>
+<p class="pre">&nbsp;<br>[general]<br>child&nbsp;behaves&nbsp;like&nbsp;top&nbsp;=&nbsp;natspeak:&nbsp;dragon-balk,&nbsp;dragonbar<br>top&nbsp;behaves&nbsp;like&nbsp;child&nbsp;=&nbsp;komodo:&nbsp;find,&nbsp;komodo</p>
 
 <p>Note that unlike other window title comparisons, here the whole title must match one of the words specified by a comma (and all titles are converted to lowercase).</p>
 
@@ -116,8 +112,7 @@ top behaves like child = komodo: find, komodo</p>
 
 <p>In order to refresh the messages window you can insert in the file <strong>actions.ini</strong> the following section:</p>
 
-<p class="pre">[natspeak messages]<br>
-taskrefresh = &lt;&lt;windowclose>>; PRINT new messages window</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<p class="pre">&nbsp;<br>[natspeak&nbsp;messages]<br>taskrefresh&nbsp;=&nbsp;<<windowclose>>;&nbsp;PRINT&nbsp;new&nbsp;messages&nbsp;window</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > <a href="index.html">actions</a> > actions configuration file > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../sitemap.html#actionsconfigurationfile';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../sitemap.html#actionsconfigurationfile">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -125,7 +120,7 @@ taskrefresh = &lt;&lt;windowclose>>; PRINT new messages window</p></td></tr></ta
 m("antenna.nl", "q.hoogenboom", "information about: actions configuration file", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

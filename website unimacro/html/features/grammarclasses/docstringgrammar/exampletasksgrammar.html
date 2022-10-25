@@ -80,89 +80,23 @@
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>example _tasks.py</h1>
 <h3>The complete grammar (called with <strong>show tasks</strong>):</h3>
 
-<p class="pre"><br>
---- grammar:<br>
-<br>
-#commands for switching tasks:<br>
-&lt;taskswitch> exported = (task)({taskcount}|{application}|Back);<br>
-&lt;taskaction> exported = (&lt;taskswitch> | (task))({taskaction});<br>
-<br>
-#commands for positioning (moving) and resizing tasks:<br>
-&lt;taskposition> exported = (&lt;taskswitch>|(task)) position &lt;directionplus> [&lt;percent>];<br>
-&lt;taskmove> exported = (&lt;taskswitch> | (task)) move<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&lt;directionplus>|&lt;angle>)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[&lt;pixels>|&lt;centimeters>|&lt;millimeters>|&lt;inches>|&lt;percent>];<br>
-&lt;taskresize> exported = (&lt;taskswitch> | (task)) (stretch|shrink)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(&lt;directionplus>|&lt;angle>)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[&lt;pixels>|&lt;centimeters>|&lt;millimeters>|&lt;inches>|&lt;percent>];<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;#directional specifications:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;angle> = {degrees} degrees;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;directionplus> = {directionplus};<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;# size specifications:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;pixels> = {pixelcount} [pixels];<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;centimeters> = {sizecount} centimeters;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;millimeters> = {sizecount} millimeters;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;inches> = {sizecount} inches;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;percent> = {percentcount} percent;<br>
-<br>
-#commands for recording taskbar and clock positions:<br>
-&lt;gettaskposition> exported = (&lsquo;get task position&rsquo;) ({taskcount}|clock);<br>
-<br>
-# here are the older commands:<br>
-# icon (system tray) commands:<br>
-&lt;iconswitch> exported = (icon) ({iconcount} |{character}|(&lt;direction> [{iconcount}])) [{iconaction}];<br>
-&lt;thisicon> exported = (icon) {iconaction};<br>
-&lt;direction> = {direction};<br>
-<br>
-# windows inside an application:<br>
-&lt;windowswitch> exported&nbsp;&nbsp;= (Window) ({windowcount}|Back|Previous|Next);<br>
-<br>
-# miscelaneous:<br>
-&lt;fileswitch> exported&nbsp;&nbsp;= (&lsquo;switch file to&rsquo;) {switchapp};<br>
-&lt;removecursor> exported = &lsquo;remove cursor&rsquo;;<br>
-&lt;convertfile> exported = convert file to (windows|dos|unix);</p>
+<p class="pre">&nbsp;<br>&nbsp;<br>---&nbsp;grammar:<br>&nbsp;<br>#commands&nbsp;for&nbsp;switching&nbsp;tasks:<br><taskswitch>&nbsp;exported&nbsp;=&nbsp;(task)({taskcount}|{application}|Back);<br><taskaction>&nbsp;exported&nbsp;=&nbsp;(<taskswitch>&nbsp;|&nbsp;(task))({taskaction});<br>&nbsp;<br>#commands&nbsp;for&nbsp;positioning&nbsp;(moving)&nbsp;and&nbsp;resizing&nbsp;tasks:<br><taskposition>&nbsp;exported&nbsp;=&nbsp;(<taskswitch>|(task))&nbsp;position&nbsp;<directionplus>&nbsp;[<percent>];<br><taskmove>&nbsp;exported&nbsp;=&nbsp;(<taskswitch>&nbsp;|&nbsp;(task))&nbsp;move<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<directionplus>|<angle>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<pixels>|<centimeters>|<millimeters>|<inches>|<percent>];<br><taskresize>&nbsp;exported&nbsp;=&nbsp;(<taskswitch>&nbsp;|&nbsp;(task))&nbsp;(stretch|shrink)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<directionplus>|<angle>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<pixels>|<centimeters>|<millimeters>|<inches>|<percent>];<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;#directional&nbsp;specifications:<br>&nbsp;&nbsp;&nbsp;&nbsp;<angle>&nbsp;=&nbsp;{degrees}&nbsp;degrees;<br>&nbsp;&nbsp;&nbsp;&nbsp;<directionplus>&nbsp;=&nbsp;{directionplus};<br>&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;size&nbsp;specifications:<br>&nbsp;&nbsp;&nbsp;&nbsp;<pixels>&nbsp;=&nbsp;{pixelcount}&nbsp;[pixels];<br>&nbsp;&nbsp;&nbsp;&nbsp;<centimeters>&nbsp;=&nbsp;{sizecount}&nbsp;centimeters;<br>&nbsp;&nbsp;&nbsp;&nbsp;<millimeters>&nbsp;=&nbsp;{sizecount}&nbsp;millimeters;<br>&nbsp;&nbsp;&nbsp;&nbsp;<inches>&nbsp;=&nbsp;{sizecount}&nbsp;inches;<br>&nbsp;&nbsp;&nbsp;&nbsp;<percent>&nbsp;=&nbsp;{percentcount}&nbsp;percent;<br>&nbsp;<br>#commands&nbsp;for&nbsp;recording&nbsp;taskbar&nbsp;and&nbsp;clock&nbsp;positions:<br><gettaskposition>&nbsp;exported&nbsp;=&nbsp;('get&nbsp;task&nbsp;position')&nbsp;({taskcount}|clock);<br>&nbsp;<br>#&nbsp;here&nbsp;are&nbsp;the&nbsp;older&nbsp;commands:<br>#&nbsp;icon&nbsp;(system&nbsp;tray)&nbsp;commands:<br><iconswitch>&nbsp;exported&nbsp;=&nbsp;(icon)&nbsp;({iconcount}&nbsp;|{character}|(<direction>&nbsp;[{iconcount}]))&nbsp;[{iconaction}];<br><thisicon>&nbsp;exported&nbsp;=&nbsp;(icon)&nbsp;{iconaction};<br><direction>&nbsp;=&nbsp;{direction};<br>&nbsp;<br>#&nbsp;windows&nbsp;inside&nbsp;an&nbsp;application:<br><windowswitch>&nbsp;exported&nbsp;&nbsp;=&nbsp;(Window)&nbsp;({windowcount}|Back|Previous|Next);<br>&nbsp;<br>#&nbsp;miscelaneous:<br><fileswitch>&nbsp;exported&nbsp;&nbsp;=&nbsp;('switch&nbsp;file&nbsp;to')&nbsp;{switchapp};<br><removecursor>&nbsp;exported&nbsp;=&nbsp;'remove&nbsp;cursor';<br><convertfile>&nbsp;exported&nbsp;=&nbsp;convert&nbsp;file&nbsp;to&nbsp;(windows|dos|unix);</p>
 
 <h3>A lot of the functions are <strong>DocstringGrammar</strong> style <strong>rule</strong> or <strong>subrule</strong> functions:</h3>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def rule_taskswitch(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;#commands for switching tasks:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(task)({taskcount}|{application}|Back)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;rule_taskswitch(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""#commands&nbsp;for&nbsp;switching&nbsp;tasks:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(task)({taskcount}|{application}|Back)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p>
 
 <h3>or</h3>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def subrule_directionplus(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rsquo;{directionplus}&rsquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# just defining the directionplus list</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;subrule_directionplus(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'{directionplus}'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;just&nbsp;defining&nbsp;the&nbsp;directionplus&nbsp;list</p>
 
 <h3>or</h3>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def subrule_pixels(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# size specifications:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{pixelcount} [pixels]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# giving an optional word and also comment in the specification</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;subrule_pixels(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;size&nbsp;specifications:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{pixelcount}&nbsp;[pixels]<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;giving&nbsp;an&nbsp;optional&nbsp;word&nbsp;and&nbsp;also&nbsp;comment&nbsp;in&nbsp;the&nbsp;specification</p>
 
 <h1>But part of the rules are defined as:</h1>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;gramSpec = &rdquo;&rdquo;&rdquo;<br>
-<br>
-# here are the older commands:<br>
-# icon (system tray) commands:<br>
-&lt;iconswitch> exported = (icon) ({iconcount} |{character}|(&lt;direction> [{iconcount}])) [{iconaction}];<br>
-&lt;thisicon> exported = (icon) {iconaction};<br>
-&lt;direction> = {direction};<br>
-<br>
-# windows inside an application:<br>
-&lt;windowswitch> exported&nbsp;&nbsp;= (Window) ({windowcount}|Back|Previous|Next);<br>
-...<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&rdquo;</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;gramSpec&nbsp;=&nbsp;"""<br>&nbsp;<br>#&nbsp;here&nbsp;are&nbsp;the&nbsp;older&nbsp;commands:<br>#&nbsp;icon&nbsp;(system&nbsp;tray)&nbsp;commands:<br><iconswitch>&nbsp;exported&nbsp;=&nbsp;(icon)&nbsp;({iconcount}&nbsp;|{character}|(<direction>&nbsp;[{iconcount}]))&nbsp;[{iconaction}];<br><thisicon>&nbsp;exported&nbsp;=&nbsp;(icon)&nbsp;{iconaction};<br><direction>&nbsp;=&nbsp;{direction};<br>&nbsp;<br>#&nbsp;windows&nbsp;inside&nbsp;an&nbsp;application:<br><windowswitch>&nbsp;exported&nbsp;&nbsp;=&nbsp;(Window)&nbsp;({windowcount}|Back|Previous|Next);<br>...<br>&nbsp;&nbsp;&nbsp;&nbsp;"""</p>
 
 <h3>with functions like:</h3>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def gotResults_thisicon(self, words, fullResults):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rdquo;&rdquo;&ldquo;do actions on active icon&rdquo;&rdquo;&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;gotResults_thisicon(self,&nbsp;words,&nbsp;fullResults):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""do&nbsp;actions&nbsp;on&nbsp;active&nbsp;icon"""<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../../index.html">home</a> > <a href="../../index.html">features</a> > <a href="../index.html">grammar classes</a> > <a href="index.html">docstringgrammar</a> > example tasks grammar > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../../sitemap.html#exampletasksgrammar';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../../sitemap.html#exampletasksgrammar">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -170,7 +104,7 @@
 m("antenna.nl", "q.hoogenboom", "information about: example tasks grammar", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

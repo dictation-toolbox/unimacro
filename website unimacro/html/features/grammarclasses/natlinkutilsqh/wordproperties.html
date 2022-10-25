@@ -88,39 +88,7 @@
 <p>When you add a new word, and give it the properties "has no preceding or following space", you will get:['InternalUseOnly2', 'InternalUseOnly5', 'NoSpaceFollowingThisWord', 'NoSpacePreceedingThisWord', 'WordWasAddedByTheUser'] (or hex: 0x20 20 01 05).</p>
 
 <h3>The complete list of word properties:</h3>
-<p class="pre">wordFormatting = {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;WordWasAddedByTheUser&rsquo;: 0x00000001,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;InternalUseOnly1&rsquo;: 0x00000002,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;InternalUseOnly2&rsquo;: 0x00000004,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;WordCanNotBeDeleted&rsquo;: 0x00000008,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;NormallyCapitalizeTheNextWord&rsquo;: 0x00000010,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;AlwaysCapitalizeTheNextWord&rsquo;: 0x00000020,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;UppercaseTheNextWord&rsquo;: 0x00000040,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;LowercaseTheNextWord&rsquo;: 0x00000080,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;NoSpaceFollowingThisWord&rsquo;: 0x00000100,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;TwoSpacesFollowingThisWord&rsquo;: 0x00000200,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;NoSpacesBetweenWordsWithThisFlagSet&rsquo;: 0x00000400,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;TurnCapitalizationModeOn&rsquo;: 0x00000800,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;TurnUppercaseModeOn&rsquo;: 0x00001000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;TurnLowercaseModeOn&rsquo;: 0x00002000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;TurnOffSpacingBetweenWords&rsquo;: 0x00004000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;RestoreNormalSpacing&rsquo;: 0x00008000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;InternalUseOnly3&rsquo;: 0x00010000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;SuppressAfterAWordWhichEndsInAPeriod&rsquo;: 0x00020000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;DoNotApplyFormattingToThisWord&rsquo;: 0x00040000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;DoNotResetTheSpacingState&rsquo;: 0x00080000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;DoNotResetTheCapitalizationState&rsquo;: 0x00100000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;NoSpacePreceedingThisWord&rsquo;: 0x00200000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;RestoreNormalCapitalization&rsquo;: 0x00400000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;FollowThisWordWithOneNewLineCharacters&rsquo;: 0x00800000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;FollowThisWordWithTwoNewLineCharacters&rsquo;: 0x01000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;DoNotCapitalizeThisWordInATitle&rsquo;: 0x02000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;InternalUseOnly&rsquo;: 0x04000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;AddAnExtraSpaceFollowingThisWord&rsquo;: 0x08000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;InternalUseOnly4&rsquo;: 0x10000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;InternalUseOnly5&rsquo;: 0x20000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lsquo;WordWasAddedByTheVocabularyBuilder&rsquo;: 0x40000000,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+<p class="pre">&nbsp;<br>wordFormatting&nbsp;=&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;'WordWasAddedByTheUser':&nbsp;0x00000001,<br>&nbsp;&nbsp;&nbsp;&nbsp;'InternalUseOnly1':&nbsp;0x00000002,<br>&nbsp;&nbsp;&nbsp;&nbsp;'InternalUseOnly2':&nbsp;0x00000004,<br>&nbsp;&nbsp;&nbsp;&nbsp;'WordCanNotBeDeleted':&nbsp;0x00000008,<br>&nbsp;&nbsp;&nbsp;&nbsp;'NormallyCapitalizeTheNextWord':&nbsp;0x00000010,<br>&nbsp;&nbsp;&nbsp;&nbsp;'AlwaysCapitalizeTheNextWord':&nbsp;0x00000020,<br>&nbsp;&nbsp;&nbsp;&nbsp;'UppercaseTheNextWord':&nbsp;0x00000040,<br>&nbsp;&nbsp;&nbsp;&nbsp;'LowercaseTheNextWord':&nbsp;0x00000080,<br>&nbsp;&nbsp;&nbsp;&nbsp;'NoSpaceFollowingThisWord':&nbsp;0x00000100,<br>&nbsp;&nbsp;&nbsp;&nbsp;'TwoSpacesFollowingThisWord':&nbsp;0x00000200,<br>&nbsp;&nbsp;&nbsp;&nbsp;'NoSpacesBetweenWordsWithThisFlagSet':&nbsp;0x00000400,<br>&nbsp;&nbsp;&nbsp;&nbsp;'TurnCapitalizationModeOn':&nbsp;0x00000800,<br>&nbsp;&nbsp;&nbsp;&nbsp;'TurnUppercaseModeOn':&nbsp;0x00001000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'TurnLowercaseModeOn':&nbsp;0x00002000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'TurnOffSpacingBetweenWords':&nbsp;0x00004000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'RestoreNormalSpacing':&nbsp;0x00008000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'InternalUseOnly3':&nbsp;0x00010000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'SuppressAfterAWordWhichEndsInAPeriod':&nbsp;0x00020000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'DoNotApplyFormattingToThisWord':&nbsp;0x00040000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'DoNotResetTheSpacingState':&nbsp;0x00080000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'DoNotResetTheCapitalizationState':&nbsp;0x00100000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'NoSpacePreceedingThisWord':&nbsp;0x00200000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'RestoreNormalCapitalization':&nbsp;0x00400000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'FollowThisWordWithOneNewLineCharacters':&nbsp;0x00800000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'FollowThisWordWithTwoNewLineCharacters':&nbsp;0x01000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'DoNotCapitalizeThisWordInATitle':&nbsp;0x02000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'InternalUseOnly':&nbsp;0x04000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'AddAnExtraSpaceFollowingThisWord':&nbsp;0x08000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'InternalUseOnly4':&nbsp;0x10000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'InternalUseOnly5':&nbsp;0x20000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;'WordWasAddedByTheVocabularyBuilder':&nbsp;0x40000000,<br>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
 
 <table border="1" cellspacing="0" class="table"><tr><th class="TH1" colspan="2"><p>functions to support this</p></th></tr>
 
@@ -139,7 +107,7 @@
 m("antenna.nl", "q.hoogenboom", "information about: Word properties", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

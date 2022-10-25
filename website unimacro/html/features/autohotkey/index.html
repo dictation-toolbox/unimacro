@@ -61,12 +61,12 @@
 </table>
 
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>AutoHotkey</h1>
-<p>The program AutoHotkey can perform many actions on your computer, in some cases smarter and more reliable than can be done with (the current knowledge) of Unimacro.</p>
+<p>The program <a href="https://www.autohotkey.com" target="_blank">AutoHotkey</a> can perform many actions on your computer, in some cases smarter and more reliable than can be done with (the current knowledge) of Unimacro.</p>
 
 <p>AutoHotkey actions can be called from Unimacro grammars, but also with the
 <a href="../../features/actions/shorthandcommands.html">Unimacro Shorthand Command</a> <strong>AHK</strong>, which can also be called from Vocola.</p>
 
-<h3>Installation and configuration</h3><ul><li>Install AutoHotkey.</li><li>(Re)start Dragon, with NatLink, Vocola and Unimacro or the option "Vocola takes Unimacro actions" enabled, in the NatLink config program.</li><li>Try the Vocola examples below</li></ul>
+<h3>Installation and configuration</h3><ul><li>Install <a href="https://www.autohotkey.com" target="_blank">AutoHotkey</a>.</li><li>(Re)start Dragon, with NatLink, Vocola and Unimacro or the option "Vocola takes Unimacro actions" enabled, in the NatLink config program.</li><li>Try the Vocola examples below</li></ul>
 
 <p>At first call of any of the Unimacro AutoHotkey functions, Unimacro tries to locate the <strong>autohotkey.exe</strong> and the directory of script files (with extension <strong>.ahk</strong>):</p>
 <ul><li>Unimacro expects <strong>autohotkey.exe</strong> in the "old style" program files directory, most often <strong>C:\Program files</strong>, and then in subdirectory <strong>autohotkey</strong>. Read the <a href="configuration.html">configuration</a> if you want them somewhere else.</li><li>Unimacro expects or creates a user ahk scripts folder <strong>AutoHotkey</strong> in the users documents directory. Read the <a href="details.html">details</a> if you want them somewhere else.</li><li>Some sample scripts are copied from the <strong>sample_ahk</strong> directory of Unimacro into this user ahk scripts directory, whenever these are newer. So when you mess up a script which is in the sample_ahk directory, delete it and restart Dragon.</li></ul>
@@ -76,12 +76,7 @@
 <ul><li>If a script or the text in the one-liner has that literary text <strong>%hndle%</strong>, the handle of the foreground window will be inserted in this place. This handle can be changed if the script is called from Unimacro, not via the <strong>AHK</strong> Unimacro Shorthand Command, see <a href="details.html">details</a>. If this substitution happens in a script file, the script text is used and script file is not changed, because:</li><li>If a script text is used, it is first written to <strong>tempscript.ahk</strong>, and then this script is executed with AutoHotkey. All script files are in the AutoHotkey directory of your user documents folder.</li></ul>
 
 <h3>Examples from Vocola</h3>
-<p class="pre">## Global vocola commands using AHK:<br>
-test paste = AHK(&ldquo;send ^v&rdquo;);<br>
-wheel (up=up|down=down) = AHK(&ldquo;send {wheel$1}&rdquo;);<br>
-wheel (up=up|down=down) 2..10&nbsp;&nbsp;= AHK(&ldquo;send {wheel$1 $2}&rdquo;);<br>
-show messages = AHK(showmessageswindow.ahk);<br>
-testswitchback = RW() VW() AHK(showmessageswindow.ahk) VW() RTW();</p>
+<p class="pre">&nbsp;<br>##&nbsp;Global&nbsp;vocola&nbsp;commands&nbsp;using&nbsp;AHK:<br>test&nbsp;paste&nbsp;=&nbsp;AHK("send&nbsp;^v");<br>wheel&nbsp;(up=up|down=down)&nbsp;=&nbsp;AHK("send&nbsp;{wheel$1}");<br>wheel&nbsp;(up=up|down=down)&nbsp;2..10&nbsp;&nbsp;=&nbsp;AHK("send&nbsp;{wheel$1&nbsp;$2}");<br>show&nbsp;messages&nbsp;=&nbsp;AHK(showmessageswindow.ahk);<br>testswitchback&nbsp;=&nbsp;RW()&nbsp;VW()&nbsp;AHK(showmessageswindow.ahk)&nbsp;VW()&nbsp;RTW();</p>
 <ul><li>The first three send Keystrokes (including mouse actions), like the Dragon/VB SendKey command or the natlink.playString function. AutoHotkey has even more support for this, for example for handling the mouse wheel.</li><li>Switching to another window with the python/win32gui function <strong>SetForegroundWindow</strong> is often unrelible. Luckily the AutoHotkey programmers do know how to do this task very reliable.</li><li>The example <strong>testswitchback</strong> uses AutoHotkey functions also from within Unimacro. See <a href="details.html">details</a>.</li></ul>
 
 <h1>Comments</h1>
@@ -93,7 +88,7 @@ testswitchback = RW() VW() AHK(showmessageswindow.ahk) VW() RTW();</p>
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

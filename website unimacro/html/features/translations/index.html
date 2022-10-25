@@ -75,42 +75,28 @@
 
 <h3>Example from grammar <strong>repeat</strong>:</h3>
 <p>Consider the rules:</p>
-<p class="pre">&lt;acceleration> = [much] (faster | slower);<br>
-&lt;speed> = [very] (fast|slow) | normal | steady;</p>
+<p class="pre">&nbsp;<br><acceleration>&nbsp;=&nbsp;[much]&nbsp;(faster&nbsp;|&nbsp;slower);<br><speed>&nbsp;=&nbsp;[very]&nbsp;(fast|slow)&nbsp;|&nbsp;normal&nbsp;|&nbsp;steady;</p>
 
 <p>The words much, faster, slower, very, fast, slow, normal, steady can all be changed into your translations or synonyms.  If you want to include the word <strong>standard speed</strong> additional to <strong>normal</strong>, and <strong>a lot</strong> instead of <strong>much</strong> you can include in the grammar words section:</p>
 
-<p class="pre">[grammar words]<br>
-...<br>
-much = a lot<br>
-normal = normal; standard speed<br>
-...</p>
+<p class="pre">&nbsp;<br>[grammar&nbsp;words]<br>...<br>much&nbsp;=&nbsp;a&nbsp;lot<br>normal&nbsp;=&nbsp;normal;&nbsp;standard&nbsp;speed<br>...</p>
 
 <p>The rules then result in:</p>
-<p class="pre">&lt;acceleration> = [&lsquo;a lot&rsquo;] (faster | slower);<br>
-&lt;speed> = [very] (fast|slow) | normal|&lsquo;standard speed&rsquo; | steady;</p>
+<p class="pre">&nbsp;<br><acceleration>&nbsp;=&nbsp;['a&nbsp;lot']&nbsp;(faster&nbsp;|&nbsp;slower);<br><speed>&nbsp;=&nbsp;[very]&nbsp;(fast|slow)&nbsp;|&nbsp;normal|'standard&nbsp;speed'&nbsp;|&nbsp;steady;</p>
 
 <h3>Warning:</h3>
 <p>In some cases  making more synonyms can result in invalid rules, although most grammars are designed to prevent this.</p>
 
 <p>Consider the following rule from the grammar <strong>lines</strong> (_lines.py):</p>
 
-<p class="pre">&lt;lines> = line |<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{count} lines |<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(previous|next|this|these) (line | {count} lines);</p>
+<p class="pre">&nbsp;<br><lines>&nbsp;=&nbsp;line&nbsp;|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{count}&nbsp;lines&nbsp;|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(previous|next|this|these)&nbsp;(line&nbsp;|&nbsp;{count}&nbsp;lines);</p>
 
 <p>If you want to make synonyms for the grammar words <strong>line</strong> and <strong>lines</strong>, like:</p>
 
-<p class="pre">[grammar words]<br>
-...<br>
-line = line; lying<br>
-lines = lines; lyings<br>
-...</p>
+<p class="pre">&nbsp;<br>[grammar&nbsp;words]<br>...<br>line&nbsp;=&nbsp;line;&nbsp;lying<br>lines&nbsp;=&nbsp;lines;&nbsp;lyings<br>...</p>
 
 <p>The rule results in:</p>
-<p class="pre">&lt;lines> = line|lying |<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{count} lines|lyings |<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(previous|next|this|these) (line|lying | {count} lines|lyings);</p>
+<p class="pre">&nbsp;<br><lines>&nbsp;=&nbsp;line|lying&nbsp;|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{count}&nbsp;lines|lyings&nbsp;|<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(previous|next|this|these)&nbsp;(line|lying&nbsp;|&nbsp;{count}&nbsp;lines|lyings);</p>
 
 <p>Which gives unwanted results.  However most grammars will be designed to prevent these errors.</p>
 
@@ -125,7 +111,7 @@ lines = lines; lyings<br>
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

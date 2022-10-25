@@ -82,15 +82,11 @@
 <ul><li><strong>gotResults_name</strong> changes into <strong>rule_name</strong> for exported rule.</li><li>For subrules the function name is <strong>subrule_name</strong>.</li><li>For imported rules (<strong>dgndictation</strong>, <strong>dgnwords</strong> and <strong>dgnletters</strong>) use <strong>importedrule_dgndictation</strong> etc. No docstring needed here.</li><li>The rule definition is given in the docstring of the function. No semicolon needed at end.</li><li>The complete grammar can be inspected with the command <strong>show name</strong> (where name is the name of the grammar)</li><li>Translations and synonyms work as with IniGrammars.</li><li>The old gramSpec definition can remain for parts of the grammar, as are in that case the gotResults functions.</li><li><strong>fullResults</strong> is not anymore in the call of each function (only <strong>words</strong>). But see <a href="fullresults.html">how to obtain the fullResults</a>.</li></ul>
 
 <h3>First example (the grammar _first_sample_docstring.py):</h3>
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def rule_start(self, words):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&ldquo;first sample docstring&rdquo;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keystroke(&lsquo;Heard macro &ldquo;start&rdquo; (words &ldquo;first sample docstring&rdquo;){enter}&rsquo;)</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;rule_start(self,&nbsp;words):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"first&nbsp;sample&nbsp;docstring"<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;keystroke('Heard&nbsp;macro&nbsp;"start"&nbsp;(words&nbsp;"first&nbsp;sample&nbsp;docstring"){enter}')</p>
 
 <p>The complete grammar shows (in this example after calling <strong>show first sample docstring</strong>)</p>
 
-<p class="pre">--- grammar:<br>
-<br>
-&lt;start> exported = first sample docstring;</p>
+<p class="pre">&nbsp;<br>---&nbsp;grammar:<br>&nbsp;<br><start>&nbsp;exported&nbsp;=&nbsp;first&nbsp;sample&nbsp;docstring;</p>
 
 <h3>self.prevRule, self.prevWords, self.nextRule and self.nextWords</h3>
 
@@ -115,7 +111,7 @@
 m("antenna.nl", "q.hoogenboom", "information about: unimacro", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

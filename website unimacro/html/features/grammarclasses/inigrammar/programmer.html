@@ -93,9 +93,7 @@
 <h3>Difference fillInstanceVariables and fillGrammarLists</h3>
 <p>The method <em>fillInstanceVariables</em> is run at initialization time of the grammar instance, before the grammar is loaded into NatSpeak. In order to redo this method, it is best to reloaded grammar, by:</p>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;fullPath = natlinkmain.loadedFiles[self.__module__]<br>
-&nbsp;&nbsp;&nbsp;natqh.setCheckForGrammarChanges(1)<br>
-&nbsp;&nbsp;&nbsp;os.utime(fullPath, None)</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;fullPath&nbsp;=&nbsp;natlinkmain.loadedFiles[self.__module__]<br>&nbsp;&nbsp;&nbsp;natqh.setCheckForGrammarChanges(1)<br>&nbsp;&nbsp;&nbsp;os.utime(fullPath,&nbsp;None)</p>
 
 <p>At the next utterance the grammar will be reloaded.</p>
 <p>The method <em>fillGrammarLists</em> is run at <em>initialize</em> time, after the grammar is loaded into NatSpeak. This method can be rerun, for example when lists have been changed.</p>
@@ -122,10 +120,7 @@ After that in the 'gotBegin' function is to</p>
 <p>Because of the possible translations/synonyms that are possible to insert in IniGrammar grammars, some manipulation is done with the <strong>gramSpec</strong> variable, which holds the grammar definition.</p>
 <ul><li>gramSpec is the compulsory name for the grammar specification, and the load statement (most often in the initialize function) should have self.gramSpec as parameter:</li></ul>
 
-<p class="pre">&nbsp;&nbsp;&nbsp;&nbsp;def initialize(self):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.load(self.gramSpec)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# if switching on fillGrammarLists, also with lists like {n1-9} or {number1to99}, will be called:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.switchOnOrOff()</p>
+<p class="pre">&nbsp;<br>&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;initialize(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.load(self.gramSpec)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;if&nbsp;switching&nbsp;on&nbsp;fillGrammarLists,&nbsp;also&nbsp;with&nbsp;lists&nbsp;like&nbsp;{n1-9}&nbsp;or&nbsp;{number1to99},&nbsp;will&nbsp;be&nbsp;called:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.switchOnOrOff()</p>
 <ul><li>The class variable gramSpec can be a string or a list. But if the grammar is translated (or there are synonyms) a copy of the class variable gramSpec is put into self.originalGramSpec,  and converted into a string.</li><li>If the translation/synonym process has changes, the resulting grammar specification is put as a string in <strong>self.gramSpec</strong> (so becomes an instance variable).</li><li>As a consequence changes to be original grammar specification can not be done after the <strong>__init__</strong> function. If you want to add or remove grammar rules, typically because of settings in the general section of the inifile of the grammar, you should add your own <em>_init_</em> function, as is done in the _tasks.py grammar of Unimacro.</li>    <ul>    <li>First the inifile is started  (startIniFile()), resulting in the fillInstanceVariables() function to be called.</li>    <li>Then the wanted action on the gramSpec is done.</li>    <li>Only then the IniGrammar.__init__ is called.</li></ul>
 <li>The grammar is NOT automatically loaded again after you change options in the general section of a grammar inifile. Call <strong>switch on grammar_name</strong> or restart Dragon.</li></ul>
 
@@ -140,7 +135,7 @@ After that in the 'gotBegin' function is to</p>
 m("antenna.nl", "q.hoogenboom", "information about: programmer", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

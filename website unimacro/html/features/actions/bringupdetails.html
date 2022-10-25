@@ -80,23 +80,7 @@ So bringing up a new task like <strong>calc</strong> works this way.</p>
 <h3>Tasks grammar</h3>
 <p>The BRINGUP Unimacro shorthand command is extensively used in the <a href="../../grammars/globalgrammars/tasks/index.html"><strong>tasks grammar</strong></a>.  Tasks you want to be able to call should be defined in the <strong>task.ini</strong> configuration file (opened by calling <strong>edit tasks</strong>). A sample:</p>
 
-<p class="pre">[application]<br>
-pythonwin = pythonwin<br>
-idle = idle<br>
-calc = calc<br>
-calculator = calc<br>
-command = cmd<br>
-edit = edit<br>
-emacs = emacs<br>
-email = outlook<br>
-excel = excel<br>
-firefox = firefox<br>
-internet = iexplore<br>
-voice code = voicecode<br>
-voice coder = voicecode<br>
-word = winword<br>
-messages = messages<br>
-dragonpad = dragonpad<br></p>
+<p class="pre">&nbsp;<br>[application]<br>pythonwin&nbsp;=&nbsp;pythonwin<br>idle&nbsp;=&nbsp;idle<br>calc&nbsp;=&nbsp;calc<br>calculator&nbsp;=&nbsp;calc<br>command&nbsp;=&nbsp;cmd<br>edit&nbsp;=&nbsp;edit<br>emacs&nbsp;=&nbsp;emacs<br>email&nbsp;=&nbsp;outlook<br>excel&nbsp;=&nbsp;excel<br>firefox&nbsp;=&nbsp;firefox<br>internet&nbsp;=&nbsp;iexplore<br>voice&nbsp;code&nbsp;=&nbsp;voicecode<br>voice&nbsp;coder&nbsp;=&nbsp;voicecode<br>word&nbsp;=&nbsp;winword<br>messages&nbsp;=&nbsp;messages<br>dragonpad&nbsp;=&nbsp;dragonpad<br>&nbsp;</p>
 
 <p>On the left-hand side are the spoken forms, sometimes for better recognizability.</p>
 <ul><li>Note on this level also <strong>edit = uedit32</strong> could be defined, but this tuning can also be done as described below.  When doing it this way, the <strong>BRINGUP edit</strong> action can also be called from other places.</li><li>Note also the windows explorer is not called here, because bringing up folders can better be done with the grammar <strong>folders</strong>.</li></ul>
@@ -108,30 +92,7 @@ dragonpad = dragonpad<br></p>
 <h3>1. Configuring through actions.ini</h3>
 <p>By calling <strong>edit actions</strong> you open this configuration file.  A sample:</p>
 
-<p class="pre">[bringup emacs]<br>
-path = D:/emacs-21.3/bin/runemacs.exe<br>
-<br>
-[bringup edit]<br>
-name = uedit32<br>
-<br>
-[bringup dragonpad]<br>
-name = natspeak<br>
-<br>
-[bringup email]<br>
-name = outlook<br>
-<br>
-[bringup internet]<br>
-name = iexplore<br>
-<br>
-[bringup idle]<br>
-path = C:\Python23\pythonw.exe<br>
-args = C:\Python23\Lib\idlelib\idle.pyw<br>
-<br>
-[bringup ibmrad]<br>
-name = javaw<br>
-title = Java - Rational<br>
-args = -product com.ibm.rational.rad.product.v75.ide<br>
-path = C:\Program Files\IBM\SDP\eclipse.exe<br></p>
+<p class="pre">&nbsp;<br>[bringup&nbsp;emacs]<br>path&nbsp;=&nbsp;D:/emacs-21.3/bin/runemacs.exe<br>&nbsp;<br>[bringup&nbsp;edit]<br>name&nbsp;=&nbsp;uedit32<br>&nbsp;<br>[bringup&nbsp;dragonpad]<br>name&nbsp;=&nbsp;natspeak<br>&nbsp;<br>[bringup&nbsp;email]<br>name&nbsp;=&nbsp;outlook<br>&nbsp;<br>[bringup&nbsp;internet]<br>name&nbsp;=&nbsp;iexplore<br>&nbsp;<br>[bringup&nbsp;idle]<br>path&nbsp;=&nbsp;C:\Python23\pythonw.exe<br>args&nbsp;=&nbsp;C:\Python23\Lib\idlelib\idle.pyw<br>&nbsp;<br>[bringup&nbsp;ibmrad]<br>name&nbsp;=&nbsp;javaw<br>title&nbsp;=&nbsp;Java&nbsp;-&nbsp;Rational<br>args&nbsp;=&nbsp;-product&nbsp;com.ibm.rational.rad.product.v75.ide<br>path&nbsp;=&nbsp;C:\Program&nbsp;Files\IBM\SDP\eclipse.exe<br>&nbsp;</p>
 <ul><li>The last example added by Jerome for Eclipse (apparently "Java" environment). The title does not act (yet). Should be worked at.</li><li>Some programs (email, internet) can be configured by giving it the proper executable <strong>name</strong> (outlook, iexplore).</li><li>Also for <strong>edit</strong> some suitable text editor can be defined (eg <strong>name = uedit32</strong>).</li><li>Emacs needs the complete <strong>path</strong>, as it is not installed in one of the windows standard folders.</li><li>The python IDE <strong>idle</strong> is a subprogram of <strong>pythonw</strong> (requiring the complete path here), having the argument in the variable <strong>args</strong>.</li></ul>
 
 <h3>2. Configure in python: actions.py:</h3>
@@ -150,7 +111,7 @@ path = C:\Program Files\IBM\SDP\eclipse.exe<br></p>
 m("antenna.nl", "q.hoogenboom", "information about: BRINGUP details", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

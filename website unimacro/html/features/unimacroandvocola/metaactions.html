@@ -68,7 +68,7 @@
 <!-- == end of left menu == --></td></tr></table></td><td class="body0" id="body0" width="76%"><table cellspacing="0" class="body" width="100%"><tr><td class="body" id="body" valign="top"><h1>Unimacro meta actions</h1>
 <p>These <strong>meta actions</strong> are most useful in global command files. A meta action like <strong>&lt;&lt;filesaveas&gt;&gt;</strong> can be defined in one (global) command. The action can differ for different programs/Windows. These are resolved at runtime, when a command has been recognised. Configuration of these meta actions are done in a user configurable ini file: <strong>actions.ini</strong>.</p>
 
-<p>Note this file is in the Unimacro release. Please consult the <a href="../../installation/inifilestrategy.html">page on inifile strategy</a> if you make changes to the file <strong>actions.ini</strong>.</p>
+<p>Note this file is in the Unimacro release. Please consult the link(/installation/inifilestrategy.html, page on inifile strategy) if you make changes to the file <strong>actions.ini</strong>.</p>
 
 <h3>Calling meta actions in Vocola User Files:</h3>
 <p>The meta actions should be called like <strong>Unimacro(&lt;&lt;filesaveas&gt;&gt;)</strong>.  As they have no spaces inside, quoting is not needed.</p>
@@ -87,43 +87,21 @@
 <p>You can get the name of the foreground program with the command <strong>give window info</strong> of the grammar <a href="../../grammars/globalgrammars/general/index.html">_general</a>.</p>
 
 <h3>Example filesaveas (in the file actions.ini):</h3>
-<p class="pre">[default]<br>
-filesaveas = {f12}<br>
-<br>
-[emacs]<br>
-filesaveas = {ctrl+x}{ctrl+w}<br>
-<br>
-[pythonwin]<br>
-filesaveas = {alt+f}a</p>
+<p class="pre">&nbsp;<br>[default]<br>filesaveas&nbsp;=&nbsp;{f12}<br>&nbsp;<br>[emacs]<br>filesaveas&nbsp;=&nbsp;{ctrl+x}{ctrl+w}<br>&nbsp;<br>[pythonwin]<br>filesaveas&nbsp;=&nbsp;{alt+f}a</p>
 
 <h3>Example save close (window|document):</h3>
 <p>It is possible to use Vocola variables inside a Unimacro meta action. Defined are the meta actions &lt;filesave&gt;,  &lt;documentclose&gt; and &lt;windowclose&gt;.  A combined command for <strong>save close document</strong> and <strong>save close window</strong> is now:</p>
 
-<p class="pre">save close (document | window) = Unimacro(&lt;&lt;filesave>>) W() Unimacro(&lt;&lt;$1close>>);</p>
+<p class="pre">&nbsp;<br>save&nbsp;close&nbsp;(document&nbsp;|&nbsp;window)&nbsp;=&nbsp;Unimacro(<<filesave>>)&nbsp;W()&nbsp;Unimacro(<<$1close>>);</p>
 
 <p>or ( making use of a complete Unimacro actions string):</p>
-<p class="pre">save close (document | window) = Unimacro(&rdquo;&lt;&lt;filesave>>; W; &lt;&lt;$1close>>&rdquo;);</p>
+<p class="pre">&nbsp;<br>save&nbsp;close&nbsp;(document&nbsp;|&nbsp;window)&nbsp;=&nbsp;Unimacro("<<filesave>>;&nbsp;W;&nbsp;<<$1close>>");</p>
 
 <p>The file <strong>actions.ini</strong> Contains the following lines:</p>
 
 <p>(for most applications the keys to send for these meta actions are <strong>default</strong>, but there are some exceptions. In this case for <strong>emacs</strong>, <strong>psp</strong> (PaintShopPro) and <strong>cmd</strong> (the DOS command window).</p>
 
-<p class="pre">[default]<br>
-documentclose = {ctrl+f4}<br>
-filesave = {ctrl+s}<br>
-windowclose = {alt+f4}<br>
-<br>
-<br>
-[emacs]<br>
-documentclose = {ctrl+x}k; {enter}<br>
-filesave = {ctrl+x}{ctrl+s}<br>
-windowclose = {ctrl+x}{ctrl+c}<br>
-<br>
-[psp]<br>
-filesave = SSK {ctrl+s}<br>
-<br>
-[cmd]<br>
-windowclose = {alt+space}c<br></p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
+<p class="pre">&nbsp;<br>[default]<br>documentclose&nbsp;=&nbsp;{ctrl+f4}<br>filesave&nbsp;=&nbsp;{ctrl+s}<br>windowclose&nbsp;=&nbsp;{alt+f4}<br>&nbsp;<br>&nbsp;<br>[emacs]<br>documentclose&nbsp;=&nbsp;{ctrl+x}k;&nbsp;{enter}<br>filesave&nbsp;=&nbsp;{ctrl+x}{ctrl+s}<br>windowclose&nbsp;=&nbsp;{ctrl+x}{ctrl+c}<br>&nbsp;<br>[psp]<br>filesave&nbsp;=&nbsp;SSK&nbsp;{ctrl+s}<br>&nbsp;<br>[cmd]<br>windowclose&nbsp;=&nbsp;{alt+space}c<br>&nbsp;</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
 <table border="0" cellpadding="0" cellspacing="0" class="bottomline" width="100%">
 <tr><td class="navline"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td class="navline">&nbsp;<a href="../../index.html">home</a> > <a href="../index.html">features</a> > <a href="index.html">unimacro and vocola</a> > meta actions > <a href="javascript:scrollTo(0,0);">top</a></td></tr></table></td><td class="sitemapbutton" onclick="location='../../sitemap.html#unimacroandvocolametaactions';" onmouseout="status='';" onmouseover="status='go to the sitemap';"><a href="../../sitemap.html#unimacroandvocolametaactions">sitemap</a></td><td class="navline" width="5"></td><td class="emailbutton" onclick="" onmouseout="status='';" onmouseover="status='send e-mail';"><noscript class="underline">q.hoogenboom</noscript>
@@ -131,7 +109,7 @@ windowclose = {alt+space}c<br></p></td></tr></table></td></tr></table></div><div
 m("antenna.nl", "q.hoogenboom", "information about: Meta actions", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--

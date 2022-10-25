@@ -134,6 +134,16 @@ For some programs, who can "return" the current line number to this grammar with
 
 For example, when you are in line 1375, with "line eighty", you go to line 1380.
 
+When you want to address numbers below 10:
+- Assume you are on line 358: when saying "line seven" you go to line 357, but when you say "line oh seven", you will go to line 407 (which is slightly nearer than line 307)
+- when saying line "oh oh seven", you will always go to line 7.
+
+For addressing numbers between 10 and 99 (including):
+- When you are still on line 358, and say "line twenty three", you go to line 323.
+- When you say "line oh two three", you go to line 23.
+
+Note: this feature only works when the *current line number is above 99*.
+
 This feature has been implemented for a limited number of applications: *win32pad*, *excel*, *Visual Studio* (new, February 2021) and *Komodo* (a commercial IDE program, also new February 2021).  See:
 
 -link(/grammars/globalgrammars/lines/implementationdetails.html, implementation details) for this grammar and 

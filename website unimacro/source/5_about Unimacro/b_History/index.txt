@@ -27,7 +27,7 @@ link(VoiceCoders.pdf, "VoiceCoders, how to implement dictation into Natlink") (p
 
 This talk is also available as link(voicecoders.ppt, powerpoint) or link(voicecoders.odp, OpenOffice Presentation).
 
-The Voicecode project is regrettably obsolete. But files are still available at link(https://sourceforge.net/projects/voicecode/files/VoiceCode/, SourceForge).
+The Voicecode project is regrettably obsolete. But files are still available at link(https://sourceforge.net/projects/voicecode/, SourceForge).
 
  Dragonfly
 

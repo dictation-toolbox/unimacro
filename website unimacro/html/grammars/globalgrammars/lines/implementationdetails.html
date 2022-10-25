@@ -58,8 +58,6 @@
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../oops/index.html">Oops</a></td></tr>
 
-<tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../shownumbersplus/index.html">Show numbers plus</a></td></tr>
-
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../tags/index.html">Tags</a></td></tr>
 
 <tr><td class="back" width="20">&nbsp;</td><td class="leftoff" colspan="2"><a href="../brackets/index.html">Brackets</a></td></tr>
@@ -81,44 +79,22 @@
 <p>The basic action for jumping to a line is the <a href="../../../features/actions/metaactions.html">meta-action</a> <strong>gotoline n</strong>, called from the lines grammar with the wanted line number for <strong>n</strong>.</p>
 
 <p>In the default section you will find:</p>
-<p class="pre">[default]<br>
-(...)<br>
-gotoline n = {Ctrl+ExtHome}{ExtDown n}{ExtUp}</p>
+<p class="pre">&nbsp;<br>[default]<br>(...)<br>gotoline&nbsp;n&nbsp;=&nbsp;{Ctrl+ExtHome}{ExtDown&nbsp;n}{ExtUp}</p>
 
 <p>So when there is no other way to jump to a line, you simply go to the top and then down the needed number of lines.</p>
 
 <p>Here are some applications which do it another way:</p>
 <p>(<strong>code</strong> is the program name of Visual Studio)</p>
-<p class="pre">[code]<br>
-gotoline n = {ctrl+g}; n{enter}<br>
-realhome = {end}{home}{home}<br>
-<br>
-[emacs]<br>
-gotoline n = EMACS goto-line; n{enter}<br>
-<br>
-[excel]<br>
-gotoline n = {ctrl+g}; n:n{enter}<br>
-<br>
-[pythonwin]<br>
-gotoline n = {ctrl+g}; n{enter}; {home}<br>
-<br>
-[textpad]<br>
-gotoline n = {ctrl+g}; n{enter}<br>
-<br>
-[uedit32]<br>
-gotoline n = {ctrl+g}; n{enter}<br>
-<br>
-[win32pad]<br>
-gotoline n = {ctrl+g}; n{enter}</p>
+<p class="pre">&nbsp;<br>[code]<br>gotoline&nbsp;n&nbsp;=&nbsp;{ctrl+g};&nbsp;n{enter}<br>realhome&nbsp;=&nbsp;{end}{home}{home}<br>&nbsp;<br>[emacs]<br>gotoline&nbsp;n&nbsp;=&nbsp;EMACS&nbsp;goto-line;&nbsp;n{enter}<br>&nbsp;<br>[excel]<br>gotoline&nbsp;n&nbsp;=&nbsp;{ctrl+g};&nbsp;n:n{enter}<br>&nbsp;<br>[komodo]<br>gotoline&nbsp;n&nbsp;=&nbsp;{Ctrl+g};&nbsp;W;&nbsp;n;{enter}<br>realhome&nbsp;=&nbsp;{alt+home}<br>&nbsp;<br>[pythonwin]<br>gotoline&nbsp;n&nbsp;=&nbsp;{ctrl+g};&nbsp;n{enter};&nbsp;{home}<br>&nbsp;<br>[textpad]<br>gotoline&nbsp;n&nbsp;=&nbsp;{ctrl+g};&nbsp;n{enter}<br>&nbsp;<br>[uedit32]<br>gotoline&nbsp;n&nbsp;=&nbsp;{ctrl+g};&nbsp;n{enter}<br>&nbsp;<br>[win32pad]<br>gotoline&nbsp;n&nbsp;=&nbsp;{ctrl+g};&nbsp;n{enter}</p>
 
 <p>Note: the excel action is overridden by the function <strong>metaaction_gotoline</strong> in the <a href="../../../features/actions/actionclassesforapplications.html">excel actions class module</a>.</p>
 
 <h2>line numbers modulo hundred</h2>
 <p>When you set this option to true in the _lines.ini file (say <strong>edit lines</strong>):</p>
 
-<p class="pre">[general]<br>
-line numbers modulo hundred = T</p>
-<p>You will be able to use this feature for Excel, win32pad and Visual Studio Code (New, February 2021).</p>
+<p class="pre">&nbsp;<br>[general]<br>line&nbsp;numbers&nbsp;modulo&nbsp;hundred&nbsp;=&nbsp;T</p>
+
+<p>You will be able to use this feature for Excel, win32pad and Visual Studio Code and Komodo (New, February 2021).</p>
 
 <p>The clue is in the <a href="../../../features/actions/actionclassesforapplications.html">actions classes</a>, which can provide, per application, the calling grammar with the current line number from the function <strong>getCurrentLineNumber</strong>. If this function does not return a valid number, this option is not available for the foreground application, as for example Komodo.</p>
 
@@ -133,10 +109,7 @@ line numbers modulo hundred = T</p>
 <p>You need to make a "<strong>Userscript</strong>" in Komodo:</p><ul><li>Go to View, Tabs & Sidebars, Toolbox</li><li>Click on the Tools pictogram (right top) and choose <strong>New Userscript</strong></li><li>Give it a name, eg "copy current line number", keep Javascript.</li><li>Give it the Key Binding <strong>Alt+Shift+C</strong>. (When you need another Key Binding, you also need to edit komodo-actions.py in the folder actionclasses.)</li></ul>
 
 <p>Now paste the following code in the Userscript:</p>
-<p class="pre">var editor = require(&ldquo;ko/editor&rdquo;);<br>
-var linenum = editor.getLineNumber(editor.getCursorPosition());<br>
-var clipboard = require(&ldquo;sdk/clipboard&rdquo;);<br>
-clipboard.set(String(linenum));</p>
+<p class="pre">&nbsp;<br>var&nbsp;editor&nbsp;=&nbsp;require("ko/editor");<br>var&nbsp;linenum&nbsp;=&nbsp;editor.getLineNumber(editor.getCursorPosition());<br>var&nbsp;clipboard&nbsp;=&nbsp;require("sdk/clipboard");<br>clipboard.set(String(linenum));</p>
 <ul><li>Probably you need to restart Dragon, and you can try the feature.</li><li>Note: when you want set/clear debug information (about the timing issues), change line 48 of the file <strong>komodo-actions.py</strong> in the folder <strong>actionclasses</strong> (debug=1 or debug=0).</li></ul>
 
 <h3>Emacs (special!)</h3>
@@ -152,10 +125,7 @@ clipboard.set(String(linenum));</p>
 <p>These are tested in Word, and basically meant for this program.</p>
 <p>In the actions.ini file there are now  analogous to "selectdown": "selectparadown" and to "selectline" there is "selectpara":</p>
 
-<p class="pre">selectpreviouspara = {ctrl+up}{shift+ctrl+up}<br>
-selectpara = {ctrl+down}{ctrl+up}{shift+ctrl+down}<br>
-selectparadown n = {shift+ctrl+down n}<br>
-selectparaup n = {shift+ctrl+up n}<br></p>
+<p class="pre">&nbsp;<br>selectpreviouspara&nbsp;=&nbsp;{ctrl+up}{shift+ctrl+up}<br>selectpara&nbsp;=&nbsp;{ctrl+down}{ctrl+up}{shift+ctrl+down}<br>selectparadown&nbsp;n&nbsp;=&nbsp;{shift+ctrl+down&nbsp;n}<br>selectparaup&nbsp;n&nbsp;=&nbsp;{shift+ctrl+up&nbsp;n}<br>&nbsp;</p>
 
 <p>These new meta-actions are found in the file sample_ini/actions.ini (March 2016, QH)</p></td></tr></table></td></tr></table></div><div class="footer" id="footer"><!-- === start of footer === -->
 
@@ -165,7 +135,7 @@ selectparaup n = {shift+ctrl+up n}<br></p>
 m("antenna.nl", "q.hoogenboom", "information about: Implementation details", "e-mail");
 
 // --></script>
-<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;feb 2021<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
+<noscript class="underline">at&nbsp;antenna.nl</noscript></td><td class="navline" width="5"></td><td class="copyright">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022</td><td class="copprintonly">&copy;&nbsp;<strong>unimacro</strong>,&nbsp;okt 2022<br> | a SourceForge Project by Quintijn Hoogenboom, Bart Jan van Os, Frank Olaf Sem-Jacobsen, Doug Ransom.</td></tr></table>
 
 <!-- === end of footer === --></div>
 <script language="javascript" type="text/javascript"><!--
