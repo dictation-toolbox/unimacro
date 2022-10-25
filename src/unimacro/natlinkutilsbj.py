@@ -3044,6 +3044,7 @@ noot mies
         If class == #32770, always return False, child, except when rule in actions.ini says different...
         
         """
+        #TODO QH this routine sucks
         if modInfo is None:
             modInfo = natlink.getCurrentModule()
 

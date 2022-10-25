@@ -43,8 +43,6 @@ self.lastDirection gives the last selection direction, persistent
 
 For more information on this number part, see grammar _testnumbersspokenforms.py
 """
-import re
-
 import natlink
 from natlinkcore import natlinkutils
 import unimacro.natlinkutilsbj as natbj
@@ -56,9 +54,6 @@ from dtactions.unimacro import unimacroactions as actions
 
 class LinesError(Exception):
     pass
-
-# for checking base number:
-reNulls = re.compile('0+$')
 
 counts = list(range(1,20)) + list(range(20,50,5)) + list(range(50,100,10)) + list(range(100, 1001, 100))
 #print 'counts: %s'% counts
@@ -91,9 +86,8 @@ class ThisGrammar(ancestor):
 <action> = <column> | {simpleaction} | <movecopyaction>;
 <column> = column <integer>;
 <movecopyaction> = (move | copy) (((down|up) {count})|(to <integer>));
-"""+numGram+"""
-<base> exported = 'line base' (<integer>|off);
-    """
+"""+numGram
+
 
     def initialize(self):
         if not self.language:
@@ -153,7 +147,6 @@ class ThisGrammar(ancestor):
         self.firstPart = ''        
         self.line = 0
         self.through = 0
-        self.newbase = 0 # for collecting a new base number
         self.numlines = 1 # for selecting line number plus count
         self.movecopyto = 0 # line number or number of lines to move or copy to
         self.action = None # for simple actions the action string or list
@@ -419,24 +412,11 @@ class ThisGrammar(ancestor):
     def gotResults_before(self,words,fullResults):
         if self.hasCommon(words, 'here'):
             natlinkutils.buttonClick('left', 1)
-
-    def gotResults_base(self,words,fullResults):
-        if self.hasCommon(words, ['off']):
-            self.base = 0
-            self.DisplayMessage('resetting line base to 0')
-        else:
-            self.waitForNumber('newbase')
         
     def gotResults(self,words,fullResults):
         comment = 'command: %s'% ' '.join(words)
         self.prog = self.progInfo.prog
         self.collectNumber()
-        #print 'lines command: %s (direction: %s)'% (comment, self.lastDirection)
-        #print 'type line: %s'% type(self.line)
-        #print 'base: %(base)s, line: %(line)s, through: %(through)s, ' \
-        #      'movecopyto: %(movecopyto)s, action: %(action)s'% self.__dict__
-        ## self.movecopyto is returned as str, but should be converted to int,
-        ## possibly relative to current line number
         if self.movecopyto and self.action[1] == 'to':
             if self.lineNumbersModuloHundred:
                 self.movecopyto = self.convertLineNumberModulo(self.movecopyto)
@@ -633,7 +613,9 @@ class ThisGrammar(ancestor):
             modulo = 10
         else:
             modulo = 100
-        intLine = getLineRelativeTo(intLine, self.currentLine, modulo=modulo)
+        if self.currentLine and self.currentLine > 99:
+            # modulo trick only when you are above line 100
+            intLine = getLineRelativeTo(intLine, self.currentLine, modulo=modulo)
         print(f'absolute: {intLine}, current: {self.currentLine}, modulo: {modulo}')
         return intLine
 

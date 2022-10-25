@@ -41,7 +41,7 @@ def test_getLineRelativeTo():
     result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
     assert result == expect
     
-    current, relative, expect = 358, 7, 301
+    current, relative, expect = 358, 7, 407
     result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
     assert result == expect
     
