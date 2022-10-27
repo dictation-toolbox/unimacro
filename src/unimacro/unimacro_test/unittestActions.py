@@ -160,7 +160,7 @@ class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
     def tttestGetSectionList(self):
         """test with fake program info for sections to be selected
         """
-        progInfo = ("notepad", "title of notepad window", "child", 12345)
+        progInfo = (r'C:\Windows\SysWOW64\notepad.exe', 'notepad', 'Untitled - Notepad', 'child', 'Notepad', 12345)
         sectionsList = actions.getSectionList(progInfo)
         expList = []
         

@@ -616,7 +616,7 @@ class ThisGrammar(ancestor):
         if self.currentLine and self.currentLine > 99:
             # modulo trick only when you are above line 100
             intLine = getLineRelativeTo(intLine, self.currentLine, modulo=modulo)
-        print(f'absolute: {intLine}, current: {self.currentLine}, modulo: {modulo}')
+            print(f'absolute: {intLine}, current: {self.currentLine}, modulo: {modulo}')
         return intLine
 
     def fillDefaultInifile(self, ini=None):

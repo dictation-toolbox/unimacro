@@ -3036,7 +3036,7 @@ noot mies
 ##            doc.Range().GoTo(-1,Name="unimacrosearch")
             print('search go back does not work yet')
             
-    def getTopOrChild(self, modInfo=None, childClass=None):
+    def getTopOrChild(self, progInfo=None, childClass=None):
         """return true if top window or child behaves like top
         
         and False if child window or top behaves like child
@@ -3045,12 +3045,12 @@ noot mies
         
         """
         #TODO QH this routine sucks
-        if modInfo is None:
-            modInfo = natlink.getCurrentModule()
+        if progInfo is None:
+            progInfo = unimacroutils.getProgInfo()
 
         # ProgInfo = collections.namedtuple('ProgInfo', 'progpath prog title toporchild classname hndle'.split(' '))
 
-        progInfo = unimacroutils.getProgInfo(modInfo=modInfo)
+        progInfo = unimacroutils.getProgInfo()
 
         
         istop = (progInfo.toporchild == 'top')
