@@ -33,7 +33,7 @@ import re
 import pickle
 
 import natlink
-from natlink.natlinkutils import *
+from natlinkcore.natlinkutils import *
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
@@ -401,7 +401,7 @@ class UtilGrammar(ancestor):
                 filename = unimacroutils.getModuleFilename(module)
                 #print 'open for edit file: %s'% filename
                 self.openFileDefault(filename, mode="edit", name='edit grammar %s'% gramName)
-                unimacroutils.setCheckForGrammarChanges(1)
+                # unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
                 try:

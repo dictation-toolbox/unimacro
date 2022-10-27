@@ -38,7 +38,7 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
     
     if not isfile(py_path):
         if not org_txt_equal:
-            print(f'\tnew release of not activated grammar {name}\n\t\tcopy {org_path} to {txt_path}')
+            print(f'\tnew release of not activated grammar {name}\n\t\tcopy {org_path} to\n\t\t\t{txt_path}')
             shutil.copyfile(org_path, txt_path)
         return 
     txt_py_equal = not bool( get_diff(txt_path, py_path) )
@@ -57,7 +57,7 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
             print(f'****grammar "{name}" in (the active) UnimacroGrammars directory has been changed.')
             print(f'--------This new version "{py_path}" is copied to \n\t"{org_path_resolved}" and to\n\t"{txt_path}".')
             print(f'\tThe changes will be saved when you commit and push your git clone of unimacro, "{workDir}".')
-            print(f'--------If you want to undo your changes, revert in git ("{workDir}"),\n\tand copy manually back "{org_path_resolved}"\n\tto "{py_path}".\n--------')
+            print(f'\t---If you want to undo your changes, revert in git ("{workDir}"),\n\tand copy manually back "{org_path_resolved}"\n\tto "{py_path}".\n--------')
             shutil.copyfile(py_path, org_path_resolved)
             shutil.copyfile(org_path_resolved, txt_path)
         else:
@@ -87,8 +87,8 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
 def get_diff(org_path, new_path):
     """print the diff of org and new
     """
-    with open(org_path, 'r') as org:
-        with open(new_path, 'r') as new:
+    with open(org_path, 'r', encoding='utf-8') as org:
+        with open(new_path, 'r', encoding='utf-8') as new:
             diff = difflib.unified_diff(
                 org.readlines(),
                 new.readlines(),
@@ -110,7 +110,8 @@ def print_diff(org_path, new_path, output_file=None):
         for line in diff:
             print(line)
         return
-    open(output_file, 'w').writelines(diff)
+    with open(output_file, 'w', encoding='utf-8') as fp:
+        fp.writelines(diff)
     print(f'----diff in {output_file}')
 
 def cleanup_files(activedir):

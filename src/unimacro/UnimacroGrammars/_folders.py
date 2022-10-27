@@ -7,7 +7,7 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020
-#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0914, R0915, R0201
+#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0914, R0915
 #pylint:disable=E1101
 r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files

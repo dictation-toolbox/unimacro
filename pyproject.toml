@@ -10,20 +10,32 @@ requires-python = ">=3.9"
 readme = "README.md"
 
 
-dependencies = ["dtactions >= 1.5.0",
+dependencies = ["dtactions >= 1.5.6",
         "debugpy >= 1.2.0",
-		"pywin32 >= 300",
-		"natlinkcore >= 5.2.1"]
+		"pywin32 >= 304",
+		"natlinkcore >= 5.3.5"]
 		  
 		
 classifiers=[	"Development Status :: 4 - Beta",
 				"Topic :: Multimedia :: Sound/Audio :: Speech",
 				"Topic :: Scientific/Engineering :: Human Machine Interfaces",
-				]
+				"Environment :: Win32 (MS Windows)",
+				"Intended Audience :: Developers",
+				"Operating System :: Microsoft :: Windows",
+				"Programming Language :: Python :: 3.9",
+				"Programming Language :: Python :: 3.10",
+				"Programming Language :: Python :: 3.11",
+				"Programming Language :: Python :: Implementation :: CPython",
+				"Topic :: Multimedia :: Sound/Audio :: Speech",
+				"Topic :: Software Development :: Libraries :: Python Modules",
+        ]
 				
 [project.optional-dependencies]
 test = [
     "pytest >=7.1.2",
+]
+dev = [
+	"pyenvutils",
 ]
 [tool.pytest.ini_options]
 minversion = "7.1.2"

@@ -87,7 +87,6 @@ class ThisGrammar(ancestor):
             
                       
     def outputNumber(self, number):
-        #pylint:disable=R0201
         keystroke(number)
         #Step 5:
         # Here some extra postprocessing for different programs:

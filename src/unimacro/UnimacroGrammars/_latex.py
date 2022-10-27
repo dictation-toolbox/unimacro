@@ -1,7 +1,7 @@
 """Unimacro grammar to Dictate latex markup, as defined in an inifile
 
 """
-# This file is part of a SourceForge project called "unimacro" see
+# This file is/was part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
@@ -11,17 +11,17 @@
 # written by: Frank Olaf Sem-Jacobsen
 # March 2011
 #
-
+#pylint:disable = R0912, C0209, E1101
 import natlink
-import nsformat
+from natlinkcore import nsformat 
+from natlinkcore import natlinkstatus
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils as natut
-from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
 
-language = unimacroutils.getLanguage()        
+status = natlinkstatus.NatlinkStatus()
+language = status.language
 ICAlphabet = natbj.getICAlphabet(language=language)
 
 # import re
@@ -29,8 +29,6 @@ ICAlphabet = natbj.getICAlphabet(language=language)
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
-    language = unimacroutils.getLanguage()        
-
 
     name = "latex"
     gramSpec = """
@@ -45,7 +43,7 @@ class ThisGrammar(ancestor):
     """
 
     def initialize(self):
-        if not self.language:
+        if not language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
 
@@ -94,7 +92,7 @@ class ThisGrammar(ancestor):
             contents = self.get_selection_that(line = 0)
         if self.hasCommon(words, ['line']):
             contents = self.get_selection_that(line = 1)
-
+        contents = contents.strip()
 
         stringpaste(Cmd)
         if pos > 0  or self.hasCommon(words, ['arguments']):
@@ -112,11 +110,16 @@ class ThisGrammar(ancestor):
             if label:
                 ## workaround for keystrokes: {{}
                 keystroke('{enter}')
-                stringpaste(r'\label{}%s}'% (self.makes_label(label, contents)))
+                stringpaste(r'\label{%s}'% (self.makes_label(label, contents)))
                 keystroke('{enter}')
                 
     def gotResults_options(self, words, fullResults):
         selection = self.view_selection_current_line()
+        if selection:
+            pass
+            # print(f'select_current_line: {selection}')
+        else:
+            print('no selection found')
         options = self.getFromInifile(words, 'options', noWarning=1)
         present = 1
         squared = selection.find(']')
@@ -133,7 +136,7 @@ class ThisGrammar(ancestor):
             keystroke('{end}')
         else:
             keystroke('{home}')
-            for i in range(0, squared):
+            for _ in range(0, squared):
                 keystroke('{right}')
             if present == 0:
                 keystroke('[')
@@ -180,20 +183,20 @@ class ThisGrammar(ancestor):
             keystroke('{up}')
             print('floating: %s'% self.floating)
         if self.reference:
-            stringpaste ('\\ref{%s}' % (self.makes_label(self.reference, self.dictation)))
+            stringpaste('\\ref{%s}' % (self.makes_label(self.reference, self.dictation)))
         if self.namereference:
-            stringpaste ('\\nameref{%s}' % (self.makes_label(self.namereference, self.dictation)))
+            stringpaste('\\nameref{%s}' % (self.makes_label(self.namereference, self.dictation)))
         if self.label_text:
-            stringpaste ('\\label{%s}' % (self.makes_label(self.label_text, self.dictation)))
+            stringpaste('\\label{%s}' % (self.makes_label(self.label_text, self.dictation)))
         if self.replace_text:
-            stringpaste (self.dictation)
+            stringpaste(self.dictation)
         
 
     def gotResults_dgndictation(self, words, fullResults):
         """do with nsformat functions"""
-        print('got dgndictation: %s'% words)
+        # print('got dgndictation: %s'% words)
         self.dictation, dummy = nsformat.formatWords(words)  # state not needed in call
-        print('   result of nsformat:  %s'% repr(self.dictation))
+        # print('   result of nsformat:  %s'% repr(self.dictation))
 
 
     def get_selection_that(self, line = 0):
@@ -203,6 +206,7 @@ class ThisGrammar(ancestor):
             action('<<selectline>><<cut>>')
         else:
             action('<<cut>>')
+        action('W')
         contents = natlink.getClipboard().strip().replace('\r', '')
         if len(contents) == 0:
             if line:
@@ -210,9 +214,10 @@ class ThisGrammar(ancestor):
                 return ""
             action('HW select that')
             action('<<cut>>')
+            action('W')
             contents = natlink.getClipboard().strip().replace('\r', '')
             if len(contents) == 0:
-                print('_latex, empty contents, no last dicatate utterance available')
+                print('_latex, empty contents, no last dictate utterance available')
                 
         unimacroutils.restoreClipboard()
         return contents
@@ -220,37 +225,53 @@ class ThisGrammar(ancestor):
     def view_selection_current_line(self):
         unimacroutils.saveClipboard()
         keystroke('{ctrl+c}')
+        action('W')
         contents = natlink.getClipboard()
         if len(contents) == 0:
-            print('no_space_by_existing selection')
+            # print('no_space_by_existing selection')
             keystroke('{end}{shift+home}')
             keystroke('{ctrl+c}')
+            action('W')
             contents = natlink.getClipboard()
         unimacroutils.restoreClipboard()
         return contents
 
 
-
-    def makes_label(self, type, text):
-        return type + ':' + ''.join(text.split()).lower()
+    def makes_label(self, Type, Text):
+        return Type + ':' + ''.join(Text.split()).lower()
   
 def stringpaste(t):
     """paste via clipboard, to circumvent German keyboard issues
     """
-    action('SCLIP "%s"'%t)
+    print(f'stringpaste: |{t}|')
+    action(f'SCLIP "{t}"')
     
-
-
-# standard stuff Joel (QH, Unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
+# standard stuff Joel (QH, Unimacro, python3):
+try:
+    thisGrammar
+except NameError:
     thisGrammar = None
 
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
 
+if __name__ == "__main__":
+    # here code to interactive run this module
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        thisGrammar.startInifile(modName = '_latex')
+        thisGrammar.initialize()
+        Words = ['add', 'option', 'draft']
+        FR = {}
+        thisGrammar.gotResults_options(Words, FR)
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # called from the loader, when starting Dragon/Natlink:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()

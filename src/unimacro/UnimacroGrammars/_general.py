@@ -9,6 +9,9 @@
 # developed during the past few years.
 #
 #
+#pylint:disable=C0302, R0904, C0209, C0321, R0912, R0914, R0915, R0911
+#pylint:disable=E1101 
+
 """do a set of general commands, with language versions possible, version 7
 
 a lot of commands from the previous version removed, inserted a search and dictate
@@ -19,22 +22,24 @@ mode, that only works when spell mode or command mode is on.
 import re
 import os
 import sys
+import time
 import pprint
+from pathlib import Path
 
-import utilsqh
+import win32gui
 
 import natlink
-import natlinkstatus
-import win32gui
-import namelist # for name phrases
-import nsformat
+from natlinkcore import natlinkstatus
+from natlinkcore import nsformat 
+from natlinkcore import natlinkutils as natut
+from unimacro import natlinkutilsbj as natbj
+from unimacro import namelist # for name phrases
 
-import natlinkutils as natut
-from unimacro import natlinkutilsqh as natqh
-import unimacro.natlinkutilsbj as natbj
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-import actions
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacro import unimacroactions as actions
+from dtactions.unimacro import unimacroutils
+
 # taskswitching moved to _tasks.py (july 2006)
 
 Counts = list(range(1,20)) + list(range(20,51,5))
@@ -45,31 +50,29 @@ Handles = {}
 systrayHndle = 0
 
 status = natlinkstatus.NatlinkStatus()
-language = status.getLanguage()
+language = status.language
 FORMATS = {
     # for letters (do nothing):
-    'no spacing': (natqh.wf_NoSpaceFollowingThisWord | natqh.wf_NoSpacePreceedingThisWord |
-                   natqh.wf_TurnOffSpacingBetweenWords |
-                      natqh.wf_DoNotApplyFormattingToThisWord
+    'no spacing': (unimacroutils.wf_NoSpaceFollowingThisWord | unimacroutils.wf_NoSpacePreceedingThisWord |
+                   unimacroutils.wf_TurnOffSpacingBetweenWords |
+                      unimacroutils.wf_DoNotApplyFormattingToThisWord
           ),
     # normal words:
-    'normal words': ( natqh.wf_RestoreNormalCapitalization |
-            natqh.wf_RestoreNormalSpacing
+    'normal words': ( unimacroutils.wf_RestoreNormalCapitalization |
+            unimacroutils.wf_RestoreNormalSpacing
           ),
     # extra space(do one space):
-    'extra space':  ( natqh.wf_RestoreNormalCapitalization |
-            natqh.wf_RestoreNormalSpacing |
-            natqh.wf_AddAnExtraSpaceFollowingThisWord
+    'extra space':  ( unimacroutils.wf_RestoreNormalCapitalization |
+            unimacroutils.wf_RestoreNormalSpacing |
+            unimacroutils.wf_AddAnExtraSpaceFollowingThisWord
           ), 
     }
 
-version = status.getDNSVersion()
-user = status.getUserName()
-wordsFolder = os.path.split(
-            sys.modules[__name__].__dict__['__file__'])[0] + \
-            '\\' + language  + "_words" + \
-            '\\' + user
-utilsqh.createFolderIfNotExistent(wordsFolder)
+user = status.user
+unimacro_user_dir = status.getUnimacroUserDirectory()
+wordsFolder = f'{unimacro_user_dir}\\{language}_words'
+if not Path(wordsFolder).is_dir():
+    Path(wordsFolder).mkdir()
 files = [os.path.splitext(f)[0] for f in os.listdir(wordsFolder)]
 ## print '_general, files in wordsFolder %s: %s'% (wordsFolder, files)
 
@@ -110,7 +113,7 @@ class ThisGrammar(ancestor):
 
     iniIgnoreGrammarLists = ['modes','count', 'namelist', 'character', 'punctuation']
 
-    language = natqh.getLanguage()        
+    language = unimacroutils.getLanguage()        
 
     try:
         number_rules = natbj.numberGrammar[language] #  including millions
@@ -128,11 +131,6 @@ class ThisGrammar(ancestor):
 <test> exported = test micstate;
 <presscode> exported = (press|address) (<dgndictation>|<dgnletters>);
 <choose> exported = choose {n1-10};
-#test (klik|dubbelklik|shiftklik|controlklik|rechtsklik|foutklik|combinedklik|trippelklik);
-# <test> exported = test clipboard formats;
-# <test> exported = eating <food> <time> [thinking <dgndictation>];
-# <food> = "an orange" | "an apple"; # 
-# <time> = "yesterday" | "today";
 <reload> exported = reload Natlink;
 <info> exported = give (user | window |unimacro| path) (info|information) ;
 <undo> exported = Undo [That] [{count} [times]];
@@ -198,7 +196,7 @@ class ThisGrammar(ancestor):
 
     def gotResultsInit(self,words,fullResults):
         self.fullText = ' '.join(words)
-        self.progName = natqh.getProgName()
+        self.progName = unimacroutils.getProgName()
 
         # variable formatting
         self.gotVariable = ""
@@ -212,7 +210,7 @@ class ThisGrammar(ancestor):
         if words[0] in ['Hier', 'Here']:
             print('Here from _general...')
             natut.buttonClick()
-            natqh.Wait()
+            unimacroutils.Wait()
 
     def gotResults_password(self,words,fullResults):
         """interpret password as dictate
@@ -227,7 +225,7 @@ class ThisGrammar(ancestor):
         """paste part of clipboard, parts are separated by ";"
         """
         n = self.getNumberFromSpoken(words[-1])
-        t = natqh.getClipboard()
+        t = unimacroutils.getClipboard()
         print('(%s) %s'% (type(t), t))
         T = self.partsSplitSpecial(t)
         if n <= len(T):
@@ -241,8 +239,8 @@ class ThisGrammar(ancestor):
         
         Used for pasting multiple addresses in Thunderbird address book
         """
-        n = self.getNumberFromSpoken(words[-1])
-        t = natqh.getClipboard()
+        # n = self.getNumberFromSpoken(words[-1])
+        t = unimacroutils.getClipboard()
         print('(%s) %s'% (type(t), t))
         T = self.partsSplitSpecial(t)
         print('put item by item %s words'% len(T))
@@ -275,14 +273,14 @@ class ThisGrammar(ancestor):
 
     def gotResults_batch(self,words,fullResults):
         
-        files = [f[:-4] for f in os.listdir(wordsFolder)]
-        if files:
-            print('in folder: %s, files: %s'% (wordsFolder, files))
+        _files = [f[:-4] for f in os.listdir(wordsFolder)]
+        if _files:
+            print('in folder: %s, files: %s'% (wordsFolder, _files))
         else:
             print('in folder: %s, no files found'% wordsFolder)
             return
         
-        for f in files:
+        for f in _files:
             F = f + '.txt'
             if f == 'deleted words':
                 print('delete words!')
@@ -291,7 +289,7 @@ class ThisGrammar(ancestor):
                     if w.find('\\\\') > 0:
                         w, p = w.split('\\\\')
                     print(f, ', word to delete :', w)
-                    natqh.deleteWordIfNecessary(w)
+                    unimacroutils.deleteWordIfNecessary(w)
                 continue
 
             if f in FORMATS:
@@ -308,11 +306,11 @@ class ThisGrammar(ancestor):
                 if w.find('\\\\') > 0:
                     w, p = w.split('\\\\')
                     exec("p = %s"%p)
-##                    pList = natqh.ListOfProperties(p)
+##                    pList = unimacroutils.ListOfProperties(p)
 ##                    for pp in pList:
 ##                        print pp
                 newFormat = p or formatting
-                natqh.addWordIfNecessary(w)
+                unimacroutils.addWordIfNecessary(w)
                 formatOld = natlink.getWordInfo(w)
                 if formatOld == newFormat:
                     print('format already okay: %s (%x)'% (w, newFormat))
@@ -395,7 +393,7 @@ class ThisGrammar(ancestor):
         self.dictate = 1
 
     def gotResults_dgnletters(self,words,fullResults):
-        self.text = ''.join(map(natqh.stripSpokenForm, words))
+        self.text = ''.join(map(unimacroutils.stripSpokenForm, words))
         if self.search:
             # catch some common misrecognitions:
             if self.text == '4':
@@ -441,12 +439,12 @@ class ThisGrammar(ancestor):
                     print('general: character or punctuation not found for spoken form: %s'% w)
         
     # def gotResults_dgnwords(self,words,fullResults):
-    #     #self.text = ' '.join(map(natqh.stripSpokenForm, words))
+    #     #self.text = ' '.join(map(unimacroutils.stripSpokenForm, words))
     #     # try with the improved nsformat function
     #     print(f'got dgnwords: {words}')
 
     def gotResults_dgndictation(self,words,fullResults):
-        #self.text = ' '.join(map(natqh.stripSpokenForm, words))
+        #self.text = ' '.join(map(unimacroutils.stripSpokenForm, words))
         # try with the improved nsformat function 
         if self.gotPassword:
             print('gotPassword, analyse password: %s'% words)
@@ -472,7 +470,7 @@ class ThisGrammar(ancestor):
             keystroke(" " + result)
             return
         if self.gotPresscode:
-            self.text = ' '.join(map(natqh.stripSpokenForm, words))
+            self.text = ' '.join(map(unimacroutils.stripSpokenForm, words))
             print(f'got dgndictation: {words} -> {self.text}')
             self.do_pressfirst(self.text)
             return
@@ -528,16 +526,16 @@ class ThisGrammar(ancestor):
 #
     def gotResults_browsewith(self,words,fullResults):
         """show page in another browser"""
-        m = natlink.getCurrentModule()
-        prog, title, topchild = natqh.getProgInfo(modInfo=m)
-        Iam2x = prog == '2xexplorer'
-        IamExplorer = prog == 'explorer'
+        progInfo = unimacroutils.getProgInfo()
+        prog = progInfo.prog
+        # Iam2x = prog == '2xexplorer'
+        # IamExplorer = prog == 'explorer'
         browser = prog in ['iexplore', 'firefox','opera', 'netscp', 'chrome']
         if not browser:
             self.DisplayMessage ('command only for browsers')
             return
         print('words:', words)
-        natqh.saveClipboard()
+        unimacroutils.saveClipboard()
         action('<<addressfield>>; {extend}{shift+exthome}{ctrl+c};<<addressfieldclose>>')
         askedBrowser = self.getFromInifile(words, 'browsers')
         if askedBrowser == prog:
@@ -549,7 +547,7 @@ class ThisGrammar(ancestor):
         action('WTC')
         action('<<addressfield>>; {ctrl+v}{enter}')
         
-        natqh.restoreClipboard()
+        unimacroutils.restoreClipboard()
  
     def gotResults_documentation(self,words,fullResults):
         print("obsolete")
@@ -558,7 +556,7 @@ class ThisGrammar(ancestor):
 #         uniModules = self.ini.getList('documentation', 'unimacro modules')
 #         otherGrammars = self.ini.getList('documentation', 'other grammars')
 #         otherModules = self.ini.getList('documentation', 'other modules')
-#         base = natqh.getUnimacroUserDirectory()
+#         base = unimacroutils.getUnimacroUserDirectory()
 #         docPath = os.path.join(base, 'doc')
 #         pickleFile = os.path.join(docPath, '@unimacro.pickle')
 #         try:
@@ -666,12 +664,12 @@ class ThisGrammar(ancestor):
     def gotResults_stopwatch(self,words,fullResults):
         """ stopwatch"""
         if self.hasCommon(words, 'start'):
-        	  self.startTime = time.time()
+            self.startTime = time.time()
         else:
-        	  t = time.time()
-        	  elapsed = t - self.startTime
-        	  action('MSG %.2f seconds'% elapsed)
-        	  self.startTime = t
+            t = time.time()
+            elapsed = t - self.startTime
+            action(f'MSG {elapsed:.2f} seconds')
+            self.startTime = t
 
 
 #  sstarting message
@@ -699,7 +697,7 @@ class ThisGrammar(ancestor):
         
     def gotResults_test(self,words,fullResults):
 
-        micstate = natlink.getMicState()
+        # micstate = natlink.getMicState()
         for ms in ('off', 'on'):
             print("switching %s mic"% ms)
             natlink.setMicState(ms)
@@ -711,91 +709,6 @@ class ThisGrammar(ancestor):
                 continue
             print("conflicting mic states, now: %s, expected: %s"% (newMs, ms))
 
-
-        # ## test clipboard formats
-        # f = natlinkclipboard.Clipboard.get_clipboard_formats()
-        # print('formats: %s'% f)
-        # 
-        # 
-        # # natlink.recognitionMimic(["list", "windows", "for", "Windows", "Explorer"])
-        # return
-        # 
-        # # test klik with variations:
-        # # test (klik|dubbelklik|shiftklik|controlklik)
-        # if words[-1] == 'klik':
-        #     print(words, 'single click')
-        #     natut.buttonClick()
-        # elif words[-1] == 'dubbelklik':
-        #     print(words, 'double click')
-        #     natut.buttonClick(1,2)
-        # elif words[-1] == 'trippelklik':
-        #     print(words, 'triple click')
-        #     natut.buttonClick(1,3)
-        # elif words[-1] == 'shiftklik':
-        #     print(words, 'shift click')
-        #     natut.buttonClick(1,1,"shift")
-        # elif words[-1] == 'controlklik':
-        #     print(words, 'control click')
-        #     natut.buttonClick(1,1,"ctrl")
-        # elif words[-1] == 'rechtsklik':
-        #     print(words, 'right click')
-        #     natut.buttonClick(2,1)
-        # elif words[-1] == 'combinedklik':
-        #     print(words, 'combined click')
-        #     natut.buttonClick(1,1,"shift+ctrl")
-        #     # natut.buttonClick(1,1,["shift", "ctrl"])
-        # elif words[-1] == 'foutklik':
-        #     print(words, 'fout click')
-        #     natut.buttonClick("long")
-        # else:
-        #     print(words, "test klik no valid last word:", words[-1])
-        # 
-
-        #action('SCLIP hallo, dit is een, test')
-        #if os.path.isfile(soundFile):
-        #    natlink.execScript('playSound "%s"'% soundFile)test
-        #else:
-        #    print 'no valid file: %s'% soundFile
-        # wavFile = r'D:\natlink\unimacro\hallo.wav'
-        # if not os.path.isfile(wavFile):
-        #     print 'not a file: %s'% wavFile
-        #     return
-        # 
-        # result = natlink.inputFromFile(wavFile, 1)
-        # print 'result: %s'% result
-        # 
-        ## delete to end:
-        #iconDir = r'D:\natlink\unimacro\icons'
-        #for name in ['repeat', 'repeat2', 'waiting', 'waiting2']:
-        #    iconPath = os.path.join(iconDir, name+'.ico')
-        #    print 'iconPath', iconPath
-        #    natlink.setTrayIcon(iconPath)
-        #    time.sleep(0.5)
-        #
-        #natlink.setTrayIcon()
-
-        #allUsers = natlink.getAllUsers()
-        #print 'allUsers: %s'% allUsers
-
-        ## try displayText:#
-        #for i in range(10):
-        #    natlink.displayText('test %s\n'% i, i)
-        #reload(actions)
-        #print 'calling script'
-        #actions.doAction("AHK showmessageswindow.ahk")
-        ##t = 'xyz'
-        #keydown = natut.wm_keydown  # or wm_syskeydown
-        #keyup = natut.wm_keyup      # or wm_syskeyup
-        #
-        #ctrl_down = (keydown, natut.vk_control, 1)
-        #ctrl_up = (keyup, natut.vk_control, 1)
-        #v_key = ord('V')
-        #v_down = (keydown, v_key, 1)
-        #v_up = (keyup, v_key, 1)
-        #          
-        #natlink.playEvents([ctrl_down, v_down, v_up, ctrl_up])
-        #natut.playString("{ctrl}{ctrl}{ctrl}{ctrl}{ctrl}{ctrl}{ctrl}" + t, 0x200)natlink
-
     def getPrevNext(self, n=1):
         """return character to the left and to the right of the cursor
         assume no selection active.
@@ -805,9 +718,9 @@ class ThisGrammar(ancestor):
         now try in other applications
         """
         playString = natut.playString
-        prog = natqh.getProgInfo()[0]
+        prog = unimacroutils.getProgInfo()[0]
         t0 = time.time()
-        natqh.clearClipboard()
+        unimacroutils.clearClipboard()
         t1 = time.time()
         playString("{left %s}"% n)
         t2 = time.time()
@@ -817,28 +730,27 @@ class ThisGrammar(ancestor):
         t4 = time.time()
         playString("{left %s}"% n)
         t5 = time.time()
-        result = natqh.getClipboard()
+        result = unimacroutils.getClipboard()
         t6 = time.time()
         print('timing getPrevNext program: %s\nclear clipboard: %.4f, left: %.4f, shiftright2: %.4f, copy: %.4f, left: %.4f, getcl: %.4f'% (
             prog, t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5))
         if len(result) == 2:
             return result[0], result[1]
-        elif result == '\n':
+        if result == '\n':
             print('getPrevNext, assume at end of file...')
             # assume at end of file, could also be begin of file, but too rare too handle
             playString("{right}")
             return result, result
-        else:
-            print('getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result)))
-            return "", result
+        print('getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result)))
+        return "", result
 
 ##        
     def gotResults_reload(self,words,fullResults):
         print("reloading natlink....")
-        natqh.switchToWindowWithTitle("Messages from Python Macros")
-        natqh.Wait()
+        unimacroutils.switchToWindowWithTitle("Messages from Python Macros")
+        unimacroutils.Wait()
         natlink.setMicState("off")
-        natqh.Wait()
+        unimacroutils.Wait()
         print("do it yourself...")
     
    # deze regel print de naam van de huidige module in het debug-venster
@@ -852,9 +764,9 @@ class ThisGrammar(ancestor):
         if self.hasCommon(words,'window'):
             m = natlink.getCurrentModule()
             hwnd = m[2]
-            p = natqh.getProgInfo(m)
+            p = unimacroutils.getProgInfo(m)
             topchild = p[2] == 'top'
-            T.append('---from natqh.getProgInfo:')
+            T.append('---from unimacroutils.getProgInfo:')
             T.append('0 prog: %s'% p[0])
             T.append('1 title: %s'% p[1])
             T.append('2 topchild: %s'% p[2])
@@ -884,50 +796,29 @@ class ThisGrammar(ancestor):
 
         elif self.hasCommon(words,'user'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
-            T.append('user:\t\t%s'% status.getUserName())
-            T.append('userLanguage:\t%s'% status.getUserLanguage())
-            T.append('language:\t%s'% self.language)
-            bm = status.getBaseModel()
-            bt = status.getBaseTopic()
-            ut = status.getUserTopic()
-            version = status.getDNSVersion()
-            if version >= 15:
-                T.append('UserTopic (DPI15):\t%s'% ut)
-            if natqh.getDNSVersion() >= 15:
-                T.append('BaseTopic (pre 15):\t%s'% bt)
-            else:
-                T.append('BaseTopic (or UserTopic):\t%s'% ut)
-            T.append('BaseModel:\t%s'% bm)
+            T.append('user:\t\t%s'% status.user)
+            T.append('userLanguage:\t%s'% status.language)
             # T.append('see messages window for trainuser info')
             extra = []
-            # extra.append(r'cd d:\natlink\miscscripts   (or different folder)')
-            # extra.append(r'python trainuser.py d:\natlink\recordings\recordingcode "user name" "%s" "%s"'%\
-            #              (bm, bt))
-            # extra.append('change folders, recording code and user name of course')
             
         elif self.hasCommon(words,'unimacro'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
             version = status.getDNSVersion()
-            T.append('DNSVersion:\t\t%s  (%s)'% (version, type(version)))
+            T.append('DNSVersion:\t\t%s'% version)
             wVersion = status.getWindowsVersion()
-            T.append('WindowsVersion:\t\t%s (%s)'% (wVersion, type(wVersion)))
+            T.append('WindowsVersion:\t\t%s'% wVersion)
             T.append('UnimacroDirectory:\t%s'% status.getUnimacroDirectory())
             T.append('UnimacroUserDirectory:\t%s'% status.getUnimacroUserDirectory())
             T.append('UnimacroGrammarsDirectory:\t%s'% status.getUnimacroGrammarsDirectory())
-            T.append('DNSuserDirectory:\t%s'% natqh.getDNSuserDirectory())
         elif self.hasCommon(words,'path'):
-        	  T.append('the python path:')
-        	  T.append(pprint.pformat(sys.path))
+            T.append('the python path:')
+            T.append(pprint.pformat(sys.path))
         elif self.hasCommon(words, "class"):
             T.append()
         else:
             T.append('no valid keyword found')
 
-        try:
-            s = '\n'.join(T)
-        except UnicodeDecodeError:
-            TT = [utilsqh.convertToBinary(t) for t in T]
-            s = '\n'.join(TT)
+        s = '\n'.join(T)
             
         actions.Message(s)
         print(s)
@@ -936,7 +827,7 @@ class ThisGrammar(ancestor):
             print(e)
 
     def gotResults_variable(self,words,fullResults):
-        vartrick = self.getFromInifile(words[0], 'formatvariable', '');
+        vartrick = self.getFromInifile(words[0], 'formatvariable', '')
         print('vartrick: %s'% vartrick)
         if vartrick:
             self.gotVariable = vartrick
@@ -951,11 +842,11 @@ class ThisGrammar(ancestor):
         keystroke('{Shift+Ctrl+Left %s}' % c)
         keystroke('{ctrl+x}')
         print('here comes the copy paste trick %s words'% c)
-        natqh.Wait(0.5)
+        unimacroutils.Wait(0.5)
         t = natlink.getClipboard()
         tList = t.split()
         print('tList: %s'% tList)
-        natqh.Wait(0.5)
+        unimacroutils.Wait(0.5)
         funcName = 'format_%s'% vartrick
         # print 'funcName: %s'% funcNameyour 
         try:
@@ -969,34 +860,6 @@ class ThisGrammar(ancestor):
 #
         keystroke(result)
         return
-
-        # # put spaces if they were collected on the clipboard:
-        # while t and t[0] == " ":
-        #     keystroke(" ")
-        # t = t.strip()
-        # if not t:
-        #     print 'no variable to compress!'
-        #     return
-        # # split words into a list:
-        # w = t.split()
-        # if cmdVariable or cmdMethod:
-        #     # uppercase each command word:
-        #     w = map(self.capit, w)
-        # 
-        # T = ''.join(w)
-        # if cmdVariable:
-        #     T = T[0].lower() + T[1:]
-        # # add words to vocabulary!
-        # if natqh.getDNSVersion() >= 11:
-        #     backslashes = '\\\\'
-        # else:
-        #     backslashes = '\\'
-        # if len(w) > 1:
-        #     natqh.addWordIfNecessary(T+backslashes+t)
-        # else:
-        #     natqh.addWordIfNecessary(T)
-        #     
-        # keystroke(T)
 
 
     def capit(self, s):
@@ -1014,7 +877,7 @@ class ThisGrammar(ancestor):
         else:
             count = 1
         #print 'count: %s'% count
-        for i in range(count):
+        for _ in range(count):
             action('<<undo>>')
 
     def gotResults_redo(self,words,fullResults):
@@ -1024,7 +887,7 @@ class ThisGrammar(ancestor):
         else:
             count = 1
         #print 'count: %s'% count
-        for i in range(count):
+        for _ in range(count):
             action('<<redo>>')
 
     def gotResults_comment(self,words,fullResults):
@@ -1035,13 +898,14 @@ class ThisGrammar(ancestor):
             ts = time.strftime("%d%m%y_", time.localtime(time.time()))
 
         m = natlink.getCurrentModule()
-        if natqh.matchModule('pythonwin', modInfo=m):
+        if unimacroutils.matchModule('pythonwin', modInfo=m):
             com = "#" + name + ts
-        elif natqh.matchModule('textpad', 'html', modInfo=m):
+        elif unimacroutils.matchModule('textpad', 'html', modInfo=m):
             com = "<!--" + name + ts + "-->"
-        elif natqh.matchModule(m,'textpad', '.c', modInfo=m):
+        elif unimacroutils.matchModule(m,'textpad', '.c'):
             com = "$$$$" + name + ts + "$$$$"
-        elif natqh.matchModule(m,'textpad', '.py', modInfo=m):
+        #TODO QH figure this out (parameters)
+        elif unimacroutils.matchModule(m,'textpad', '.py', modInfo=m):
             com = "#" + name + ts
         else:
             com = name + ts
@@ -1087,34 +951,31 @@ class ThisGrammar(ancestor):
     def gotResults_namephrase(self,words,fullResults):
         # list of words that can be combined in a double christian name
         #  eg Jan Jaap or Jan-Marie 
-        voornamenList = ['Jan', 'Jaap', 'Peter', 'Louise', 'Anne'
-                         ]
+        # voornamenList = ['Jan', 'Jaap', 'Peter', 'Louise', 'Anne']
         modInfo = natlink.getCurrentModule()
         action("CLIPSAVE")
         keystroke("{Ctrl+c}")
-
+        time.sleep(0.1)
         # do contents of clipboard:
         t = natlink.getClipboard().strip()
         if not t:
             modInfo = natlink.getCurrentModule()
-            if natqh.matchModule('natspeak', 'spell', modInfo):
+            if unimacroutils.matchModule('natspeak', 'spell', modInfo):
                 keystroke("{ExtHome}{Shift+ExtEnd}{Ctrl+x}")
-                natqh.Wait(0.5)
+                unimacroutils.Wait(0.5)
                 t = natlink.getClipboard().strip()
                 if not t:
                     action("CLIPRESTORE")
                     return
             else:
                 if self.language == 'nld':
-                    com = "Selecteer dat"
+                    com = "selecteer dat"
                 else:
-                    com  = "Select That"
-                if natqh.getDNSVersion() >= 7:
-                    com = com.lower()
+                    com  = "select that"
                 action("HW %s"%com)
-                natqh.Wait(0.5)
+                unimacroutils.Wait(0.5)
                 keystroke("{Ctrl+c}")
-                
+                time.sleep(0.1)
                 t = natlink.getClipboard().strip()
                 if not t:                    
                     self.DisplayMessage("select a text first")
@@ -1123,13 +984,14 @@ class ThisGrammar(ancestor):
         if self.hasCommon(words, ['naam', 'Name']):
             result = namelist.namelistUnimacro(t, ini=self.ini)
             print('result of namelistUnimacro function: %s'% result)
+            r = '' # in case result is empty
             for r in result:
-                print('adding part: %s'% r)
-                natqh.addWordIfNecessary(t)
+                print(f'adding part: {r}')
+                unimacroutils.addWordIfNecessary(t)
             keystroke(r)
         else: # zonder naam in words, a normal phrase:
             print('adding phrase %s'% t)
-            natqh.addWordIfNecessary(t)
+            unimacroutils.addWordIfNecessary(t)
             keystroke(t)
         action("CLIPRESTORE")
 
@@ -1147,13 +1009,11 @@ class ThisGrammar(ancestor):
             t = natlink.getClipboard().strip()
             if not t:
                 if self.language == 'nld':
-                    com = "Selecteer dat"
+                    com = "selecteer dat"
                 else:
-                    com  = "Select That"
-                if natqh.getDNSVersion() >= 7:
-                    com = com.lower()
+                    com  = "select that"
                 action("HW %s"%com)
-                natqh.Wait(0.5)
+                unimacroutils.Wait(0.5)
                 keystroke("{Ctrl+c}")
                 t = natlink.getClipboard().strip()
             if not t:                    
@@ -1190,12 +1050,12 @@ class ThisGrammar(ancestor):
         action("CLIPRESTORE")
         # 
     def gotResults_openuser(self,words,fullResults):
-        user = self.getFromInifile(words[-1], 'users')
-        print('user: %s'% user)
+        User = self.getFromInifile(words[-1], 'users')
+        print('user: %s'% User)
         try:
-            natlink.openUser(user)
+            natlink.openUser(User)
         except natlink.UnknownName:
-            print('cannot open user "%s", unknown name'% user)
+            print(f'cannot open user "{User}", unknown name')
             
     def gotResults(self,words,fullResults):
         if self.highlight:
@@ -1222,7 +1082,7 @@ class ThisGrammar(ancestor):
             #return
 
         if self.search:
-            progInfo = natqh.getProgInfo()
+            progInfo = unimacroutils.getProgInfo()
 
             # make provisions for searchwords (function (def), class (class) etc)
             if self.specialSearchWord:
@@ -1234,24 +1094,24 @@ class ThisGrammar(ancestor):
             if self.search == 'forward':
                 # forward
                 self.direc = 'down'
-                res = self.searchOn(count, progInfo=progInfo)
+                self.searchOn(count, progInfo=progInfo)
                 return
-            elif self.search == 'new':
+            if self.search == 'new':
                 # new, just start the search dialog:
                 self.searchMarkSpot(progInfo=progInfo)
                 action('<<startsearch>>', progInfo=progInfo)
                 return
-            elif self.search == 'back':
+            if self.search == 'back':
                 # back:
                 self.direc = 'up'
-                res = self.searchOn(count, progInfo=progInfo)
+                self.searchOn(count, progInfo=progInfo)
                 return
-            elif self.search ==  'go back':
+            if self.search ==  'go back':
             # go back, return to origin
                 print("search go back")
                 self.searchGoBack(progInfo=progInfo)
                 return
-            elif self.search in ('for', 'before','after'):
+            if self.search in ('for', 'before','after'):
                 # new search with text
                 self.direc = 'down'
                 print('new leap to text: %s'% self.text)
@@ -1268,21 +1128,22 @@ class ThisGrammar(ancestor):
             if res == -2:
             # search failed, did cancel mode
                 return 
-            natqh.visibleWait()
+            unimacroutils.visibleWait()
             print('calling stop search')
             self.stopSearch(progInfo=progInfo)
+            
 
     def searchOn(self, count, progInfo=None):
         """search up or down possibly more times"""
         if progInfo is None:
-           progInfo = natqh.getProgInfo(modInfo)
+            progInfo = unimacroutils.getProgInfo()
         sectionList = actions.getSectionList(progInfo=progInfo)
         if self.direc == 'back':
             searchGoOn = actions.getMetaAction('searchgoback', sectionList=sectionList, progInfo=progInfo)
         else:
             searchGoOn = actions.getMetaAction('searchgoforward', sectionList=sectionList, progInfo=progInfo)
             
-        for i in range(count):
+        for _ in range(count):
             if searchGoOn:
                 res = action(searchGoOn)
             else:
@@ -1291,7 +1152,7 @@ class ThisGrammar(ancestor):
             if res == -2:
                 # search failed, did cancel mode
                 return 
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
         if not searchGoOn:
             self.stopSearch(progInfo)
 
@@ -1306,7 +1167,7 @@ class ThisGrammar(ancestor):
 
     def Message(self,t):
         tt = t + "  (command: " + self.fullText + ")"
-        natqh.Message(tt,self.title)
+        unimacroutils.Message(tt,self.title)
         
     def do_pressfirst(self, text):
         """first character "hard", rest normal
@@ -1339,10 +1200,10 @@ def getIdleTitles():
     return TitlesHandles
 
 def getIdleWindowsWithText(hwnd, th):
-    TH, Classes = th
+    TH, classes = th
 ##    if wTitle.find('d:') == 0:
 ##        print 'class:', win32gui.GetClassName(hwnd)
-    if win32gui.GetClassName(hwnd) in Classes:
+    if win32gui.GetClassName(hwnd) in classes:
         wTitle = win32gui.GetWindowText(hwnd).strip().lower()
         TH.append((wTitle, hwnd))
 
@@ -1355,6 +1216,7 @@ else:
     thisGrammar = None
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None

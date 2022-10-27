@@ -16,7 +16,7 @@ from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
 import natlink
-from natlink.natlinkutils import *
+from natlinkcore.natlinkutils import *
 from natlinkutilsbj import SetMic
 import listdialogs
 import D_
@@ -25,7 +25,7 @@ RequestFileName=listdialogs.RequestFileName
 ResultFileName=listdialogs.ResultFileName
 
 # hopelijk: QH
-from natlinkutilsqh import getUnimacroDirectory
+from dtactions.unimacro.unimacroutils import getUnimacroDirectory
 baseDirectory = getUnimacroDirectory()
 
 
@@ -110,7 +110,8 @@ class SelectGrammar(GrammarBase):
                 chars=chars+'\\'                
             else:
                 chars=chars+c
-        natlinkutils.playString(chars)
+        
+        sendkeys(chars)
         if self.dlg:
             self.dlg.setCurrentAtTop()
 

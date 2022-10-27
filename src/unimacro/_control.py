@@ -9,7 +9,7 @@
 # _control.py, adapted version of_gramutils.py
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003
-#pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107
+#pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107, C0209, E0601, W0602
 #pylint:disable=E1101
 
 import os
@@ -38,37 +38,9 @@ except ImportError:
 
 tracecount = list(map(str, list(range(1, 10))))
 
-#Words that are 'filtered out' (actually: removed) in Filter Mode
-#See below for the different modes
-def ReadFilteredWords(Filename):
-    #reads all words from the Filtered words file    
-    #does not really belong here
-    try:
-        File=open(Filename,'r')
-    except:
-        return []
-    Words = File.readlines()
-    File.close()
-    for w in Words:
-        Words[Words.index(w)]=w[:-1]
-    freq={}        
-    for w in Words:
-        if w in freq:
-            freq[w]=freq[w]+1
-        else:
-            freq[w]=1
-    Words=list(freq.keys())
-    return Words
-
-FilteredWords = ['in','the','minimum','to','and','end','a','of','that','it',
-                 'if', 'its', 'is', 'this', 'booth', 'on', 'with',"'s"]
 #(taken from natlinkmain, to prevent import:)
 baseDirectory = status.getUnimacroUserDirectory()
 unimacroDirectory = status.getUnimacroDirectory()
-
-FilterFileName=baseDirectory+'\\filtered.txt'
-FilteredWords=natbj.Union(FilteredWords, ReadFilteredWords(FilterFileName))
-
 
 #Constants for the UtilGrammar
 Normal=0
@@ -167,6 +139,7 @@ class UtilGrammar(ancestor):
 ##        if unimacroutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
+        print('---now starting other Unimacro grammars:')
 
     def unload(self):
         natbj.UnRegisterControlObject(self)
@@ -508,43 +481,42 @@ class UtilGrammar(ancestor):
             Start=()
         # fix state at this moment (in case of Active grammars popup)
         self.BrowsePrepare(Start, All, Exclusive)
-        if Active:
+        if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
             activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
-            otherGrammars = natlinkmain.loadedFiles.keys()
+            otherGrammars = [] #  natlinkmain.loadedFiles.keys()
             
-            print(f'loadedGrammars (natbj): {natbj.loadedGrammars}')
-            print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
+            print(f'loadedGrammars (Unimacro): {natbj.loadedGrammars}')
+            # print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
             allGramNames = self.getUnimacroGrammarNames()
             self.setList('gramnames', allGramNames)
             print(f'for being sure, set all active grammars in list "gramnames": "{allGramNames}"')
-
-            for g in natbj.loadedGrammars.items():
-                gram = natbj.loadedGrammars[g]
+            
+            for grammar_name, gram in natbj.loadedGrammars.items():
+                # gram = natbj.loadedGrammars[g]
                 result = getattr(gram, 'isActive')
-                modName = gram.__module__
-                #print 'gram: %s, modName: %s, result: %s'% (gram, modName, result)
+                mod_name = gram.__module__
+                print(f'gram: {grammar_name}, module: {mod_name}')
                 if result:
-                    activeGrammars.append(g)
-                    if modName in otherGrammars:
-                        otherGrammars.remove(modName)
+                    activeGrammars.append(grammar_name)
+                    if mod_name in otherGrammars:
+                        otherGrammars.remove(mod_name)
                     else:
-                        print('cannot remove from otherGrammars: %s'% modName)
+                        print(f'cannot remove from otherGrammars: {mod_name}')
                 elif result == 0:
                     maySwitchOn = gram.mayBeSwitchedOn
                     if maySwitchOn:
-                        inactiveGrammars.append(g)
+                        inactiveGrammars.append(grammar_name)
                     else:
-                        switchedOffGrammars.append(g)
-                    #print 'gram: %s, name: %s'% (gram, modName)
-                    if modName in otherGrammars:
-                        otherGrammars.remove(modName)
+                        switchedOffGrammars.append(grammar_name)
+                    if mod_name in otherGrammars:
+                        otherGrammars.remove(mod_name)
                     else:
-                        print('cannot remove from otherGrammars: %s'% modName)
+                        print(f'cannot remove from otherGrammars: {mod_name}')
             if not activeGrammars:
                 msg = 'No Unimacro grammars are active'
             elif activeGrammars == [self.name]:
-                msg = 'No grammars are active (apart from "%s")'% self.name
+                msg = f'No grammars are active (apart from "{self.name}")'
             elif inactiveGrammars or switchedOffGrammars:
                 msg = 'Active Unimacro grammars:\n' + ', '.join(activeGrammars)
             else:
@@ -601,7 +573,7 @@ class UtilGrammar(ancestor):
                         return
                 print(f'open for edit file: "{filepath}"')
                 self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
-                unimacroutils.setCheckForGrammarChanges(1)
+                # unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
                 try:
@@ -651,18 +623,15 @@ class UtilGrammar(ancestor):
             actions.Message(t)
 
     def UnimacroControlPostLoad(self):
-        newKeys = natbj.getRegisteredGrammarNames()
-        # print(f'_control, postLoad: newKeys: {newKeys}')
         prevSet = set(self.Lists['gramnames'])
         newSet = set(natbj.getRegisteredGrammarNames())
         if prevSet != newSet:
-            # print(f'setting new grammar names list: {list(newSet)}')
+            print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNames(self):
         """get all the names of active or wrong Unimacro grammar names
         """
-        #pylint:disable=R0201
         wrongNames = set() #set(natlinkmain.wrongFiles.keys())
         loadedNames = set() #set(natlinkmain.loadedFiles.keys())
 
@@ -679,6 +648,7 @@ class UtilGrammar(ancestor):
         
         sync with ...
         """
+        # print('checkUnimacroGrammars!!')
         check_unimacro_grammars.checkUnimacroGrammars()
 
 # class MessageDictGrammar(natlinkutils.DictGramBase):
@@ -703,18 +673,6 @@ class UtilGrammar(ancestor):
 # messageDictGrammar = MessageDictGrammar()
 # messageDictGrammar.initialize()
 # print('messageDictGrammar initialized')
-
-
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-utilGrammar = UtilGrammar()
-if utilGrammar.gramSpec:
-    utilGrammar.initialize()
-    natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
-    utilGrammar.checkUnimacroGrammars() 
-    
-else:
-    print('grammar _control has no specification for this language---------')
-    utilGrammar = None
 
 def unload():
     #pylint:disable=W0603
@@ -766,3 +724,24 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
             return
         # new                 
 
+# standard stuff Joel (adapted for python3, QH, unimacro):
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        utilGrammar = UtilGrammar()
+        utilGrammar.startInifile(modName = '_control')
+        utilGrammar.initialize()
+        Words = ['show', 'all', 'grammars']
+        FR = {}
+        print(f'natbj.loadedGrammars: {natbj.loadedGrammars}')
+        utilGrammar.gotResults_show(Words, FR)
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    utilGrammar = UtilGrammar()
+    utilGrammar.initialize()
+    # set special function as a callback...
+    natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
+    utilGrammar.checkUnimacroGrammars() 
