@@ -132,7 +132,7 @@ class ThisGrammar(ancestor):
 <presscode> exported = (press|address) (<dgndictation>|<dgnletters>);
 <choose> exported = choose {n1-10};
 <reload> exported = reload Natlink;
-<info> exported = give (user | window |unimacro| path) (info|information) ;
+<info> exported = give (user | prog |window |unimacro| path) (info|information) ;
 <undo> exported = Undo [That] [{count} [times]];
 <redo> exported = Redo [That] [{count} [times]];
 <namephrase> exported = Make That [Name] phrase;
@@ -761,38 +761,31 @@ class ThisGrammar(ancestor):
         """
         T = []
         extra = []
-        if self.hasCommon(words,'window'):
+        if self.hasCommon(words,'window') or self.hasCommon(words,'prog'):
             m = natlink.getCurrentModule()
-            hwnd = m[2]
+            hndle = m[2]
             p = unimacroutils.getProgInfo(m)
-            topchild = p[2] == 'top'
+            assert hndle == p.hndle
             T.append('---from unimacroutils.getProgInfo:')
-            T.append('0 prog: %s'% p[0])
-            T.append('1 title: %s'% p[1])
-            T.append('2 topchild: %s'% p[2])
-            T.append('3 classname: %s'% p[3])
+            # (progpath, prog, title, toporchild, classname, hndle)
+            if self.hasCommon(words, 'prog'):
+                T.append(f'progInfo = {p}')
+            T.append(f'  .progpath: "{p.progpath}"\n')
+            T.append(f'  .prog:\t{p.prog}')
+            T.append(f'  .title: "{p.title}"\n')
+            T.append(f'  .toporchild\t{p.toporchild}')
+            T.append(f'  .classname\t{p.classname}')
+            T.append(f'  .hndle:\t{hndle}')
             childClass = "#32770"
             overruleIsTop = self.getTopOrChild(m, childClass=childClass)
-                
-            T.append('4 hndle: %s'% p[4])
 
-            if topchild != overruleIsTop:
+            if p.toporchild != overruleIsTop:
                 T.append('')
                 if overruleIsTop:
                     T.append("**** treat as TOP window although it is a child window")
                 else:
                     T.append("**** treat as CHILD window although it is a top window")
 
-
-
-            T.append('')
-            T.append('---from getCurrentModule:')
-            T.append('0 program path: %s'% m[0])
-            T.append('1 window title: %s'% m[1])
-            T.append('2 window handle: %s'% m[2])
-            T.append('')
-            T.append('---from GetClassName:')
-            T.append('class name: %s'% win32gui.GetClassName(hwnd))
 
         elif self.hasCommon(words,'user'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
