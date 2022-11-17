@@ -11,7 +11,7 @@ thisDir = Path(__file__).parent
 def mock_unimacro_user_dir(tmp_dir,_self):
 
     mock_folder= tmp_dir / "mock_unimacro_userdir"
-    print(f"Mock unimacro folder {mock_folder} in {__FILE__}")   #just for understanding remove eventually
+    print(f"Mock unimacro folder {mock_folder} in {__file__}")   #just for understanding remove eventually
     if not mock_folder.is_dir():
         mock_folder.mkdir()
     return str(mock_folder)
