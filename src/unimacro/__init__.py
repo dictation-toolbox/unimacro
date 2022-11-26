@@ -23,6 +23,7 @@ sitePackagesDir = get_site_packages_dir(__file__)
 import os
 import sys
 
+
 __version__ = '4.1.4'   
  
 def get_site_packages_dir(fileOfModule):
