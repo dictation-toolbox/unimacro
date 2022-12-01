@@ -3038,27 +3038,26 @@ noot mies
             
     def getTopOrChild(self, progInfo=None, childClass=None):
         """return true if top window or child behaves like top
-        
         and False if child window or top behaves like child
         
-        If class == #32770, always return False, child, except when rule in actions.ini says different...
+        complicated function, which depends on the unimacroactions.ini settings. 
+
+        As a shortcut: childClass can be set to "#32770" (file open etc dialogs),
+        and then always return False, child, except even when rule in actions.ini says different...
         
         """
         #TODO QH this routine sucks
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
-
-        # ProgInfo = collections.namedtuple('ProgInfo', 'progpath prog title toporchild classname hndle'.split(' '))
-
-        progInfo = unimacroutils.getProgInfo()
-
+        
+        assert len(progInfo) == 6
         
         istop = (progInfo.toporchild == 'top')
         if istop:
-            if actions.topWindowBehavesLikeChild( modInfo ):
+            if actions.topWindowBehavesLikeChild( progInfo ):
                 istop = False
             elif childClass and progInfo.classname == childClass:
-                if actions.childWindowBehavesLikeTop( modInfo ):
+                if actions.childWindowBehavesLikeTop( progInfo ):
                     if self.debug:
                         print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
@@ -3068,7 +3067,7 @@ noot mies
                     istop = False
                     # IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         else:
-            if actions.childWindowBehavesLikeTop( modInfo ):
+            if actions.childWindowBehavesLikeTop( progInfo ):
                 if self.debug:
                     print('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True

@@ -22,7 +22,7 @@
 #
 # _number.py 
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-#  August 2003
+#  August 2003/November 2022 (python3)
 # 
 """smart and reliable number dictation
 
@@ -45,18 +45,22 @@ as "30", "3".
 QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
-from unimacro.actions import getMetaAction
+#pylint:disable=C0209, R0904, R0912, R0915
 
-from natlinkcore import natlinkutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import getMetaAction
 from dtactions.unimacro import unimacroutils
+
 import unimacro.natlinkutilsbj as natbj
 
-import iban  # special module for banknumber (European mainly I think)
-import types  
+from unimacro import iban  # special module for banknumber (European mainly I think)
 
 # Note: lists number1to99 and number1to9 and n1-9 and n20-90 etc. are taken from function getNumberList in natlinkutilsbj
+
+class NumberException(Exception):
+    pass
+
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -91,9 +95,10 @@ class ThisGrammar(ancestor):
     except KeyError:
         print('take number grammar from "enx"')
         integer999 = natbj.numberGrammarTill999['enx']
+
     ##  345567;345567
     ## these are special rules for making numbers of specific length.
-    ## when they appear to be usefull, I will try to make them available in other languages
+    ## when they appear to be useful, I will try to make them available in other languages
     ## and other cases too:
         
     amsterdamZuidRule = """<numberaztotal> exported =  <numberazone> | <numberaztwo> | <numberazone><numberaztwo>;
@@ -300,7 +305,6 @@ class ThisGrammar(ancestor):
         # because more numbers can be collected, the previous ones be collected first
         # if you expect only one number, this function can be skipped (but it is safe to call):
         self.collectNumber()
-        result = self.hasCommon(words, 'number')
         if self.hasCommon(words, 'number'):
             if self.number:
                 # flush previous number
@@ -321,7 +325,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, 'through'):
             self.waitForNumber('through')
         else:
-            raise NumberError('invalid user input in grammar %s: %s'%(__name__, words))
+            raise NumberException('invalid user input in grammar %s: %s'%(__name__, words))
 
     def gotResults_spacingnumber(self, words, fullResults):
         self.collectNumber()
@@ -347,7 +351,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, 'through'):
             self.waitForNumber('through')
         else:
-            raise NumberError('invalid words in pagenumber rule in grammar %s: %s'%(__name__, words))
+            raise NumberException('invalid words in pagenumber rule in grammar %s: %s'%(__name__, words))
 
     def gotResults_filenamelastpage(self, words, fullResults):
         # additional command, compose filename with the last called page number(s).
@@ -486,7 +490,7 @@ class ThisGrammar(ancestor):
             action("<<pagefinish>>")
             return  # page command
             
-        elif self.pair:
+        if self.pair:
             self.pair = self.doMinus('pair', 'minus')
             print("(%s, %s) "% (self.number, self.pair))
             
@@ -516,7 +520,7 @@ class ThisGrammar(ancestor):
         elif self.ibanCheck and self.ibanHeader:
             try:
                 # print 'ibanheader: %s, number: %s'% (self.ibanHeader, self.number)
-                result = Iban = iban.create_iban(self.ibanHeader[:2], self.ibanHeader[2:], self.number)
+                result = iban.create_iban(self.ibanHeader[:2], self.ibanHeader[2:], self.number)
             except iban.IBANError as err:
                 print('invalid iban %s, %s (%s)'% (self.ibanHeader, self.number, err))
                 return
@@ -577,5 +581,6 @@ else:
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None 

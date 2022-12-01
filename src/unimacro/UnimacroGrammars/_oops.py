@@ -50,36 +50,40 @@ turned on.
  
 
 """
+#pylint:disable=R0912, R0914, R0915
+#pylint:disable=E1101
 
+
+import time
+import os
+from pathlib import Path
 
 import natlink
-import win32gui
+from natlinkcore import natlinkstatus
 from dtactions.unimacro import utilsqh
-from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-import time
-import copy
-import sys
-import os
-import operator
 logHour = -1
 logFile = ''
 
-language = unimacroutils.getLanguage()
-version = unimacroutils.getDNSVersion()
-UUDirectory = unimacroutils.getUnimacroUserDirectory()
+status = natlinkstatus.NatlinkStatus()
+
+language = status.language
+version = status.getDNSVersion()
+UDDirectory = status.getUnimacroDataDirectory()
 # print 'language: %s (%s)'% (language, type(language))
 # print 'version: %s (%s)'% (version, type(version))
 # print 'getUnimacroUserDirectory: %s (%s)'% (UUDirectory, type(UUDirectory))
-logFolder = os.path.join(UUDirectory, language + "_log", unimacroutils.getUser())
-print('_oops, logfolder: %s'% logFolder)
+logFolder = Path(UDDirectory)/f'{status.language}_log'/status.user
+print(f'_oops, logfolder: {logFolder}')
  
 def getLogFileName():
     """get name with date and time, record hour in logHour"""
     global logHour, logFile
-    utilsqh.createFolderIfNotExistent(logFolder)
+    if not logFolder.exists():
+        print(f'Want to create log folder: {logFolder}')
+    if not logFolder.exists():
+        logFolder.mkdir(parents=True)
     lTime = time.localtime()
     logFile = time.strftime("%Y-%m-%d %H%M", lTime)  + '.txt'
     logHour = lTime[3]
@@ -130,10 +134,7 @@ if language == 'nld':
         3: 'herstel + spatie (als "spatie")',
         4: 'herstel + geen spatie ervoor (als ":")'
     }
-    if unimacroutils.getDNSVersion() >= 7:
-        ScratchThatCommand = ['schrap', 'dat']
-    else:
-        ScratchThatCommand = ['Schrap', 'dat']
+    ScratchThatCommand = ['schrap', 'dat']
     WordCommand = 'commando'
     WordDictate = 'dictaat'
 else:
@@ -143,10 +144,7 @@ else:
         3: 'restore and add a space (like "space-bar")',
         4: 'restore, but no space before (like ":")'
     }
-    if unimacroutils.getDNSVersion() >= 7:
-        ScratchThatCommand = ['scratch', 'that']
-    else:
-        ScratchThatCommand = ['Scratch', 'That']
+    ScratchThatCommand = ['scratch', 'that']
     WordCommand = 'commando'
     WordDictate = 'dictate'
 
@@ -181,7 +179,7 @@ class ThisGrammar(ancestor):
         self.prevModinfo = None
         self.switchOnOrOff(activateRule='oops')
         if self.logging:
-            print('_oops, logging of utterances to dir:\n\t%s'% logFolder)
+            print(f'_oops, logging of utterances to dir:\n\t{logFolder}')
         else:
             print('_oops, NO logging of utterances')
 
@@ -204,10 +202,13 @@ class ThisGrammar(ancestor):
             if logHour != lTime[3]:
                 #print 'get new logfilename'
                 getLogFileName()
-            prog = os.path.split(moduleInfo[0])[1]
+            self.progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
+            prog = self.progInfo.prog
+            hndle = self.progInfo.hndle
+            title = self.progInfo.title
             minutes = time.strftime("%H:%M", time.localtime())
 
-            logToFile('\n%s---%s---%s(%s)'% (minutes, prog, moduleInfo[1], moduleInfo[2]))
+            logToFile(f'\n{minutes}---{prog}---{title}({hndle})')
             self.prevModinfo = moduleInfo
         #else:
         #    print 'no logging or same moduleInfo: %s, %s, %s'% (self.logging, repr(self.prevModinfo), repr(moduleInfo))
@@ -231,7 +232,7 @@ class ThisGrammar(ancestor):
                 try:
                     words = resObj.getWords(0)
                 except (natlink.OutOfRange, IndexError):
-                        words = "<???>"
+                    words = "<???>"
 
                 resCode = -1
                 isDictate = -1
@@ -239,10 +240,12 @@ class ThisGrammar(ancestor):
                 for i in range(10):
                     try:
                         res = resObj.getResults(i)
-                        try:
-                            lenWave = len(resObj.getWave())
-                        except natlink.DataMissing:
-                            lenWave = 0
+                        ##TODO DOUG
+                        # try:
+                        #     lenWave = len(resObj.getWave())
+                        # except natlink.DataMissing:
+                        #     lenWave = 0
+                        lenWave = 0
                         k,rest = int(lenWave/1000), lenWave%1000
                         resCode = res[0][1]
                         resCode = resCode & 0x7fffffff
@@ -256,17 +259,17 @@ class ThisGrammar(ancestor):
                 if isDictate == -1:
                     line = '  <???> '
                 elif isDictate and not resCode:
-                    line = '  %s (only dictate alternatives)'% ' '.join(words)
+                    line = f'  {" ".join(words)} (only dictate alternatives)'
                 elif isDictate:
-                    line = '  %s (dictate, command alternatives)' % ' '.join(words)
+                    line = f'  {" ".join(words)} (dictate, command alternatives)'
                 else:
-                    line = '  %s (command %s)'% (words, resCode)
+                    line = f'  {words} (command {resCode})'
                 if k == -1:
                     logToFile(line+'(nowave)')
                 elif rest <= 500:
-                    logToFile(line+'(%sk+%s)'% (k, rest))
+                    logToFile(line+f'({k}k+{rest})')
                 else:
-                    logToFile(line+'(%sk-%s)'% (k+1, 1000-rest))
+                    logToFile(line+'({k+1}k-{1000-rest})')
                     
             
         if recogType == 'other':
@@ -308,9 +311,9 @@ class ThisGrammar(ancestor):
 ##                if wordInfo:
 ##                    pron = map(lambda x: x[6].join(wordInfo))
                 if resCode:
-                    print("%s:\t[%s]  (%s %s)" % (i+1,  repr(words), WordCommand,resCode))
+                    print(f'{i+1}:\t[{words}]  ({WordCommand} {resCode})')
                 else:
-                    print("%s:\t%s  (%s)" % (i+1, repr(words), WordDictate))
+                    print(f'{i+1}:\t{words}  ({WordDictate})')
                     if i == 0:
                         self.FirstIsDictate = 1
                     if len(words) == 1:
@@ -322,13 +325,13 @@ class ThisGrammar(ancestor):
         else:
             i = 10
         if language == 'nld':
-            print("OK, Annuleren, of Kies 1, ..., Kies %s [middel|sterk]" % i)
+            print(f'OK, Annuleren, of Kies 1, ..., Kies {i} [middel|sterk]')
             if SingleWord:
-                print("of Format #, Verwijder # of Eigenschappen #  (# = 1, ..., %s)" % i)
+                print(f'of Format #, Verwijder # of Eigenschappen #  (# = 1, ..., {i}')
         else:
-            print("OK, Cancel, or Choose 1, ..., Choose %s [Medium|Strong]" % i)
+            print(f'OK, Cancel, or Choose 1, ..., Choose {i} [Medium|Strong]')
             if SingleWord:
-                print("or Format #, Delete # or Properties # (# = 1, ..., %s)" %i)
+                print(f'or Format #, Delete # or Properties # (# = 1, ..., {i})')
 
         self.oopsFlag = 3
         self.activateSet(['inoops'],exclusive=1)
@@ -336,8 +339,8 @@ class ThisGrammar(ancestor):
         unimacroutils.switchToWindowWithTitle("Messages from Python Macros")
 
     def gotResults_inoops(self,words,fullResults):
-        nCorr = choiceWeak
-        choice = 0
+        # nCorr = choiceWeak
+        # choice = 0
         if not self.lastResObj:
             self.cancelMode()
             unimacroutils.returnFromMessagesWindow()
@@ -383,7 +386,7 @@ class ThisGrammar(ancestor):
             newWords = self.lastResObj.getWords(choice-1)
         except natlink.OutOfRange:
             i = choice-1
-            print('_oops, choose %s, no result number %s'% (i,i))
+            print(f'_oops, choose {i}, no result number {i}')
             return
         res = self.lastResObj.getResults(choice-1)
         resCode = res[0][1]
@@ -411,17 +414,17 @@ class ThisGrammar(ancestor):
                     return
                 numChoices = len(fKeys)
                 if language == 'nld':
-                    print('Formatteren van: %s'% self.newWord)
-                    print('Kies Format 1, ..., %i of zeg "Annuleren"' %numChoices)
+                    print(f'Formatteren van: {self.newWord}')
+                    print(f'Kies Format 1, ..., {numChoices} of zeg "Annuleren"')
                 elif language == 'enx':
-                    print('Formating: %s'% self.newWord)
-                    print('Choose Format 1, ..., %i, or say "Cancel"' % numChoices)
+                    print(f'Formating: {self.newWord}')
+                    print(f'Choose Format 1, ..., {numChoices}, or say "Cancel"')
                 else:
                     print('invalid language, skip this')
                     self.cancelMode()
                     return
                 for n in range(numChoices):
-                    print('%s:\t%s'%(n+1, FormatComments[n+1]))
+                    print(f'{n+1}:\t{FormatComments[n+1]}')
                     
                 #  Entered the new exclusive grammar rules, for the right
                 #    format to be chosen
@@ -438,7 +441,7 @@ class ThisGrammar(ancestor):
                 time.sleep(1.5)
             else:
                 natlink.deleteWord(newWords[0])
-                print('deleted: %s' % newWords[0])
+                print(f'deleted: {newWords[0]}')
         elif self.hasCommon(words, ['Properties','Eigenschappen']):
             if resCode:
                 print('no properties on a command!')
@@ -449,7 +452,7 @@ class ThisGrammar(ancestor):
             else:
                 self.newWord = newWords[0]
                 props = natlink.getWordInfo(self.newWord)
-                print('properties of %s: %x' % (self.newWord, props))
+                print(f'properties of {self.newWord}: {props}')
                 p = unimacroutils.ListOfProperties(props)
                 if p:
                     for pp in p:
@@ -457,16 +460,16 @@ class ThisGrammar(ancestor):
                     time.sleep(4.0)
         elif self.hasCommon(words, ['Choose', 'Kies', 'OK']):
             hadChoose = 1
-            print('correcting: %s (%s times)'%(newWords,self.nChoice))
+            print(f'correcting: {newWords} ({self.nChoice})')
             for i in range(self.nChoice):
                 result = self.lastResObj.correction(newWords)
                 if not result:
                     print('correction failed')
                     break
             else:
-                print('corrected %s times'% self.nChoice)
+                print(f'corrected {self.nChoice} times')
         else:
-            print('invalid word in command: %s' % repr(words))
+            print(f'invalid word in command: {words}')
             time.sleep(2.0)
         time.sleep(1.0)
         self.cancelMode()
@@ -475,9 +478,7 @@ class ThisGrammar(ancestor):
         #    dictate word, the last phrase is scratched and replaced by the new
         #    text or the new command.
         if hadChoose and self.FirstIsDictate:
-            print('mimic first: %s'% ScratchThatCommand)
             natlink.recognitionMimic(ScratchThatCommand)
-            print('now mimic: %s'% newWords)
             natlink.recognitionMimic(newWords)
 
     def gotResults_inoops2(self,words,fullResults):
@@ -490,20 +491,18 @@ class ThisGrammar(ancestor):
                 return
             try:
                 fNum = int(words[-1])
-            except ValuerError:
+            except ValueError:
                 fNum = ''
-            # fNum = int(words[-1])
-            if fNum in list(FORMATS.keys()):
-                fstring = FORMATS[fNum]
-            else:
-                print('invalid paramter choosen: %s' % repr(words))
-                fstring = ''
+            
+            fstring = FORMATS.get(fNum, '')
+
             if fstring and self.newWord:
                 oldFormat = natlink.getWordInfo(self.newWord)
                 if fstring == oldFormat:
-                    print('format of %s is already: %x' % (self.newWord, fstring))
+                    print(f'format of {self.newWord} is already: {fstring}')
                 else:
-                    print('formatting word: %s from hex %x to hex: %x'%(self.newWord, oldFormat, fstring))
+                    ##TODO QH
+                    print(f'formatting word: {self.newWord} from hex {oldFormat:x} to hex: {fstring} (cannot format string to hex)'%(self.newWord, oldFormat, fstring))
                     natlink.setWordInfo(self.newWord, fstring)
             self.newWord = ""
         time.sleep(1.0)
@@ -534,11 +533,10 @@ def logToFile(line):
     if not logFile:
         print('_oops, logging: cannot find valid name for logFile')
         return
-    sock = open(logFile, 'a')
-    if not line.endswith('\n'):
-        line += '\n'
-    sock.write(line)
-    sock.close()
+    with open(logFile, 'a', encoding='utf8') as fp:
+        if not line.endswith('\n'):
+            line += '\n'
+        fp.write(line)
 
 def changeCallback(type,args):
     # not active without special version of natlinkmain:
