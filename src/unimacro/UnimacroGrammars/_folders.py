@@ -66,6 +66,7 @@ import win32clipboard
 
 import natlink
 from natlinkcore import readwritefile
+from natlinkcore import natlinktimer
 from dtactions.unimacro import extenvvars
 from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
@@ -335,7 +336,7 @@ class ThisGrammar(ancestor):
                                                 # recent [folders] START or recent [folders] STOP
             intervalSeconds = self.trackFoldersInterval/1000
             print('maintain a list of %s recent folders (Explorer or File Dialog) at every utterance and every %s seconds'% (self.trackFoldersHistory, intervalSeconds))
-            natlink.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # every 5 seconds
+            natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # every 5 seconds
         else:
             self.doTrackFoldersHistory = False
         if self.doTrackFoldersHistory:
@@ -738,7 +739,7 @@ class ThisGrammar(ancestor):
         activeFolder = self.getActiveFolder(hndle, className)
         if not activeFolder:
             return
-        
+        print(f'getting active folder {activeFolder}')
         # activeFolder = os.path.normcase(activeFolder)
         if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
             return
@@ -795,12 +796,12 @@ class ThisGrammar(ancestor):
     def startRecentFolders(self):
         self.doTrackFoldersHistory = True
         self.fillList('recentfolders')
-        natlink.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # should have milliseconds
+        natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # should have milliseconds
         print("track folders history is started, the timer callback is on")
         
     def stopRecentFolders(self):
         self.doTrackFoldersHistory = True
-        natlink.setTimerCallback(self.catchTimerRecentFolders, 0)
+        natlinktimer.setTimerCallback(self.catchTimerRecentFolders, 0)
         self.recentfoldersDict = {}
         self.emptyList('recentfolders')
         print("track folders history is stopped, the timer callback is off")
@@ -2705,7 +2706,7 @@ def unload():
     # print("function unload in _folders.py")
     if thisGrammar:
         # print("unloading folders grammar")
-        natlink.setTimerCallback(None, 0)
+        natlinktimer.setTimerCallback(None, 0)
         # make recentfoldersDict persistf across 
         try:
             thisGrammar.dumpRecentFoldersDict()

@@ -346,7 +346,7 @@ class ThisGrammar(ancestor):
             self.mouseSteps = steps
         elif k in SPEED:
             debugPrint(f'starting with speed: {SPEED[k][s]}')
-            natlinktimer.setTimerCallback(self.onTimer, SPEED[k][s], debug=1)
+            natlinktimer.setTimerCallback(self.onTimer, SPEED[k][s]) ##, debug=1)
         else:
             debugPrint(f'timer starting with unknown speed for state/minorstate: {k}')
             natlinktimer.setTimerCallback(self.onTimer, defaultSpeed)
