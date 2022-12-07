@@ -163,7 +163,7 @@ class ThisGrammar(ancestor):
         self.dialogNumberRange = [] # ditto
         self.catchRemember = ""
         self.activeFolder = None
-        self.previousDisplayRecentFolders = None   # displaying recent folders list
+        self.prevDisplayRecentFolders = None   # displaying recent folders list
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
@@ -739,7 +739,8 @@ class ThisGrammar(ancestor):
         activeFolder = self.getActiveFolder(hndle, className)
         if not activeFolder:
             return
-        print(f'getting active folder {activeFolder}')
+        if activeFolder != self.activeFolder:
+            print(f'get new folder {activeFolder}')
         # activeFolder = os.path.normcase(activeFolder)
         if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
             return
@@ -821,10 +822,10 @@ class ThisGrammar(ancestor):
             message.append('- %s: %s'% (name, value))
         message.append('-'*20)
         message = '\n'.join(mess)
-        if message == self.previousDisplayRecentFolders:
+        if message == self.prevDisplayRecentFolders:
             print("recent folders, no change")
             return
-        self.previousDisplayRecentFolders = message
+        self.prevDisplayRecentFolders = message
         print(message)
         
         
