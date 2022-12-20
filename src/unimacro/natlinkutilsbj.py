@@ -1542,7 +1542,7 @@ class IniGrammar(IniGrammarAncestor):
                     self.ini.set(notTransSection, 'info1', 'De volgende grammatica woorden kunnen worden vertaald.')
                 else:
                     self.ini.set(notTransSection, 'info1', 'These grammar words can be translated.')
-                self.ini.set(notTransSection, 'info2', 'See http://qh.antenna.nl/unimacro/features/translations for more info')
+                self.ini.set(notTransSection, 'info2', 'See https://qh.antenna.nl/unimacro/features/translations for more info')
                 self.ini.write()
         else:
             if self.ini.get(notTransSection):
@@ -2650,7 +2650,7 @@ noot mies
         if not L:
             if not toRemove:
                 return
-            self.error('removedFromList, list is empty, but toRemove is not empty: %s'% toRemove)
+            print(f'{self.name}, removedFromList: list is empty, but toRemove is not empty: {toRemove}')
             return
         if not toRemove:
             return

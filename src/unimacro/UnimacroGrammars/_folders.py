@@ -104,6 +104,10 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 doRecentFolderCommand = True
 # some child windows have to behave as top window (specified in ini file):
 # note: title is converted to lowercase, only full title is recognised
+try:
+    thisGrammar
+except NameError:
+    thisGrammar = None
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -164,6 +168,8 @@ class ThisGrammar(ancestor):
         self.catchRemember = ""
         self.activeFolder = None
         self.prevDisplayRecentFolders = None   # displaying recent folders list
+        self.subfoldersDict = {}
+        self.foldersSet = set()
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
@@ -222,6 +228,7 @@ class ThisGrammar(ancestor):
         """
         if self.activeFolder == activeFolder:
             return
+
         if self.activeFolder:
             self.emptyListsForActiveFolder()
             # print 'empty lists for active folder %s, now: %s'% (self.activeFolder, activeFolder)
@@ -230,7 +237,9 @@ class ThisGrammar(ancestor):
         if activeFolder and os.path.isdir(activeFolder):
             self.fillListsForActiveFolder(activeFolder)
             print('set %s (sub)files and %s subfolders'% (len(self.subfilesDict), len(self.subfoldersDict)))
-
+            self.activeFolder = activeFolder
+            return
+        print(f'_folders, handleTrackFilesAndFolders, invalid activeFolder: {activeFolder}')
 
     def fillList(self, listName):
         """fill a list in the grammar from the data of the inifile
@@ -463,7 +472,11 @@ class ThisGrammar(ancestor):
         ancestor.fillGrammarLists(self)
         
         ## this one is ignored in the` parent class version of this function
-        self.fillList('recentfolders')
+        ## when recentfolders is not needed in the grammar, it raises a ValueError
+        try:
+            self.fillList('recentfolders')
+        except ValueError:
+            pass
     
     def resolveVirtualDrives(self, wantedVirtualDrives):
         """check the virtual drives, possibly recursive
@@ -736,11 +749,14 @@ class ThisGrammar(ancestor):
         When the buffer grows too large, the first inserted items are removed from the list
         (QH, March 2020)
         """
+        # print('_folders, catchTimerRecentFolders')
         activeFolder = self.getActiveFolder(hndle, className)
         if not activeFolder:
             return
-        if activeFolder != self.activeFolder:
-            print(f'get new folder {activeFolder}')
+        if activeFolder == self.activeFolder:
+            return
+        self.activeFolder = activeFolder
+        print(f'get new folders for {activeFolder}')
         # activeFolder = os.path.normcase(activeFolder)
         if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
             return
@@ -803,6 +819,7 @@ class ThisGrammar(ancestor):
     def stopRecentFolders(self):
         self.doTrackFoldersHistory = True
         natlinktimer.setTimerCallback(self.catchTimerRecentFolders, 0)
+        self.dumpRecentFoldersDict()
         self.recentfoldersDict = {}
         self.emptyList('recentfolders')
         print("track folders history is stopped, the timer callback is off")
@@ -2137,7 +2154,7 @@ class ThisGrammar(ancestor):
             print('_folders, gotoFolder: no window handle found, return')
         # Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
-        browser = prog in ['iexplore', 'firefox','opera', 'netscp', 'brave']
+        _browser = prog in ['iexplore', 'firefox','opera', 'netscp', 'brave']
 ##        print 'iambrowser:', browser
 ##        print 'xx: %s, Iam2x: %s, IamExplorer: %s'% (xx, Iam2x, IamExplorer)
 ##
@@ -2293,8 +2310,7 @@ class ThisGrammar(ancestor):
         (if E: is a valid backup drive)
 
         """
-        fdrive, fdir = os.path.splitdrive(f)
-        remdrive, rempart = os.path.splitdrive(remote)
+        _fdrive, fdir = os.path.splitdrive(f)
         fparts = [part for part in fdir.split(os.sep) if part]
         while fparts:
             fpart = os.sep.join(fparts)
@@ -2305,8 +2321,7 @@ class ThisGrammar(ancestor):
         print('_folders, no valid remote folder found for %s and remote: %s'% (f, remote))
 
     def getValidFile(self, f, remote):
-        fdrive, fdir = os.path.splitdrive(f)
-        remdrive, rempart = os.path.splitdrive(remote)
+        _fdrive, fdir = os.path.splitdrive(f)
         fparts = [part for part in fdir.split(os.sep) if part]
         while fparts:
             fpart = os.sep.join(fparts)
@@ -2695,29 +2710,30 @@ def dumpToPickle(data, picklePath):
 def collection_iter(collection):
     for index in range(collection.Count):
         yield collection.Item(index)
-    # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
 
+
+# standard stuff Joel (adapted for different calling methods, including tests QH, unimacro)
 def unload():
-    global thisGrammar, dialogGrammar
+    #pylint:disable=W0603
+    global thisGrammar
     # print("function unload in _folders.py")
     if thisGrammar:
         # print("unloading folders grammar")
-        natlinktimer.setTimerCallback(None, 0)
-        # make recentfoldersDict persistf across 
-        try:
-            thisGrammar.dumpRecentFoldersDict()
-        except:
-            pass
+        thisGrammar.stopRecentFolders()  # stopping the timer callback
         thisGrammar.unload()
         print("unloaded folders grammar")
-        time.sleep(5)
-
-    thisGrammar = None
+        thisGrammar = None
 
 if __name__ == "__main__":
-    print(get_selected_files())
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        thisGrammar.startInifile(modName = '_folders')
+        thisGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
