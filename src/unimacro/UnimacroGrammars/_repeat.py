@@ -48,7 +48,7 @@ from natlinkcore import natlinkutils
 from natlinkcore import natlinktimer
 from natlinkcore import natlinkstatus
 import natlink
-DEBUG = 0
+DEBUG = 1
 status = natlinkstatus.NatlinkStatus()
 stateError = 'invalid state for timer routine'
 
@@ -327,7 +327,7 @@ class ThisGrammar(ancestor):
         k = self.state + self.minorState
         s = self.curSpeed + 2  # very slow =2 -->> 0
         if self.waiting:
-            natlinktimer.setTimerCallback(self.onTimer, waitingSpeed)
+            natlinktimer.setTimerCallback(self.onTimer, waitingSpeed, callAtMicOff=self.cancelMode)
         elif k == 'mousing' or self.state == 'dragging':
             speed = SPEED[k][s]
             steps = defaultMousePixels
@@ -342,14 +342,14 @@ class ThisGrammar(ancestor):
             else:
                 speed = s
             debugPrint(f'mouse starting with speed: {speed}, steps: {steps}')
-            natlinktimer.setTimerCallback(self.onTimer, speed)
+            natlinktimer.setTimerCallback(self.onTimer, speed, callAtMicOff=self.cancelMode)
             self.mouseSteps = steps
         elif k in SPEED:
             debugPrint(f'starting with speed: {SPEED[k][s]}')
-            natlinktimer.setTimerCallback(self.onTimer, SPEED[k][s]) ##, debug=1)
+            natlinktimer.setTimerCallback(self.onTimer, SPEED[k][s], callAtMicOff=self.cancelMode)
         else:
             debugPrint(f'timer starting with unknown speed for state/minorstate: {k}')
-            natlinktimer.setTimerCallback(self.onTimer, defaultSpeed)
+            natlinktimer.setTimerCallback(self.onTimer, defaultSpeed, callAtMicOff=self.cancelMode)
             
         self.inTimer = 1
         
@@ -908,16 +908,13 @@ def findKeyWord(list1,list2):
     return None
 
 startTime = time.time()
-if DEBUG:
-    fOutName = 'c:\\DEBUG '+__name__+'.txt'
-    debugFile = open(fOutName, 'w', encoding='utf8')
-    print(f'DEBUG uitvoer naar: {fOutName}')
 
 def debugPrint(t):
     if not DEBUG: return
-    debugFile.write(t)
-    debugFile.write('\n')
-    debugFile.flush()
+    print(t)
+    # debugFile.write(t)
+    # debugFile.write('\n')
+    # debugFile.flush()
 
 
 iconDirectory = os.path.join(status.getUnimacroDirectory(), 'icons')
@@ -937,11 +934,11 @@ def unload():
     if thisGrammar: thisGrammar.unload()
     thisGrammar = None
 
-def changeCallback(type,args):
-    # not active without special version of natlinkmain,
-    # call the cancelMode, to switch off exclusive mode when mic toggles:
-    if ((type == 'mic') and (args=='on')):
-        return   # check WAS in natlinkmain...
-    if thisGrammar:
-        thisGrammar.cancelMode()
+# def changeCallback(type,args):
+#     # not active without special version of natlinkmain,
+#     # call the cancelMode, to switch off exclusive mode when mic toggles:
+#     if ((type == 'mic') and (args=='on')):
+#         return   # check WAS in natlinkmain...
+#     if thisGrammar:
+#         thisGrammar.cancelMode()
 
