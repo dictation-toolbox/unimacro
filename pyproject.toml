@@ -37,6 +37,9 @@ test = [
 dev = [
 	"pyenvutils",
 ]
+[project.entry-points.natlink_extensions]
+unimacro_builtins = "unimacro.UnimacroGrammars:locateme"
+
 [tool.pytest.ini_options]
 minversion = "7.1.2"
 addopts = "--capture=tee-sys "
