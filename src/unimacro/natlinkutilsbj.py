@@ -1542,7 +1542,7 @@ class IniGrammar(IniGrammarAncestor):
                     self.ini.set(notTransSection, 'info1', 'De volgende grammatica woorden kunnen worden vertaald.')
                 else:
                     self.ini.set(notTransSection, 'info1', 'These grammar words can be translated.')
-                self.ini.set(notTransSection, 'info2', 'See http://qh.antenna.nl/unimacro/features/translations for more info')
+                self.ini.set(notTransSection, 'info2', 'See https://qh.antenna.nl/unimacro/features/translations for more info')
                 self.ini.write()
         else:
             if self.ini.get(notTransSection):
@@ -2650,7 +2650,7 @@ noot mies
         if not L:
             if not toRemove:
                 return
-            self.error('removedFromList, list is empty, but toRemove is not empty: %s'% toRemove)
+            print(f'{self.name}, removedFromList: list is empty, but toRemove is not empty: {toRemove}')
             return
         if not toRemove:
             return
@@ -2982,7 +2982,7 @@ noot mies
         if not progInfo:
             return None # no information
         # old info:
-        _progpath, prog, title, topchild, _classname, _hndle = progInfo
+        _progpath, prog, title, toporchild, _classname, _hndle = progInfo
         nprogInfo = unimacroutils.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
@@ -2991,7 +2991,7 @@ noot mies
             if progInfo != nprogInfo:
                 print('%s: window changed, cancel search'% prog)
                 return -2 # cancelMode, because window title changed
-        elif (prog == 'winword' and topchild == 'top' and nprogInfo[2] == 'child'):
+        elif (prog == 'winword' and toporchild == 'top' and nprogInfo[2] == 'child'):
             print('%s: search failed, cancel search'% prog)
             return -2 # cancelMode, because window title changed
         return None
@@ -3038,27 +3038,26 @@ noot mies
             
     def getTopOrChild(self, progInfo=None, childClass=None):
         """return true if top window or child behaves like top
-        
         and False if child window or top behaves like child
         
-        If class == #32770, always return False, child, except when rule in actions.ini says different...
+        complicated function, which depends on the unimacroactions.ini settings. 
+
+        As a shortcut: childClass can be set to "#32770" (file open etc dialogs),
+        and then always return False, child, except even when rule in actions.ini says different...
         
         """
         #TODO QH this routine sucks
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
-
-        # ProgInfo = collections.namedtuple('ProgInfo', 'progpath prog title toporchild classname hndle'.split(' '))
-
-        progInfo = unimacroutils.getProgInfo()
-
+        
+        assert len(progInfo) == 6
         
         istop = (progInfo.toporchild == 'top')
         if istop:
-            if actions.topWindowBehavesLikeChild( modInfo ):
+            if actions.topWindowBehavesLikeChild( progInfo ):
                 istop = False
             elif childClass and progInfo.classname == childClass:
-                if actions.childWindowBehavesLikeTop( modInfo ):
+                if actions.childWindowBehavesLikeTop( progInfo ):
                     if self.debug:
                         print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
@@ -3066,9 +3065,8 @@ noot mies
                     if self.debug:
                         print('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
-                    # IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         else:
-            if actions.childWindowBehavesLikeTop( modInfo ):
+            if actions.childWindowBehavesLikeTop( progInfo ):
                 if self.debug:
                     print('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True

@@ -39,6 +39,7 @@ import os.path
 import win32api
 from dtactions.unimacro import unimacroutils
 from natlinkcore import natlinkutils
+from natlinkcore import natlinktimer
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -88,7 +89,7 @@ class ThisGrammar(ancestor):
         #self.setExclusive(0)
         if self.inTimer:
             print('cancel timer')
-            natlink.setTimerCallback(None,0)
+            natlinktimer..setTimerCallback(self.onTimer,0)
             self.inTimer = 0
 
     def onTimer(self):
@@ -171,7 +172,7 @@ class ThisGrammar(ancestor):
         if self.hasCommon(words, 'continue'):
             timeEachMilliseconds = max(1, self.pauseTime)*500
             print('set the timer to %s'% timeEachMilliseconds)
-            natlink.setTimerCallback(self.onTimer, timeEachMilliseconds)
+            natlinktimer..setTimerCallback(self.onTimer, timeEachMilliseconds)
             self.inTimer = 1
             
     # Sometimes the mouse is a bit too high (if the stack grows longer)

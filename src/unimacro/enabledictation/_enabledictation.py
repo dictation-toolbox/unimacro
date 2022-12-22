@@ -109,7 +109,9 @@ class VoiceDictation:
                 dct = self.dictObj
                 dct.deactivate()
                 self.dctactive = 0
-            prog, title, topchild, hndle = unimacroutils.getProgInfo(moduleInfo)
+                progInfo = unimacroutils.getProgInfo(moduleInfo)
+
+            _progpath, prog, title, _toporchild, _classname, _hndle = progInfo
             print('changing app to: "%s", %s'% (prog, hndle))
             self.app, self.ctrl = None, None
             if prog in self.WindowsParameters:

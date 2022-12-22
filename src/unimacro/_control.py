@@ -567,6 +567,7 @@ class UtilGrammar(ancestor):
                     filepath = __file__
                 else:
                     unimacrogrammarsdir = status.getUnimacroGrammarsDirectory()
+                    print(f'_control, unimacrogrammarsdir: {unimacrogrammarsdir}, module: {moduleName}')
                     filepath = os.path.join(unimacrogrammarsdir, moduleName + '.py')
                     if not os.path.isfile(filepath):
                         print(f'_control: cannot find grammar file for "{gramName}",\n\t{filepath} does not exist')

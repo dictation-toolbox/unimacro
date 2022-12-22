@@ -190,6 +190,7 @@ class ThisGrammar(ancestor):
             self.checkInifile() # refills grammar lists and instance variables
                                 # if something changed.
         self.gotPassword = 0
+        self.progInfo = unimacroutils.getProgInfo(moduleInfo)
         
     def gotResults_wrongrule(self,words,fullResults):
         natut.playString("%s\n"% fullResults)
@@ -211,6 +212,8 @@ class ThisGrammar(ancestor):
             print('Here from _general...')
             natut.buttonClick()
             unimacroutils.Wait()
+        self.progInfo = unimacroutils.getProgInfo()
+        print(f'progInfo _general: {self.progInfo.prog}, {self.progInfo.title}')
 
     def gotResults_password(self,words,fullResults):
         """interpret password as dictate
@@ -762,10 +765,8 @@ class ThisGrammar(ancestor):
         T = []
         extra = []
         if self.hasCommon(words,'window') or self.hasCommon(words,'prog'):
-            m = natlink.getCurrentModule()
-            hndle = m[2]
-            p = unimacroutils.getProgInfo(m)
-            assert hndle == p.hndle
+            p = unimacroutils.getProgInfo()
+            hndle = p.hndle
             T.append('---from unimacroutils.getProgInfo:')
             # (progpath, prog, title, toporchild, classname, hndle)
             if self.hasCommon(words, 'prog'):
@@ -777,7 +778,7 @@ class ThisGrammar(ancestor):
             T.append(f'  .classname\t{p.classname}')
             T.append(f'  .hndle:\t{hndle}')
             childClass = "#32770"
-            overruleIsTop = self.getTopOrChild(m, childClass=childClass)
+            overruleIsTop = self.getTopOrChild(self.progInfo, childClass=childClass)
 
             if p.toporchild != overruleIsTop:
                 T.append('')
@@ -890,15 +891,14 @@ class ThisGrammar(ancestor):
         else:
             ts = time.strftime("%d%m%y_", time.localtime(time.time()))
 
-        m = natlink.getCurrentModule()
-        if unimacroutils.matchModule('pythonwin', modInfo=m):
+        progInfo = unimacroutils.getProgInfo()
+        if unimacroutils.matchModule('pythonwin', progInfo=progInfo):
             com = "#" + name + ts
-        elif unimacroutils.matchModule('textpad', 'html', modInfo=m):
+        elif unimacroutils.matchModule('textpad', 'html', progInfo=progInfo):
             com = "<!--" + name + ts + "-->"
-        elif unimacroutils.matchModule(m,'textpad', '.c'):
+        elif unimacroutils.matchModule('textpad', '.c', progInfo=progInfo):
             com = "$$$$" + name + ts + "$$$$"
-        #TODO QH figure this out (parameters)
-        elif unimacroutils.matchModule(m,'textpad', '.py', modInfo=m):
+        elif unimacroutils.matchModule('textpad', '.py', progInfo=progInfo):
             com = "#" + name + ts
         else:
             com = name + ts
@@ -1200,40 +1200,19 @@ def getIdleWindowsWithText(hwnd, th):
         wTitle = win32gui.GetWindowText(hwnd).strip().lower()
         TH.append((wTitle, hwnd))
 
-
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
-
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
-
-# forgot about this, possibly delete (QH 2010):
-#def processLine(line):
-#    """proces a line"""
-#    if line.find("Bind") == -1:
-#        return line
-#    obj, options = line.split('.Bind')
-#    lenstart = len(obj) - len(obj.lstrip())
-#    obj = obj.strip()
-#    options = options[1:-1]
-#    pars = tuple(map(string.strip, options.split(',')))
-#    if len(pars) == 2:
-#        oldMethod, method = pars
-#        return '%s%s(%s, %s)'% (' '*lenstart, oldMethod, obj, method)
-#    elif len(pars) == 3:
-#        oldMethod, method, id = pars
-#        return '%s%s(%s, %s, %s)'% (' '*lenstart, oldMethod, obj, id, method)
-#    else:
-#        return 'invalid pars: %s %s'% (len(pars), line)
 #
-
-
+if __name__ == "__main__":
+    # here code to interactive run this module
+    pass
+elif __name__.find('.') == -1:
+    # this is caught when this module is imported by the loader (when Dragon/Natlink starts)
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
 
 

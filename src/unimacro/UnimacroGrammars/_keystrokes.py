@@ -1,4 +1,3 @@
-__version__ = "$Rev: 606 $ on $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
@@ -17,21 +16,16 @@ keystrokes can be defined, that can be used in combination with all the
 others continuously.
 
 """
-import time
-import os
-import sys
-from natlinkcore import inivars
-import types
-import copy
-import natlink
-from natlinkcore import nsformat 
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
+#pylint:disable=R0904, R0913, R0912
 
-from natlinkcore import natlinkutils as natut
+import sys
+import copy
+from dtactions.unimacro import inivars
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
+from unimacro import natlinkutilsbj as natbj
+from natlinkcore import nsformat 
 
 language = unimacroutils.getLanguage()        
 
@@ -114,7 +108,7 @@ class ThisGrammar(ancestor):
         self.resetAllVars()
         self.resetVars()
         self.isIgnored = 0
-        self.title = 'Unimacro grammar %s (%s) language: %s'% (self.name, __name__, language)
+        self.title = 'Unimacro grammar {self.name} (__name__) language: {language}'
         #self.activateAll()
         self.fillGrammarLists()
         self.dictateOutputState = -1 # start state for dictate <dgndictation> rule (nsformat)
@@ -146,12 +140,12 @@ class ThisGrammar(ancestor):
         ini = self.ini
         #print 'do keystrokes for mode: %s'% repr(mode)
         if mode == 'inactive':
-            print('%s: deactivate: %s'% (self.GetName(), mode))
+            print(f'{self.GetName()}: deactivate: {mode}')
             self.deactivateAll()
             self.cancelMode()
             self.resetAllVars()
             return
-        elif mode == 'active':
+        if mode == 'active':
             repkeySections = ['repkey']
             norepkeySections = ['norepkey']
             # print 'activate "default mode" keystrokes'
@@ -162,7 +156,7 @@ class ThisGrammar(ancestor):
             # self.modeSet is set of modestrings being active:
             wantExclusive = self.modeSet & self.exclusiveModes  # both a set
             if wantExclusive:
-                print('make keystokes mode exclusive: %s'% wantExclusive)
+                print(f'make keystokes mode exclusive: {wantExclusive}')
                 self.setExclusive(1)
             #if 
             repkeySections = self.ini.getSectionsWithPrefix('repkey', mode)
@@ -234,7 +228,7 @@ class ThisGrammar(ancestor):
     #        else: # 
     #            
     def gotResults_dgndictation(self, words, fullResults):
-        print('words of dgndictation: %s'% words)
+        print(f'words of dgndictation: {words}')
         formattedOutput, self.dictateOutputState = nsformat.formatWords(words, state=self.dictateOutputState)
         self.key = formattedOutput
         self.flush()
@@ -258,12 +252,12 @@ class ThisGrammar(ancestor):
             if self.repkeySections:
                 res = self.ini.get(self.repkeySections, w)
             else:
-                print('_keystrokes, no repkeySections for this mode: %s'% repr(self.prevMode))
+                print(f'_keystrokes, no repkeySections for this mode: {self.prevMode}')
                 return
             if res:
                 self.key = res
             else:
-                print('rep, found character or something else: %s'% w)
+                print(f'rep, found character or something else: {w}')
                 posSlash = w.find('\\')
                 if posSlash > 0:
                     self.key = w[:posSlash]
@@ -300,11 +294,11 @@ class ThisGrammar(ancestor):
                     if self.repkeySections:
                         res = self.ini.get(self.norepkeySections, w)
                     else:
-                        print('_keystrokes, no norepkeySections for this mode: %s'% self.prevMode)
+                        print(f'_keystrokes, no norepkeySections for this mode: {self.prevMode}')
                         return
                     res = self.ini.get(self.norepkeySections, w)
                     if not res:
-                        raise ValueError("_keystrokes, norepkey: no code found for %s (%s)"% w, (self.fullResults))
+                        raise ValueError(f'_keystrokes, norepkey: no code found for {w} ({self.fullResults})')
                     self.key = res
                 #print 'norepkey: %s'% self.key
             self.flush()
@@ -361,14 +355,14 @@ class ThisGrammar(ancestor):
         if len(parts) > 1:
             
             if parts[1] not in possibleClicks:
-                print('number of clicks (%s) should be one of %s'% (parts[1], possibleClicks))
+                print(f'number of clicks ({parts[1]}) should be one of {possibleClicks}')
                 return
             nClick = int(parts[1])
         else:
             nClick = 1
     
         if len(parts) > 2:
-            print('currently only (button, clicks) allowed in clickrule, not: %s'% clickrules)
+            print(f'currently only (button, clicks) allowed in clickrule, not: {clickrules}')
             return
     
         if self.nextRule == 'contextmenu' and nClick == 1:
@@ -385,10 +379,10 @@ class ThisGrammar(ancestor):
         action("ALERT")
         if not action("WAITMOUSEMOVE"):
             action("ALERT 2")
-            return
+            return None
         if not action("WAITMOUSESTOP"):
             action("ALERT 2")
-            return
+            return None
         action("ALERT")
         return 1
 
@@ -436,8 +430,8 @@ class ThisGrammar(ancestor):
         if self.count != 1:
             self.key = unimacroutils.doCount(self.key, self.count)
        
-        if type(self.key) == list:
-            print('_keystrokes, flush: warning, self.key is list: %s'% self.key)
+        if isinstance(self.key, list):
+            print(f'_keystrokes, flush: warning, self.key is list: {self.key}')
             self.buf.extend(self.key)
         else:
             self.buf.append(self.key)
@@ -448,12 +442,12 @@ class ThisGrammar(ancestor):
             try:
                 buf = ''.join(self.buf)
             except TypeError:
-                print("---TypeError in flushAll of _keystrokes: %s"% repr(self.buf))
+                print(f'---TypeError in flushAll of _keystrokes: {self.buf}')
                 raise
             
             #print 'flushAll: %s'% buf  
             if self.codes:
-                action("SCLIP %s"% buf)
+                action(f'SCLIP {buf}')
             elif buf.find("<<") >= 0:
                 action(buf)
             else:
@@ -495,14 +489,14 @@ class ThisGrammar(ancestor):
             if unimacroutils.matchWindow(self.modes[mode], progInfo=progInfo):
                 modeSet.append(mode)
         self.modeSet = set(modeSet)
-        if modeSet: return tuple(modeSet)
+        if modeSet:
+            return tuple(modeSet)
 
         if unimacroutils.matchWindow(self.activateRules, progInfo=progInfo):
             if unimacroutils.matchWindow(self.deactivateRules, progInfo=progInfo):
                 return 'inactive'
             return 'active'
-        else:
-            return 'inactive'
+        return 'inactive'
 
        
     def showInifile(self, body=None, grammarLists=None, ini=None,
@@ -514,24 +508,24 @@ class ThisGrammar(ancestor):
                 modesString = ', '.join(self.prevMode)
             else:
                 modesString = str(self.prevMode)
-            body.append('current mode/active/inactive: %s'% modesString)
+            body.append(f'current mode/active/inactive: {modesString}')
             if not self.prevMode:
-                body.append("no current mode (yet): %s"% self.prevMode)
+                body.append(f'no current mode (yet): {self.prevMode}')
             elif self.prevMode == 'active':
                 pass
             elif self.prevMode == 'inactive':
                 # probably never comes here, because grammar is inactive at this moment
-                body.append('inactive in %s'% self.deactivateRules)
+                body.append(f'inactive in {self.deactivateRules}')
             else:
                 # give extra moohdes information:
                 body.append('possible modes:')
                 for mode in self.modes:
                     if self.modes[mode] == {mode: None}:
-                        body.append('\t%s: (all windows)'% mode)
+                        body.append(f'\t{mode}: (all windows)')
                     else:
-                        body.append('\t%s: %s'% (mode, self.modes[mode]))
+                        body.append(f'\t{mode}: {self.modes[mode]}')
         else:
-            body.append('active/inactive: %s'% self.prevMode)
+            body.append('active/inactive: {self.prevMode}')
 
         if self.doKeystrokesExtended:
             body.append('do keystrokes extended (with Here and mouse clicking)')
@@ -545,7 +539,6 @@ class ThisGrammar(ancestor):
         """initialize as a starting example the ini file obsolete
 
         """
-        pass
         
     def fillInstanceVariables(self):
         """fills instance variables with data from inifile
@@ -587,7 +580,7 @@ class ThisGrammar(ancestor):
             self.exclusiveModes = set(self.ini.getList('general', 'exclusive modes', []))
             for m in self.exclusiveModes:
                 if m not in self.modes:
-                    print('warning, exclusive mode "%s" not in defined modes: %s'% (repr(m), list(self.modes.keys())))
+                    print(f'warning, exclusive mode "{m}" not in defined modes: {self.modes.keys()}')
             
                     
         except inivars.IniError:
@@ -621,7 +614,8 @@ else:
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
  
 def changeCallback(type,args):

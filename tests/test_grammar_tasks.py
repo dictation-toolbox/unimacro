@@ -36,4 +36,4 @@ def test_gototask(monkeypatch):
         natlink.natDisconnect()
 
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main(['test_grammar_tasks.py'])
