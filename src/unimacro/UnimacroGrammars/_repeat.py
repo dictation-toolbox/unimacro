@@ -286,10 +286,9 @@ class ThisGrammar(ancestor):
         self.hadRepeat = 0
         self.repeatStuff = None
         self.lastResults = []
+        print('_repeat, return to normal state, non exclusive')
         self.activateSet(normalSet, exclusive=0)
         
-    resetExclusiveMode = cancelMode
-
 ##    def waitMode(self):
 ##        if self.waiting:
 ##            debugPrint('in timer, already waiting')

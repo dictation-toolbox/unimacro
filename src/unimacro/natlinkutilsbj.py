@@ -2982,7 +2982,7 @@ noot mies
         if not progInfo:
             return None # no information
         # old info:
-        _progpath, prog, title, topchild, _classname, _hndle = progInfo
+        _progpath, prog, title, toporchild, _classname, _hndle = progInfo
         nprogInfo = unimacroutils.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
@@ -2991,7 +2991,7 @@ noot mies
             if progInfo != nprogInfo:
                 print('%s: window changed, cancel search'% prog)
                 return -2 # cancelMode, because window title changed
-        elif (prog == 'winword' and topchild == 'top' and nprogInfo[2] == 'child'):
+        elif (prog == 'winword' and toporchild == 'top' and nprogInfo[2] == 'child'):
             print('%s: search failed, cancel search'% prog)
             return -2 # cancelMode, because window title changed
         return None
@@ -3065,7 +3065,6 @@ noot mies
                     if self.debug:
                         print('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
-                    # IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         else:
             if actions.childWindowBehavesLikeTop( progInfo ):
                 if self.debug:
