@@ -270,7 +270,7 @@ def SetMic(state):
 # The CallAllGrammarObjects(funcName,args) method provides
 # a means to send or receive signals/data to other grammar objects
 # See also the GrammarX class
-loadedGrammars = {}
+allUnimacroGrammars = {}
 grammarsChanged = 0
 
 exclusiveGrammars = {}
@@ -289,27 +289,26 @@ def RegisterGrammarObject(GrammarObject):
     """registers a grammar object in global variable
 
     also sets the flag "grammarsChanged"
-    key in the dictionary loadedGrammars is the name,
+    key in the dictionary allUnimacroGrammars is the name,
     value is the instance object itself
     """    
     #pylint:disable=W0603
-    global loadedGrammars, grammarsChanged
-    loadedGrammars[GrammarObject.GetName()] = GrammarObject
+    global allUnimacroGrammars, grammarsChanged
+    allUnimacroGrammars[GrammarObject.GetName()] = GrammarObject
     grammarsChanged = 1
- 
 
 def UnRegisterGrammarObject(GrammarObject):
     """unregisters a grammar object from the global variable
 
     also sets the flag "grammarsChanged"
-    delete the item in the dictionary "loadedGrammars"
+    delete the item in the dictionary "allUnimacroGrammars"
 
     """    
     #pylint:disable=W0603
-    global loadedGrammars, grammarsChanged
-    for k, v in list(loadedGrammars.items()):
+    global allUnimacroGrammars, grammarsChanged
+    for k, v in list(allUnimacroGrammars.items()):
         if v is GrammarObject:
-            del loadedGrammars[k]
+            del allUnimacroGrammars[k]
             # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
             grammarsChanged = 1
             return
@@ -326,7 +325,10 @@ def CallAllGrammarObjects(funcName,args):
         args = args[0] # in order to be able to give arguments "loose" in the call instead of
                        # in a explicit tuple: CAGO(func, a, b, c) instead of
                        #                      CAGO(func, (a, b, c))
-    for name, grammar in list(loadedGrammars.items()):
+    for name, grammar in list(allUnimacroGrammars.items()):
+        if not grammar.isLoaded():
+            # only loaded grammars...
+            continue
         try:
             func = getattr(grammar, funcName)
         except AttributeError:
@@ -337,13 +339,13 @@ def CallAllGrammarObjects(funcName,args):
         #     pass
 
 def getRegisteredGrammarNames():
-    return list(loadedGrammars.keys())
+    return list(allUnimacroGrammars.keys())
 
 def GetGrammarObject(grammarName):
     """return the grammar object, if in correct dict, by user name
     """
-    if grammarName in loadedGrammars:
-        return loadedGrammars[grammarName]
+    if grammarName in allUnimacroGrammars:
+        return allUnimacroGrammars[grammarName]
     return None
 
 # Utility functions for displaying messages in the results box.
@@ -501,17 +503,19 @@ class GrammarX(GrammarXAncestor):
 
     def __init__(self):
         self.__inherited.__init__(self)
+        # set in list of allUnimacroGrammars, also when not loaded into
+        RegisterGrammarObject(self)
         self.inGotBegin = 1 # initialise behave like being there
         self.mayBeSwitchedOn = 1
         # self.isActive = 0 # now user isActive() from GrammarBase
         self.language = status.get_language()
         self.version = status.getDNSVersion()
         self.exclusive = 0
-        self.name = ""
+        # self.name = ""
         self.want_on_or_off = None   # True: on False: off None: no decision
         self.hypothesis = 0
         self.allResults = 0
-        
+                
     def getPrimaryAncestor(self):
         # the default primary ancestor is the first baseclass
         return self.__class__.__bases__[0] 
@@ -520,8 +524,8 @@ class GrammarX(GrammarXAncestor):
         
         if gramSpec:
             success = self.__inherited.load(self,gramSpec,allResults,hypothesis, grammarName=grammarName)
-            if success:
-                RegisterGrammarObject(self)
+            # if success:
+            #     RegisterGrammarObject(self)
             return success
         return None
     
@@ -562,8 +566,10 @@ class GrammarX(GrammarXAncestor):
     # if that member function is defined.
 
     def getName(self):
-        if self.name:
+        try:
             return self.name
+        except NameError:
+            pass
         n = self.__module__
         if n[0] == "_":
             n = n[1:]
@@ -680,6 +686,16 @@ class GrammarX(GrammarXAncestor):
 
     def switchOnOrOff(self, **kw):
         # print(f'{self.name}, switchOnOrOff')
+        allResults = kw.get('allResults', 0)
+        hypothesis = kw.get('hypothesis', 0)
+        grammarName = kw.get('grammarName', self.name)
+        if not self.isLoaded():
+            may_be_loaded = self.ini.getBool('general', 'initial on', False)
+            if may_be_loaded:
+                self.load(self.gramSpec, allResults=allResults, hypothesis=hypothesis, grammarName=grammarName)
+            else:
+                print(f"\t{self.name}: grammar is not loaded (inactive)")    
+                return None
         result = None
         if self.want_on_or_off is None:
             if self.mayBeSwitchedOn == 'exclusive':
@@ -699,7 +715,7 @@ class GrammarX(GrammarXAncestor):
         else:
             raise ValueError(f'grammar {self.name}, invalid value for want_on_or_off: {self.want_on_or_off}')
             
-        return result
+        return None
             
     def switchOn(self, **kw):
         """switches grammar on, activates all rules
@@ -747,7 +763,10 @@ class GrammarX(GrammarXAncestor):
             rule = kw['activateRule']
             del kw['activateRule']
             if self.mayBeSwitchedOn:
-                self.activate(rule, **kw)
+                window = kw.get('window', 0)
+                exclusive = kw.get('exclusive', None)
+                noError = kw.get('noError', 0)
+                self.activate(rule, window=window, exclusive=exclusive, noError=noError)
                 return 1
             print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
             return None
@@ -1280,7 +1299,6 @@ class IniGrammar(IniGrammarAncestor):
         self.debug = None # can be set in some grammar at initialize time
         #mod = sys.modules[self.__module__]
 ##            version = getattr(mod, '__version__', '---')
-        self.version = None  #SVN change
         self.DNSVersion = status.getDNSVersion()
         self.spokenforms = spokenforms.SpokenForms(self.language, self.DNSVersion) # for spoken forms numbers!!
 
@@ -1723,9 +1741,9 @@ noot mies
         # if you want rules dynamically activated in gotBegin,
         # the following line should be skipped in the overloaded function,
         # and the variable self.prevModInfo should be set to None
-        fillLists = kw.get('fillLists')
+        fillLists = kw.get('fillLists', None)
         if fillLists:
-            del kw['fillLists']
+            print(f'{self.name}, switchOn, with fillLists: {fillLists}')
         if not self.__inherited.switchOn(self, **kw):
             print('switching on "%s" failed'% self.name)
             return
@@ -1741,8 +1759,8 @@ noot mies
         
         # try:
         self.fillGrammarLists()
-        if self.version:
-            print('IniGrammar switched on: %s (%s)'% (self.getName(), self.version))
+        if self.DNSVersion:
+            print('IniGrammar switched on: %s (%s)'% (self.getName(), self.DNSVersion))
         else:
             print('IniGrammar switched on: %s'% self.getName())
                 

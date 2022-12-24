@@ -1291,7 +1291,6 @@ class ThisGrammar(ancestor):
         """collects the given command words and try to find the given folder
 
         """
-        print('-------folder words: %s'% words)
         if len(words) == 1:
             ## catch folder with dgndictation, postpone here:
             self.gotFolder = True

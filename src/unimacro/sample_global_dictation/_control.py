@@ -163,8 +163,8 @@ class UtilGrammar(ancestor):
         #Now is the time to get the names of the grammar objects and
         # activate the list for the <ShowTrainGrammar> rule
         if natbj.grammarsChanged:
-##            print 'new list for control: %s'% natbj.loadedGrammars.keys()
-            self.setList('gramnames', list(natbj.loadedGrammars.keys()))
+##            print 'new list for control: %s'% natbj.allUnimacroGrammars.keys()
+            self.setList('gramnames', list(natbj.allUnimacroGrammars.keys()))
             natbj.ClearGrammarsChangedFlag()
         if self.checkForChanges:
             self.checkInifile()
@@ -278,9 +278,9 @@ class UtilGrammar(ancestor):
             natbj.CallAllGrammarObjects(func, ())
             print("-"*10)
         else:
-            gramname = self.hasCommon(words, list(natbj.loadedGrammars.keys()))
+            gramname = self.hasCommon(words, list(natbj.allUnimacroGrammars.keys()))
             if gramname:
-                gram = natbj.loadedGrammars[gramname]
+                gram = natbj.allUnimacroGrammars[gramname]
                 gram.callIfExists(func, ())
             else:
                 print('no grammar name found: %s'% gramname)
@@ -339,7 +339,7 @@ class UtilGrammar(ancestor):
         if natbj.exclusiveGrammars:
             print('exclusive (+ control) are: %s'% ' '.join(list(natbj.exclusiveGrammars.keys())))
 
-        grammars = natbj.loadedGrammars
+        grammars = natbj.allUnimacroGrammars
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words, gramNames)
         if gramName:
@@ -391,7 +391,7 @@ class UtilGrammar(ancestor):
             actions.editActions()
             return
 
-        grammars = natbj.loadedGrammars
+        grammars = natbj.allUnimacroGrammars
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words[-1:], gramNames)
         if gramName:

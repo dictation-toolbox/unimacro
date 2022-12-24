@@ -25,26 +25,18 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining &
 # advies),2002, revised October 2003
 # march 2011: change sol to solitaire
+#pylint:disable=C0209
+#pylint:disable=E0602
+
 """Grammar for playing solitaire (patience) hands-free
 
 Extensive use is made of mouse (dragging) routines.
 """
 
-import natlink
 import win32gui
-import types
-import time
-import os
-import os.path
-import win32api
-from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
 from natlinkcore import natlinktimer
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
-
 
 #aantal carden en aantal stapelplaatsen:
 cnum = list(range(1,8))
@@ -61,8 +53,6 @@ deltaY = 14
 pauzesDelta = 0.1
 minPause = 0.5
 
-language = unimacroutils.getLanguage()
-
 ancestor = natbj.DocstringGrammar
 class ThisGrammar(ancestor):
     name = 'solitaire'
@@ -72,7 +62,6 @@ class ThisGrammar(ancestor):
     #    """
 
     def initialize(self):
-        global language
         if self.load(self.gramSpec):
             self.setNumbersList("cnum", cnum)
             self.setNumbersList("snum", snum)
@@ -82,14 +71,12 @@ class ThisGrammar(ancestor):
             self.pause = 1
             self.inTimer = 0
             self.pauseTime = 4
-        else:
-            language = ""
                         
     def cancelMode(self):
         #self.setExclusive(0)
         if self.inTimer:
             print('cancel timer')
-            natlinktimer..setTimerCallback(self.onTimer,0)
+            natlinktimer.setTimerCallback(self.onTimer,0)
             self.inTimer = 0
 
     def onTimer(self):
@@ -102,7 +89,7 @@ class ThisGrammar(ancestor):
             print('window handle changed, cancel timer')
             self.cancelMode()
             return
-        print('in onTimer: %.1f'% time.clock())
+        # print('in onTimer: %.1f'% time.clock())
         self.rule_newcard([])
         
 
@@ -110,7 +97,8 @@ class ThisGrammar(ancestor):
         print('gotbegin, cancelmode')
         self.cancelMode()
         winHandle = moduleInfo[2]
-        if self.prevHandle == winHandle: return
+        if self.prevHandle == winHandle:
+            return
         self.prevHandle = winHandle
         if moduleInfo[0].lower().find('solitaire.exe') > 0 and unimacroutils.isTopWindow(moduleInfo[2]):
             if self.checkForChanges:
@@ -129,7 +117,7 @@ class ThisGrammar(ancestor):
         """
         global hspace, vspace, cardhspace, cardvspace
         clrect = win32gui.GetClientRect(self.prevHandle)
-        xMax, yMax = clrect[2]-1, clrect[3]-1
+        xMax, _yMax = clrect[2]-1, clrect[3]-1
         hspace = (xMax - 7*kwidth)/8
         cardhspace = int(hspace/2)
         cardvspace = vspace
@@ -172,7 +160,7 @@ class ThisGrammar(ancestor):
         if self.hasCommon(words, 'continue'):
             timeEachMilliseconds = max(1, self.pauseTime)*500
             print('set the timer to %s'% timeEachMilliseconds)
-            natlinktimer..setTimerCallback(self.onTimer, timeEachMilliseconds)
+            natlinktimer.setTimerCallback(self.onTimer, timeEachMilliseconds)
             self.inTimer = 1
             
     # Sometimes the mouse is a bit too high (if the stack grows longer)
@@ -238,10 +226,10 @@ class ThisGrammar(ancestor):
         #self.hasCommon, which can handle translations or synonyms
         print('cardnumto: %s'% words)
         unimacroutils.rememberMouse()
-        if self.hasCommon(words[0],['card']):
-            ww = words[1:]
-        else:
-            ww = words[:]
+        # if self.hasCommon(words[0],['card']):
+        #     ww = words[1:]
+        # else:
+        #     ww = words[:]
 
         # go to numbered card with mouse:
         From = self.getNumberFromSpoken(words[0])
@@ -311,7 +299,7 @@ class ThisGrammar(ancestor):
         ysteps = int((pos[1]-yold)/nsteps)
         xsteps = int((pos[0]-xold)/nsteps)
         x, y = xold, yold
-        for i in range(nsteps):
+        for _ in range(nsteps):
             x += xsteps
             y += ysteps
             unimacroutils.doMouse(0,5, x, y, 'move')
@@ -360,14 +348,15 @@ else:
 def unload():
     #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
 
-def changeCallback(type,args):
-    # not active without special version of natlinkmain,
-    # call the cancelMode, to switch off exclusive mode when mic toggles:
-    if ((type == 'mic') and (args=='on')):
-        return   # check WAS in natlinkmain...
-    if thisGrammar:
-        print('cancel')
-        thisGrammar.cancelMode()
+# def changeCallback(type,args):
+#     # not active without special version of natlinkmain,
+#     # call the cancelMode, to switch off exclusive mode when mic toggles:
+#     if ((type == 'mic') and (args=='on')):
+#         return   # check WAS in natlinkmain...
+#     if thisGrammar:
+#         print('cancel')
+#         thisGrammar.cancelMode()
