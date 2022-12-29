@@ -53,6 +53,9 @@ class GramOff(natbj.IniGrammar):
 def test_getAllGrammars(monkeypatch):
     """see if we can get all the grammars
     """
+    
+    Doug get this working.
+    
     monkeypatch.setattr(status, "getUnimacroUserDirectory", mock_unimacro_user_dir)
 
     natlink.natConnect()
