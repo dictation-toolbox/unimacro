@@ -18,6 +18,7 @@ def mock_unimacro_user_dir(tmp_dir,_self):
     print(f"Mock unimacro folder {mock_folder} in {__file__}")   #just for understanding remove eventually
     if not mock_folder.is_dir():
         mock_folder.mkdir()
+    print(f'create mock_unimacro_userdir: {mock_folder}')
     return str(mock_folder)
 
 class GramOn(natbj.IniGrammar):
