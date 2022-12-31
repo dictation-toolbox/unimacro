@@ -12,15 +12,15 @@ pytest.MonkeyPatch().setenv("NATLINK_USERDIR",natlink_folder)
 import natlink
 from unimacro._control import UtilGrammar
 from unimacro import natlinkutilsbj as natbj
-from natlinkcore import natlinkstatus
-status = natlinkstatus.NatlinkStatus
+#from natlinkcore import natlinkstatus
+#status = natlinkstatus.NatlinkStatus
 
 thisDir = Path(__file__).parent
-@pytest.fixture 
-def status():
-    from natlinkcore import natlinkstatus
-    status = natlinkstatus.NatlinkStatus
-    return status
+#@pytest.fixture 
+#def status():
+#    from natlinkcore import natlinkstatus
+#    status = natlinkstatus.NatlinkStatus
+#    return status
 
 def do_nothing(*args, **kwargs):
     return None
@@ -63,7 +63,7 @@ class GramOff(natbj.IniGrammar):
     def gotResults_gramoff(self, words, fullResults):
         print(f'got gramoff: {words}')
         
-def test_getAllGrammars(monkeypatch):
+def test_getAllGrammars(unimacro_setup):
     """see if we can get all the grammars
     """
     
