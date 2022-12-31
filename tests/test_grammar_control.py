@@ -66,21 +66,15 @@ class GramOff(natbj.IniGrammar):
 def test_getAllGrammars(unimacro_setup):
     """see if we can get all the grammars
     """
-    
-    
-    natlink.natConnect()
-    try:
-        gramon = GramOn()
-        gramon.initialize()
-        gramoff = GramOff()
-        gramoff.initialize()
-        utilGrammar = UtilGrammar()
-        # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
-        utilGrammar.startInifile()
-        utilGrammar.initialize()
-        utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
-    finally:
-        natlink.natDisconnect()
+    gramon = GramOn()
+    gramon.initialize()
+    gramoff = GramOff()
+    gramoff.initialize()
+    utilGrammar = UtilGrammar()
+    # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
+    utilGrammar.startInifile()
+    utilGrammar.initialize()
+    utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
 
 if __name__ == "__main__":
     pytest.main(['test_grammar_control.py'])
