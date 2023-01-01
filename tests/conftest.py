@@ -15,9 +15,12 @@ def unimacro_setup(tmpdir):
     natlink_config_dir=tmp_test_root.mkdir('.natlink')
     unimacro_userdir=tmp_test_root.mkdir("unimacro_user_directory")
     natlink_config_file=natlink_config_dir/"natlink.ini"
-
+    vocola_userdir=tmp_test_root.mkdir("vocola_user_directory")
+    natlink_usergrammars_dir=tmp_test_root.mkdir("natlink_user_grammars")
     sub={
-        'unimacrouserdirectory':unimacro_userdir
+        'unimacrotestuserdirectory':unimacro_userdir,
+        'vocolatestuserdirectory':vocola_userdir,
+        'natlinktestuserdirectory':natlink_usergrammars_dir
     }
     natlinkini_source_folder=Path(__file__).parent / "unimacro_test_natlink_config.natlink"
     natlinkini_source_config = natlinkini_source_folder/"natlink.ini"
