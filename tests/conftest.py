@@ -23,7 +23,7 @@ def unimacro_setup(tmpdir):
         'natlinktestuserdirectory':natlink_usergrammars_dir
     }
     natlinkini_source_folder=Path(__file__).parent / "unimacro_test_natlink_config.natlink"
-    natlinkini_source_config = natlinkini_source_folder/"natlink.ini"
+    natlinkini_source_config = natlinkini_source_folder/"_natlink.ini"
     with open(natlinkini_source_config) as f:
         src=Template(f.read())
         config_file_text=src.substitute(sub)
