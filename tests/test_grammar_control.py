@@ -10,7 +10,8 @@ thisDir = Path(__file__).parent
 
 def do_nothing(*args, **kwargs):
     return None
- 
+
+
 class GramOn(natbj.IniGrammar):
     """simple grammar which is initially on
     """
