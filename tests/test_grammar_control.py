@@ -2,7 +2,6 @@
 from pathlib import Path
 import pytest
 
-import natlink
 from unimacro._control import UtilGrammar
 from unimacro import natlinkutilsbj as natbj
 

@@ -10,7 +10,7 @@ thisDir = Path(__file__).parent
 def do_nothing(*args, **kwargs):
     return None
 
-def test_getTopOrChild(unimacro_setup):
+def test_getTopOrChild(unimacro_setup,monkeypatch):
     """see if (with debugging) coming into a grammar works
     """
      

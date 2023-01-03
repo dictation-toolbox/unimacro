@@ -37,7 +37,7 @@ test = [
 dev = [
 	"pyenvutils","entry-point-inspector"
 ]
-[project.entry-points."natlink.extensions"]
+[project.entry-points."natlink.grammars"]
 unimacro_builtins = "unimacro.UnimacroGrammars:locateme"
 
 [tool.pytest.ini_options]
