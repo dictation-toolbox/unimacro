@@ -14,7 +14,7 @@ import types
 import os
 import os.path
 import TestCaseWithHelpers
-import lynote
+import unimacro.lynote
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.

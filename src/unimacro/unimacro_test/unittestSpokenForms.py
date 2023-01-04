@@ -21,7 +21,7 @@ for extraPath in extraPaths:
     if os.path.isdir(extraPath):
         if extraPath not in sys.path:
             sys.path.append(extraPath)
-import spokenforms
+import unimacro.spokenforms
 from dtactions.unimacro import inivars
 from dtactions.unimacro import utilsqh
 import TestCaseWithHelpers

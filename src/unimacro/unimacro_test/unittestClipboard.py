@@ -20,9 +20,7 @@ import win32gui
 from pathlib import Path
 
 thisDir = Path('.')
-unimacroFolder = (thisDir/'..').normPath()
-if not unimacroFolder in sys.path:
-    sys.path.append(unimacroFolder)
+
 import TestCaseWithHelpers
 import natlink
 from dtactions import natlinkclipboard
@@ -44,7 +42,7 @@ print('printing will go to %s'% logFileName)
 print('start unittestClipboard', file=open(logFileName, 'w'))
 
 testFilesDir = thisDir/'test_clipboardfiles'
-if not testFilesDir.isdir():
+if not testFilesDir.is_dir():
     testFilesDir.mkdir()
 
 #---------------------------------------------------------------------------
@@ -81,8 +79,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
                 # print('window hndle %s may not match "thisHndle": %s'% (hndle, self.thisHndle))
                 continue
             # print('close window with hndle: %s'% hndle)
-            natlinkutilsqh.SetForegroundWindow(hndle)
-            curHndle = natlinkutilsqh.GetForegroundWindow()
+            unimacroutils.SetForegroundWindow(hndle)
+            curHndle = unimacroutils.GetForegroundWindow()
 
             if hndle == curHndle:
                 if hndle in self.killActions:

@@ -18,7 +18,7 @@ import unittest
 from pprint import pformat
 import filecmp
 import itertools
-import readwritefile
+from natlinkcore import readwritefile
 
 class AssertStringEqualsFailed(AssertionError):
     def __init__(self, exp_string, got_string, first_diff, orig_message):

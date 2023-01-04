@@ -65,7 +65,7 @@ natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
 logFileName = os.path.join(thisDir, "testresult.txt")
 
 testFilesDir = Path(thisDir)/'test_clipboardfiles'
-if testFilesDir.isdir():
+if testFilesDir.is_dir():
     print("test files for Bringup: %s"% testFilesDir)
 else:
     raise OSError("no valid directory for test files: %s"% testFilesDir)

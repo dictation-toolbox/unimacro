@@ -35,8 +35,8 @@ from pathlib import Path
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = [Path(r"C:\natlinkGIT3\unimacro")]
 for extraPath in extraPaths:
-    extraPath.isdir()
-    extraNorm = extraPath.normPath()
+    extraPath.is_dir()
+    extraNorm=extraPath  #used to noralize it now we don't
     if extraNorm not in sys.path:
         sys.path.append(extraNorm)
 # little trick to keep testers apart (do not bother)
@@ -46,7 +46,7 @@ try:
 except ImportError:
     tester = "aligen"
 
-import windowparameters
+import unimacro.windowparameters as windowparameters
 
 W = windowparameters.PROGS[tester]
 
@@ -60,8 +60,8 @@ from struct import pack
 import natlink
 import win32gui
 import win32ui
-from messagefunctions import *
-import unimacro.messagefunctions as mess
+from dtactions.messagefunctions import *
+import dtactions.messagefunctions as mess
 import TestCaseWithHelpers
 class TestError(Exception):pass
 
