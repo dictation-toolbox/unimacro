@@ -297,56 +297,56 @@ def RegisterGrammarObject(GrammarObject):
     allUnimacroGrammars[GrammarObject.GetName()] = GrammarObject
     grammarsChanged = 1
 
-def UnRegisterGrammarObject(GrammarObject):
-    """unregisters a grammar object from the global variable
+# def UnRegisterGrammarObject(GrammarObject):
+#     """unregisters a grammar object from the global variable
+# 
+#     also sets the flag "grammarsChanged"
+#     delete the item in the dictionary "allUnimacroGrammars"
+# 
+#     """    
+#     #pylint:disable=W0603
+#     global allUnimacroGrammars, grammarsChanged
+#     for k, v in list(allUnimacroGrammars.items()):
+#         if v is GrammarObject:
+#             del allUnimacroGrammars[k]
+#             # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
+#             grammarsChanged = 1
+#             return
 
-    also sets the flag "grammarsChanged"
-    delete the item in the dictionary "allUnimacroGrammars"
+# def CallAllGrammarObjects(funcName,args):
+#     """calls a function through all grammar objects
+# 
+#     funcName should be a string with the function name
+#     args should be a tuple of arguments, can be empty tuple ()
+#     exits silently if function doesn't exist in a grammar
+# 
+#     """    
+#     if args and len(args) == 1 and isinstance(args[0], tuple):
+#         args = args[0] # in order to be able to give arguments "loose" in the call instead of
+#                        # in a explicit tuple: CAGO(func, a, b, c) instead of
+#                        #                      CAGO(func, (a, b, c))
+#     for name, grammar in list(allUnimacroGrammars.items()):
+#         if not grammar.isLoaded():
+#             # only loaded grammars...
+#             continue
+#         try:
+#             func = getattr(grammar, funcName)
+#         except AttributeError:
+#             print('func not found for %s'% name)
+#         func(*args)
+#         # except AttributeError:
+#         #     print 'apply %s of %s fails'% (funcName, name)
+#         #     pass
 
-    """    
-    #pylint:disable=W0603
-    global allUnimacroGrammars, grammarsChanged
-    for k, v in list(allUnimacroGrammars.items()):
-        if v is GrammarObject:
-            del allUnimacroGrammars[k]
-            # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
-            grammarsChanged = 1
-            return
-
-def CallAllGrammarObjects(funcName,args):
-    """calls a function through all grammar objects
-
-    funcName should be a string with the function name
-    args should be a tuple of arguments, can be empty tuple ()
-    exits silently if function doesn't exist in a grammar
-
-    """    
-    if args and len(args) == 1 and isinstance(args[0], tuple):
-        args = args[0] # in order to be able to give arguments "loose" in the call instead of
-                       # in a explicit tuple: CAGO(func, a, b, c) instead of
-                       #                      CAGO(func, (a, b, c))
-    for name, grammar in list(allUnimacroGrammars.items()):
-        if not grammar.isLoaded():
-            # only loaded grammars...
-            continue
-        try:
-            func = getattr(grammar, funcName)
-        except AttributeError:
-            print('func not found for %s'% name)
-        func(*args)
-        # except AttributeError:
-        #     print 'apply %s of %s fails'% (funcName, name)
-        #     pass
-
-def getRegisteredGrammarNames():
-    return list(allUnimacroGrammars.keys())
-
-def GetGrammarObject(grammarName):
-    """return the grammar object, if in correct dict, by user name
-    """
-    if grammarName in allUnimacroGrammars:
-        return allUnimacroGrammars[grammarName]
-    return None
+# def getRegisteredGrammarNames():
+#     return list(allUnimacroGrammars.keys())
+# 
+# def GetGrammarObject(grammarName):
+#     """return the grammar object, if in correct dict, by user name
+#     """
+#     if grammarName in allUnimacroGrammars:
+#         return allUnimacroGrammars[grammarName]
+#     return None
 
 # Utility functions for displaying messages in the results box.
 # The module _control registers these, and should be available.
@@ -499,12 +499,15 @@ class GrammarX(GrammarXAncestor):
     """
     #pylint:disable=R0904, C0116
     __inherited=GrammarXAncestor
-    # status = 'new'
+    try:
+        allGrammarXObjects
+    except NameError:
+        allGrammarXObjects = {}
 
     def __init__(self):
         self.__inherited.__init__(self)
         # set in list of allUnimacroGrammars, also when not loaded into
-        RegisterGrammarObject(self)
+        self.RegisterGrammarObject()
         self.inGotBegin = 1 # initialise behave like being there
         self.mayBeSwitchedOn = 1
         # self.isActive = 0 # now user isActive() from GrammarBase
@@ -516,6 +519,25 @@ class GrammarX(GrammarXAncestor):
         self.hypothesis = 0
         self.allResults = 0
                 
+    def getUnimacroGrammars(self):
+        """return the dict of (name, grammarobject) of GrammarX objects
+        """
+        return copy.copy(self.allGrammarXObjects)
+
+    def RegisterGrammarObject(self):
+        self.__class__.allGrammarXObjects[self.name] = self
+
+    def GetGrammarObject(self, grammarName):
+        """return the grammar object, if in correct dict, by user name
+        """
+        if grammarName in self.allGrammarXObjects:
+            return self.allGrammarXObjects[grammarName]
+        return None
+
+    def getRegisteredGrammarNames(self):
+        return list(self.allGrammarXObjects.keys())
+
+                
     def getPrimaryAncestor(self):
         # the default primary ancestor is the first baseclass
         return self.__class__.__bases__[0] 
@@ -524,8 +546,6 @@ class GrammarX(GrammarXAncestor):
         
         if gramSpec:
             success = self.__inherited.load(self,gramSpec,allResults,hypothesis, grammarName=grammarName)
-            # if success:
-            #     RegisterGrammarObject(self)
             return success
         return None
     
@@ -533,7 +553,6 @@ class GrammarX(GrammarXAncestor):
         return '<grammarx: %s>'% self.GetName()
 
     def unload(self):
-        UnRegisterGrammarObject(self)
         self.__inherited.unload(self)
 
     def beginCallback(self, moduleInfo):
@@ -1759,16 +1778,8 @@ noot mies
         
         # try:
         self.fillGrammarLists()
-        if self.DNSVersion:
-            print('IniGrammar switched on: %s (%s)'% (self.getName(), self.DNSVersion))
-        else:
-            print('IniGrammar switched on: %s'% self.getName())
-                
-        # except:
-        #     self.message('error switching on grammar %s, deactivate all rules\n\n (%s, %s)'% 
-        #                        (self.getName(), sys.exc_info()[0], sys.exc_info()[1]))
-        #     self.deactivateAll()            
-        # 
+        print(f'IniGrammar switched on: {self.getName()}')
+
     def showInifile(self, body=None, grammarLists=None, ini=None,
                     showGramspec=1, prefix=None, commandExplanation=None,
                     postfix=None, lineLen=60, sort=1):
@@ -2150,7 +2161,7 @@ noot mies
         else:
             spokenList = [i for i in puncts if i in allPunctsSpoken]
 
-        print('characters list "%s": %s'% (name, spokenList))
+        # print('characters list "%s": %s'% (name, spokenList))
         self.setList(name, spokenList)
         return spokenList
             
