@@ -631,7 +631,7 @@ class UtilGrammar(ancestor):
 
     def UnimacroControlPostLoad(self):
         prevSet = set(self.Lists['gramnames'])
-        newSet = set(natbj.getRegisteredGrammarNames())
+        newSet = set(self.getRegisteredGrammarNames())
         if prevSet != newSet:
             print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))

@@ -48,11 +48,21 @@ def test_getAllGrammars(unimacro_setup):
     gramon.initialize()
     gramoff = GramOff()
     gramoff.initialize()
+    assert gramon.isLoaded() is True
+    assert gramon.isActive() is True
+    assert gramoff.isLoaded() is False
+    assert gramoff.isActive() is False
     utilGrammar = UtilGrammar()
     # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
     utilGrammar.startInifile()
     utilGrammar.initialize()
-    utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
+    # utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
+    assert utilGrammar.isLoaded() is True
+    assert utilGrammar.isActive() is True
+    
+    all_um_grammars = utilGrammar.getUnimacroGrammars()
+    assert len(all_um_grammars) == 3
+    
 
 if __name__ == "__main__":
     pytest.main(['test_grammar_control.py'])

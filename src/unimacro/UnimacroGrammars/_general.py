@@ -162,7 +162,7 @@ class ThisGrammar(ancestor):
             self.setCharactersList('character')
             self.setPunctuationList('punctuation')
             self.specialSearchWords = self.Lists['searchwords'] or [] # like function, class of (inifile) section
-            print('specialSearchWords: %s'% self.specialSearchWords)
+            # print('specialSearchWords: %s'% self.specialSearchWords)
             self.setNumbersList('count', Counts)
             self.setList('modes', modes)
 ##            self.testlist = ['11\\Canon fiftyfive two fifty',

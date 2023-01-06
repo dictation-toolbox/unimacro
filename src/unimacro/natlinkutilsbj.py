@@ -537,7 +537,6 @@ class GrammarX(GrammarXAncestor):
     def getRegisteredGrammarNames(self):
         return list(self.allGrammarXObjects.keys())
 
-                
     def getPrimaryAncestor(self):
         # the default primary ancestor is the first baseclass
         return self.__class__.__bases__[0] 
