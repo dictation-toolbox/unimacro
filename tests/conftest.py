@@ -19,7 +19,6 @@ def unimacro_sample_ini_dir() ->Path:
 
  
 def copy_grammar_ini(grammar_ini_file: str,unimacro_user_dir:Path):
-
     source_file=unimacro_sample_ini_dir()/"enx_inifiles"/grammar_ini_file
     target_file=unimacro_user_dir / "enx_inifiles"/grammar_ini_file
     return file_copy(source_file,target_file)
