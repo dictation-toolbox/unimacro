@@ -4,8 +4,38 @@ from pathlib import Path
 import pytest
 from distutils.dir_util import copy_tree
 import natlink
-
+from functools import cache
+import importlib
+from shutil import copy as file_copy
 thisDir = Path(__file__).parent
+
+@cache          #only needs to be called once
+def unimacro_source_dir() ->Path:
+    return Path(importlib.util.find_spec("unimacro").submodule_search_locations[0])
+
+@cache 
+def unimacro_sample_ini_dir() ->Path:
+    return unimacro_source_dir()/"sample_ini"
+
+ 
+def copy_grammar_ini(grammar_ini_file: str,unimacro_user_dir:Path):
+
+    source_file=unimacro_sample_ini_dir()/"enx_inifiles"/grammar_ini_file
+    target_file=unimacro_user_dir / "enx_inifiles"/grammar_ini_file
+    return file_copy(source_file,target_file)
+ 
+#a function to build the fixture to copy a grammar ini file to unimacro user directory.  see sample in test_brackets.py
+#the fixture itself will return the same thing to the tests as the unimacro_setup fixture.
+
+def make_copy_grammar_ini_fixture(grammar_ini_file : str):
+    @pytest.fixture()
+    def grammar_ini_fixture(unimacro_setup):
+        copy_grammar_ini(grammar_ini_file,unimacro_setup[1])
+        return unimacro_setup
+    return grammar_ini_fixture
+
+
+
 
 @pytest.fixture()
 def unimacro_setup(tmpdir):
