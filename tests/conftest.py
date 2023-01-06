@@ -57,7 +57,7 @@ def unimacro_setup(tmpdir):
         src=Template(f.read())
         config_file_text=src.substitute(sub)
 
-    print(f"natlink_config_dir: f{natlink_config_dir}")
+    print(f"natlink_config_dir: {natlink_config_dir}")
     with open(natlink_config_file,'w') as fw:
         fw.write(config_file_text)
     
