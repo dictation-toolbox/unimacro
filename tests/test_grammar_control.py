@@ -42,7 +42,7 @@ class GramOff(natbj.DocstringGrammar):
         """grammar off"""
         print(f'got gramoff: {words}')
         
-def ttttest_getAllGrammars(unimacro_setup):
+def test_getAllGrammars(unimacro_setup):
     """see if we can get all the grammars
     """
     gramon = GramOn(inifile_stem="_gramon")
