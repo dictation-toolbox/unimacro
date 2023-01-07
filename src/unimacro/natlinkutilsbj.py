@@ -527,6 +527,28 @@ class GrammarX(GrammarXAncestor):
     def RegisterGrammarObject(self):
         self.__class__.allGrammarXObjects[self.name] = self
 
+    def CallAllGrammarObjects(self, funcName, args):
+        """calls a function through all grammar objects
+    
+        funcName should be a string with the function name
+        args should be a tuple of arguments, can be empty tuple ()
+        exits silently if function doesn't exist in a grammar
+    
+        """    
+        if args and len(args) == 1 and isinstance(args[0], tuple):
+            args = args[0] # in order to be able to give arguments "loose" in the call instead of
+                           # in a explicit tuple: CAGO(func, a, b, c) instead of
+                           #                      CAGO(func, (a, b, c))
+        for name, grammar in list(self.allGrammarXObjects.items()):
+            if not grammar.isLoaded():
+                # only loaded grammars...
+                continue
+            try:
+                func = getattr(grammar, funcName)
+            except AttributeError:
+                print('func not found for %s'% name)
+            func(*args)
+
     def GetGrammarObject(self, grammarName):
         """return the grammar object, if in correct dict, by user name
         """
@@ -1059,10 +1081,12 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         elif isinstance(words, list):
             lentwo = len(words)
         else:
-            raise TypeError('appendList, invalid type for appending to words list "%s": %s'% (listName, type(words)))
+            # assume list like object:
+            words = list(words)
+            lentwo = len(words)
 
         # may become a smaller list if grammarListLengthMaximum is exceeded:
-        _wordsToAppend = words
+        _wordsToAppend = list(words)
     
         if lenone + lentwo > grammarListLengthMaximum:
             if lenone:
@@ -1226,7 +1250,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
             title = 'Active Grammars'
         Grammars=BrowseGrammar.GrammarElement()
         Grammars.Init(BrowseGrammar.RuleCode,title)
-        CallAllGrammarObjects('InsertGrammarData',[Grammars,All,Exclusive])
+        self.CallAllGrammarObjects('InsertGrammarData',[Grammars,All,Exclusive])
         Data=(Grammars,Start,All,Exclusive)
         with  open(GrammarFileName,'wb') as GrammarFile:
             pickle.dump(Data, GrammarFile)
@@ -1283,7 +1307,13 @@ class IniGrammar(IniGrammarAncestor):
     """
     #pylint:disable=R0902, R0904
     __inherited=IniGrammarAncestor
-    def __init__(self):
+    def __init__(self, inifile_stem=None):
+        """modname is name of module, for "normal" Unimacro grammars, residing in a module.
+        
+        Can be overridden for for example test grammars, or when more than one grammar is in a module.
+        """
+        self.inifile_stem = inifile_stem or self.__module__.rsplit('.', maxsplit=1)[-1]
+
         try:
             self.iniIgnoreGrammarLists
         except AttributeError:
@@ -2241,7 +2271,7 @@ noot mies
         """
         return
 
-    def startInifile(self, modName=None):
+    def startInifile(self):
         """loads the inifile for the grammar given.
 
         Is called at initialisation of this instance.
@@ -2267,23 +2297,24 @@ noot mies
         self.checkForChanges = 1
         self.openedInifile = 0
         self.ignore = None
-        modName = self.name or modName or self.__module__.rsplit('.', maxsplit=1)[-1]
+        inifile_stem = self.inifile_stem
+        if not inifile_stem:
+            raise ValueError('startInifile, {self.name}, no inifile_stem found')
         # baseDir = status.getUnimacroDirectory()
         userDir = status.getUnimacroUserDirectory()
         
         commandDir = os.path.join(userDir,
                                         self.language +"_inifiles")
-        inifile = os.path.join(commandDir, modName + '.ini')
+        inifile = os.path.join(commandDir, inifile_stem + '.ini')
         if not os.path.isfile(inifile):
-            print('\tCannot find inifile: %s'% inifile)
-            self.lookForExampleInifile(commandDir, modName + '.ini')
+            print(f'\tCannot find inifile: {inifile}')
+            self.lookForExampleInifile(commandDir, inifile_stem + '.ini')
             if not os.path.isfile(inifile):
-                print('\tcannot find an example inifile for %s'% modName)
+                print(f'\tcannot find an example inifile for {inifile_stem}')
                 self.inifile = inifile
-                self.TryToMakeDefaultInifile(commandDir,modName + '.ini', self.language)
+                self.TryToMakeDefaultInifile(commandDir, inifile_stem + '.ini', self.language)
                 if not  os.path.isfile(inifile):
-                    self.message('cannot make a default inifile for: %s (%s)'%
-                                        (modName, inifile))
+                    self.message(f'cannot make a default inifile for: {inifile_stem} ({inifile})')
                     self.inifile = None
                     return
             #self.openFileDefault(inifile)
@@ -2293,7 +2324,7 @@ noot mies
             except KeyError:
                 commandWord = "edit"
             name = self.getName()
-            self.message(f'===Created new inifile for grammar "{modName}"\n===Please edit this file by calling the command "{commandWord} {name}"')
+            self.message(f'===Created new inifile for grammar "{inifile_stem}"\n===Please edit this file by calling the command "{commandWord} {name}"')
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
@@ -3122,7 +3153,7 @@ class DocstringGrammar(DocstringGrammarAncestor):
     nIndentSubrule = 4
     giveFullResults = 0
     
-    def __init__(self):
+    def __init__(self, **kw):
         self.ruleFuncsDict = {} # records the functions corresponding to rules
         gramSpecFromDocstring = self.buildGramSpecFromDocstrings() or ""
         try:
@@ -3135,7 +3166,7 @@ class DocstringGrammar(DocstringGrammarAncestor):
         totalgramSpec = gramSpecFromDocstring + '\n' + classGramSpec
         self.gramSpec = totalgramSpec.strip()
         self.originalGramSpec = self.gramSpec
-        self.__inherited.__init__(self)
+        self.__inherited.__init__(self, **kw)
 
     def buildGramSpecFromDocstrings(self):
         L = []

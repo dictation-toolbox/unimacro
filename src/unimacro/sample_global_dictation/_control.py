@@ -503,7 +503,7 @@ def changeCallback(type,args):
         #This could be done anywhere, but not within natlinkutilsbj
         #Because that module is 'imported from'.
         if utilGrammar.interceptMode:
-            CallAllGrammarObjects('setInterceptMode',[0])
+            self.CallAllGrammarObjects('setInterceptMode',[0])
         
         
     

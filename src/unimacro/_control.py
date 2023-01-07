@@ -449,7 +449,7 @@ class UtilGrammar(ancestor):
             self.gotResults_showexclusive(words, fullResults)
             return
 
-        grammars = natbj.allUnimacroGrammars
+        grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
         # print(f'_control, gramNames: {gramNames}')
         gramName = self.hasCommon(words, gramNames)
@@ -467,7 +467,7 @@ class UtilGrammar(ancestor):
         if gramName:
             name = [gramName]
         else:
-            name = words[1:-1]
+            name = words[1:-1]   # 'all' or 'active'
         
         All=1
         if len(name)>0:
@@ -490,13 +490,13 @@ class UtilGrammar(ancestor):
             #print 'collect and show active, non-active and non-Unimacro grammars'
             activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
             
-            print(f'allUnimacroGrammars (Unimacro): {natbj.allUnimacroGrammars}')
             # print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
-            allGramNames = self.getUnimacroGrammarNames()
+            allGrammars = self.getUnimacroGrammars()
+            print(f'allGrammars (Unimacro): {allGrammars}')
+            allGramNames = allGrammars.keys()
             self.setList('gramnames', allGramNames)
-            print(f'for being sure, set all active grammars in list "gramnames": "{allGramNames}"')
             
-            for grammar_name, gram in natbj.allUnimacroGrammars.items():
+            for grammar_name, gram in allGrammars.items():
                 # gram = natbj.allUnimacroGrammars[g]
                 print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
                 # 
@@ -705,7 +705,7 @@ def changeCallback(type, args):
         #This could be done anywhere, but not within natlinkutilsbj
         #Because that module is 'imported from'.
         if utilGrammar.interceptMode:
-            natbj.CallAllGrammarObjects('setInterceptMode',[0])
+            utilGrammar.CallAllGrammarObjects('setInterceptMode',[0])
         
         
 def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
@@ -736,8 +736,8 @@ if __name__ == "__main__":
     ## interactive use, for debugging:
     natlink.natConnect()
     try:
-        utilGrammar = UtilGrammar()
-        utilGrammar.startInifile(modName = '_control')
+        utilGrammar = UtilGrammar(inifile_stem='_control')
+        utilGrammar.startInifile()
         utilGrammar.initialize()
         Words = ['show', 'all', 'grammars']
         FR = {}
