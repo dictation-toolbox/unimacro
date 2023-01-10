@@ -22,9 +22,9 @@ jobs:
     - name: Building package with flit
       run: |
             flit build
-    - name: Publishing 📦 to Test PyPI
+    - name: Publishing 📦 to the package index (typically pypi or testpypi)
      # Regarding building artifacts within Platform specific environment see https://github.com/pypa/gh-action-pypi-publish#non-goals
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
+        password: ${{ secrets.INDEX_API_TOKEN }}
+        repository_url: ${{ vars.PACKAGE_INDEX_URL}}
