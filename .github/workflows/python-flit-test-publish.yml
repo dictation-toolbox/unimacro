@@ -1,4 +1,4 @@
-name: Publish Package 📦 to Test PyPI
+name: Publish Package 📦 to a Python Package Index
 on:
   release:
     types: [published] # with prerelease and release
@@ -9,7 +9,10 @@ permissions:
 
 jobs:
   build:
-    # Set up the environment `CI` references the secret `TEST_PYPI_API_TOKEN` in repository settings
+    # Select an environment with the  secret `PYPI_API_TOKEN` 
+    #and the environment varial PACKAGE_INDEX_URL in repository settings
+    #if you environment is named PUBLISH
+    #the environment line should be environment: PUBLISH
     # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#referencing-an-environment
     environment: TESTDEPLOY
     runs-on: ubuntu-latest
