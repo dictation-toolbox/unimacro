@@ -11,7 +11,7 @@ jobs:
   build:
     # Set up the environment `CI` references the secret `TEST_PYPI_API_TOKEN` in repository settings
     # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#referencing-an-environment
-    environment: CI
+    environment: TESTDEPLOY
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
