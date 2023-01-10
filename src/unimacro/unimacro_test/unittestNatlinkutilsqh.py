@@ -4,18 +4,18 @@
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
 # unittestNatlinkutilsqh.py
-#   This script performs tests on the utilities in natlinkutilsqh.py
+#   This script performs tests on the utilities in natlinkutilsqh.py, now unimacroutils.py
 #   the site mechanism (of Qh private) in which modules of a website generating program
 #   are tested specifically
 #
+#pylint:disable=C0209, E1101
 import sys
 import unittest
-import types
 import os
 import os.path
-import TestCaseWithHelpers
 import natlink
-from dtactions.unimacro import unimacroutils as natqh
+from dtactions.unimacro import unimacroutils
+import TestCaseWithHelpers
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.
@@ -50,9 +50,6 @@ class UnittestNatlinkutilsqh(TestCaseWithHelpers.TestCaseWithHelpers):
         
     def tearDown(self):
         natlink.natDisconnect()
-        pass
-
-
     
     def testMatchTitle(self):
         """test the matchTitle function

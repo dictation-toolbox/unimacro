@@ -8,51 +8,16 @@
 # with numbers to spoken forms
 # see spokenforms.py in the Unimacro directory
 # discard DNS version < 11... (abbrevs not N. L. D. but N L D)
-import sys
-import os
-import types
+#pylint:disable=C0209, R0904
 import unittest
-import time
-import pprint
 
-#need this here (hard coded, sorry) for it can be run without NatSpeak being on
-extraPaths = (r"C:\natlinkgit3\unimacro",)
-for extraPath in extraPaths:
-    if os.path.isdir(extraPath):
-        if extraPath not in sys.path:
-            sys.path.append(extraPath)
-import unimacro.spokenforms
+from unimacro import spokenforms
 from dtactions.unimacro import inivars
-from dtactions.unimacro import utilsqh
 import TestCaseWithHelpers
-class TestError(Exception):pass
 
-def convertListToUnicode(L):
-    """convert inplace the string values of a list to Unicode, Python 2
-    """
-    for i, item in enumerate(L):
-         if type(item) == bytes:
-             L[i] = utilsqh.convertToUnicode(item)
- 
-def convertKeysValuesToUnicode(D):
-    """convert list of string values to Unicode, Python 2
-  2: ['two', 'too'] to  2: [u'two', u'too'],
-    """
-    for k, values in D.items():
-        if type(values) == list:
-           for i, value in enumerate(values):
-                values[i] = utilsqh.convertToUnicode(value)
-        elif type(values) == bytes:
-            values = utilsqh.convertToUnicode(values)
-        if type(k) == bytes:
-            del D[k]
-            k = utilsqh.convertToUnicode(k)
-            D[k] = values
-        else:
-            if type(values) != list:
-                D[k] = values
+class TestError(Exception):
+    pass
 
-DNSVersion = 15  # can test in other versions too
 expected_n2s =    {0: ['oh', 'zero'],
  1: ['on\xe9'],
  2: ['two', 'too'],
@@ -316,7 +281,7 @@ expected_punct2spoken =     {'!': ['exclamation mark'],
 class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         spokenforms.resetSpokenformsGlobals()
-        self.numbers = spokenforms.SpokenForms('test', DNSVersion=DNSVersion)
+        self.numbers = spokenforms.SpokenForms('test')
     
     def tearDown(self):
         pass
@@ -345,7 +310,7 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         self.assert_equal(expected_spoken2punct, n.spoken2punct, "abbrevs, first instance spoken2punct is not as expected")
         
         # next instance:
-        m = spokenforms.SpokenForms('test', DNSVersion=DNSVersion)
+        m = spokenforms.SpokenForms('test')
         self.assert_equal(expected_s2n, m.s2n, "numbers, second instance spoken2numbers is not as expected")
         
         
@@ -368,14 +333,14 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
         
         # next instance non existing language:
         print('\nexpect messages from spokenforms, as it is switched to a non existing language')
-        m = spokenforms.SpokenForms('othertest', DNSVersion=DNSVersion)
+        m = spokenforms.SpokenForms('othertest')
         expected_othertest =   {}
         self.assert_equal(expected_othertest, m.s2n, "numbers, other language (no entries) spoken2numbers is not as expected")
         
         self.assert_equal(expected_othertest, m.n2s, "numbers, other language (no entries) numbers2spoken is not as expected")
         
         # back to language 'test'
-        n = spokenforms.SpokenForms('test', DNSVersion=DNSVersion)
+        n = spokenforms.SpokenForms('test')
         self.assert_equal(expected_s2n, n.s2n, "numbers again, spoken2numbers is not as expected")
         
         self.assert_equal(expected_n2s, n.n2s, "numbers again, numbers2spoken is not as expected")
@@ -394,14 +359,14 @@ class UnittestNumbersSpokenForms(TestCaseWithHelpers.TestCaseWithHelpers):
 
         # non existing language:        
         print('\nexpect messages from spokenforms.ini, as language is unknown')
-        m = spokenforms.SpokenForms('othertest', DNSVersion=DNSVersion)
+        m = spokenforms.SpokenForms('othertest')
 
         got = n.getMixedList(L)
         expected =    ['1', '2', '4', '5', '6']
         self.assert_equal(expected, n.getMixedList(L), "numbers: spoken forms list not as expected")
 
         # back to previous:
-        n = spokenforms.SpokenForms('test', DNSVersion=DNSVersion)
+        n = spokenforms.SpokenForms('test')
         got = n.getMixedList(L)
         expected = ['on\xe9', 'two', 'too', 'four', 'for', 'five', 'six']
 

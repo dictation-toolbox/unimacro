@@ -119,9 +119,18 @@ def test_show_all_grammars(unimacro_setup):
     # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
     utilGrammar.startInifile()
     utilGrammar.initialize()
-    Words = ['show', 'all', 'grammars']
+    
+    # try "show gramon"
+    ## this one opens the info in a new window:
+    # Words = ['show', 'gramon']
+    # FR = {}
+    # utilGrammar.gotResults_show(Words, FR)
+    Words = ['show', 'gramoff']
     FR = {}
     utilGrammar.gotResults_show(Words, FR)
+    #    
+    Words = ['switch', 'on', 'gramoff']
+    utilGrammar.gotResults_switch(Words, FR)
     
         
     

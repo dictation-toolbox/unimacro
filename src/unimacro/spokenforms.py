@@ -2,7 +2,7 @@
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 #  June 2011/March 2022
 #
-#pylint:disable=C0115, C0116, R0912, R0914, R0915, R0911
+#pylint:disable=C0115, C0116, R0912, R0914, R0915, R0911, C0209
 """This module contains a class spokenforms that maintains spoken forms
 for numbers, thus making it possible to use spoken forms for all numbers lists
 in Unimacro grammars which need numbers 
@@ -233,10 +233,10 @@ class SpokenForms:
   
     language = None
     
-    def __init__(self, language, DNSVersion):
+    def __init__(self, language, DNSVersion=None):
         # global in this module, does not extra work if language did not change:
         checkSpokenformsInifile(language)
-        self.DNSVersion = DNSVersion
+        self.DNSVersion = DNSVersion or 15
         
         if self.language is None or self.language != language:
             self.__class__.language = None
@@ -388,7 +388,7 @@ class SpokenForms:
                 for name in spokenforms:
                     # needed for retrieving the numbers
                     # spokenforms back to the numbers:
-                    if not name in self.s2n:
+                    if name not in self.s2n:
                         self.s2n[name] = i
             else:
                 print('no spoken forms found for %s'% i)

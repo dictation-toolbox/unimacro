@@ -24,13 +24,24 @@
 #                 '\r\n' for WordPad, aligen (???)
 
 # increase or decrease for more visible or faster testing:
-visibleTime = 0.5 # set higher, if you want to see what happens, 1, 2...
-
+#pylint:disable=C0209, C0321, W0702, R0912
 import sys
 import os
 import os.path
-import win32clipboard
 from pathlib import Path
+import unittest
+import time
+import win32gui
+from dtactions.messagefunctions import *
+import dtactions.messagefunctions as mess
+from dtactions.unimacro import unimacroutils
+from unimacro import windowparameters
+import TestCaseWithHelpers
+
+class TestError(Exception):
+    pass
+
+visibleTime = 0.5 # set higher, if you want to see what happens, 1, 2...
 
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = [Path(r"C:\natlinkGIT3\unimacro")]
@@ -46,24 +57,10 @@ try:
 except ImportError:
     tester = "aligen"
 
-import unimacro.windowparameters as windowparameters
+testApp = None   # forgot about this...
 
 W = windowparameters.PROGS[tester]
 
-import sys
-import unittest
-import os
-import os.path
-import time
-import traceback        # for printing exceptions
-from struct import pack
-import natlink
-import win32gui
-import win32ui
-from dtactions.messagefunctions import *
-import dtactions.messagefunctions as mess
-import TestCaseWithHelpers
-class TestError(Exception):pass
 
 #---------------------------------------------------------------------------
 class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
@@ -144,7 +141,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     def getAppWindow(self):
         appWindow = findTopWindow(wantedClass=W["windowclass"], wantedText=W["windowcaption"])
         if appWindow:
-            isVisible = win32gui.IsWindowVisible(appWindow)
+            _isVisible = win32gui.IsWindowVisible(appWindow)
             #print 'is visible? %s'% isVisible
             self.__class__.app = appWindow
             return
@@ -152,12 +149,12 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
             raise TestError("application (class: %s, caption: %s) should be active before you start the tests"%
                             (W["windowclass"], W["windowcaption"]))
         meHndle = win32gui.GetForegroundWindow()
-        result = os.startfile(W["apppath"])
+        _result = os.startfile(W["apppath"])
         if W["testcloseapp"]:
             sleepTime = 0.1
         else:
             sleepTime = 0.5
-        for iTry in range(20):
+        for _Try in range(20):
             time.sleep(sleepTime)
             appWindow = findTopWindow(wantedClass=W["windowclass"], wantedText=W["windowcaption"])
             if appWindow: break

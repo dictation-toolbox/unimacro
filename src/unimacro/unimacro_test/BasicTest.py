@@ -7,11 +7,12 @@
 #   NaturallySpeaking should be running with nothing in the editor window
 #   (that you want to preserve) before these tests are run.
 #   performed.
-from pathlib import Path
-import sys
+# from pathlib import Path
+import unittest
 from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
 from dtactions.unimacro import unimacroactions as actions
+from natlinkcore import natlinkutils
+import TestCaseWithHelpers
 
 # unimacrodir = str(Path('./..').resolve())
 # if unimacrodir not in sys.path:
@@ -19,8 +20,6 @@ from dtactions.unimacro import unimacroactions as actions
 
 action = actions.doAction
 
-import unittest
-import TestCaseWithHelpers
 
 ##class UnimacroBasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
 class BasicTest(TestCaseWithHelpers.TestCaseWithHelpers):

@@ -12,28 +12,18 @@
 #
 import sys
 import unittest
-import types
 import os
 import os.path
 import time
-import traceback        # for printing exceptions
-import TestCaseWithHelpers
+from pathlib import Path
 import natlink
-from natlinkcore import loader
 from natlinkcore import natlinkstatus
 from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
-from pathlib import Path
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.unimacro import unimacroactions as actions
+import TestCaseWithHelpers
 
 status = natlinkstatus.NatlinkStatus()
-
-from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
 
 class TestError(Exception):
     pass

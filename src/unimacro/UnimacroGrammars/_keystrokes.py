@@ -26,7 +26,8 @@ from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro import unimacroutils
 from unimacro import natlinkutilsbj as natbj
 from natlinkcore import nsformat 
-
+from natlinkcore import loader
+natlinkmain = loader.NatlinkMain()
 language = unimacroutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
@@ -158,7 +159,9 @@ class ThisGrammar(ancestor):
             if wantExclusive:
                 print(f'make keystokes mode exclusive: {wantExclusive}')
                 self.setExclusive(1)
-            #if 
+                # done at start of the grammar, possibly only do it here:
+                # natlinkmain.set_on_mic_off_callback(self.on_mic_off_callback)
+            #
             repkeySections = self.ini.getSectionsWithPrefix('repkey', mode)
             repkeySections.append('repkey')
             norepkeySections = self.ini.getSectionsWithPrefix('norepkey', mode)
@@ -608,6 +611,7 @@ class ThisGrammar(ancestor):
 thisGrammar = ThisGrammar()
 if thisGrammar.gramSpec:
     thisGrammar.initialize()
+    natlinkmain.set_on_mic_off_callback(thisGrammar.cancelMode)
 else:
     thisGrammar = None
 
@@ -618,10 +622,4 @@ def unload():
         thisGrammar.unload()
     thisGrammar = None
  
-def changeCallback(type,args):
-    # not active without special version of natlinkmain:
-    if ((type == 'mic') and (args=='on')):
-        return   # check WAS in natlinkmain...
-    if thisGrammar:
-        thisGrammar.cancelMode()
 

@@ -2522,8 +2522,8 @@ def getExplorerTitles():
     return TitlesHandles
 
 def getExplWindowsWithText(hwnd, th):
-    TH, Classes = th
-    if win32gui.GetClassName(hwnd) in Classes:
+    TH, classes = th
+    if win32gui.GetClassName(hwnd) in classes:
         # wTitle = win32gui.GetWindowText(hwnd).strip()  # ansi
         wTitle = getwindowtext(hwnd).strip()
         if wTitle and hwnd:
@@ -2635,6 +2635,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     meant for setting up a inputbox dialog
     """
     rwfile = readwritefile.ReadWriteFile()
+    print(f'unimacrofolder: {unimacrofolder}')
     Text = rwfile.readAnything(os.path.join(unimacrofolder, templatefile))
     # print(f'OldText: {Text}')
     for orig, toreplace in  [('$prompt$', prompt), ('$default$', default), ('$text$', text),
@@ -2727,8 +2728,8 @@ if __name__ == "__main__":
     ## interactive use, for debugging:
     natlink.natConnect()
     try:
-        thisGrammar = ThisGrammar()
-        thisGrammar.startInifile(modName = '_folders')
+        thisGrammar = ThisGrammar(inifile_stem="_folders")
+        thisGrammar.startInifile()
         thisGrammar.initialize()
     finally:
         natlink.natDisconnect()

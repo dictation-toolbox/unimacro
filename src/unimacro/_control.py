@@ -148,9 +148,9 @@ class UtilGrammar(ancestor):
     def gotBegin(self, moduleInfo):
         #Now is the time to get the names of the grammar objects and
         # activate the list for the <ShowTrainGrammar> rule
-        if natbj.grammarsChanged:
+        if self.GetGrammarsChanged():
             prevSet = set(self.Lists['gramnames'])
-            newSet = set(natbj.allUnimacroGrammars.keys())
+            newSet = set(self.getUnimacroGrammars().keys())
             if prevSet != newSet:
                 # debug lines:
                 # if newSet - prevSet:
@@ -158,7 +158,7 @@ class UtilGrammar(ancestor):
                 # if prevSet - newSet:
                 #     print '_control, removed Unimacro grammar(s): %s'% list(prevSet - newSet)
                 self.setList('gramnames', list(newSet))
-            natbj.ClearGrammarsChangedFlag()
+            self.ClearGrammarsChangedFlag()
         if self.checkForChanges:
             self.checkInifile()
             
@@ -328,9 +328,11 @@ class UtilGrammar(ancestor):
                 else:
                     self.switch(gram, g, funcName)
         else:
-            gramname = self.hasCommon(words, list(natbj.allUnimacroGrammars.keys()))
+            grammars = self.getUnimacroGrammars()
+            gramNames = list(grammars.keys())
+            gramname = self.hasCommon(words, gramNames)
             if gramname:
-                gram = natbj.allUnimacroGrammars[gramname]
+                gram = grammars[gramname]
                 if gram != self:
                     self.switch(gram, gramname, funcName)
                     # self never needs switching on
@@ -488,15 +490,17 @@ class UtilGrammar(ancestor):
         self.BrowsePrepare(Start, All, Exclusive)
         if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
-            activeGrammars, inactiveGrammars, switchedOffGrammars = [], [], []
-            
-            # print(f'all active grammars (natlinkmain): {natlinkmain.loadedFiles}')
-            allGrammars = self.getUnimacroGrammars()
-            print(f'allGrammars (Unimacro): {allGrammars}')
-            allGramNames = allGrammars.keys()
+            G = self.getUnimacroGrammars()
+            print(f'allGrammars (Unimacro): {G}')
+            allGramNames = G.keys()
             self.setList('gramnames', allGramNames)
-            
-            for grammar_name, gram in allGrammars.items():
+            activeGrammars = [g for g in G if G[g].isActive()]
+            inactiveGrammars = [g for g in G if G[g].isLoaded() and not G[g].isActive()]
+            switchedOffGrammarsGrammars = [g for g in G if not G[g].isLoaded()]
+            print(f'activeGrammars: {activeGrammars}')
+            print(f'inactiveGrammars: {inactiveGrammars}')
+            print(f'switchedOffGrammarsGrammars: {switchedOffGrammarsGrammars}')
+            for grammar_name, gram in G.items():
                 # gram = natbj.allUnimacroGrammars[g]
                 print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
                 # 
@@ -561,7 +565,7 @@ class UtilGrammar(ancestor):
             spokenforms.editSpokenForms(comingFrom=self, name="edit spoken forms", language=self.language)
             return
 
-        grammars = natbj.allUnimacroGrammars
+        grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words[-1:], gramNames)
         if gramName:
@@ -626,6 +630,7 @@ class UtilGrammar(ancestor):
             t = ';  '.join(t)
             self.DisplayMessage(t)
         else:
+            t = ';  '.join(t)
             t = t.replace('; ', '\n')
             actions.Message(t)
 

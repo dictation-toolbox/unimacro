@@ -270,48 +270,6 @@ def SetMic(state):
 # The CallAllGrammarObjects(funcName,args) method provides
 # a means to send or receive signals/data to other grammar objects
 # See also the GrammarX class
-allUnimacroGrammars = {}
-grammarsChanged = 0
-
-exclusiveGrammars = {}
-
-def ClearGrammarsChangedFlag():
-    """clears this flag, is used solely by grammar _control
-
-    this flag was set when the grammar was registered or and registered
-
-    """
-    #pylint:disable=W0603
-    global grammarsChanged
-    grammarsChanged = 0
-
-def RegisterGrammarObject(GrammarObject):
-    """registers a grammar object in global variable
-
-    also sets the flag "grammarsChanged"
-    key in the dictionary allUnimacroGrammars is the name,
-    value is the instance object itself
-    """    
-    #pylint:disable=W0603
-    global allUnimacroGrammars, grammarsChanged
-    allUnimacroGrammars[GrammarObject.GetName()] = GrammarObject
-    grammarsChanged = 1
-
-# def UnRegisterGrammarObject(GrammarObject):
-#     """unregisters a grammar object from the global variable
-# 
-#     also sets the flag "grammarsChanged"
-#     delete the item in the dictionary "allUnimacroGrammars"
-# 
-#     """    
-#     #pylint:disable=W0603
-#     global allUnimacroGrammars, grammarsChanged
-#     for k, v in list(allUnimacroGrammars.items()):
-#         if v is GrammarObject:
-#             del allUnimacroGrammars[k]
-#             # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
-#             grammarsChanged = 1
-#             return
 
 # def CallAllGrammarObjects(funcName,args):
 #     """calls a function through all grammar objects
@@ -417,9 +375,10 @@ def UnRegisterControlObject(GrammarObject):
 
 def GlobalResetExclusiveMode():
     #pylint:disable=C0116
-    for _k, v in list(exclusiveGrammars.items()):
-##        print 'resetting: %s'% k
-        v[0].resetExclusiveMode()
+    print('GlobalResetExclusiveMode, this one does nothing any more')
+#     for _k, v in list(exclusiveGrammars.items()):
+# ##        print 'resetting: %s'% k
+#         v[0].resetExclusiveMode()
 
 ##def Global(MessageText):
 ##    """displays message in the message window
@@ -503,6 +462,10 @@ class GrammarX(GrammarXAncestor):
         allGrammarXObjects
     except NameError:
         allGrammarXObjects = {}
+    try:
+        GrammarsChanged
+    except NameError:
+        GrammarsChanged = False
 
     def __init__(self):
         self.__inherited.__init__(self)
@@ -526,6 +489,13 @@ class GrammarX(GrammarXAncestor):
 
     def RegisterGrammarObject(self):
         self.__class__.allGrammarXObjects[self.name] = self
+        self.__class__.GrammarsChanged = True
+
+    def GetGrammarsChangedFlag(self):
+        return self.__class__GrammarsChanged
+
+    def ClearGrammarsChangedFlag(self):
+        self.__class__.GrammarsChanged = False
 
     def CallAllGrammarObjects(self, funcName, args):
         """calls a function through all grammar objects
@@ -713,8 +683,8 @@ class GrammarX(GrammarXAncestor):
     #Now we can get info on the exclusive state
     def getExclusiveInfo(self):
         name = self.GetName()
-        if exclusiveGrammars and name in exclusiveGrammars:
-            return exclusiveGrammars[name]
+        if name in self.exclusiveGrammars:
+            return self.exclusiveGrammars[name]
         return None
     
     def printExclusiveInfo(self):
@@ -1307,6 +1277,8 @@ class IniGrammar(IniGrammarAncestor):
     """
     #pylint:disable=R0902, R0904
     __inherited=IniGrammarAncestor
+    inifile_stem = None
+    
     def __init__(self, inifile_stem=None):
         """modname is name of module, for "normal" Unimacro grammars, residing in a module.
         
@@ -2299,7 +2271,7 @@ noot mies
         self.ignore = None
         inifile_stem = self.inifile_stem
         if not inifile_stem:
-            raise ValueError('startInifile, {self.name}, no inifile_stem found')
+            raise ValueError(f'startInifile, {self.name}, no inifile_stem found ')
         # baseDir = status.getUnimacroDirectory()
         userDir = status.getUnimacroUserDirectory()
         
