@@ -127,7 +127,7 @@ class UtilGrammar(ancestor):
         # temp set allResults to 0, disabling the messages trick:
         if not self.load(self.gramSpec, allResults=showAll):
             return
-        natbj.RegisterControlObject(self)
+        self.RegisterControlObject(self)
         self.emptyList('message')
         allGramNames = self.getUnimacroGrammarNames()
         self.setList('gramnames', allGramNames)
@@ -141,14 +141,15 @@ class UtilGrammar(ancestor):
 ##            self.setExclusive(1)
         print('---now starting other Unimacro grammars:')
 
+
     def unload(self):
-        natbj.UnRegisterControlObject(self)
+        self.UnregisterControlObject()
         ancestor.unload(self)
 
     def gotBegin(self, moduleInfo):
         #Now is the time to get the names of the grammar objects and
         # activate the list for the <ShowTrainGrammar> rule
-        if self.GetGrammarsChanged():
+        if self.GetGrammarsChangedFlag():
             prevSet = set(self.Lists['gramnames'])
             newSet = set(self.getUnimacroGrammars().keys())
             if prevSet != newSet:
@@ -164,16 +165,6 @@ class UtilGrammar(ancestor):
             
         self.startExclusive = self.exclusive # exclusive state at start of recognition!
 
-    def gotResultsInit(self,words,fullResults):
-        if self.mayBeSwitchedOn == 'exclusive':
-            print('recog controle, switch off mic: %s'% words)
-            natbj.SetMic('off')
-        if self.exclusive:
-            try:
-                self.DisplayMessage('<%s>'% ' '.join(words))
-            except natlink.NatError:
-                print('DisplayMessage failed: "%s"'% ' '.join(words))
-
     def resetExclusiveMode(self):
         """no activateAll, do nothing, this grammar follows the last unexclusive grammar
         """
@@ -185,36 +176,9 @@ class UtilGrammar(ancestor):
         pass
     
     def gotResultsObject(self,recogType,resObj):
-        if natbj.IsDisplayingMessage:
-            return
-        mes = natbj.GetPendingMessage()
-        if mes:
-            mes = '\n\n'.join(mes)
-            natbj.ClearPendingMessage()
-            self.DisplayMessage(mes)
-            return
-        unimacroutils.doPendingBringUps()  # if there were
-        unimacroutils.doPendingExecScripts()  # if there were
-
-        if self.startExclusive and self.exclusive and showAll:
-            # display recognition results for exclusive grammars
-            # with showAll = None (in top of this file), you can disable this feature
-            if recogType == 'reject':
-                URName = ''
-                exclGram = natbj.exclusiveGrammars
-                exclGramKeys = list(exclGram.keys())
-                if len(exclGramKeys) > 1 and self.name in exclGramKeys:
-                    exclGramKeys.remove(self.name)
-                if len(exclGramKeys) > 1:
-                    URName = ', '.join(exclGramKeys)
-                k = exclGramKeys[0]
-                v = exclGram[k]
-                # UE stands for unrecognised exclusive:
-                # if more exclusive grammars,
-                # the last one is taken
-                URName = URName or v[2]   # combined name or last rule of excl grammar
-                msg = '<'+URName+': ???>'
-                self.DisplayMessage(msg, alsoPrint=0)
+        """probably obsolete, mechanism was too complicated
+        """
+        return
 
     #Utilities for Filter Modes and other special modes
     def setMode(self,NewMode):
@@ -304,9 +268,9 @@ class UtilGrammar(ancestor):
     def gotResults_switch(self,words,fullResults):
         #print 'control, switch: %s'% words
         if self.hasCommon(words, 'on'):
-            funcName = 'switchOn'
+            switchOn = True
         elif self.hasCommon(words, 'off'):
-            funcName = 'switchOff'
+            switchOn = False
         else:
             try:
                 t = {'nld': '<%s: ongeldig schakel-commando>'% self.GetName()}[self.language]
@@ -314,68 +278,49 @@ class UtilGrammar(ancestor):
                 t = '<%s: invalid switch command>'% self.GetName()
             self.DisplayMessage(t)
             return
+        G = self.getUnimacroGrammars()
+        Gkeys = list(G.keys())
         if self.hasCommon(words, 'all grammars'):
-            #print '%s all grammars:'% funcName
-            notLoaded = {}
-            for impg, gram in natbj.importedGrammars.items():
-                if impg not in natbj.allUnimacroGrammars:
-                    notLoaded[impg] = gram
-                    
-            for g in natbj.allUnimacroGrammars.items():
-                gram = natbj.allUnimacroGrammars[g]
+            for gname, gram in G.items():
                 if gram == self:
-                    print('no need to switch on _control (should always be on...)')
-                else:
-                    self.switch(gram, g, funcName)
+                    continue
+                self.switch(gram, gname, switchOn)
         else:
-            grammars = self.getUnimacroGrammars()
-            gramNames = list(grammars.keys())
-            gramname = self.hasCommon(words, gramNames)
-            if gramname:
-                gram = grammars[gramname]
+            gname = self.hasCommon(words, Gkeys)
+            if gname:
+                gram = G[gname]
                 if gram != self:
-                    self.switch(gram, gramname, funcName)
+                    self.switch(gram, gname, switchOn)
                     # self never needs switching on
             else:
                 print('_control switch, no valid grammar found, command: %s'% words)
 
-    def switch(self, gram, gramName, funcName):
+    def switch(self, gram, gname, switchOn):
         """switch on or off grammar, and set in inifile,
-        
+        gram is the grammar object
+        gname is the grammar name
+        switchOn is True or Fals
         """
-        func = getattr(gram, funcName)
-        # in case manual changes were done:
-        #gram.checkInifile()
-        if funcName == 'switchOn':
+        if gram == self:
+            print(f'should not be here, do not switch on of off _control {gram}')
+            return
+        if switchOn:
             self.checkInifile()
-            if not gram.mayBeSwitchedOn:
-                gram.ini.set('general', 'initial on', 1)
-                #gram.mayBeSwitchedOn = 1
-                gram.ini.write()
-                unimacroutils.Wait(0.1)
-            else:
-                print('reload grammar "%s"'% gram.getName())
+            gram.ini.set('general', 'initial on', 1)
+            gram.ini.write()
+            unimacroutils.Wait(0.1)
 
             gram.unload()
             gram.initialize()
-                
-            # modName = gram.__module__
-            # modPath = gram.__module__.__file__
-            # natlinkmain.unload_module(modName)
-            # natlinkmain.load_or_reload_module(modPath, force_load=True)
-            #print 'reloaded "%s"'% modName
             return 1
-        if funcName == 'switchOff':
-            if gram.mayBeSwitchedOn:
-                gram.ini.set('general', 'initial on', 0)
-                gram.ini.writeIfChanged()
-                gram.mayBeSwitchedOn = 0
-                gram.unload()
-                print('grammar "%s" switched off'% gram.getName())
-                return 1
-            print('grammar "%s" switched off (again)'% gram.getName())
-            return 1
-        raise ValueError('switching on/off should have as function "switchOn" or "switchOff", not: %s'% func)
+
+        # switch off:        
+        gram.ini.set('general', 'initial on', 0)
+        gram.ini.writeIfChanged()
+        gram.cancelMode()  
+        gram.unload()
+        print('grammar "%s" switched off'% gram.getName())
+        return 1
          
     def gotResults_showexclusive(self,words,fullResults):
 
@@ -386,6 +331,7 @@ class UtilGrammar(ancestor):
         else:
             Start=()
         # fix state at this moment (in case of Active grammars popup)
+        
         if natbj.exclusiveGrammars:
             Exclusive = 1
             self.BrowsePrepare(Start, All, Exclusive)
@@ -410,15 +356,15 @@ class UtilGrammar(ancestor):
 
     def gotResults_resetexclusive(self,words,fullResults):
         print('reset exclusive')
-        if natbj.exclusiveGrammars:
+        exclGrammars = natbj.getExclusiveGrammars()
+        if exclGrammars:
             T = ['exclusive grammars:']
-            for e in natbj.exclusiveGrammars:
-                T.append(e)
+            for name, gram in exclGrammars.items():
+                T.append(name)
+                gram.cancelMode()
             T.append(self.name)
             T.append('... reset exclusive mode')
             self.DisplayMessage(' '.join(T))
-            natbj.GlobalResetExclusiveMode()
-            unimacroutils.Wait(1)
             self.DisplayMessage('reset exclusive mode OK')
         else:
             self.DisplayMessage('no exclusive grammars')
@@ -445,9 +391,10 @@ class UtilGrammar(ancestor):
         if self.hasCommon(words, 'spoken forms'):
             spokenforms.showSpokenForms(comingFrom=self, name="show spoken forms", language=self.language)
             return
-        Exclusive = 0
-        if natbj.exclusiveGrammars:
-            print('exclusive grammars (+ control) are: %s'% ' '.join(list(natbj.exclusiveGrammars.keys())))
+        if self.hasCommon(words, 'exclusive'):
+            G = self.getExclusiveGrammars()
+            exclNames = [g for g in G if G[g].isExclusive()]
+            print('exclusive grammars (+ control) are: {exclNames}')
             self.gotResults_showexclusive(words, fullResults)
             return
 
@@ -514,11 +461,7 @@ class UtilGrammar(ancestor):
                 #     else:
                 #         print(f'cannot remove from otherGrammars: {mod_name}')
                 # elif result == 0:
-                #     maySwitchOn = gram.mayBeSwitchedOn
-                #     if maySwitchOn:
-                #         inactiveGrammars.append(grammar_name)
-                #     else:
-                #         switchedOffGrammars.append(grammar_name)
+                #     inactiveGrammars.append(grammar_name)
                 #     if mod_name in otherGrammars:
                 #         otherGrammars.remove(mod_name)
                 #     else:
@@ -620,16 +563,12 @@ class UtilGrammar(ancestor):
         try:
             t = {'nld': ['Grammatica "%s" is uitgeschakeld'% name,
                          '', 
-                         '"Schakel in %s" om te activeren'% name]}[self.language]
+                         'Zeg: "schakel in [grammatica] %s" om te activeren'% name]}[self.language]
             # title = {'nld': 'Grammatica %s'% name}[self.language]
         except KeyError:
             t = ['Grammar "%s" is switched off'% name,
-                 '"Switch On Grammar %s" to activate'% name]
+                 'Say: "switch on [grammar] %s" to activate'% name]
             # title = 'Grammar %s'% name
-        if natbj.loadedMessageGrammar:
-            t = ';  '.join(t)
-            self.DisplayMessage(t)
-        else:
             t = ';  '.join(t)
             t = t.replace('; ', '\n')
             actions.Message(t)

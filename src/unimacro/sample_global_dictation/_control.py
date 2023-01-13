@@ -189,8 +189,6 @@ class UtilGrammar(ancestor):
         pass
     
     def gotResultsObject(self,recogType,resObj):
-        if natbj.IsDisplayingMessage:
-            return
         if self.doMessages:
             mes = natbj.GetPendingMessage()
             if mes:

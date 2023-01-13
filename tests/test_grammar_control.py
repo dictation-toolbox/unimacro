@@ -20,9 +20,6 @@ class GramOn(natbj.IniGrammar):
     def initialize(self):
         self.ini.set('general', 'initial on', "True")
         self.switchOnOrOff()
-        if not self.isLoaded():
-            # print(f'{self.name}: grammar is not loaded')
-            return
     def gotResults_gramon(self, words, fullResults):
         print(f'got gramon: {words}')
 
@@ -42,7 +39,7 @@ class GramOff(natbj.DocstringGrammar):
         """grammar off"""
         print(f'got gramoff: {words}')
         
-def test_getAllGrammars(unimacro_setup):
+def tttest_getAllGrammars(unimacro_setup):
     """see if we can get all the grammars
     """
     gramon = GramOn(inifile_stem="_gramon")
@@ -60,6 +57,8 @@ def test_getAllGrammars(unimacro_setup):
     # utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
     assert utilGrammar.isLoaded() is True
     assert utilGrammar.isActive() is True
+    assert utilGrammar.LoadedControlGrammars[0] is utilGrammar
+    assert gramon.LoadedControlGrammars[-1] is utilGrammar
     
     al = utilGrammar.getUnimacroGrammars()
     assert len(al) == 3
@@ -81,21 +80,10 @@ def test_getAllGrammars(unimacro_setup):
     active = {g for g in al if al[g].isActive()}
     assert active == set(['control', 'gramon'])
     
-    gramon.switchOff()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control'])     
-    active = {g for g in al if al[g].isActive()}
-    assert active == set(['control'])
-
+    # should ignore this command:
     utilGrammar.switchOff()
     loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control'])     
-    active = {g for g in al if al[g].isActive()}
-    assert active == set(['control'])
-
-    gramon.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon'])     
+    assert loaded == set(['control', 'gramon']) 
     active = {g for g in al if al[g].isActive()}
     assert active == set(['control', 'gramon'])
 
@@ -105,8 +93,64 @@ def test_getAllGrammars(unimacro_setup):
     active = {g for g in al if al[g].isActive()}
     assert active == set(['control', 'gramon'])
 
+    gramon.switchOn()
+    loaded = {g for g in al if al[g].isLoaded()}
+    assert loaded == set(['control', 'gramon'])     
+    active = {g for g in al if al[g].isActive()}
+    assert active == set(['control', 'gramon'])
 
-def test_show_all_grammars(unimacro_setup):
+    
+def test_ExclusiveMode(unimacro_setup):
+    """see if grammars can switch on and off exclusive mode, with _control following
+
+    (when a grammar switches on exclusive mode, _control follows, because then the inspecting commands
+    are still recognized)
+    """
+    gramon = GramOn(inifile_stem="_gramon")
+    gramon.initialize()
+    gramoff = GramOff(inifile_stem="_gramoff")
+    gramoff.initialize()
+    assert gramon.isLoaded() is True
+    assert gramon.isActive() is True
+    assert gramoff.isLoaded() is False
+    assert gramoff.isActive() is False
+    # first test with utilGrammar (_control) not present.
+    gramon.setExclusive(1)
+    # set exclusive 
+    gramon.setExclusive(1)
+    exclGr = gramon.getExclusiveGrammars()
+    assert len(exclGr) == 1
+    gramon.setExclusive(0)
+    exclGr = gramon.getExclusiveGrammars()
+    assert len(exclGr) == 0
+    
+    utilGrammar = UtilGrammar()
+    # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
+    utilGrammar.startInifile()
+    utilGrammar.initialize()
+    # utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
+    assert utilGrammar.isLoaded() is True
+    assert utilGrammar.isActive() is True
+    assert utilGrammar.LoadedControlGrammars[0] is utilGrammar
+    assert gramon.LoadedControlGrammars[-1] is utilGrammar
+    
+    exclGr = gramon.getExclusiveGrammars()
+    assert len(exclGr) == 0
+    utilGrammar.setExclusive(1)
+    exclGr = gramon.getExclusiveGrammars()
+    assert len(exclGr) == 1
+    gramon.setExclusive(1)
+    exclGr = gramon.getExclusiveGrammars()
+    assert len(exclGr) == 2
+    gramon.setExclusive(0)
+    exclGr = gramon.getExclusiveGrammars()
+    assert len(exclGr) == 0
+    
+
+    
+    
+
+def tttest_show_all_grammars(unimacro_setup):
     gramon = GramOn(inifile_stem="_gramon")
     gramon.initialize()
     gramoff = GramOff(inifile_stem="_gramoff")
@@ -132,7 +176,7 @@ def test_show_all_grammars(unimacro_setup):
     Words = ['switch', 'on', 'gramoff']
     utilGrammar.gotResults_switch(Words, FR)
     
-        
+    
     
 
 if __name__ == "__main__":

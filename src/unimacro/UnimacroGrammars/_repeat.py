@@ -306,9 +306,6 @@ class ThisGrammar(ancestor):
     def onTimer(self):
 ##        if self.lastClock:
 ##            diff = int((time.clock() - self.lastClock) * 1000 )
-        if natbj.IsDisplayingMessage:
-            debugPrint('in timer, displaying message, returning')
-            return
         moduleInfo = natlink.getCurrentModule()
         if natlink.getMicState() == 'on' and moduleInfo[2] == self.moduleInfo[2]:
             if self.inside or self.insideCommand:
@@ -430,17 +427,10 @@ class ThisGrammar(ancestor):
         return 1 # good exit
 
     def gotBegin(self,moduleInfo):
-        if natbj.IsDisplayingMessage:
-            debugPrint('displaying message, ignoring generic movement')
-            return
         if self.inTimer:
             self.inside = 1
  
     def gotResultsObject(self,recogType,resObj):
-        if natbj.IsDisplayingMessage:
-            debugPrint('displaying message, ignoring generic movement')
-            return
-
         if recogType == 'reject':
             return
         handle = natlink.getCurrentModule()[2]

@@ -265,182 +265,9 @@ def SetMic(state):
         natlink.setMicState(state)
     except :
         pass
-
-# Utility functions for global accessing of GrammarX objects.
-# The CallAllGrammarObjects(funcName,args) method provides
-# a means to send or receive signals/data to other grammar objects
-# See also the GrammarX class
-
-# def CallAllGrammarObjects(funcName,args):
-#     """calls a function through all grammar objects
-# 
-#     funcName should be a string with the function name
-#     args should be a tuple of arguments, can be empty tuple ()
-#     exits silently if function doesn't exist in a grammar
-# 
-#     """    
-#     if args and len(args) == 1 and isinstance(args[0], tuple):
-#         args = args[0] # in order to be able to give arguments "loose" in the call instead of
-#                        # in a explicit tuple: CAGO(func, a, b, c) instead of
-#                        #                      CAGO(func, (a, b, c))
-#     for name, grammar in list(allUnimacroGrammars.items()):
-#         if not grammar.isLoaded():
-#             # only loaded grammars...
-#             continue
-#         try:
-#             func = getattr(grammar, funcName)
-#         except AttributeError:
-#             print('func not found for %s'% name)
-#         func(*args)
-#         # except AttributeError:
-#         #     print 'apply %s of %s fails'% (funcName, name)
-#         #     pass
-
-# def getRegisteredGrammarNames():
-#     return list(allUnimacroGrammars.keys())
-# 
-# def GetGrammarObject(grammarName):
-#     """return the grammar object, if in correct dict, by user name
-#     """
-#     if grammarName in allUnimacroGrammars:
-#         return allUnimacroGrammars[grammarName]
-#     return None
-
-# Utility functions for displaying messages in the results box.
-# The module _control registers these, and should be available.
-# loadedMessageGrammar is a DictGrammar, which resides in _control. Is activated and
-# deactivated only through DisplayMessage function.
-#
-# loadedControlGrammar is the grammar for control commands, which always run together with
-# an exclusive mode, and can catch rejected recognitions when in exclusive mode.
-# this control grammar never switches off.
-loadedMessageGrammar = None
-loadedControlGrammar = None
-IsDisplayingMessage = 0
-
-# if Display is asked for in gotBegin, it is waited for:
-# displaying is controlled in _repeat:
-pendingMessage = []
-
-
-def SetPendingMessage(mess):
-    #pylint:disable=W0603, C0116
-    global pendingMessage
-    pendingMessage.append(mess)
-def ClearPendingMessage():
-    #pylint:disable=W0603, C0116
-    global pendingMessage
-    pendingMessage = []
-def GetPendingMessage():
-    #pylint:disable=W0603, C0116
-    return pendingMessage
-
-def SetDisplayingMessage():
-    #pylint:disable=W0603, C0116
-    global IsDisplayingMessage
-##    print 'setting display message'
-    IsDisplayingMessage = 1
-
-def ClearDisplayingMessage():
-    #pylint:disable=W0603, C0116
-    global IsDisplayingMessage
-##    print 'clearing display message'
-    IsDisplayingMessage = 0
-
-##def GlobalIsDisplayingMessage():
-##    return IsDisplayingMessage
-# instead of this function simply the variable natbj.IsDisplayingMessage can be checked
-
-def RegisterMessageObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedMessageGrammar
-    loadedMessageGrammar=GrammarObject
-
-def UnRegisterMessageObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedMessageGrammar
-    if loadedMessageGrammar is GrammarObject:
-        loadedMessageGrammar = None
-
-def RegisterControlObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedControlGrammar
-    loadedControlGrammar = GrammarObject
-
-def UnRegisterControlObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedControlGrammar
-    if loadedControlGrammar is GrammarObject:
-        loadedControlGrammar = None
-
-def GlobalResetExclusiveMode():
-    #pylint:disable=C0116
-    print('GlobalResetExclusiveMode, this one does nothing any more')
-#     for _k, v in list(exclusiveGrammars.items()):
-# ##        print 'resetting: %s'% k
-#         v[0].resetExclusiveMode()
-
-##def Global(MessageText):
-##    """displays message in the message window
-##
-##    works only if the grammar _message is active.
-##
-##    """    
-##    global loadedMessageGrammar
-##    if (loadedMessageGrammar):
-##        try:
-##            print 'global display message: %s'% MessageText
-##            func = getattr(loadedMessageGrammar, 'DisplayMessage')
-##            apply(func, [MessageText])
-##        except AttributeError:
-##            pass
-##
-##    
-def  ControlResetExclusiveGrammar():
-    """resets the exclusive flag of the _control grammar
-
-    If the exclusive state of a/the last grammar is reset (becoming
-    non-exclusive again), the grammar _control.
-    This is done through this function
-
-    """    
-    #pylint:disable=W0603
-    global loadedControlGrammar
-    if exclusiveGrammars:    # should not come here
-        print('no reset, still exclusiveGrammars present: %s'% exclusiveGrammars)
-        return
-    if loadedControlGrammar:
-##        print 'resetting exclusive grammar control'
-        loadedControlGrammar.setExclusive(0)
-
-def ControlSetExclusiveGrammar():
-    """sets the exclusive flag of the message grammar
-
-    (the control grammar, including the message rule)
-
-    This is to ensure the exclusive state together with
-    another exclusive grammar. If in an exclusive grammar
-    speech is not recognised, it is intercepted by the
-    grammar _control, which invokes DisplayMessage.
-
-    """    
-    #pylint:disable=W0603
-    global loadedControlGrammar
-    if not exclusiveGrammars:     # should not come here
-        print('no set of grammar, though exclusiveGrammars exist')
-        return
-    if loadedControlGrammar:
-        if loadedControlGrammar.exclusive == 1:
-##            print 'messageGrammar already exclusive'
-            return
-##        print 'setting exclusive grammar control'
-        loadedControlGrammar.setExclusive(1)
-  
-
-#---------------------------------------------------------------------------
 # GrammarX
 
-GrammarXAncestor=natlinkutils.GrammarBase # do not use self.__class__.bases[0]., see Python FAQ
+GrammarXAncestor=natlinkutils.GrammarBase
 class GrammarX(GrammarXAncestor):
     """first subclass of GrammarBase
 
@@ -458,14 +285,9 @@ class GrammarX(GrammarXAncestor):
     """
     #pylint:disable=R0904, C0116
     __inherited=GrammarXAncestor
-    try:
-        allGrammarXObjects
-    except NameError:
-        allGrammarXObjects = {}
-    try:
-        GrammarsChanged
-    except NameError:
-        GrammarsChanged = False
+    allGrammarXObjects = {}
+    GrammarsChanged = []   # take last item just True!
+    LoadedControlGrammars = []
 
     def __init__(self):
         self.__inherited.__init__(self)
@@ -486,16 +308,26 @@ class GrammarX(GrammarXAncestor):
         """return the dict of (name, grammarobject) of GrammarX objects
         """
         return copy.copy(self.allGrammarXObjects)
+    
+    def getExclusiveGrammars(self):
+        """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
+        """
+        G = {}
+        for name, gram in self.allGrammarXObjects.items():
+            if gram.isExclusive():
+                G[name] = gram
+        return G
 
     def RegisterGrammarObject(self):
-        self.__class__.allGrammarXObjects[self.name] = self
-        self.__class__.GrammarsChanged = True
+        self.allGrammarXObjects[self.name] = self
+        self.GrammarsChanged.append(True)
 
+    def SetGrammarsChangedFlag(self):
+        self.GrammarsChanged.append(True)
     def GetGrammarsChangedFlag(self):
-        return self.__class__GrammarsChanged
-
+        return self.GrammarsChanged.pop()
     def ClearGrammarsChangedFlag(self):
-        self.__class__.GrammarsChanged = False
+        self.GrammarsChanged.clear()
 
     def CallAllGrammarObjects(self, funcName, args):
         """calls a function through all grammar objects
@@ -526,12 +358,63 @@ class GrammarX(GrammarXAncestor):
             return self.allGrammarXObjects[grammarName]
         return None
 
+    def  ControlResetExclusiveGrammar(self):
+        """resets the exclusive flag of the _control grammar
+    
+        If the exclusive state of a/the last grammar is reset (becoming
+        non-exclusive again), the grammar _control.
+        """    
+        exclGr = self.getExclusiveGrammars()
+        if not exclGr:
+            return
+        if len(exclGr) > 1:
+            return
+        for gram in exclGr.values():
+            if gram is self.LoadedControlGrammars[-1]:
+                gram.setExclusive(0)
+            
+    def RegisterControlObject(self, gramobj):
+        """keep this (control grammar) in a special variable
+        """
+        if not self.LoadedControlGrammars:
+            self.LoadedControlGrammars.append(gramobj)
+        elif not self.LoadedControlGrammars[0] is gramobj:
+            print(f'RegisterControlObject, WARNING, wanting to set to {gramobj.name}, but already set to {self.LoadedControlGrammars[0].name}')
+
+    def UnregisterControlObject(self):
+        """clear this (control grammar) in a special variable
+        """
+        self.LoadedControlGrammars.clear()
+                
+    def ControlSetExclusiveGrammar(self, value):
+        """sets the exclusive flag of the _control grammar if another grammar is also exclusive
+        
+        In this way, the commands of the _control grammar remain accessible when
+        other (Unimacro) grammars are exclusive
+        """
+        value = value or 1
+        exclGr = self.getExclusiveGrammars()
+        if not exclGr:
+            return
+        if not self.LoadedControlGrammars:
+            return
+        if self.LoadedControlGrammars[0] is self:
+            return
+        self.LoadedControlGrammars[0].setExclusive(1)
+
+
     def getRegisteredGrammarNames(self):
         return list(self.allGrammarXObjects.keys())
 
     def getPrimaryAncestor(self):
         # the default primary ancestor is the first baseclass
         return self.__class__.__bases__[0] 
+
+
+
+
+
+
 
     def load(self,gramSpec,allResults=0,hypothesis=0, grammarName=None):
         
@@ -551,8 +434,6 @@ class GrammarX(GrammarXAncestor):
 
         """
         # intercept here if grammar is switched off, or inside displaying message
-        if IsDisplayingMessage:
-            return
         if self.mayBeSwitchedOn:
             # onOrOff = what the user wants
             # onOrOffState = the actual state.
@@ -566,7 +447,7 @@ class GrammarX(GrammarXAncestor):
     def hypothesisCallback(self, words):
         # intercept here if grammar is switched off, or inside displaying message
         # when is this used?
-        if self.mayBeSwitchedOn and not IsDisplayingMessage:
+        if self.mayBeSwitchedOn:
             self.callIfExists( "gotHypothesis", (words,) )
 
     def resultsCallback(self, wordsAndNums, resObj):
@@ -642,57 +523,22 @@ class GrammarX(GrammarXAncestor):
 
         state is maintained in self.exclusive
         """
-        #pylint:disable=R0912, W0603
-        global exclusiveGrammars
+        #pylint:disable=
         if exclusive is None:
             return
         if exclusive == self.exclusive:
             return
         self.__inherited.setExclusive(self,exclusive)
         self.exclusive = exclusive
-        name = self.GetName()
-##        print 'setting exclusive %s, self: %s'% (exclusive, self)
-        if loadedControlGrammar and self is loadedControlGrammar:
+        
+        if self.LoadedControlGrammars and self is self.LoadedControlGrammars[0]:
             return
-        if exclusive:
-            if name in exclusiveGrammars:
-                return
-            moduleInfo = natlink.getCurrentModule()
-            if self.isActive():
-                rules = list(self.activeRules.keys())
-                if rules:
-                    rule = rules[0]
-                else:
-                    rule = 'no rules active'
-            else:
-                rule = '%s, no rules active'% self.name
-            exclusiveGrammars[name] = (self, moduleInfo[2], rule)
-            ControlSetExclusiveGrammar()
-        elif exclusive == 0:
-            if name in exclusiveGrammars:
-                del exclusiveGrammars[name]
-                if not exclusiveGrammars:
-                    ControlResetExclusiveGrammar()
-        else:
-            print('setExclusive, invalid value: %s (grammar: %s)'% (exclusive, name))
+        self.ControlSetExclusiveGrammar(exclusive)
+       
 
     def cancelMode(self):
         """overload for grammars that can go exclusive"""
         return
-
-    #Now we can get info on the exclusive state
-    def getExclusiveInfo(self):
-        name = self.GetName()
-        if name in self.exclusiveGrammars:
-            return self.exclusiveGrammars[name]
-        return None
-    
-    def printExclusiveInfo(self):
-        """global print info on exclusive grammar states"""
-        if not exclusiveGrammars:
-            print('no grammars are exclusive')
-        else:
-            print('exclusive are: %s'% list(exclusiveGrammars.keys()))
 
     def switchOnOrOff(self, **kw):
         # print(f'{self.name}, switchOnOrOff')
@@ -705,27 +551,20 @@ class GrammarX(GrammarXAncestor):
                 self.load(self.gramSpec, allResults=allResults, hypothesis=hypothesis, grammarName=grammarName)
             else:
                 print(f"\t{self.name}: grammar is not loaded (inactive)")    
-                return None
-        result = None
+                return
         if self.want_on_or_off is None:
-            if self.mayBeSwitchedOn == 'exclusive':
-                print('switch on exclusive: %s'% self.name)
-                result = self.switchOn(**kw)
-                self.setExclusive(1)
-            elif self.mayBeSwitchedOn:
+            if self.mayBeSwitchedOn:
                 # print(f'switch on: {self.name}')
-                result = self.switchOn(**kw)
+                self.switchOn(**kw)
             else:
                 if self.isActive():
-                    result = self.switchOff()
+                    self.switchOff()
         elif self.want_on_or_off is True:
-            result = self.switchOn(**kw)
+            self.switchOn(**kw)
         elif self.want_on_or_off is False:
-            result = self.switchOff()
+            self.switchOff()
         else:
             raise ValueError(f'grammar {self.name}, invalid value for want_on_or_off: {self.want_on_or_off}')
-            
-        return None
             
     def switchOn(self, **kw):
         """switches grammar on, activates all rules
@@ -803,124 +642,15 @@ class GrammarX(GrammarXAncestor):
         if self.is_loaded:
             self.unload()
         return 1
-
-    def DisplayMessage(self, MessageText, pauseAfter=0, alert=None, alsoPrint=1):
-        #pylint:disable=R0912, R0915
-        print("DisplayMessage for the time being:\n%s"% MessageText)
-
-#         if self.inGotBegin:
-# ##            print 'message from gotBegin not allowed: %s'% MessageText
-#             SetPendingMessage(MessageText)
-#             return
-# 
-#         if not loadedMessageGrammar:
-#             print('display message no message grammar: %s'% MessageText)
-#             return
-#         if IsDisplayingMessage:
-#             print('recursive call DisplayMessage, no display')
-#             return
-# 
-#         # if six.PY2:
-#         #     MessageText = utilsqh.convertToBinary(MessageText)
-# 
-#         mayDisplay = 1
-#         for t in DisplayMessageForbiddenCharacters:
-#             if MessageText.find(t) >= 0:
-#                 mayDisplay = 0
-#                 break
-#         if len(MessageText) > maxDisplayMessage or not mayDisplay or alert:
-#             Message(MessageText, alert=alert)
-#             return
-#         if status.getDNSVersion() < 11:
-#             AddedMessage = '\\' + MessageText
-#         else:
-#             AddedMessage = '\\\\' + MessageText
-#         #print 'DisplayMessage: %s'% AddedMessage
-#         try:
-#             SetDisplayingMessage()
-#             if exclusiveGrammars:
-#                 for g in exclusiveGrammars:
-#                     grammar = exclusiveGrammars[g][0]
-#     ##                print 'resetting exclusive: %s'% grammar
-#                     grammar.gramObj.setExclusive(0)
-#                 if loadedControlGrammar:
-#                     loadedControlGrammar.gramObj.setExclusive(0)
-# ##                print 'reset exclusive state in display message'
-# 
-#             hasWord = 0
-#             try:
-#                 if (natlink.getWordInfo(AddedMessage)):
-#                     #print 'message already exists, text: %s' % MessageText
-#                     hasWord = 11
-#                 else:
-#                     if status.getDNSVersion() < 8:
-#                         flags = natlinkutils.dgnwordflag_useradded | \
-#                                 natlinkutils.dgnwordflag_no_space_next | \
-#                                 natlinkutils.dgnwordflag_no_space_before
-#                         natlink.addWord(AddedMessage, flags)
-#                         #print 'added word: %s'% AddedMessage
-#                         hasWord = 1
-#                     else:
-#                         natlink.addWord(AddedMessage)
-#                         hasWord = 1
-#                         pass
-# ##                        # flags for 8, 9...
-# ##                        flagList = ['InternalUseOnly2', 'InternalUseOnly5',
-# ##                                 'NoSpaceFollowingThisWord', 'NoSpacePreceedingThisWord',
-# ##                                 'WordWasAddedByTheUser']
-# ##                        flags = status.makeWordProperties(flagList)
-# ##                    print 'flags: %x, intflags: %s'% (flags, int(flags))
-#             except natlink.InvalidWord:
-#                 print('error with addWord of: %s'% AddedMessage)
-#  
-#             if hasWord:
-# ##                print 'loadedMessageGrammar activate, with specific handle'
-#                 hndle = natlink.getCurrentModule()[2]
-#                 loadedMessageGrammar.activate(hndle)
-#                 try:
-# ##                    print 'send to messageDictGrammar: %s'% [AddedMessage]
-#                     natlink.recognitionMimic([AddedMessage])
-#                 except (natlink.NatError, natlink.MimicFailed):
-#                     print('error displaying message: %s'% AddedMessage)
-# 
-#                 # temporary changing the mode (only for version 7)                
-#     ##            if currentMode > 1:
-#     ##               natlink.execScript('SetRecognitionMode %s'% currentMode)
-#                 if hasWord != 11:  # do not delete words that were already in voc
-#                     try:
-#                         natlink.deleteWord(AddedMessage)
-#                     except natlink.UnknownName:
-#                         pass  # for unknown reason a just added word sometimes cannot be deleted
-#                               # some other word in other capitalization?
-#                               #    (like \processing grammar and \Processing Grammar) ???
-#             else:
-#                 # version 9 or error:
-#                 loadedControlGrammar.setList('message',[AddedMessage])
-#                 try:
-# ##                    hndle = natlink.getCurrentModule()[2]
-# ##                    loadedMessageGrammar.activate(hndle)
-#                     natlink.recognitionMimic([AddedMessage])
-#                     loadedControlGrammar.emptyList('message')
-#                 except (natlink.NatError, natlink.MimicFailed):
-#                     print('error displaying message (command): %s'% MessageText)
-#         finally:
-# ##            print 'loadedMessageGrammar deactivate'
-#             loadedMessageGrammar.deactivate()
-#             if exclusiveGrammars:
-# ##                print 'set exclusive state again'
-#                 for g in exclusiveGrammars:
-#                     print('reset exclusive: %s'% g)
-#                     grammar = exclusiveGrammars[g][0]
-#                     grammar.gramObj.setExclusive(1)
-#                 if loadedControlGrammar:
-#                     loadedControlGrammar.gramObj.setExclusive(1)
-# 
-# ##                loadedMessageGrammar.gramObj.setExclusive(1)
-#   
-#             ClearDisplayingMessage()
-#         if pauseAfter:
-#             print('pause after DisplayMessage: %s'% pauseAfter)
-#             time.sleep(pauseAfter)
+    
+    def DisplayMessage(self, mess):
+        """display as a message
+        
+        This was with the DisplayMessage grammar trick,
+        a recognition without effect, but showing in the recognition window.
+        Maybe could be restored some time...
+        """
+        self.message(mess)
 
     def message(self, mess):
         """only print to Messages window
@@ -931,7 +661,7 @@ class GrammarX(GrammarXAncestor):
     def IProgressReport(self,Case,TotalCases,NPeriods):
         Period=round(TotalCases/NPeriods)
         if (Case%Period==0) or (Case==TotalCases) or (Case==1):
-            self.DisplayMessage('%3.0f%% Done' % (round(100.0*Case/TotalCases)), alsoPrint=0)
+            self.DisplayMessage('%3.0f%% Done' % round(100.0*Case/TotalCases))
 
     def onTrayIcon(self, message):
         """needs this call when from actions the systemtray is called and clicked on
@@ -1109,18 +839,16 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         if ' '.join(words) != 'Cancel This': #make sure one global grammar has this active!
             Start=(self.GetName(),list(results.keys()))
             self.Browse(Start,0)
-        CallAllGrammarObjects('setInterceptMode',[0])
-        if ' '.join(words)=='Cancel This':
-            self.DisplayMessage('Canceled', alsoPrint=0)
+        # probably obsolete:
+        # CallAllGrammarObjects('setInterceptMode',[0])
+        # if ' '.join(words)=='Cancel This':
+        #     self.DisplayMessage('Canceled', alsoPrint=0)
 
     def resultsCallback(self, wordsAndNums, resObj):
         # see natlinkutils for documentation. This method is changed
         # to implement interceptMode.
         # Uses the original behavior whenever NOT in intercept mode.
         # also intercept when in display mode:
-        if IsDisplayingMessage:
-##            print 'displaying message, ignore callback, grammar: %s'% self
-            return
         if not self.interceptMode:
             self.__inherited.resultsCallback(self, wordsAndNums, resObj)
         else:
@@ -1286,10 +1014,7 @@ class IniGrammar(IniGrammarAncestor):
         """
         self.inifile_stem = inifile_stem or self.__module__.rsplit('.', maxsplit=1)[-1]
 
-        try:
-            self.iniIgnoreGrammarLists
-        except AttributeError:
-            self.iniIgnoreGrammarLists = []
+        self.iniIgnoreGrammarLists = []
         self.__inherited.__init__(self)
         self.language = status.get_language()
         
@@ -3129,7 +2854,7 @@ class DocstringGrammar(DocstringGrammarAncestor):
         self.ruleFuncsDict = {} # records the functions corresponding to rules
         gramSpecFromDocstring = self.buildGramSpecFromDocstrings() or ""
         try:
-            classGramSpec = self.__class__.gramSpec
+            classGramSpec = copy.copy(self.gramSpec)
             if not isinstance(classGramSpec, str):
                 classGramSpec = '\n'.join(classGramSpec)
         except AttributeError:
