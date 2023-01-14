@@ -39,7 +39,7 @@ class GramOff(natbj.DocstringGrammar):
         """grammar off"""
         print(f'got gramoff: {words}')
         
-def tttest_getAllGrammars(unimacro_setup):
+def test_getAllGrammars(unimacro_setup):
     """see if we can get all the grammars
     """
     gramon = GramOn(inifile_stem="_gramon")
@@ -110,6 +110,8 @@ def test_ExclusiveMode(unimacro_setup):
     gramon.initialize()
     gramoff = GramOff(inifile_stem="_gramoff")
     gramoff.initialize()
+    # just to be sure (should have been done when unloading _control (utilGrammar))
+    gramon.UnregisterControlObject()
     assert gramon.isLoaded() is True
     assert gramon.isActive() is True
     assert gramoff.isLoaded() is False
@@ -118,7 +120,7 @@ def test_ExclusiveMode(unimacro_setup):
     gramon.setExclusive(1)
     # set exclusive 
     gramon.setExclusive(1)
-    exclGr = gramon.getExclusiveGrammars()
+    exclGr = gramon.getExclusiveGrammars() 
     assert len(exclGr) == 1
     gramon.setExclusive(0)
     exclGr = gramon.getExclusiveGrammars()
@@ -150,7 +152,7 @@ def test_ExclusiveMode(unimacro_setup):
     
     
 
-def tttest_show_all_grammars(unimacro_setup):
+def test_show_all_grammars(unimacro_setup):
     gramon = GramOn(inifile_stem="_gramon")
     gramon.initialize()
     gramoff = GramOff(inifile_stem="_gramoff")

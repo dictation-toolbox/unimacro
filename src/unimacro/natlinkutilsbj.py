@@ -358,7 +358,7 @@ class GrammarX(GrammarXAncestor):
             return self.allGrammarXObjects[grammarName]
         return None
 
-    def  ControlResetExclusiveGrammar(self):
+    def ControlResetExclusiveGrammar(self):
         """resets the exclusive flag of the _control grammar
     
         If the exclusive state of a/the last grammar is reset (becoming
@@ -392,7 +392,6 @@ class GrammarX(GrammarXAncestor):
         In this way, the commands of the _control grammar remain accessible when
         other (Unimacro) grammars are exclusive
         """
-        value = value or 1
         exclGr = self.getExclusiveGrammars()
         if not exclGr:
             return
@@ -400,7 +399,7 @@ class GrammarX(GrammarXAncestor):
             return
         if self.LoadedControlGrammars[0] is self:
             return
-        self.LoadedControlGrammars[0].setExclusive(1)
+        self.LoadedControlGrammars[0].setExclusive(value)
 
 
     def getRegisteredGrammarNames(self):
@@ -531,9 +530,11 @@ class GrammarX(GrammarXAncestor):
         self.__inherited.setExclusive(self,exclusive)
         self.exclusive = exclusive
         
-        if self.LoadedControlGrammars and self is self.LoadedControlGrammars[0]:
-            return
-        self.ControlSetExclusiveGrammar(exclusive)
+        if self.LoadedControlGrammars:
+            if self is self.LoadedControlGrammars[0]:
+                # no extra setting if self is _control
+                return
+            self.ControlSetExclusiveGrammar(exclusive)
        
 
     def cancelMode(self):
