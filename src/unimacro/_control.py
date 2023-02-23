@@ -8,7 +8,7 @@
 #
 # _control.py, adapted version of_gramutils.py
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
-# starting new version Quintijn Hoogenboom, August 2003
+# starting new version Quintijn Hoogenboom, August 2003, for python3 2023
 #pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107, C0209, E0601, W0602
 #pylint:disable=E1101
 
@@ -303,7 +303,7 @@ class UtilGrammar(ancestor):
         """
         if gram == self:
             print(f'should not be here, do not switch on of off _control {gram}')
-            return
+            return None
         if switchOn:
             self.checkInifile()
             gram.ini.set('general', 'initial on', 1)
@@ -331,7 +331,7 @@ class UtilGrammar(ancestor):
         else:
             Start=()
         # fix state at this moment (in case of Active grammars popup)
-        
+        print(f'_control, showexclusive, exclusiveGrammars: {natbj.exclusiveGrammars}')
         if natbj.exclusiveGrammars:
             Exclusive = 1
             self.BrowsePrepare(Start, All, Exclusive)
@@ -393,8 +393,8 @@ class UtilGrammar(ancestor):
             return
         if self.hasCommon(words, 'exclusive'):
             G = self.getExclusiveGrammars()
-            exclNames = [g for g in G if G[g].isExclusive()]
-            print('exclusive grammars (+ control) are: {exclNames}')
+            exclNames = [gname for gname, gram in G.items() if gram.isExclusive()]
+            print(f'exclusive grammars (+ control) are: {exclNames}')
             self.gotResults_showexclusive(words, fullResults)
             return
 
@@ -434,6 +434,7 @@ class UtilGrammar(ancestor):
         else:
             Start=()
         # fix state at this moment (in case of Active grammars popup)
+        Exclusive = 0
         self.BrowsePrepare(Start, All, Exclusive)
         if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'

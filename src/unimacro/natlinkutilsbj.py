@@ -325,7 +325,9 @@ class GrammarX(GrammarXAncestor):
     def SetGrammarsChangedFlag(self):
         self.GrammarsChanged.append(True)
     def GetGrammarsChangedFlag(self):
-        return self.GrammarsChanged.pop()
+        if self.GrammarsChanged:
+            return self.GrammarsChanged.pop()
+        return False
     def ClearGrammarsChangedFlag(self):
         self.GrammarsChanged.clear()
 
