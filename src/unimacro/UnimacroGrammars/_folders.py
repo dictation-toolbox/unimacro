@@ -169,6 +169,7 @@ class ThisGrammar(ancestor):
         self.activeFolder = None
         self.prevDisplayRecentFolders = None   # displaying recent folders list
         self.subfoldersDict = {}
+        self.subfilesDict = {}
         self.foldersSet = set()
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
@@ -1437,9 +1438,9 @@ class ThisGrammar(ancestor):
         # reset variables, no action in gotResults:
         self.wantedFile = self.wantedFolder = self.wantedWebsite = ""
         print(f'thisDir: {thisDir}')
-        UnimacroDirectory = extenvvars.expandEnvVariableAtStart('%UNIMACRODIRECTORY%')
+        UnimacroDirectory = extenvvars.expandEnvVariableAtStart('%Unimacro%')
         print(f'UnimacroDirectory: {UnimacroDirectory}')
-        UnimacroGrammarsDirectory = extenvvars.expandEnvVariableAtStart('%UNIMACROGRAMMARSDIRECTORY%')
+        UnimacroGrammarsDirectory = extenvvars.expandEnvVariableAtStart('%UnimacroGrammars%')
         print(f'UnimacroGrammarsDirectory: {UnimacroGrammarsDirectory}')
         makeFromTemplateAndExecute(UnimacroDirectory, "unimacrofoldersremembertemplate.py", UnimacroGrammarsDirectory, "rememberdialog.py",
                                       prompt, text, default, inifile, section, value, pausetime=pausetime)
@@ -2656,7 +2657,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     rwfile.writeAnything(outputpath, Text)
     # print('wrote to: %s'% outputfile)
     # print(f'output dialog: {outputpath}, python: {pythonexe}')
-    UnimacroBringUp(pythonexe.normpath(), outputpath)    
+    UnimacroBringUp(str(pythonexe), outputpath)    
 
 
 ## different functions#########################################3

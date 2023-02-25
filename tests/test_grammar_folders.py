@@ -24,8 +24,6 @@ def test_folder_remember(unimacro_setup):
     FR = {}
     thisGrammar.catchRemember = 'folder'
     thisGrammar.wantedFolder = r'C:\Windows'
-    ##TODO Doug ???
-    ##it sucks at getExtendedEnv in extenvvars.py (DT/dtactions/unimacro)
     
     thisGrammar.gotResults_remember(words, FR)
     

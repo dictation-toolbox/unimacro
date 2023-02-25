@@ -439,15 +439,15 @@ class UtilGrammar(ancestor):
         if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
             G = self.getUnimacroGrammars()
-            print(f'allGrammars (Unimacro): {G}')
+            # print(f'allGrammars (Unimacro): {G}')
             allGramNames = G.keys()
             self.setList('gramnames', allGramNames)
             activeGrammars = [g for g in G if G[g].isActive()]
             inactiveGrammars = [g for g in G if G[g].isLoaded() and not G[g].isActive()]
-            switchedOffGrammarsGrammars = [g for g in G if not G[g].isLoaded()]
+            switchedOffGrammars = [g for g in G if not G[g].isLoaded()]
             print(f'activeGrammars: {activeGrammars}')
             print(f'inactiveGrammars: {inactiveGrammars}')
-            print(f'switchedOffGrammarsGrammars: {switchedOffGrammarsGrammars}')
+            print(f'switchedOffGrammars: {switchedOffGrammars}')
             for grammar_name, gram in G.items():
                 # gram = natbj.allUnimacroGrammars[g]
                 print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
@@ -467,35 +467,35 @@ class UtilGrammar(ancestor):
                 #         otherGrammars.remove(mod_name)
                 #     else:
                 #         print(f'cannot remove from otherGrammars: {mod_name}')
-        #     if not activeGrammars:
-        #         msg = 'No Unimacro grammars are active'
-        #     elif activeGrammars == [self.name]:
-        #         msg = f'No grammars are active (apart from "{self.name}")'
-        #     elif inactiveGrammars or switchedOffGrammars:
-        #         msg = 'Active Unimacro grammars:\n' + ', '.join(activeGrammars)
-        #     else:
-        #         msg = 'All Unimacro grammars are active:\n' + ', '.join(activeGrammars)
-        # 
-        #     if inactiveGrammars:
-        #         inactive = 'Inactive (but "Switched on") grammars:\n' + ', '.join(inactiveGrammars)
-        #         msg += '\n\n' + inactive
-        #         
-        #     if switchedOffGrammars:
-        #         switchedoff = '"Switched off" grammars:\n' + ', '.join(switchedOffGrammars)
-        #         msg += '\n\n' + switchedoff
-        # 
-        #     if otherGrammars:
-        #         other = 'Other grammars (outside Unimacro):\n' + ', '.join(otherGrammars)
-        #         msg = msg + '\n\n' + other
-        #     if activeGrammars and activeGrammars != [self.name]:
-        #         msg = msg + '\n\n' + "Show details of active Unimacro grammars?"
-        #         if not actions.YesNo(msg, "Active grammars", icon="information", defaultToSecondButton=1):
-        #             return
-        #     else:
-        #         msg = msg + '\n\n' + 'Activate with\n\t"switch on <grammar name>" or \n\t"switch on all grammars".'
-        #         actions.Message(msg, "No active Unimacro grammars", icon="information")
-        #         return
-        # 
+            if not activeGrammars:
+                msg = 'No Unimacro grammars are active'
+            elif activeGrammars == [self.name]:
+                msg = f'No grammars are active (apart from "{self.name}")'
+            elif inactiveGrammars or switchedOffGrammars:
+                msg = 'Active Unimacro grammars:\n' + ', '.join(activeGrammars)
+            else:
+                msg = 'All Unimacro grammars are active:\n' + ', '.join(activeGrammars)
+        
+            if inactiveGrammars:
+                inactive = 'Inactive (but "Switched on") grammars:\n' + ', '.join(inactiveGrammars)
+                msg += '\n\n' + inactive
+                
+            if switchedOffGrammars:
+                switchedoff = '"Switched off" grammars:\n' + ', '.join(switchedOffGrammars)
+                msg += '\n\n' + switchedoff
+        
+            # if otherGrammars:
+            #     other = 'Other grammars (outside Unimacro):\n' + ', '.join(otherGrammars)
+            #     msg = msg + '\n\n' + other
+            if activeGrammars and activeGrammars != [self.name]:
+                msg = msg + '\n\n' + "Show details of active Unimacro grammars?"
+                if not actions.YesNo(msg, "Active grammars", icon="information", defaultToSecondButton=1):
+                    return
+            else:
+                msg = msg + '\n\n' + 'Activate with\n\t"switch on <grammar name>" or \n\t"switch on all grammars".'
+                actions.Message(msg, "No active Unimacro grammars", icon="information")
+                return
+        
         # self.BrowseShow()
         
 
