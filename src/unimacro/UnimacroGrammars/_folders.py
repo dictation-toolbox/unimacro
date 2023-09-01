@@ -462,11 +462,10 @@ class ThisGrammar(ancestor):
         self.ini.writeIfChanged()        
 
 
-    def fillGrammarLists(self, listOfLists=None, ignoreFromIni='general',
-                         ignoreFromGrammar=None):
+    def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
         
-        extra, the 'recentfolders' list from iniChangingData!!
+        extra, the 'recentfolders' list in self.loadRecentFoldersDict
         (note: fillList is a specialised function of this grammar)
 
         """

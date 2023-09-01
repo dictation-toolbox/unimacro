@@ -1016,8 +1016,10 @@ class IniGrammar(IniGrammarAncestor):
         Can be overridden for for example test grammars, or when more than one grammar is in a module.
         """
         self.inifile_stem = inifile_stem or self.__module__.rsplit('.', maxsplit=1)[-1]
-
-        self.iniIgnoreGrammarLists = []
+        try:
+            self.iniIgnoreGrammarLists
+        except AttributeError:
+            self.iniIgnoreGrammarLists = []
         self.__inherited.__init__(self)
         self.language = status.get_language()
         
@@ -1772,8 +1774,7 @@ noot mies
         self.checkForChanges = 1
         self.openFileDefault(inifile, mode="edit")
 
-    def fillGrammarLists(self, listOfLists=None, ignoreFromIni='general',
-                         ignoreFromGrammar=None):
+    def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
 
         If listOfLists is not provided, all sections from the inifile
@@ -1785,14 +1786,8 @@ noot mies
         
         Numbers are taken from spokenforms, as well as 'character'.
 
-        If a list of names is given in "ignoreFromIni", or this variable is
-        a valid section name, this/these name(s) are ignored in this function
-
         Also if listName is found in self.iniIgnoreGrammarLists, it is skipped,
         but with a warning
-
-        If "ignoreFromGrammar" is or contains valid list names in the grammar,
-        these are ignored when filling the lists.
 
         At the end of the function it is checked if there are no
         remaining lists from the grammar that should be filled.
@@ -1829,10 +1824,13 @@ noot mies
         if fromGrammar:
             changes = 0
             for l in fromGrammar[:]:
+                if l in self.iniIgnoreGrammarLists:
+                    continue
                 if self.fillList(l):
                     fromGrammar.remove(l)
-                elif l in allListsFromIni: 
-                    print('%s: warning, empty section for list "%s" in inifile'% (self.name, l))
+                elif l in allListsFromIni:
+                    pass
+                    # print('\t%s: warning, empty section for list "%s" in inifile'% (self.name, l))
                 else:
                     changes = 1
                     self.emptyList(l)
