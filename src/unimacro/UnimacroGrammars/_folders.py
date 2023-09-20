@@ -169,6 +169,7 @@ class ThisGrammar(ancestor):
         self.activeFolder = None
         self.prevDisplayRecentFolders = None   # displaying recent folders list
         self.subfoldersDict = {}
+        self.subfilesDict = {}
         self.foldersSet = set()
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
@@ -461,11 +462,10 @@ class ThisGrammar(ancestor):
         self.ini.writeIfChanged()        
 
 
-    def fillGrammarLists(self, listOfLists=None, ignoreFromIni='general',
-                         ignoreFromGrammar=None):
+    def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
         
-        extra, the 'recentfolders' list from iniChangingData!!
+        extra, the 'recentfolders' list in self.loadRecentFoldersDict
         (note: fillList is a specialised function of this grammar)
 
         """
@@ -1291,7 +1291,6 @@ class ThisGrammar(ancestor):
         """collects the given command words and try to find the given folder
 
         """
-        print('-------folder words: %s'% words)
         if len(words) == 1:
             ## catch folder with dgndictation, postpone here:
             self.gotFolder = True
@@ -1438,9 +1437,9 @@ class ThisGrammar(ancestor):
         # reset variables, no action in gotResults:
         self.wantedFile = self.wantedFolder = self.wantedWebsite = ""
         print(f'thisDir: {thisDir}')
-        UnimacroDirectory = extenvvars.expandEnvVariableAtStart('%UNIMACRODIRECTORY%')
+        UnimacroDirectory = extenvvars.expandEnvVariableAtStart('%Unimacro%')
         print(f'UnimacroDirectory: {UnimacroDirectory}')
-        UnimacroGrammarsDirectory = extenvvars.expandEnvVariableAtStart('%UNIMACROGRAMMARSDIRECTORY%')
+        UnimacroGrammarsDirectory = extenvvars.expandEnvVariableAtStart('%UnimacroGrammars%')
         print(f'UnimacroGrammarsDirectory: {UnimacroGrammarsDirectory}')
         makeFromTemplateAndExecute(UnimacroDirectory, "unimacrofoldersremembertemplate.py", UnimacroGrammarsDirectory, "rememberdialog.py",
                                       prompt, text, default, inifile, section, value, pausetime=pausetime)
@@ -2523,8 +2522,8 @@ def getExplorerTitles():
     return TitlesHandles
 
 def getExplWindowsWithText(hwnd, th):
-    TH, Classes = th
-    if win32gui.GetClassName(hwnd) in Classes:
+    TH, classes = th
+    if win32gui.GetClassName(hwnd) in classes:
         # wTitle = win32gui.GetWindowText(hwnd).strip()  # ansi
         wTitle = getwindowtext(hwnd).strip()
         if wTitle and hwnd:
@@ -2636,6 +2635,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     meant for setting up a inputbox dialog
     """
     rwfile = readwritefile.ReadWriteFile()
+    print(f'unimacrofolder: {unimacrofolder}')
     Text = rwfile.readAnything(os.path.join(unimacrofolder, templatefile))
     # print(f'OldText: {Text}')
     for orig, toreplace in  [('$prompt$', prompt), ('$default$', default), ('$text$', text),
@@ -2656,7 +2656,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     rwfile.writeAnything(outputpath, Text)
     # print('wrote to: %s'% outputfile)
     # print(f'output dialog: {outputpath}, python: {pythonexe}')
-    UnimacroBringUp(pythonexe.normpath(), outputpath)    
+    UnimacroBringUp(str(pythonexe), outputpath)    
 
 
 ## different functions#########################################3
@@ -2728,8 +2728,8 @@ if __name__ == "__main__":
     ## interactive use, for debugging:
     natlink.natConnect()
     try:
-        thisGrammar = ThisGrammar()
-        thisGrammar.startInifile(modName = '_folders')
+        thisGrammar = ThisGrammar(inifile_stem="_folders")
+        thisGrammar.startInifile()
         thisGrammar.initialize()
     finally:
         natlink.natDisconnect()

@@ -8,16 +8,11 @@
 # grammar activated if a recent folders dialog is brought to the foreground,
 # interaction with grammar _folders.
 #
-
-
-
-import natlink
-from natlinkcore import natlinkutils
+#pylint:disable=
 from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroutils
+from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
+
 
 
 ancestor = natbj.IniGrammar
@@ -40,7 +35,7 @@ class ThisGrammar(ancestor):
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
-        print('loaded: %s'% self.gramSpec) 
+        print(f'loaded: {self.gramSpec}') 
         self.prevHndle = None
 
     def gotBegin(self,moduleInfo):
@@ -54,7 +49,7 @@ class ThisGrammar(ancestor):
         self.prevHndle = hndle
         if unimacroutils.matchModule('natspeak'):
             # try to reach data from _folders grammar: 
-            self.foldersGram = natbj.GetGrammarObject('folders')
+            self.foldersGram = self.GetGrammarObject('folders')
             #print 'self.foldersGram: %s'% self.foldersGram
             if self.foldersGram is None:
                 return
@@ -75,14 +70,14 @@ class ThisGrammar(ancestor):
         """
         wNumList = self.getNumbersFromSpoken(words) # returns a string or None
         if len(wNumList) != 1:
-            print('natspeak dialog: error in command, no number found: %s'% wNumList)
+            print(f'natspeak dialog: error in command, no number found: {wNumList}')
             return
         chooseNum = wNumList[0]
         self.exitDialog()
         self.foldersGram.gotoRecentFolder(chooseNum-1)  # remember choose is 1 based, the list is 0 based 
 
     def gotResults_okcancelrfd(self, words, fullResults):
-        print('dialog ok cancel: %s, just close the dialog'% words)
+        print(f'dialog ok cancel: {words}, just close the dialog')
         self.exitDialog()
 
     def exitDialog(self):
@@ -99,6 +94,8 @@ thisGrammar = ThisGrammar()
 thisGrammar.initialize()
 
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None

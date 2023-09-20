@@ -12,28 +12,18 @@
 #
 import sys
 import unittest
-import types
 import os
 import os.path
 import time
-import traceback        # for printing exceptions
-import TestCaseWithHelpers
+from pathlib import Path
 import natlink
-from natlinkcore import loader
 from natlinkcore import natlinkstatus
 from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
-from pathlib import Path
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.unimacro import unimacroactions as actions
+import TestCaseWithHelpers
 
 status = natlinkstatus.NatlinkStatus()
-
-from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroutils
-import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
 
 class TestError(Exception):
     pass
@@ -65,7 +55,7 @@ natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
 logFileName = os.path.join(thisDir, "testresult.txt")
 
 testFilesDir = Path(thisDir)/'test_clipboardfiles'
-if testFilesDir.isdir():
+if testFilesDir.is_dir():
     print("test files for Bringup: %s"% testFilesDir)
 else:
     raise OSError("no valid directory for test files: %s"% testFilesDir)

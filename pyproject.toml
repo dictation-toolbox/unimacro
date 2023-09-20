@@ -13,9 +13,9 @@ readme = "README.md"
 dependencies = ["dtactions >= 1.5.6",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
-		"natlinkcore >= 5.3.5"]
-		  
-		
+		"natlinkcore >= 5.3.5",
+        "pysimplegui"]
+		  		
 classifiers=[	"Development Status :: 4 - Beta",
 				"Topic :: Multimedia :: Sound/Audio :: Speech",
 				"Topic :: Scientific/Engineering :: Human Machine Interfaces",
@@ -35,9 +35,9 @@ test = [
     "pytest >=7.1.2",
 ]
 dev = [
-	"pyenvutils",
+	"pyenvutils","entry-point-inspector"
 ]
-[project.entry-points.natlink_extensions]
+[project.entry-points."natlink.grammars"]
 unimacro_builtins = "unimacro.UnimacroGrammars:locateme"
 
 [tool.pytest.ini_options]
@@ -48,19 +48,16 @@ addopts = "--capture=tee-sys "
 #in addition to that in site-packages etc.
 #you may want to run your tests without install natlinkcore with flit or pip
 pythonpath = [
-    "src",
-	"src/unimacro",
-    "src/unimacro/unimacro_test",
 ]
 testpaths= [
-      "src/unimacro/unimacro_test",
+		"tests",
+		"src/unimacro/unimacro_test"
 ]
 python_files = [
 			"unittest*.py",
 			"test_*.py",
 	]
  
-
 [project.scripts]
 
 [project.urls]

@@ -16,7 +16,7 @@ keystrokes can be defined, that can be used in combination with all the
 others continuously.
 
 """
-#pylint:disable=R0904, R0913, R0912
+#pylint:disable=R0904, R0913, R0912, C0209
 
 import sys
 import copy
@@ -26,7 +26,9 @@ from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro import unimacroutils
 from unimacro import natlinkutilsbj as natbj
 from natlinkcore import nsformat 
-
+from natlinkcore import loader
+import natlink
+natlinkmain = loader.NatlinkMain()
 language = unimacroutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
@@ -53,13 +55,16 @@ class ThisGrammar(ancestor):
 <switchkeys> exported = "keystrokes (simple|extended)";
 """ 
 
-    def __init__(self):
-        self.language = unimacroutils.getLanguage()
-        # here the grammar is not loaded yet, but the ini file is present
-        self.startInifile()
-        #print 'requireTimes: %s, simpleOrExtended: %s'% (self.requireTimes, self.doKeystrokesExtended)
-        self.constructGramSpec(inInit=1)
-        ancestor.__init__(self)
+    gramSpec = "# placeholder of gramSpec"
+
+    # def __init__(self, inifile_stem=None):
+    #     self.language = unimacroutils.getLanguage()
+    #     # here the grammar is not loaded yet, but the ini file is present
+    #     self.inifile_stem = inifile_stem
+    #     self.startInifile()
+    #     #print 'requireTimes: %s, simpleOrExtended: %s'% (self.requireTimes, self.doKeystrokesExtended)
+    #     self.constructGramSpec(inInit=1)
+    #     ancestor.__init__(self)
 
     def constructGramSpec(self, inInit=0):
         """return the gramSpec, from gramSpecStart, with several options and tranlation steps
@@ -85,15 +90,14 @@ class ThisGrammar(ancestor):
         #print 'startSpec: %s\n\n'% startSpec
         startSpec.append(self.lastpartofgramspec)
         self.gramSpec = copy.copy(startSpec)
-        if not inInit:
-            # this should be done only at switchkey command:
-            self.unload()
-            self.load(self.gramSpec)
-        
-
+        # if not inInit:
+        #     # this should be done only at switchkey command:
+        #     self.unload()
+        #     self.load(self.gramSpec)
 
     def initialize(self):
         #print 'self.gramspec: %s'% self.gramSpec
+        self.constructGramSpec()
         self.load(self.gramSpec)
         # call for extra spoken form with difficult numbers
         # needs self.stripSpokenForm in gotResults... function!!!
@@ -158,7 +162,9 @@ class ThisGrammar(ancestor):
             if wantExclusive:
                 print(f'make keystokes mode exclusive: {wantExclusive}')
                 self.setExclusive(1)
-            #if 
+                # done at start of the grammar, possibly only do it here:
+                # natlinkmain.set_on_mic_off_callback(self.on_mic_off_callback)
+            #
             repkeySections = self.ini.getSectionsWithPrefix('repkey', mode)
             repkeySections.append('repkey')
             norepkeySections = self.ini.getSectionsWithPrefix('norepkey', mode)
@@ -605,23 +611,27 @@ class ThisGrammar(ancestor):
         self.resetAllVars()
  
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
 
 def unload():
-    #pylint:disable=W0603
+    #pylint:disable=W0603, E0601
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
  
-def changeCallback(type,args):
-    # not active without special version of natlinkmain:
-    if ((type == 'mic') and (args=='on')):
-        return   # check WAS in natlinkmain...
-    if thisGrammar:
-        thisGrammar.cancelMode()
 
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar(inifile_stem="_keystrokes")
+        thisGrammar.startInifile()
+        thisGrammar.initialize()
+        natlinkmain.set_on_mic_off_callback(thisGrammar.cancelMode)
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
+    natlinkmain.set_on_mic_off_callback(thisGrammar.cancelMode)

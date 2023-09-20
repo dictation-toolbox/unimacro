@@ -60,13 +60,15 @@ from pathlib import Path
 
 import natlink
 from natlinkcore import natlinkstatus
-from dtactions.unimacro import utilsqh
+from natlinkcore import loader
 from dtactions.unimacro import unimacroutils
 import unimacro.natlinkutilsbj as natbj
+
 logHour = -1
 logFile = ''
 
 status = natlinkstatus.NatlinkStatus()
+natlinkmain = loader.NatlinkMain()
 
 language = status.language
 version = status.getDNSVersion()
@@ -75,10 +77,10 @@ UDDirectory = status.getUnimacroDataDirectory()
 # print 'version: %s (%s)'% (version, type(version))
 # print 'getUnimacroUserDirectory: %s (%s)'% (UUDirectory, type(UUDirectory))
 logFolder = Path(UDDirectory)/f'{status.language}_log'/status.user
-print(f'_oops, logfolder: {logFolder}')
  
 def getLogFileName():
     """get name with date and time, record hour in logHour"""
+    #pylint:disable=W0603
     global logHour, logFile
     if not logFolder.exists():
         print(f'Want to create log folder: {logFolder}')
@@ -154,34 +156,40 @@ if len(list(FORMATS.keys())) != len(list(FormatComments.keys())):
 else:
     DoFormatting = 1
 
+thisGrammar = None
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
     iniIgnoreGrammarLists = ['chooselist'] # are set in this module    
     name = "oops"
     gramSpec = """
 <oops> exported = Oops;
+# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+
 <inoops> exported = Cancel | OK | <choose>;
 <choose> = (Choose|Format|Delete|Properties) {chooselist} | (Choose|Format|Delete|Properties) {chooselist}(Weak|Medium|Strong);
 <inoops2> exported = Cancel | OK | (Choose Format (1 | 2 | 3| 4));
         """
 
     def initialize(self):
-        self.load(self.gramSpec, allResults=1)
+        # load if ini file gives permission:
+        self.switchOnOrOff(activateRule='oops', allResults=1)
+        if not self.isLoaded():
+            # print(f'{self.name}: grammar is not loaded')
+            return
         self.oopsFlag = 0
         self.lastResObj = None
         self.messageHndle = 0
         self.setList('chooselist', ChooseList)
-        if language == 'nld':
-            print('Grammatica _oops ge-initialiseerd')
-        else:
-            print('Grammar _oops initialized')
+        # if language == 'nld':
+        #     print('Grammatica _oops ge-initialiseerd')
+        # else:
+        #     print('Grammar _oops initialized')
         self.cancelMode()
         self.prevModinfo = None
-        self.switchOnOrOff(activateRule='oops')
         if self.logging:
-            print(f'_oops, logging of utterances to dir:\n\t{logFolder}')
+            print(f'{self.name}: logging of utterances to dir:\n\t{logFolder}')
         else:
-            print('_oops, NO logging of utterances')
+            print('{self.name}, NO logging of utterances')
 
     def fillInstanceVariables(self):
         """fills the necessary instance variables
@@ -518,13 +526,6 @@ class ThisGrammar(ancestor):
             self.activateSet(['oops'], exclusive = 0)
         self.newWord = ''
 
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
-
 def logToFile(line):
     """logging !
     """
@@ -538,13 +539,7 @@ def logToFile(line):
             line += '\n'
         fp.write(line)
 
-def changeCallback(type,args):
-    # not active without special version of natlinkmain:
-    if ((type == 'mic') and (args=='on')):
-        return   # check WAS in natlinkmain...
-    if thisGrammar:
-        thisGrammar.cancelMode()
-
+# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 def unload():
     #pylint:disable=W0603
     global thisGrammar
@@ -552,4 +547,16 @@ def unload():
         thisGrammar.unload()
     thisGrammar = None
 
-
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        thisGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
+    natlinkmain.set_on_mic_off_callback(thisGrammar.cancelMode)

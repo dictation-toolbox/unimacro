@@ -1,0 +1,33 @@
+name: Publish Package 📦 to a Python Package Index
+on:
+  release:
+    types: [published] # with prerelease and release
+
+permissions:
+  contents: read
+
+
+jobs:
+  build:
+    # Select an environment with the  secret `PYPI_API_TOKEN` 
+    #and the environment varial PACKAGE_INDEX_URL in repository settings
+    #if you environment is named PUBLISH
+    #the environment line should be environment: PUBLISH
+    # https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#referencing-an-environment
+    environment: TESTDEPLOY
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Installing build Dependencies
+      run: |
+          python -m pip install --upgrade pip
+          python -m pip install flit
+    - name: Building package with flit
+      run: |
+            flit build
+    - name: Publishing 📦 to the package index (typically pypi or testpypi)
+     # Regarding building artifacts within Platform specific environment see https://github.com/pypa/gh-action-pypi-publish#non-goals
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.INDEX_API_TOKEN }}
+        repository_url: ${{ vars.PACKAGE_INDEX_URL}}
