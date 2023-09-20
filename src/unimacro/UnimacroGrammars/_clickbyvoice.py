@@ -72,6 +72,7 @@ class ThisGrammar(ancestor):
         
     def initialize(self):
         self.prevHandle = -1
+        self.ActiveHndle = None
         self.load(self.gramSpec)
 
     def gotBegin(self,moduleInfo):
@@ -98,15 +99,15 @@ class ThisGrammar(ancestor):
                 print(f'_clickbyvoice ({self.name}, prog: {prog}, checking the inifile')
                 self.checkInifile()
             self.switchOnOrOff(window=winHandle)
-            if not self.isActive == winHandle:
+            if not self.ActiveHndle == winHandle:
                 print(f'activate _clickbyvoice, {prog}, hndle: {winHandle}')
                 self.activateAll(window=winHandle)
-                self.isActive = winHandle
+                self.ActiveHndle = winHandle
         else:
-            if self.isActive:
+            if self.isActive():
                 print("deactivate _clickbyvoice")
                 self.deactivateAll()
-                self.isActive = False
+                self.ActiveHndle = False
                 
 
     def gotResultsInit(self,words,fullResults):

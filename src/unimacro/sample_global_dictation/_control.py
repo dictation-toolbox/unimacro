@@ -163,8 +163,8 @@ class UtilGrammar(ancestor):
         #Now is the time to get the names of the grammar objects and
         # activate the list for the <ShowTrainGrammar> rule
         if natbj.grammarsChanged:
-##            print 'new list for control: %s'% natbj.loadedGrammars.keys()
-            self.setList('gramnames', list(natbj.loadedGrammars.keys()))
+##            print 'new list for control: %s'% natbj.allUnimacroGrammars.keys()
+            self.setList('gramnames', list(natbj.allUnimacroGrammars.keys()))
             natbj.ClearGrammarsChangedFlag()
         if self.checkForChanges:
             self.checkInifile()
@@ -189,8 +189,6 @@ class UtilGrammar(ancestor):
         pass
     
     def gotResultsObject(self,recogType,resObj):
-        if natbj.IsDisplayingMessage:
-            return
         if self.doMessages:
             mes = natbj.GetPendingMessage()
             if mes:
@@ -278,9 +276,9 @@ class UtilGrammar(ancestor):
             natbj.CallAllGrammarObjects(func, ())
             print("-"*10)
         else:
-            gramname = self.hasCommon(words, list(natbj.loadedGrammars.keys()))
+            gramname = self.hasCommon(words, list(natbj.allUnimacroGrammars.keys()))
             if gramname:
-                gram = natbj.loadedGrammars[gramname]
+                gram = natbj.allUnimacroGrammars[gramname]
                 gram.callIfExists(func, ())
             else:
                 print('no grammar name found: %s'% gramname)
@@ -339,7 +337,7 @@ class UtilGrammar(ancestor):
         if natbj.exclusiveGrammars:
             print('exclusive (+ control) are: %s'% ' '.join(list(natbj.exclusiveGrammars.keys())))
 
-        grammars = natbj.loadedGrammars
+        grammars = natbj.allUnimacroGrammars
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words, gramNames)
         if gramName:
@@ -391,7 +389,7 @@ class UtilGrammar(ancestor):
             actions.editActions()
             return
 
-        grammars = natbj.loadedGrammars
+        grammars = natbj.allUnimacroGrammars
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words[-1:], gramNames)
         if gramName:
@@ -503,7 +501,7 @@ def changeCallback(type,args):
         #This could be done anywhere, but not within natlinkutilsbj
         #Because that module is 'imported from'.
         if utilGrammar.interceptMode:
-            CallAllGrammarObjects('setInterceptMode',[0])
+            self.CallAllGrammarObjects('setInterceptMode',[0])
         
         
     

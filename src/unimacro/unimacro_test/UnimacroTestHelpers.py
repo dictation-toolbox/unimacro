@@ -10,9 +10,7 @@
 from pathlib import Path
 from pprint import pprint
 import sys
-unimacrodir = Path('./..').normPath()
-if unimacrodir not in sys.path:
-    sys.path.append(unimacrodir)
+
 from dtactions.unimacro import unimacroactions as actions
 import unittest
 import TestCaseWithHelpers

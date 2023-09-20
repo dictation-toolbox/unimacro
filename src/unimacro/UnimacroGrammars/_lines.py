@@ -708,7 +708,7 @@ class ThisGrammar(ancestor):
             # after a wordspec you can call "search number or task", numbers and tasks
             # corresponding with the _tasks grammar
             if self.tasksGrammarName:
-                self.tasksGrammar = natbj.GetGrammarObject(self.tasksGrammarName)
+                self.tasksGrammar = self.GetGrammarObject(self.tasksGrammarName)
                 if self.tasksGrammar:
                     self.enableSearchCommands = 1
                     print('_lines, enable search commands, coupling grammar %s with %s'% (self.name, self.tasksGrammarName))

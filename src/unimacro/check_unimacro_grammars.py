@@ -8,19 +8,13 @@ import difflib
 import subprocess
 from pathlib import Path        
 from natlinkcore import natlinkstatus
-try:
-    from unimacro.__init__ import get_site_packages_dir
-except ModuleNotFoundError:
-    print('Run this module after "build_package" and "flit install --symlink"\n')
 
 k3diffapp = r'C:\Program Files\KDiff3\kdiff3.exe'
 if not os.path.isfile(k3diffapp):
     k3diffapp = None
 
 status = natlinkstatus.NatlinkStatus()
-sitePackagesDir = get_site_packages_dir(__file__).lower()
-workDir = str(Path(sitePackagesDir).resolve())
-have_symlinks = (workDir != sitePackagesDir)
+
     
 
 def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):

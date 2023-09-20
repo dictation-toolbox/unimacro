@@ -46,7 +46,7 @@ QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
 #pylint:disable=C0209, R0904, R0912, R0915
-
+import natlink
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.unimacro.unimacroactions import getMetaAction
@@ -96,29 +96,29 @@ class ThisGrammar(ancestor):
         print('take number grammar from "enx"')
         integer999 = natbj.numberGrammarTill999['enx']
 
-    ##  345567;345567
-    ## these are special rules for making numbers of specific length.
-    ## when they appear to be useful, I will try to make them available in other languages
-    ## and other cases too:
-        
-    amsterdamZuidRule = """<numberaztotal> exported =  <numberazone> | <numberaztwo> | <numberazone><numberaztwo>;
-    <numberazone>  = zesentachtig <numberthreedigits><numberthreedigits>;
-    <numberaztwo> = point (<__thousandslimited>  | <numbertwodigits><numbertwodigits>);
-<numbertwodigits> = {n0-9}{n0-9} | {n10-99};
-<numberthreedigits> = {n0-9}{n0-9}{n0-9} | <__hundredslimited> | {n0-9} <numbertwodigits>;
-<__hundredslimited> = hundred | <__2to9before> hundred | hundred <__1to99after> ;
-<__thousandslimited> = thousand | <__2to9before> thousand | thousand <__1to99after> |
-                        <__2to9before> thousand <__1to9after>;
-
-<numberfourdigits> = <__thousandslimited>  | <numbertwodigits> <numbertwodigits> ;
-<numbersixdigits> = {n0-9}+ | {n0-9} <numbertwodigits>  {n0-9} <numbertwodigits> ;
-<__thousands> = duizend | (<__1to99>|<__hundreds>) duizend | duizend (<__1to99>|<__hundreds>) |
-                   (<__1to99>|<__hundreds>) duizend  (<__1to99>|<__hundreds>);
-<__2to9before> = {n2-9};
-<__1to99after> = {n1-99};
-<__1to9after> = {n1-9};
-
-"""
+#     ##  345567;345567
+#     ## these are special rules for making numbers of specific length.
+#     ## when they appear to be useful, I will try to make them available in other languages
+#     ## and other cases too:
+#         
+#     amsterdamZuidRule = """<numberaztotal> exported =  <numberazone> | <numberaztwo> | <numberazone><numberaztwo>;
+#     <numberazone>  = zesentachtig <numberthreedigits><numberthreedigits>;
+#     <numberaztwo> = point (<__thousandslimited>  | <numbertwodigits><numbertwodigits>);
+# <numbertwodigits> = {n0-9}{n0-9} | {n10-99};
+# <numberthreedigits> = {n0-9}{n0-9}{n0-9} | <__hundredslimited> | {n0-9} <numbertwodigits>;
+# <__hundredslimited> = hundred | <__2to9before> hundred | hundred <__1to99after> ;
+# <__thousandslimited> = thousand | <__2to9before> thousand | thousand <__1to99after> |
+#                         <__2to9before> thousand <__1to9after>;
+# 
+# <numberfourdigits> = <__thousandslimited>  | <numbertwodigits> <numbertwodigits> ;
+# <numbersixdigits> = {n0-9}+ | {n0-9} <numbertwodigits>  {n0-9} <numbertwodigits> ;
+# <__thousands> = duizend | (<__1to99>|<__hundreds>) duizend | duizend (<__1to99>|<__hundreds>) |
+#                    (<__1to99>|<__hundreds>) duizend  (<__1to99>|<__hundreds>);
+# <__2to9before> = {n2-9};
+# <__1to99after> = {n1-99};
+# <__1to9after> = {n1-9};
+# 
+# """
 
 ##8600 8650 86 2008
     def gotResults___hundredslimited(self,words,fullResults):
@@ -246,16 +246,6 @@ class ThisGrammar(ancestor):
 
 #failed to get this working:
 #<listtupleargument> exported = (Tuple|List|Argument) (Number <number> | (Variable|String) <dgndictation> | None)+;
-    def __init__(self):
-        """start the inifile and add to grammar if needed a special rule
-        """
-        self.startInifile()
-        #print 'enableSearchCommands: %s'% self.enableSearchCommands
-        if self.specialAmsterdamZuid:
-            self.gramSpec.append(self.amsterdamZuidRule)
-        ancestor.__init__(self)                
-
-
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
@@ -572,15 +562,24 @@ class ThisGrammar(ancestor):
         return Nstring
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
-
 def unload():
     #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None 
+
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar(inifile_stem="_number extended")
+        thisGrammar.startInifile()
+        thisGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()
+

@@ -10,6 +10,8 @@
 # reworked for python3 release: September 2022
 #
 #pylint:disable = C0302, R0904, C0209, R0914,, R0911, R0912, R0913
+#pylint:disable=E1101
+
 """Do task switching (taskbar), 
 
 And switch to Documents inside an application.
@@ -113,6 +115,8 @@ class ThisGrammar(ancestor):
         """get all the values as keys, and the keys as values
             values are separated by ; to are read in as a list
         """
+        #pylint:disable=W0212
+        
         D = {}
         keys = self.ini.get(section)
         if not keys:
@@ -1091,7 +1095,7 @@ class ThisGrammar(ancestor):
             # the keyword or the value of one of the items of
             # allApps (the list of applications in the inifile
             
-            allAppsDict = dict([(k, self.ini.get('application', k)) for k in allApps])
+            allAppsDict = {(k, self.ini.get('application', k)) for k in allApps}
 
             for sApp in switchApps:
                 if sApp in allApps:
@@ -1127,7 +1131,7 @@ class ThisGrammar(ancestor):
             
 
 def unload():
-    #pylint:disable = W0603
+    #pylint:disable = W0603, E0601
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
@@ -1141,13 +1145,9 @@ def changeCallback(Type,Args):
         thisGrammar.cancelMode()
 
 # standard stuff Joel
-print(f'_task grammar, __name__: {__name__}')
-# -- when testing, the __name__ parameter is qualified, like unimacro.UnimacroGrammars._tasks
-# -- when called from Dragon/Natlink/loader, the name is "_tasks"
-if __name__ == "__main__":
-    # here code to interactive run this module
-    pass
-elif __name__.find('.') == -1:
+if __name__.find('.') == -1:
     # this is caught when this module is imported by the loader (when Dragon/Natlink starts)
     thisGrammar = ThisGrammar()
     thisGrammar.initialize()
+
+# testing via test_tasks.py

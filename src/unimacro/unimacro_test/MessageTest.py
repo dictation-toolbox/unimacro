@@ -6,13 +6,14 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-from dtactions.unimacro import unimacroutils
-from natlinkcore import natlinkutils
+#pylint:disable=C0209
+import unittest
 from dtactions.unimacro import unimacroactions as actions
+import natlink
+import UnimacroTestHelpers
+
 action = actions.doAction
 
-import unittest
-import UnimacroTestHelpers
 
 class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
     """Testing the Message and YesNo functions in 'actions.py'
@@ -102,4 +103,6 @@ class MessageTest(UnimacroTestHelpers.UnimacroTestHelpers):
 
 
 if __name__ == "__main__":
-    unittest.main(verbose=1)
+    natlink.natConnect()
+    unittest.main()
+    natlink.natDisconnect()

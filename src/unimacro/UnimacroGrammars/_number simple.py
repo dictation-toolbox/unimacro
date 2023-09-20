@@ -26,7 +26,9 @@ further comments in _number extended.py. Also see the page "number grammar" on t
 from dtactions.unimacro import unimacroutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
+import natlink
 
+thisGrammar = None
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
@@ -51,11 +53,6 @@ class ThisGrammar(ancestor):
         super().__init__()
   
     def initialize(self):
-        if not self.language:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
-            return
-        self.load(self.gramSpec)
-        # if switching on fillInstanceVariables also fill numbers lists like {n1-9} or {number1to99}
         self.switchOnOrOff() 
 
     def gotResultsInit(self, words, fullResults):
@@ -79,7 +76,7 @@ class ThisGrammar(ancestor):
     def gotResults(self,words,fullResults):
         # step 4, in gotResults collect the number (as a string):
         self.collectNumber() # setting self.number, see self.waitForNumber above
-        print('number from the _number simple grammar: %s'% self.number)
+        print(f'number from the _number simple grammar: {self.number}')
         if self.minus:
             self.number = '-' + self.number
         # disable when testing through unittestIniGrammar.py (in unimacro_test directory):
@@ -99,15 +96,23 @@ class ThisGrammar(ancestor):
             keystroke('{tab}')
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
-
 def unload():
     #pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None 
+
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        # thisGrammar.startInifile()
+        thisGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()

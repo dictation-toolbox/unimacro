@@ -162,7 +162,7 @@ class ThisGrammar(ancestor):
             self.setCharactersList('character')
             self.setPunctuationList('punctuation')
             self.specialSearchWords = self.Lists['searchwords'] or [] # like function, class of (inifile) section
-            print('specialSearchWords: %s'% self.specialSearchWords)
+            # print('specialSearchWords: %s'% self.specialSearchWords)
             self.setNumbersList('count', Counts)
             self.setList('modes', modes)
 ##            self.testlist = ['11\\Canon fiftyfive two fifty',
@@ -576,12 +576,12 @@ class ThisGrammar(ancestor):
 #         self.DisplayMessage('writing documentation to: %s'% docPath)
 #         pydoc.writedocs(base)
 #         self.DisplayMessage('checking unimacro grammars, modules and other grammars, modules')
-#         loadedGrammars = list(natlinkmain.loadedFiles.keys())
+#         allUnimacroGrammars = list(natlinkmain.loadedFiles.keys())
 #         if 'unimacro grammars' not in memory:
 #             memory['unimacro grammars'] = {}
 #         mem = memory['unimacro grammars']
 #         for m in uniGrammars:
-#             if m in loadedGrammars:
+#             if m in allUnimacroGrammars:
 #                 mem[m] = sys.modules[m].__doc__
 #             else:
 #                 if not m in mem:
