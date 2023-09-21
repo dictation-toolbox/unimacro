@@ -1095,7 +1095,7 @@ class ThisGrammar(ancestor):
             # the keyword or the value of one of the items of
             # allApps (the list of applications in the inifile
             
-            allAppsDict = {(k, self.ini.get('application', k)) for k in allApps}
+            allAppsDict = {k: self.ini.get('application', k) for k in allApps}
 
             for sApp in switchApps:
                 if sApp in allApps:
