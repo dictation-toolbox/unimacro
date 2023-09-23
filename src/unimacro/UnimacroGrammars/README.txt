@@ -1,16 +1,14 @@
-The python files in this folder are grammar files, which should be activated by copying or moving them into the UnimacroGrammarsDirectory, the subdirectory "ActiveGrammars" of the UnimacroUserDirectory
+The python files in this folder are grammar files, which are activated, when starting Dragon with Natlink and Unimacro enabled.
 
-In this directory, UnimacroGrammars, subdirectory of the UnimacroDirectory, will contain - as much as possible - maintained Unimacro grammars 
+These are the most common Unimacro grammars. They can be activated or deactivated by voice, through commands of the _control grammar.
 
-After toggling the microphone the grammar should be active. In rare cases, this does not work. Restart Dragon in that case.
+In other directories are more special or older (possibly obsolete) grammars and demo grammars.
 
-Deactivating goes the other way around, simply remove from the UnimacroGrammarsDirectory (possibly move/copy them back to this directory), and again toggle the microphone.
+When you want to activate these, specify with the config program a natlink userdirectory, and copy the grammars into this directory. (See the contents of the file natlink.ini)
 
 Note for unimacro grammar files it is also possible to activate/deactivate the grammars by voice commands as defined in _control.
 
-Note: when developing grammars, do not forget to copy the last version from the "ActiveGrammars" directory (the UnimacroGrammarsDirectory) into the UnimacroGrammars directory here.
-
-
+Quintijn Hoogenboom September 23, 2023
 
 
 
