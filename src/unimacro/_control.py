@@ -16,6 +16,7 @@ import os
 import filecmp
 import shutil
 import string
+from pathlib import Path
 import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
@@ -519,15 +520,17 @@ class UtilGrammar(ancestor):
                 moduleName = grammar.__module__
                 if __file__.endswith(moduleName + '.py'):
                     filepath = __file__
+                # else:
+                    # unimacrogrammarsdir = status.getUnimacroGrammarsDirectory()
+                    # print(f'_control, unimacrogrammarsdir: {unimacrogrammarsdir}, module: {moduleName}')
+                    # filepath = os.path.join(unimacrogrammarsdir, moduleName + '.py')
+                    # if not os.path.isfile(filepath):
+                    #     print(f'_control: cannot find grammar file for "{gramName}",\n\t{filepath} does not exist')
+                    #     return
+                    print(f'open for edit file: "{filepath}"')
+                    self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
                 else:
-                    unimacrogrammarsdir = status.getUnimacroGrammarsDirectory()
-                    print(f'_control, unimacrogrammarsdir: {unimacrogrammarsdir}, module: {moduleName}')
-                    filepath = os.path.join(unimacrogrammarsdir, moduleName + '.py')
-                    if not os.path.isfile(filepath):
-                        print(f'_control: cannot find grammar file for "{gramName}",\n\t{filepath} does not exist')
-                        return
-                print(f'open for edit file: "{filepath}"')
-                self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
+                    print(f'cannot find filename/path for {moduleName}')
                 # unimacroutils.setCheckForGrammarChanges(1)
             else:
                 # edit the inifile
@@ -578,7 +581,7 @@ class UtilGrammar(ancestor):
         prevSet = set(self.Lists['gramnames'])
         newSet = set(self.getRegisteredGrammarNames())
         if prevSet != newSet:
-            print(f'setting new grammar names list: {list(newSet)}')
+            # print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNames(self):
@@ -587,8 +590,23 @@ class UtilGrammar(ancestor):
         wrongNames = set() #set(natlinkmain.wrongFiles.keys())
         loadedNames = set() #set(natlinkmain.loadedFiles.keys())
 
-        grammarsDirectory = status.getUnimacroGrammarsDirectory()
+        # grammarsDirectory = status.getUnimacroGrammarsDirectory()
+        #TODO QH  For the moment:
+        grammarsDirectory = str(Path(__file__).parent/'unimacrogrammars')
+        print(f'getUnimacroGrammarNames, grammarsDirectory: {grammarsDirectory}')
+        
         unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
+        # unimacro user grammars directory:
+        uug_directory = status.getUnimacroUserGrammarsDirectory()
+        uug_PyFiles = [f for f in os.listdir(uug_directory) if f.endswith('.py')]
+        if uug_PyFiles:
+            for uug in uug_PyFiles:
+                if uug in unimacroPyFiles:
+                    print(f'Warning grammar {uug} both in Unimacro directory as in UnimacroUserGrammarsDirectory')
+                else:
+                    unimacroPyFiles.append(uug)
+
+            
         # print("\n===unimacroPyFiles", unimacroPyFiles)
         # print(f'wrongNames" {wrongNames}')
         # print(f'loadedNames" {loadedNames}')

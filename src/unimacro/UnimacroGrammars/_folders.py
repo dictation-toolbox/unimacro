@@ -430,14 +430,15 @@ class ThisGrammar(ancestor):
         self.filesSections = ['files']
         # from section files (manual):
         filesList = self.ini.get('files')
-        for f in filesList[:]:
-            filename = self.substituteFilename(self.ini.get('files', f))
-            if not os.path.isfile(filename):
-                print(f'warning _folders, file "{f}" does not exist: "{filename}"'% (f, filename))
-                # self.ini.delete('files', f)
-                # self.ini.set('obsolete files', f, filename)
-                continue
-            self.filesDict[f] = filename
+        if filesList:
+            for f in filesList[:]:
+                filename = self.substituteFilename(self.ini.get('files', f))
+                if not os.path.isfile(filename):
+                    print(f'warning _folders, file "{f}" does not exist: "{filename}"')
+                    # self.ini.delete('files', f)
+                    # self.ini.set('obsolete files', f, filename)
+                    continue
+                self.filesDict[f] = filename
 
         for trf in self.trackFiles:
             if not trf:
