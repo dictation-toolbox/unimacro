@@ -581,7 +581,7 @@ class UtilGrammar(ancestor):
         prevSet = set(self.Lists['gramnames'])
         newSet = set(self.getRegisteredGrammarNames())
         if prevSet != newSet:
-            print(f'setting new grammar names list: {list(newSet)}')
+            # print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNames(self):
@@ -596,6 +596,17 @@ class UtilGrammar(ancestor):
         print(f'getUnimacroGrammarNames, grammarsDirectory: {grammarsDirectory}')
         
         unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
+        # unimacro user grammars directory:
+        uug_directory = status.getUnimacroUserGrammarsDirectory()
+        uug_PyFiles = [f for f in os.listdir(uug_directory) if f.endswith('.py')]
+        if uug_PyFiles:
+            for uug in uug_PyFiles:
+                if uug in unimacroPyFiles:
+                    print(f'Warning grammar {uug} both in Unimacro directory as in UnimacroUserGrammarsDirectory')
+                else:
+                    unimacroPyFiles.append(uug)
+
+            
         # print("\n===unimacroPyFiles", unimacroPyFiles)
         # print(f'wrongNames" {wrongNames}')
         # print(f'loadedNames" {loadedNames}')
