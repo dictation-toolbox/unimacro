@@ -7,7 +7,8 @@
 for numbers, thus making it possible to use spoken forms for all numbers lists
 in Unimacro grammars which need numbers 
 
-tested with unittestSpokenForms.py (in unimacro_test directory of Unimacro)
+tested with test_spokenforms.py (in tests directory of the unimacro repository)
+(with pytest)
 """
 import re
 import os
@@ -489,7 +490,9 @@ class SpokenForms:
         if name startswith number_ skip it optionally
         if name endswith (number) skip it optionally
             
-        if name startswith letter_ skip it optionally    
+        if name startswith letter_ skip it optionally
+        
+        This is a too complicated function!!! (QH, 2023-10-02)
             
         """
         # make number _ at start and numbers in brackets at end of name optional
@@ -525,7 +528,7 @@ class SpokenForms:
         # s = reNonAlphaNumeric.sub(' ', s)
         s = reNumeric.split(s)
         s = [_f for _f in s if _f]
-        for i, phrase in enumerate(s):
+        for i, phrase in enumerate(list(s)):
             if phrase.find(' ') > 0:
                 phraseList = phrase.split()
                 s[i:i+1] = phraseList
@@ -548,12 +551,12 @@ class SpokenForms:
         for item in result:
             if isinstance(item, list):
                 if Result:
-                    Result = ['%s %s'% (i,j) for i in result for j in item]
+                    Result = ['%s %s'% (i,j) for i in Result for j in item]
                 else:
                     Result = item
             else:
                 if Result:
-                    Result = ['%s %s'% (r, item) for r in result]
+                    Result = ['%s %s'% (r, item) for r in Result]
                 else:
                     Result = [item]
         if prevResult:
