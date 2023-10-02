@@ -757,7 +757,7 @@ class ThisGrammar(ancestor):
         if activeFolder == self.activeFolder:
             return
         self.activeFolder = activeFolder
-        print(f'get new folders for {activeFolder}')
+        # print(f'get new folders for {activeFolder}')
         # activeFolder = os.path.normcase(activeFolder)
         if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
             return
@@ -1964,9 +1964,7 @@ class ThisGrammar(ancestor):
             print('git command "%s" for file "%s"'% (self.Git, f))
             self.doGitCommand(self.Git, f)
             return
-        
-        if self.Edit:
-            mode = 'edit'        
+        mode = 'edit'        
         if self.Open:
             mode = 'open'
 

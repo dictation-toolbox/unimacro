@@ -597,7 +597,7 @@ class UtilGrammar(ancestor):
         
         unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
         # unimacro user grammars directory:
-        uug_directory = status.getUnimacroUserGrammarsDirectory()
+        uug_directory = status.getUnimacroGrammarsDirectory()
         uug_PyFiles = [f for f in os.listdir(uug_directory) if f.endswith('.py')]
         if uug_PyFiles:
             for uug in uug_PyFiles:
