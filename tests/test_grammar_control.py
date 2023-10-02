@@ -1,7 +1,6 @@
 #pylint:disable=E1101
 from pathlib import Path
 import pytest
-
 from unimacro._control import UtilGrammar
 from unimacro import natlinkutilsbj as natbj
 
@@ -99,6 +98,8 @@ def test_getAllGrammars(unimacro_setup):
     active = {g for g in al if al[g].isActive()}
     assert active == set(['control', 'gramon'])
 
+
+
     
 def test_ExclusiveMode(unimacro_setup):
     """see if grammars can switch on and off exclusive mode, with _control following
@@ -166,6 +167,25 @@ def test_show_all_grammars(unimacro_setup):
     utilGrammar.startInifile()
     utilGrammar.initialize()
     
+def test_get_unimacro_grammars(unimacro_setup):
+    """get modules from the active grammars
+    """
+    gramon = GramOn(inifile_stem="_gramon")
+    gramon.initialize()
+    gramoff = GramOff(inifile_stem="_gramoff")
+    gramoff.initialize()
+    assert gramon.isLoaded() is True
+    assert gramon.isActive() is True
+    assert gramoff.isLoaded() is False
+    assert gramoff.isActive() is False
+    utilGrammar = UtilGrammar()
+    # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
+    utilGrammar.startInifile()
+    utilGrammar.initialize()
+
+    gramnames = utilGrammar.getUnimacroGrammarNames()
+    assert set(gramnames) == {'grammaron', 'grammaroff', 'control'}
+
     # try "show gramon"
     ## this one opens the info in a new window:
     # Words = ['show', 'gramon']
@@ -178,8 +198,8 @@ def test_show_all_grammars(unimacro_setup):
     Words = ['switch', 'on', 'gramoff']
     utilGrammar.gotResults_switch(Words, FR)
     
-    
-    
+    # newSet = set(self.getRegisteredGrammarNames())
+
 
 if __name__ == "__main__":
     pytest.main(['test_grammar_control.py'])

@@ -13,9 +13,11 @@
 #pylint:disable=E1101
 
 import os
+import sys
 import filecmp
 import shutil
 import string
+import copy
 from pathlib import Path
 import natlink
 from natlinkcore import loader
@@ -25,33 +27,22 @@ from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
-from unimacro import check_unimacro_grammars
+from unimacro import spokenforms
 
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 
-# extra commands for controlling actions module:
-try:
-    spokenforms = __import__('spokenforms')
-except ImportError:
-    spokenforms = None
-    print('warning: spokenforms module not imported')
-
 tracecount = list(map(str, list(range(1, 10))))
 
-#(taken from natlinkmain, to prevent import:)
-baseDirectory = status.getUnimacroUserDirectory()
-unimacroDirectory = status.getUnimacroDirectory()
-
-#Constants for the UtilGrammar
+# #Constants for the UtilGrammar
 Normal=0
-Training=1 #obsolete
-Command=2 #obsolete
-Filter=4
-FilterTraining=5
-Display=6
-
-
+# Training=1 #obsolete
+# Command=2 #obsolete
+# Filter=4
+# FilterTraining=5
+# Display=6
+# 
+# 
 showAll = 1  # reset if no echo of exclusive commands is wished
 #voicecodeHome = None
 #if 'VCODE_HOME' in os.environ:
@@ -130,8 +121,9 @@ class UtilGrammar(ancestor):
             return
         self.RegisterControlObject(self)
         self.emptyList('message')
-        allGramNames = self.getUnimacroGrammarNames()
-        self.setList('gramnames', allGramNames)
+        # at post load
+        # allGramNames = self.getUnimacroGrammarNames()
+        # self.setList('gramnames', allGramNames)
         self.setNumbersList('tracecount', tracecount)
         
         self.activateAll()
@@ -399,6 +391,7 @@ class UtilGrammar(ancestor):
             self.gotResults_showexclusive(words, fullResults)
             return
 
+
         grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
         # print(f'_control, gramNames: {gramNames}')
@@ -587,39 +580,34 @@ class UtilGrammar(ancestor):
     def getUnimacroGrammarNames(self):
         """get all the names of active or wrong Unimacro grammar names
         """
-        wrongNames = set() #set(natlinkmain.wrongFiles.keys())
-        loadedNames = set() #set(natlinkmain.loadedFiles.keys())
-
-        # grammarsDirectory = status.getUnimacroGrammarsDirectory()
-        #TODO QH  For the moment:
-        grammarsDirectory = str(Path(__file__).parent/'unimacrogrammars')
-        print(f'getUnimacroGrammarNames, grammarsDirectory: {grammarsDirectory}')
+        registered = self.allGrammarXObjects
+        gramon = registered['gramon']
+        assert isinstance(gramon, natbj.IniGrammar)
+        assert isinstance(gramon, natbj.GrammarX)
         
-        unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
-        # unimacro user grammars directory:
-        uug_directory = status.getUnimacroGrammarsDirectory()
-        uug_PyFiles = [f for f in os.listdir(uug_directory) if f.endswith('.py')]
-        if uug_PyFiles:
-            for uug in uug_PyFiles:
-                if uug in unimacroPyFiles:
-                    print(f'Warning grammar {uug} both in Unimacro directory as in UnimacroUserGrammarsDirectory')
-                else:
-                    unimacroPyFiles.append(uug)
+        assert isinstance(registered, dict)
+        loaded_modules = copy.deepcopy(natlinkmain.loaded_modules)   # dict
+        bad_modules = copy.deepcopy(natlinkmain.bad_modules)   # set of paths
 
+        unimacro_modules = {}
+        for name, gramobj in registered.items():
+            print(f'name: {name}: gramobj: {gramobj}')
+            module = gramobj.__module__
+            name = gramobj.name or name
+            module_filepath = sys.modules[module].__file__
+            unimacro_modules[name] = module_filepath
             
-        # print("\n===unimacroPyFiles", unimacroPyFiles)
-        # print(f'wrongNames" {wrongNames}')
-        # print(f'loadedNames" {loadedNames}')
-        loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
-        return loadedandwrongmodules
-
-    def checkUnimacroGrammars(self):
-        """see if there are any changed grammar files with respect to original file in release
-        
-        sync with ...
-        """
-        # print('checkUnimacroGrammars!!')
-        check_unimacro_grammars.checkUnimacroGrammars()
+        print(f'unimacro_modules: {unimacro_modules}\n===========')
+        return unimacro_modules.keys()
+    
+    # 
+    # def checkUnimacroGrammars(self):
+    #     """see if there are any changed grammar files with respect to original file in release
+    #     
+    #     sync with ...
+    #     """
+    #     # print('checkUnimacroGrammars!!')
+    #     check_unimacro_grammars.checkUnimacroGrammars()
 
 # class MessageDictGrammar(natlinkutils.DictGramBase):
 #     def __init__(self):
