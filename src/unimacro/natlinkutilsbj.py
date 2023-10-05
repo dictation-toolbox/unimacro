@@ -179,11 +179,9 @@ def letterUppercase(l):
     written, spoken = L[0], L[1].capitalize()
     return f'{written}\\{spoken}'
 
-tmpDirectory = os.path.join(status.getUnimacroUserDirectory(), 'tmp')
-if not os.path.isdir(tmpDirectory):
-    os.mkdir(tmpDirectory)
+dataDirectory = status.getUnimacroDataDirectory()
 
-GrammarFileName = os.path.join(tmpDirectory, 'grammar.bin')
+GrammarFileName = os.path.join(dataDirectory, 'grammar.bin')
 for somePath in sys.path:
     files = glob.glob(somePath + '\\pythonwin.exe')
     if files:
@@ -306,8 +304,15 @@ class GrammarX(GrammarXAncestor):
                 
     def getUnimacroGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects
+        
+        but replace the "nice name" of the grammar as key (as specified in grammar.ini)
         """
-        return copy.copy(self.allGrammarXObjects)
+        um_grammars = {}
+        for _key, obj in self.allGrammarXObjects.items():
+            name = obj.name
+            um_grammars[name] = obj
+        return um_grammars
+            
     
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
@@ -1083,6 +1088,7 @@ class IniGrammar(IniGrammarAncestor):
         """get possibly from inifile, if not present, start a inifile entry"""
         n = self.ini.get('grammar name', 'name')
         if n:
+            # print(f'checkName, return: {n}')
             return n
         if 'name' in dir(self):
             n = self.name
@@ -2809,7 +2815,7 @@ noot mies
         
         assert len(progInfo) == 6
         
-        istop = (progInfo.toporchild == 'top')
+        istop = progInfo.toporchild == 'top'
         if istop:
             if actions.topWindowBehavesLikeChild( progInfo ):
                 istop = False
@@ -3272,4 +3278,4 @@ def splitList(L, n):
             O = []
     if O:
         yield O
-
+        
