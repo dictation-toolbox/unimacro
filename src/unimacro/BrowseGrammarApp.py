@@ -23,6 +23,7 @@
 # June 2020: adapt for python3, Quintijn Hoogenboom
 # Author: Bart Jan van Os, Version: 1.0
 #pylint:disable = C0209, W0622, C0321, W0612, W0702
+#pylint:disable = E1101
 """This file implements a dialog/window to browse and train NatLink
 grammars
 
@@ -62,8 +63,7 @@ import TrainDialog
 import D_train
 
 status = natlinkstatus.NatlinkStatus()
-baseDirectory = status.getUnimacroGrammarsDirectory()
-# print('baseDirectory: %s'% baseDirectory)
+dataDirectory = status.getUnimacroDataDirectory()
 
 # seems to have gone from comctrl:
 LVCFMT_LEFT = 0
@@ -572,7 +572,7 @@ def CreateBrowseDialog():
     try:
         GrammarFile=open(GrammarFileName,'rb')
     except:
-        GrammarFile=open(baseDirectory+'\\TestGrammar.bin','rb')
+        GrammarFile=open(dataDirectory+'\\TestGrammar.bin','rb')
     (Grammars,Start,All,Exclusive)=pickle.load(GrammarFile)
     GrammarFile.close()
     Grammars.Sort()
@@ -599,8 +599,12 @@ def CheckCreateApp():
 
 
 if __name__=='__main__':
-    demodlg()
-    #demomodeless()
+    ## assume there is a "grammar.bin" in the UnimacroDataDirectory 
+    CheckCreateApp()
+    # 
+    # 
+    # demodlg()
+    # #demomodeless()
 else:
     CheckCreateApp()
     
