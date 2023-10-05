@@ -62,40 +62,40 @@ def test_getAllGrammars(unimacro_setup):
     al = utilGrammar.getUnimacroGrammars()
     assert len(al) == 3
 
-    loaded = {g for g in al if al[g].isLoaded()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'gramon'])
-    active = {g for g in al if al[g].isActive()}
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == loaded
     
     gramoff.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'gramon', 'gramoff'])
-    active = {g for g in al if al[g].isActive()}
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == loaded
     
     gramoff.switchOff()
-    loaded = {g for g in al if al[g].isLoaded()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'gramon'])     #   switchOff also unloads the grammar!
-    active = {g for g in al if al[g].isActive()}
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == set(['control', 'gramon'])
     
     # should ignore this command:
     utilGrammar.switchOff()
-    loaded = {g for g in al if al[g].isLoaded()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'gramon']) 
-    active = {g for g in al if al[g].isActive()}
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == set(['control', 'gramon'])
 
     gramon.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'gramon'])     
-    active = {g for g in al if al[g].isActive()}
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == set(['control', 'gramon'])
 
     gramon.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'gramon'])     
-    active = {g for g in al if al[g].isActive()}
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == set(['control', 'gramon'])
 
 
