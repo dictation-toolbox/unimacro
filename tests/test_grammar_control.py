@@ -191,11 +191,12 @@ def test_get_unimacro_grammars(unimacro_setup):
     # Words = ['show', 'gramon']
     # FR = {}
     # utilGrammar.gotResults_show(Words, FR)
-    Words = ['show', 'gramoff']
-    FR = {}
-    utilGrammar.gotResults_show(Words, FR)
+    # Words = ['show', 'gramoff']
+    # FR = {}
+    # utilGrammar.gotResults_show(Words, FR)
     #    
     Words = ['switch', 'on', 'gramoff']
+    FR = {}
     utilGrammar.gotResults_switch(Words, FR)
     
     # newSet = set(self.getRegisteredGrammarNames())

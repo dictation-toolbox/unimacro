@@ -287,6 +287,7 @@ class GrammarX(GrammarXAncestor):
     GrammarsChanged = []   # take last item just True!
     LoadedControlGrammars = []
 
+
     def __init__(self):
         self.__inherited.__init__(self)
         # set in list of allUnimacroGrammars, also when not loaded into
@@ -302,18 +303,7 @@ class GrammarX(GrammarXAncestor):
         self.hypothesis = 0
         self.allResults = 0
                 
-    def getUnimacroGrammars(self):
-        """return the dict of (name, grammarobject) of GrammarX objects
-        
-        but replace the "nice name" of the grammar as key (as specified in grammar.ini)
-        """
-        um_grammars = {}
-        for _key, obj in self.allGrammarXObjects.items():
-            name = obj.name
-            um_grammars[name] = obj
-        return um_grammars
-            
-    
+               
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
@@ -322,6 +312,11 @@ class GrammarX(GrammarXAncestor):
             if gram.isExclusive():
                 G[name] = gram
         return G
+
+    def getUnimacroGrammars(self):
+        """duplicate functions
+        """
+        return copy.copy(self.allGrammarXObjects)
 
     def RegisterGrammarObject(self):
         self.allGrammarXObjects[self.name] = self
@@ -385,7 +380,7 @@ class GrammarX(GrammarXAncestor):
         """
         if not self.LoadedControlGrammars:
             self.LoadedControlGrammars.append(gramobj)
-        elif not self.LoadedControlGrammars[0] is gramobj:
+        elif not self.LoadedControlGrammars[0].name is gramobj.name:
             print(f'RegisterControlObject, WARNING, wanting to set to {gramobj.name}, but already set to {self.LoadedControlGrammars[0].name}')
 
     def UnregisterControlObject(self):

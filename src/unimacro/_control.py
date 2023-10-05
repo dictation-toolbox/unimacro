@@ -490,7 +490,7 @@ class UtilGrammar(ancestor):
                 actions.Message(msg, "No active Unimacro grammars", icon="information")
                 return
         
-        # self.BrowseShow()
+        self.BrowseShow()
         
 
     def gotResults_edit(self,words,fullResults):
@@ -506,35 +506,26 @@ class UtilGrammar(ancestor):
         grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words[-1:], gramNames)
-        if gramName:
+        
+        try:
             grammar = grammars[gramName]
-            print(f'grammar: {gramName}: {grammar}')
-            if self.hasCommon(words, 'grammar'):
-                moduleName = grammar.__module__
-                if __file__.endswith(moduleName + '.py'):
-                    filepath = __file__
-                # else:
-                    # unimacrogrammarsdir = status.getUnimacroGrammarsDirectory()
-                    # print(f'_control, unimacrogrammarsdir: {unimacrogrammarsdir}, module: {moduleName}')
-                    # filepath = os.path.join(unimacrogrammarsdir, moduleName + '.py')
-                    # if not os.path.isfile(filepath):
-                    #     print(f'_control: cannot find grammar file for "{gramName}",\n\t{filepath} does not exist')
-                    #     return
-                    print(f'open for edit file: "{filepath}"')
-                    self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
-                else:
-                    print(f'cannot find filename/path for {moduleName}')
-                # unimacroutils.setCheckForGrammarChanges(1)
-            else:
-                # edit the inifile
-                try:
-                    grammar.switchOn()
-                    grammar.editInifile()
-                except AttributeError:
-                    self.DisplayMessage(f'grammar "{gramName}" has no method "editInifile"')
-                    return
+        except KeyError:
+            print(f'grammar {words[-1:]} not found in list of gramNames:\n{gramNames}')
+            return
+        # print(f'grammar: {gramName}: {grammar}')
+        if self.hasCommon(words, 'grammar'):
+            moduleName = grammar.__module__
+            module = sys.modules[moduleName]
+            filepath = module.__file__
+            print(f'open for edit file: "{filepath}"')
+            self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
         else:
-            print('no grammar name found')
+            # edit the inifile
+            try:
+                grammar.switchOn()
+                grammar.editInifile()
+            except AttributeError:
+                self.DisplayMessage(f'grammar "{gramName}" has no method "editInifile"')
 
     def switchOff(self, **kw):
         """overload, this grammar never switches off
@@ -578,22 +569,27 @@ class UtilGrammar(ancestor):
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNames(self):
-        """get all the names of active or wrong Unimacro grammar names
+        """get the names of active or inactive, but loaded Unimacro grammars
+        
+        (wrong grammars are not "recorded" here, regrettably)
+        
         """
-        registered = self.allGrammarXObjects
+        registered = self.getUnimacroGrammars()
         gramon = registered['gramon']
         assert isinstance(gramon, natbj.IniGrammar)
         assert isinstance(gramon, natbj.GrammarX)
         
         assert isinstance(registered, dict)
-        loaded_modules = copy.deepcopy(natlinkmain.loaded_modules)   # dict
-        bad_modules = copy.deepcopy(natlinkmain.bad_modules)   # set of paths
+        # loaded_modules = copy.deepcopy(natlinkmain.loaded_modules)   # dict
+        # bad_modules = copy.deepcopy(natlinkmain.bad_modules)   # set of paths
 
         unimacro_modules = {}
         for name, gramobj in registered.items():
             print(f'name: {name}: gramobj: {gramobj}')
             module = gramobj.__module__
-            name = gramobj.name or name
+            combi_name = gramobj.name or name
+            print(f'combi_name: {combi_name}: gramobj.name: {gramobj.name}, initial_name: {name} ')
+
             module_filepath = sys.modules[module].__file__
             unimacro_modules[name] = module_filepath
             
@@ -690,10 +686,9 @@ if __name__ == "__main__":
         utilGrammar = UtilGrammar(inifile_stem='_control')
         utilGrammar.startInifile()
         utilGrammar.initialize()
-        Words = ['show', 'all', 'grammars']
+        Words = ['edit', 'grammar', 'controll']
         FR = {}
-        print(f'natbj.allUnimacroGrammars: {natbj.allUnimacroGrammars}')
-        utilGrammar.gotResults_show(Words, FR)
+        utilGrammar.gotResults_edit(Words, FR)
     finally:
         natlink.natDisconnect()
 elif __name__.find('.') == -1:
