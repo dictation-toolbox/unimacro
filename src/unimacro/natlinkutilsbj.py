@@ -307,10 +307,7 @@ class GrammarX(GrammarXAncestor):
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
-        G = {}
-        for name, gram in self.allGrammarXObjects.items():
-            if gram.isExclusive():
-                G[name] = gram
+        G = {name: gram for name, gram in self.allGrammarXObjects.items() if gram.isExclusive()}
         return G
 
     def getUnimacroGrammars(self):
@@ -458,15 +455,8 @@ class GrammarX(GrammarXAncestor):
     # if that member function is defined.
 
     def getName(self):
-        try:
-            return self.name
-        except NameError:
-            pass
-        n = self.__module__
-        if n[0] == "_":
-            n = n[1:]
-        self.name = n
-        return n
+        return self.name
+
     GetName = getName   # consistency with Bart Jan
 
     # These methods are adapted to keep track of the exclusive state.
@@ -1016,12 +1006,17 @@ class IniGrammar(IniGrammarAncestor):
         Can be overridden for for example test grammars, or when more than one grammar is in a module.
         """
         self.inifile_stem = inifile_stem or self.__module__.rsplit('.', maxsplit=1)[-1]
+        self.language = status.get_language()
+        try:
+            self.ini
+        except AttributeError:
+            self.startInifile()
+        self.name = self.checkName()
         try:
             self.iniIgnoreGrammarLists
         except AttributeError:
             self.iniIgnoreGrammarLists = []
         self.__inherited.__init__(self)
-        self.language = status.get_language()
         
         if not self.gramSpec:
             print('Serious error: IniGrammar did not find gramSpec')
@@ -1043,9 +1038,6 @@ class IniGrammar(IniGrammarAncestor):
 
         # here the grammar is not loaded yet, but the ini file is present
         # this could have been done in the user grammar already...
-        if not 'ini' in dir(self):
-            self.startInifile()
-        self.name = self.checkName()
         self.debug = None # can be set in some grammar at initialize time
         #mod = sys.modules[self.__module__]
 ##            version = getattr(mod, '__version__', '---')
@@ -1081,17 +1073,25 @@ class IniGrammar(IniGrammarAncestor):
 
     def checkName(self):
         """get possibly from inifile, if not present, start a inifile entry"""
+        try:
+            self.name
+        except AttributeError:
+            pass
+        else:
+            if not self.name is self.__class__.name:
+                return self.name
+
         n = self.ini.get('grammar name', 'name')
         if n:
-            # print(f'checkName, return: {n}')
             return n
-        if 'name' in dir(self):
+
+        try:
             n = self.name
-        else:
+        except AttributeError:
             n = self.__module__
-        n = n.replace('_', ' ')
-        n = n.strip()
-        print('setting grammar name to: %s'% n)
+            n = n.replace('_', ' ')
+            n = n.strip()
+        print(f'setting grammar name to: {n}')
         self.ini.set('grammar name', 'name', n)
         self.ini.write()
         return n

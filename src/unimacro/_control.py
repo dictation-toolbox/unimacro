@@ -13,11 +13,9 @@
 #pylint:disable=E1101
 
 import os
-import sys
 import filecmp
 import shutil
 import string
-import copy
 from pathlib import Path
 import natlink
 from natlinkcore import loader
@@ -514,9 +512,13 @@ class UtilGrammar(ancestor):
             return
         # print(f'grammar: {gramName}: {grammar}')
         if self.hasCommon(words, 'grammar'):
-            moduleName = grammar.__module__
-            module = sys.modules[moduleName]
-            filepath = module.__file__
+            unimacro_grammars_paths = self.getUnimacroGrammarNamesPaths()
+            print(f'unimacro_grammars_paths:\n{unimacro_grammars_paths}\n')
+            try:
+                filepath = unimacro_grammars_paths[gramName]
+            except KeyError:
+                print(f'grammar not in unimacro_grammars_paths dict: {gramName}')
+                return
             print(f'open for edit file: "{filepath}"')
             self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
         else:
@@ -568,33 +570,32 @@ class UtilGrammar(ancestor):
             # print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
-    def getUnimacroGrammarNames(self):
+    def getUnimacroGrammarNamesPaths(self):
         """get the names of active or inactive, but loaded Unimacro grammars
         
         (wrong grammars are not "recorded" here, regrettably)
         
         """
         registered = self.getUnimacroGrammars()
-        gramon = registered['gramon']
-        assert isinstance(gramon, natbj.IniGrammar)
-        assert isinstance(gramon, natbj.GrammarX)
         
         assert isinstance(registered, dict)
         # loaded_modules = copy.deepcopy(natlinkmain.loaded_modules)   # dict
         # bad_modules = copy.deepcopy(natlinkmain.bad_modules)   # set of paths
 
         unimacro_modules = {}
+        natlink_modules = natlinkmain.get_loaded_modules()
+        natlink_modules_files = [str(f) for f in natlink_modules.keys()]
         for name, gramobj in registered.items():
-            print(f'name: {name}: gramobj: {gramobj}')
-            module = gramobj.__module__
-            combi_name = gramobj.name or name
-            print(f'combi_name: {combi_name}: gramobj.name: {gramobj.name}, initial_name: {name} ')
-
-            module_filepath = sys.modules[module].__file__
-            unimacro_modules[name] = module_filepath
+            print(f'grammar name: {name}, gramobj: {gramobj}')
+            for try_file in natlink_modules_files:
+                if try_file.find(name) > 0:
+                    unimacro_modules[name] = try_file
+                    break
+            else:
+                print(f'not found in natlink_modules_files: {name}')
+                unimacro_modules[name] = name   # not found
             
-        print(f'unimacro_modules: {unimacro_modules}\n===========')
-        return unimacro_modules.keys()
+        return unimacro_modules
     
     # 
     # def checkUnimacroGrammars(self):
