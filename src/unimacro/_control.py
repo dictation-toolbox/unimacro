@@ -686,7 +686,7 @@ if __name__ == "__main__":
         utilGrammar = UtilGrammar(inifile_stem='_control')
         utilGrammar.startInifile()
         utilGrammar.initialize()
-        Words = ['edit', 'grammar', 'controll']
+        Words = ['edit', 'grammar', 'control']
         FR = {}
         utilGrammar.gotResults_edit(Words, FR)
     finally:
