@@ -1,7 +1,6 @@
 #pylint:disable=E1101
 from pathlib import Path
 import pytest
-
 from unimacro._control import UtilGrammar
 from unimacro import natlinkutilsbj as natbj
 
@@ -14,7 +13,6 @@ def do_nothing(*args, **kwargs):
 class GramOn(natbj.IniGrammar):
     """simple grammar which is initially on
     """
-    name = 'gramon'
     gramSpec = """<gramon> exported = 'grammar on';
         """
     def initialize(self):
@@ -63,41 +61,43 @@ def test_getAllGrammars(unimacro_setup):
     al = utilGrammar.getUnimacroGrammars()
     assert len(al) == 3
 
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon'])
-    active = {g for g in al if al[g].isActive()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == loaded
     
     gramoff.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon', 'gramoff'])
-    active = {g for g in al if al[g].isActive()}
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron', 'grammaroff'])
+    active = {g for g, gram in al.items() if gram.isActive()}
     assert active == loaded
     
     gramoff.switchOff()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon'])     #   switchOff also unloads the grammar!
-    active = {g for g in al if al[g].isActive()}
-    assert active == set(['control', 'gramon'])
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])     #   switchOff also unloads the grammar!
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
     
     # should ignore this command:
     utilGrammar.switchOff()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon']) 
-    active = {g for g in al if al[g].isActive()}
-    assert active == set(['control', 'gramon'])
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron']) 
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
 
     gramon.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon'])     
-    active = {g for g in al if al[g].isActive()}
-    assert active == set(['control', 'gramon'])
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])     
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
 
     gramon.switchOn()
-    loaded = {g for g in al if al[g].isLoaded()}
-    assert loaded == set(['control', 'gramon'])     
-    active = {g for g in al if al[g].isActive()}
-    assert active == set(['control', 'gramon'])
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])     
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
+
+
 
     
 def test_ExclusiveMode(unimacro_setup):
@@ -166,20 +166,44 @@ def test_show_all_grammars(unimacro_setup):
     utilGrammar.startInifile()
     utilGrammar.initialize()
     
-    # try "show gramon"
-    ## this one opens the info in a new window:
-    # Words = ['show', 'gramon']
+def test_get_unimacro_grammars(unimacro_setup):
+    """get modules from the active grammars
+    """
+    gramon = GramOn(inifile_stem="_gramon")
+    gramon.initialize()
+    gramoff = GramOff(inifile_stem="_gramoff")
+    gramoff.initialize()
+    assert gramon.isLoaded() is True
+    assert gramon.isActive() is True
+    assert gramoff.isLoaded() is False
+    assert gramoff.isActive() is False
+    utilGrammar = UtilGrammar()
+    # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
+    utilGrammar.startInifile()
+    utilGrammar.initialize()
+
+    gramnames = utilGrammar.getUnimacroGrammarNamesPaths()
+    assert set(gramnames) == {'grammaron', 'grammaroff', 'control'}
+
+    
+    ### uncomment manually which you want to test:    
+    # # try "show gramon"
+    # # this one opens the info in a new window:
+    # Words = ['show', 'grammaron']
     # FR = {}
     # utilGrammar.gotResults_show(Words, FR)
-    Words = ['show', 'gramoff']
-    FR = {}
-    utilGrammar.gotResults_show(Words, FR)
+    # Words = ['show', 'grammaroff']
+    # FR = {}
+    # utilGrammar.gotResults_show(Words, FR)
     #    
-    Words = ['switch', 'on', 'gramoff']
+    Words = ['switch', 'on', 'grammaroff']
+    FR = {}
     utilGrammar.gotResults_switch(Words, FR)
+    assert gramoff.isLoaded() is True
+    assert gramoff.isActive() is True
     
-    
-    
+    # newSet = set(self.getRegisteredGrammarNames())
+
 
 if __name__ == "__main__":
     pytest.main(['test_grammar_control.py'])

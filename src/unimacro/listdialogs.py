@@ -13,8 +13,8 @@ from dtactions.unimacro.unimacroutils import AppBringUp
 
 from natlinkutilsbj import *
 status = natlinkstatus.NatlinkStatus()
-baseDirectory = status.getUnimacroGrammarsDirectory()
-print(f'baseDirectory: {baseDirectory}')
+dataDirectory = status.getUnimacroDataDirectory()
+# print(f'dataDirectory: {dataDirectory}')
 
 
 IDC_NUMBERS=1010
@@ -282,8 +282,8 @@ RQID_FModuleList=17
 
 
 # QHQH
-RequestFileName=baseDirectory+'\\request.bin'
-ResultFileName=baseDirectory+'\\result.bin'
+RequestFileName=dataDirectory+'\\request.bin'
+ResultFileName=dataDirectory+'\\result.bin'
 
 def DumpData(Data,FileName):
     File=open(FileName,'w')

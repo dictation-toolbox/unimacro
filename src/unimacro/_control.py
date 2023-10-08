@@ -25,33 +25,22 @@ from dtactions.unimacro import unimacroutils
 from dtactions.unimacro import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
-from unimacro import check_unimacro_grammars
+from unimacro import spokenforms
 
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 
-# extra commands for controlling actions module:
-try:
-    spokenforms = __import__('spokenforms')
-except ImportError:
-    spokenforms = None
-    print('warning: spokenforms module not imported')
-
 tracecount = list(map(str, list(range(1, 10))))
 
-#(taken from natlinkmain, to prevent import:)
-baseDirectory = status.getUnimacroUserDirectory()
-unimacroDirectory = status.getUnimacroDirectory()
-
-#Constants for the UtilGrammar
+# #Constants for the UtilGrammar
 Normal=0
-Training=1 #obsolete
-Command=2 #obsolete
-Filter=4
-FilterTraining=5
-Display=6
-
-
+# Training=1 #obsolete
+# Command=2 #obsolete
+# Filter=4
+# FilterTraining=5
+# Display=6
+# 
+# 
 showAll = 1  # reset if no echo of exclusive commands is wished
 #voicecodeHome = None
 #if 'VCODE_HOME' in os.environ:
@@ -130,8 +119,9 @@ class UtilGrammar(ancestor):
             return
         self.RegisterControlObject(self)
         self.emptyList('message')
-        allGramNames = self.getUnimacroGrammarNames()
-        self.setList('gramnames', allGramNames)
+        # at post load
+        # allGramNames = self.getUnimacroGrammarNames()
+        # self.setList('gramnames', allGramNames)
         self.setNumbersList('tracecount', tracecount)
         
         self.activateAll()
@@ -399,6 +389,7 @@ class UtilGrammar(ancestor):
             self.gotResults_showexclusive(words, fullResults)
             return
 
+
         grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
         # print(f'_control, gramNames: {gramNames}')
@@ -450,8 +441,10 @@ class UtilGrammar(ancestor):
             print(f'inactiveGrammars: {inactiveGrammars}')
             print(f'switchedOffGrammars: {switchedOffGrammars}')
             for grammar_name, gram in G.items():
+                pass
+            
                 # gram = natbj.allUnimacroGrammars[g]
-                print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
+                # print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
                 # 
                 # result = getattr(gram, 'isActive')
                 # mod_name = gram.__module__
@@ -497,7 +490,7 @@ class UtilGrammar(ancestor):
                 actions.Message(msg, "No active Unimacro grammars", icon="information")
                 return
         
-        # self.BrowseShow()
+        self.BrowseShow()
         
 
     def gotResults_edit(self,words,fullResults):
@@ -513,35 +506,30 @@ class UtilGrammar(ancestor):
         grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
         gramName = self.hasCommon(words[-1:], gramNames)
-        if gramName:
+        
+        try:
             grammar = grammars[gramName]
-            print(f'grammar: {gramName}: {grammar}')
-            if self.hasCommon(words, 'grammar'):
-                moduleName = grammar.__module__
-                if __file__.endswith(moduleName + '.py'):
-                    filepath = __file__
-                # else:
-                    # unimacrogrammarsdir = status.getUnimacroGrammarsDirectory()
-                    # print(f'_control, unimacrogrammarsdir: {unimacrogrammarsdir}, module: {moduleName}')
-                    # filepath = os.path.join(unimacrogrammarsdir, moduleName + '.py')
-                    # if not os.path.isfile(filepath):
-                    #     print(f'_control: cannot find grammar file for "{gramName}",\n\t{filepath} does not exist')
-                    #     return
-                    print(f'open for edit file: "{filepath}"')
-                    self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
-                else:
-                    print(f'cannot find filename/path for {moduleName}')
-                # unimacroutils.setCheckForGrammarChanges(1)
-            else:
-                # edit the inifile
-                try:
-                    grammar.switchOn()
-                    grammar.editInifile()
-                except AttributeError:
-                    self.DisplayMessage(f'grammar "{gramName}" has no method "editInifile"')
-                    return
+        except KeyError:
+            print(f'grammar {words[-1:]} not found in list of gramNames:\n{gramNames}')
+            return
+        # print(f'grammar: {gramName}: {grammar}')
+        if self.hasCommon(words, 'grammar'):
+            unimacro_grammars_paths = self.getUnimacroGrammarNamesPaths()
+            print(f'unimacro_grammars_paths:\n{unimacro_grammars_paths}\n')
+            try:
+                filepath = unimacro_grammars_paths[gramName]
+            except KeyError:
+                print(f'grammar not in unimacro_grammars_paths dict: {gramName}')
+                return
+            print(f'open for edit file: "{filepath}"')
+            self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
         else:
-            print('no grammar name found')
+            # edit the inifile
+            try:
+                grammar.switchOn()
+                grammar.editInifile()
+            except AttributeError:
+                self.DisplayMessage(f'grammar "{gramName}" has no method "editInifile"')
 
     def switchOff(self, **kw):
         """overload, this grammar never switches off
@@ -584,42 +572,41 @@ class UtilGrammar(ancestor):
             # print(f'setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
-    def getUnimacroGrammarNames(self):
-        """get all the names of active or wrong Unimacro grammar names
-        """
-        wrongNames = set() #set(natlinkmain.wrongFiles.keys())
-        loadedNames = set() #set(natlinkmain.loadedFiles.keys())
-
-        # grammarsDirectory = status.getUnimacroGrammarsDirectory()
-        #TODO QH  For the moment:
-        grammarsDirectory = str(Path(__file__).parent/'unimacrogrammars')
-        print(f'getUnimacroGrammarNames, grammarsDirectory: {grammarsDirectory}')
+    def getUnimacroGrammarNamesPaths(self):
+        """get the names of active or inactive, but loaded Unimacro grammars
         
-        unimacroPyFiles = [f for f in os.listdir(grammarsDirectory) if f.endswith('.py')]
-        # unimacro user grammars directory:
-        uug_directory = status.getUnimacroUserGrammarsDirectory()
-        uug_PyFiles = [f for f in os.listdir(uug_directory) if f.endswith('.py')]
-        if uug_PyFiles:
-            for uug in uug_PyFiles:
-                if uug in unimacroPyFiles:
-                    print(f'Warning grammar {uug} both in Unimacro directory as in UnimacroUserGrammarsDirectory')
-                else:
-                    unimacroPyFiles.append(uug)
+        (wrong grammars are not "recorded" here, regrettably)
+        
+        """
+        registered = self.getUnimacroGrammars()
+        
+        assert isinstance(registered, dict)
+        # loaded_modules = copy.deepcopy(natlinkmain.loaded_modules)   # dict
+        # bad_modules = copy.deepcopy(natlinkmain.bad_modules)   # set of paths
 
+        unimacro_modules = {}
+        natlink_modules = natlinkmain.get_loaded_modules()
+        natlink_modules_files = [str(f) for f in natlink_modules.keys()]
+        for name, gramobj in registered.items():
+            print(f'grammar name: {name}, gramobj: {gramobj}')
+            for try_file in natlink_modules_files:
+                if try_file.find(name) > 0:
+                    unimacro_modules[name] = try_file
+                    break
+            else:
+                print(f'not found in natlink_modules_files: {name}')
+                unimacro_modules[name] = name   # not found
             
-        # print("\n===unimacroPyFiles", unimacroPyFiles)
-        # print(f'wrongNames" {wrongNames}')
-        # print(f'loadedNames" {loadedNames}')
-        loadedandwrongmodules = [n[:-3] for n in unimacroPyFiles if n in wrongNames.union(loadedNames)]
-        return loadedandwrongmodules
-
-    def checkUnimacroGrammars(self):
-        """see if there are any changed grammar files with respect to original file in release
-        
-        sync with ...
-        """
-        # print('checkUnimacroGrammars!!')
-        check_unimacro_grammars.checkUnimacroGrammars()
+        return unimacro_modules
+    
+    # 
+    # def checkUnimacroGrammars(self):
+    #     """see if there are any changed grammar files with respect to original file in release
+    #     
+    #     sync with ...
+    #     """
+    #     # print('checkUnimacroGrammars!!')
+    #     check_unimacro_grammars.checkUnimacroGrammars()
 
 # class MessageDictGrammar(natlinkutils.DictGramBase):
 #     def __init__(self):
@@ -702,10 +689,9 @@ if __name__ == "__main__":
         utilGrammar = UtilGrammar(inifile_stem='_control')
         utilGrammar.startInifile()
         utilGrammar.initialize()
-        Words = ['show', 'all', 'grammars']
+        Words = ['edit', 'grammar', 'control']
         FR = {}
-        print(f'natbj.allUnimacroGrammars: {natbj.allUnimacroGrammars}')
-        utilGrammar.gotResults_show(Words, FR)
+        utilGrammar.gotResults_edit(Words, FR)
     finally:
         natlink.natDisconnect()
 elif __name__.find('.') == -1:

@@ -179,11 +179,9 @@ def letterUppercase(l):
     written, spoken = L[0], L[1].capitalize()
     return f'{written}\\{spoken}'
 
-tmpDirectory = os.path.join(status.getUnimacroUserDirectory(), 'tmp')
-if not os.path.isdir(tmpDirectory):
-    os.mkdir(tmpDirectory)
+dataDirectory = status.getUnimacroDataDirectory()
 
-GrammarFileName = os.path.join(tmpDirectory, 'grammar.bin')
+GrammarFileName = os.path.join(dataDirectory, 'grammar.bin')
 for somePath in sys.path:
     files = glob.glob(somePath + '\\pythonwin.exe')
     if files:
@@ -289,6 +287,7 @@ class GrammarX(GrammarXAncestor):
     GrammarsChanged = []   # take last item just True!
     LoadedControlGrammars = []
 
+
     def __init__(self):
         self.__inherited.__init__(self)
         # set in list of allUnimacroGrammars, also when not loaded into
@@ -304,26 +303,39 @@ class GrammarX(GrammarXAncestor):
         self.hypothesis = 0
         self.allResults = 0
                 
-    def getUnimacroGrammars(self):
-        """return the dict of (name, grammarobject) of GrammarX objects
-        """
-        return copy.copy(self.allGrammarXObjects)
-    
+               
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
-        G = {}
-        for name, gram in self.allGrammarXObjects.items():
-            if gram.isExclusive():
-                G[name] = gram
+        G = {name: gram for name, gram in self.allGrammarXObjects.items() if gram.isExclusive()}
         return G
 
+    def getUnimacroGrammars(self):
+        """duplicate functions
+        """
+        return copy.copy(self.allGrammarXObjects)
+
     def RegisterGrammarObject(self):
-        self.allGrammarXObjects[self.name] = self
+        self.allGrammarXObjects[self.module_name] = self
         self.GrammarsChanged.append(True)
+
+    def UnregisterGrammarObject(self):
+        """calling at unload time"""
+        if self.LoadedControlGrammars and self.LoadedControlGrammars[-1] is self:
+            self.LoadedControlGrammars.pop()
+        try:
+            del self.allGrammarXObjects[self.module_name]
+        except KeyError:
+            if self.name == self.module_name:
+                print(f'cannot unregister unimacro grammar {self.module_name}')
+            else:
+                print(f'cannot unregister unimacro grammar {self.module_name}, name: {self.name}')
+                
+        # self.GrammarsChanged.append(True)
 
     def SetGrammarsChangedFlag(self):
         self.GrammarsChanged.append(True)
+        print(f'GrammarsChanged: {self.GrammarsChanged}')   ## seems not to work TODO QH:
     def GetGrammarsChangedFlag(self):
         if self.GrammarsChanged:
             return self.GrammarsChanged.pop()
@@ -380,7 +392,7 @@ class GrammarX(GrammarXAncestor):
         """
         if not self.LoadedControlGrammars:
             self.LoadedControlGrammars.append(gramobj)
-        elif not self.LoadedControlGrammars[0] is gramobj:
+        elif not self.LoadedControlGrammars[0].name is gramobj.name:
             print(f'RegisterControlObject, WARNING, wanting to set to {gramobj.name}, but already set to {self.LoadedControlGrammars[0].name}')
 
     def UnregisterControlObject(self):
@@ -428,6 +440,8 @@ class GrammarX(GrammarXAncestor):
         return '<grammarx: %s>'% self.GetName()
 
     def unload(self):
+        self.UnregisterGrammarObject()
+        self.UnregisterControlObject()
         self.__inherited.unload(self)
 
     def beginCallback(self, moduleInfo):
@@ -458,15 +472,8 @@ class GrammarX(GrammarXAncestor):
     # if that member function is defined.
 
     def getName(self):
-        try:
-            return self.name
-        except NameError:
-            pass
-        n = self.__module__
-        if n[0] == "_":
-            n = n[1:]
-        self.name = n
-        return n
+        return self.name
+
     GetName = getName   # consistency with Bart Jan
 
     # These methods are adapted to keep track of the exclusive state.
@@ -1015,13 +1022,19 @@ class IniGrammar(IniGrammarAncestor):
         
         Can be overridden for for example test grammars, or when more than one grammar is in a module.
         """
-        self.inifile_stem = inifile_stem or self.__module__.rsplit('.', maxsplit=1)[-1]
+        self.module_name = self.__module__.rsplit('.', maxsplit=1)[-1]
+        self.inifile_stem = inifile_stem or self.module_name
+        self.language = status.get_language()
+        try:
+            self.ini
+        except AttributeError:
+            self.startInifile()
+        self.name = self.checkName()
         try:
             self.iniIgnoreGrammarLists
         except AttributeError:
             self.iniIgnoreGrammarLists = []
         self.__inherited.__init__(self)
-        self.language = status.get_language()
         
         if not self.gramSpec:
             print('Serious error: IniGrammar did not find gramSpec')
@@ -1043,9 +1056,6 @@ class IniGrammar(IniGrammarAncestor):
 
         # here the grammar is not loaded yet, but the ini file is present
         # this could have been done in the user grammar already...
-        if not 'ini' in dir(self):
-            self.startInifile()
-        self.name = self.checkName()
         self.debug = None # can be set in some grammar at initialize time
         #mod = sys.modules[self.__module__]
 ##            version = getattr(mod, '__version__', '---')
@@ -1081,16 +1091,25 @@ class IniGrammar(IniGrammarAncestor):
 
     def checkName(self):
         """get possibly from inifile, if not present, start a inifile entry"""
+        try:
+            self.name
+        except AttributeError:
+            pass
+        else:
+            if not self.name is self.__class__.name:
+                return self.name
+
         n = self.ini.get('grammar name', 'name')
         if n:
             return n
-        if 'name' in dir(self):
+
+        try:
             n = self.name
-        else:
+        except AttributeError:
             n = self.__module__
-        n = n.replace('_', ' ')
-        n = n.strip()
-        print('setting grammar name to: %s'% n)
+            n = n.replace('_', ' ')
+            n = n.strip()
+        print(f'setting grammar name to: {n}')
         self.ini.set('grammar name', 'name', n)
         self.ini.write()
         return n
@@ -2809,7 +2828,7 @@ noot mies
         
         assert len(progInfo) == 6
         
-        istop = (progInfo.toporchild == 'top')
+        istop = progInfo.toporchild == 'top'
         if istop:
             if actions.topWindowBehavesLikeChild( progInfo ):
                 istop = False
@@ -3272,4 +3291,4 @@ def splitList(L, n):
             O = []
     if O:
         yield O
-
+        

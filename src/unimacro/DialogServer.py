@@ -17,16 +17,17 @@ from pywin.framework import dlgappcore
 
 import natlink
 from natlinkcore.natlinkutils import *
+from natlinkcore import natlinkstatus
 from natlinkutilsbj import SetMic
 import listdialogs
 import D_
-
+status = natlinkstatus.NatlinkStatus()
 RequestFileName=listdialogs.RequestFileName
 ResultFileName=listdialogs.ResultFileName
 
 # hopelijk: QH
-from dtactions.unimacro.unimacroutils import getUnimacroDirectory
-baseDirectory = getUnimacroDirectory()
+
+dataDirectory = status.getUnimacroDataDirectory()
 
 
 IDC_EDIT=1000
@@ -206,7 +207,7 @@ class MainWindow(dlgappcore.AppDialog):
         try:
             RequestFile=open(RequestFileName,'r')
         except:
-            RequestFile=open(baseDirectory+'\\TestRequest.bin','r')
+            RequestFile=open(dataDirectory+'\\TestRequest.bin','r')
         Data=pickle.load(RequestFile)
         GrammarFile.close()
         return Data
