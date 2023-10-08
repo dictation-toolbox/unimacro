@@ -13,7 +13,7 @@ readme = "README.md"
 dependencies = ["dtactions >= 1.5.7",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
-		"natlinkcore >= 5.3.5",
+		"natlinkcore >= 5.3.6",
         "pysimplegui"]
 		  		
 classifiers=[	"Development Status :: 4 - Beta",
