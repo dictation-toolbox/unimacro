@@ -316,11 +316,26 @@ class GrammarX(GrammarXAncestor):
         return copy.copy(self.allGrammarXObjects)
 
     def RegisterGrammarObject(self):
-        self.allGrammarXObjects[self.name] = self
+        self.allGrammarXObjects[self.module_name] = self
         self.GrammarsChanged.append(True)
+
+    def UnregisterGrammarObject(self):
+        """calling at unload time"""
+        if self.LoadedControlGrammars and self.LoadedControlGrammars[-1] is self:
+            self.LoadedControlGrammars.pop()
+        try:
+            del self.allGrammarXObjects[self.module_name]
+        except KeyError:
+            if self.name == self.module_name:
+                print(f'cannot unregister unimacro grammar {self.module_name}')
+            else:
+                print(f'cannot unregister unimacro grammar {self.module_name}, name: {self.name}')
+                
+        # self.GrammarsChanged.append(True)
 
     def SetGrammarsChangedFlag(self):
         self.GrammarsChanged.append(True)
+        print(f'GrammarsChanged: {self.GrammarsChanged}')   ## seems not to work TODO QH:
     def GetGrammarsChangedFlag(self):
         if self.GrammarsChanged:
             return self.GrammarsChanged.pop()
@@ -425,6 +440,8 @@ class GrammarX(GrammarXAncestor):
         return '<grammarx: %s>'% self.GetName()
 
     def unload(self):
+        self.UnregisterGrammarObject()
+        self.UnregisterControlObject()
         self.__inherited.unload(self)
 
     def beginCallback(self, moduleInfo):
@@ -1005,7 +1022,8 @@ class IniGrammar(IniGrammarAncestor):
         
         Can be overridden for for example test grammars, or when more than one grammar is in a module.
         """
-        self.inifile_stem = inifile_stem or self.__module__.rsplit('.', maxsplit=1)[-1]
+        self.module_name = self.__module__.rsplit('.', maxsplit=1)[-1]
+        self.inifile_stem = inifile_stem or self.module_name
         self.language = status.get_language()
         try:
             self.ini

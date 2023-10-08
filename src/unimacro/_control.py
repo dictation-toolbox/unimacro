@@ -441,8 +441,10 @@ class UtilGrammar(ancestor):
             print(f'inactiveGrammars: {inactiveGrammars}')
             print(f'switchedOffGrammars: {switchedOffGrammars}')
             for grammar_name, gram in G.items():
+                pass
+            
                 # gram = natbj.allUnimacroGrammars[g]
-                print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
+                # print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
                 # 
                 # result = getattr(gram, 'isActive')
                 # mod_name = gram.__module__
