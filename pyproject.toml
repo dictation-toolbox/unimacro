@@ -32,7 +32,7 @@ classifiers=[	"Development Status :: 4 - Beta",
 				
 [project.optional-dependencies]
 test = [
-    "pytest >=7.1.2",
+    "pytest >=7.1.2","flake8"
 ]
 dev = [
 	"pyenvutils","entry-point-inspector"
