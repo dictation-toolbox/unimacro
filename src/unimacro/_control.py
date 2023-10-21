@@ -430,7 +430,8 @@ class UtilGrammar(ancestor):
         self.BrowsePrepare(Start, All, Exclusive)
         if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
-            G = self.getUnimacroGrammars()
+            Gmodulenames = self.getUnimacroGrammars()
+            G = {grammarobj.name: grammarobj for _objname, grammarobj in Gmodulenames.items()}
             # print(f'allGrammars (Unimacro): {G}')
             allGramNames = G.keys()
             self.setList('gramnames', allGramNames)
@@ -440,8 +441,8 @@ class UtilGrammar(ancestor):
             print(f'activeGrammars: {activeGrammars}')
             print(f'inactiveGrammars: {inactiveGrammars}')
             print(f'switchedOffGrammars: {switchedOffGrammars}')
-            for grammar_name, gram in G.items():
-                pass
+            # for grammar_name, gram in G.items():
+            #     print(f'grammar_name: {grammar_name}, gram: {gram}')
             
                 # gram = natbj.allUnimacroGrammars[g]
                 # print(f'{grammar_name}, isLoaded: {gram.isLoaded()}, isActive: {gram.isActive()}')
