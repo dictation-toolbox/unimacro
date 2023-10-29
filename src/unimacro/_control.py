@@ -301,7 +301,7 @@ class UtilGrammar(ancestor):
             gram.ini.write()
             unimacroutils.Wait(0.1)
 
-            gram.unload()
+            # gram.unload()
             gram.initialize()
             return 1
 
@@ -309,7 +309,8 @@ class UtilGrammar(ancestor):
         gram.ini.set('general', 'initial on', 0)
         gram.ini.writeIfChanged()
         gram.cancelMode()  
-        gram.unload()
+        gram.deactivateAll()
+        # gram.unload()
         print('grammar "%s" switched off'% gram.getName())
         return 1
          
@@ -430,8 +431,7 @@ class UtilGrammar(ancestor):
         self.BrowsePrepare(Start, All, Exclusive)
         if All or Active:
             #print 'collect and show active, non-active and non-Unimacro grammars'
-            Gmodulenames = self.getUnimacroGrammars()
-            G = {grammarobj.name: grammarobj for _objname, grammarobj in Gmodulenames.items()}
+            G = self.getUnimacroGrammars()
             # print(f'allGrammars (Unimacro): {G}')
             allGramNames = G.keys()
             self.setList('gramnames', allGramNames)
@@ -570,7 +570,7 @@ class UtilGrammar(ancestor):
         prevSet = set(self.Lists['gramnames'])
         newSet = set(self.getRegisteredGrammarNames())
         if prevSet != newSet:
-            # print(f'setting new grammar names list: {list(newSet)}')
+            # print(f'UnimacroControlPostLoad, setting new grammar names list: {list(newSet)}')
             self.setList('gramnames', list(newSet))
             
     def getUnimacroGrammarNamesPaths(self):
@@ -589,9 +589,10 @@ class UtilGrammar(ancestor):
         natlink_modules = natlinkmain.get_loaded_modules()
         natlink_modules_files = [str(f) for f in natlink_modules.keys()]
         for name, gramobj in registered.items():
-            print(f'grammar name: {name}, gramobj: {gramobj}')
+            # print(f'grammar name: {name}, gramobj: {gramobj}, module_name: {gramobj.module_name}')
+            mod_name = gramobj.module_name
             for try_file in natlink_modules_files:
-                if try_file.find(name) > 0:
+                if try_file.find(mod_name) > 0:
                     unimacro_modules[name] = try_file
                     break
             else:
@@ -600,15 +601,6 @@ class UtilGrammar(ancestor):
             
         return unimacro_modules
     
-    # 
-    # def checkUnimacroGrammars(self):
-    #     """see if there are any changed grammar files with respect to original file in release
-    #     
-    #     sync with ...
-    #     """
-    #     # print('checkUnimacroGrammars!!')
-    #     check_unimacro_grammars.checkUnimacroGrammars()
-
 # class MessageDictGrammar(natlinkutils.DictGramBase):
 #     def __init__(self):
 #         natlinkutils.DictGramBase.__init__(self)
