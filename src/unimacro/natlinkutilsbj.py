@@ -1777,7 +1777,7 @@ noot mies
         #print 'writing to and open:\n\t"%s"'% whatFile
         t = '\n'.join(L)
         rwfile = readwritefile.ReadWriteFile()
-        rwfile.writeAnything(whatFile, t)
+        rwfile.writeAnything(whatFile, t, encoding='utf-8')
        
         self.openFileDefault(whatFile, mode="edit")
 

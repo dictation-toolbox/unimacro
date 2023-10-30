@@ -304,7 +304,7 @@ def test_make_mixed_list(unimacro_setup):
     numbers = spokenforms.SpokenForms('test')
 
     L = [1, 2, 4, 5, 6]
-    got = numbers.getMixedList(L)
+    # got = numbers.getMixedList(L)
     expected =     ['on\xe9', 'two', 'too', 'four', 'for', 'five', 'six']
     assert expected == numbers.getMixedList(L)
 
@@ -312,7 +312,7 @@ def test_make_mixed_list(unimacro_setup):
     print('\nexpect messages from spokenforms.ini, as language is unknown')
     m = spokenforms.SpokenForms('othertest')
 
-    got = numbers.getMixedList(L)
+    # got = numbers.getMixedList(L)
     expected =    ['1', '2', '4', '5', '6']
     assert expected == m.getMixedList(L)
 
@@ -331,8 +331,8 @@ def test_get_number_back_from_spoken_form(unimacro_setup):
     numbers = spokenforms.SpokenForms('test')
 
     expected = 1
-    input = 'on\xe9'
-    assert expected == numbers.getNumberFromSpoken(input)
+    Input = 'on\xe9'
+    assert expected == numbers.getNumberFromSpoken(Input)
     
     expected = 5
     assert expected == numbers.getNumberFromSpoken(5)
@@ -361,12 +361,12 @@ def test_get_number_back_from_spoken_form(unimacro_setup):
     # originalList ints:
     originalList = [0,1,2]
     expected = None
-    input = 'four'
-    assert expected == numbers.getNumberFromSpoken(input, originalList)
+    Input = 'four'
+    assert expected == numbers.getNumberFromSpoken(Input, originalList)
     expected = 1
     
-    input = 'on\xe9'
-    assert expected == numbers.getNumberFromSpoken(input, originalList)
+    Input = 'on\xe9'
+    assert expected == numbers.getNumberFromSpoken(Input, originalList)
     expected = 1
     assert expected == numbers.getNumberFromSpoken(1, originalList)
     expected = None
@@ -487,10 +487,10 @@ def test_get_list_of_spoken_forms_sorted_by_number_values(unimacro_setup):
 
     
 def test_format_spoken_forms_from_numbers_dict(unimacro_setup):
-    """
+    """test spoken forms
     """
     func = inivars.formatReverseNumbersDict
-    assert func({1: ['on\xe9'], 2: ['two'], 3: ['three']}) == 'on\xe9 ... three'
+    assert func({1: ['oné'], 2: ['two'], 3: ['three']}) == 'oné ... three'
 
 def test_get_punctuation_list(unimacro_setup):
     """test the punctuation from the punctuationreverse section
