@@ -31,10 +31,10 @@ More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgra
 If you want to install your local unimacro development environment as the working unimacro:
 `pip install -e . `.  
 
-`flit build` to build the wheen and sdist with [flit](https://flit.pypa.io/).  
-`flit publish` to pubish them to the [Python Package Index](https://pypi.org/).
+`py -m build` to build the Python package locally.
 
- 
+Publishing to PyPi is done through the [trusted publisher mechanism](https://docs.pypi.org/trusted-publishers/using-a-publisher/) when a release is created on github using github actions. 
+
 BEFORE YOU PUBLISH review the version number of dependencies in pyproject.toml, see if you require newer ones.
 
 
