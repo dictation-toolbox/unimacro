@@ -2,12 +2,14 @@
 from pathlib import Path
 import pytest
 from unimacro._control import UtilGrammar
+from unimacro.UnimacroGrammars._brackets import BracketsGrammar
 from unimacro import natlinkutilsbj as natbj
-
 thisDir = Path(__file__).parent
 
 def do_nothing(*args, **kwargs):
     return None
+
+# test with _control.py, _brackets.py (a very simple grammar), and two grammars that are defined in this file, gramon and gramoff
 
 
 class GramOn(natbj.IniGrammar):
@@ -58,7 +60,67 @@ def test_getAllGrammars(unimacro_setup):
     assert utilGrammar in utilGrammar.LoadedControlGrammars
     
     al = utilGrammar.getUnimacroGrammars()
-    assert len(al) == 3
+    assert len(al) == 4
+
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == loaded
+    
+    gramoff.switchOn()
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron', 'grammaroff'])
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == loaded
+    
+    gramoff.switchOff()
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])     #   switchOff also unloads the grammar!
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
+    
+    # should ignore this command:
+    utilGrammar.switchOff()
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron']) 
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
+
+    gramon.switchOn()
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])     
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
+
+    gramon.switchOn()
+    loaded = {g for g, gram in al.items() if gram.isLoaded()}
+    assert loaded == set(['control', 'grammaron'])     
+    active = {g for g, gram in al.items() if gram.isActive()}
+    assert active == set(['control', 'grammaron'])
+
+def test_getAllGrammarsSwitchingOnAlternative(unimacro_setup):
+    """see if we can get all the grammars, as control switches on in a different way, should also work...
+    
+    """
+    gramon = GramOn(inifile_stem="_gramon")
+    gramon.initialize()
+    gramoff = GramOff(inifile_stem="_gramoff")
+    gramoff.initialize()
+    assert gramon.isLoaded() is True
+    assert gramon.isActive() is True
+    assert gramoff.isLoaded() is False
+    assert gramoff.isActive() is False
+    utilGrammar = UtilGrammar()
+    # monkeypatch.setattr(utilGrammar, 'switchOnOrOff', do_nothing)
+    utilGrammar.startInifile()
+    utilGrammar.initialize()
+    # utilGrammar.gotResults_show(words=['show', 'all', 'grammars'], fullResults={})
+    assert utilGrammar.isLoaded() is True
+    assert utilGrammar.isActive() is True
+    assert utilGrammar in utilGrammar.LoadedControlGrammars
+    
+    al = utilGrammar.getUnimacroGrammars()
+    assert len(al) == 4
 
     loaded = {g for g, gram in al.items() if gram.isLoaded()}
     assert loaded == set(['control', 'grammaron'])
@@ -97,7 +159,21 @@ def test_getAllGrammars(unimacro_setup):
     assert active == set(['control', 'grammaron'])
 
 
-
+def test_switching_on_off_brackets(unimacro_setup):
+    """try if brackets grammar switches on and off
+    """
+    gram = BracketsGrammar()
+    gram.initialize()
+    assert gram.isLoaded() is True
+    assert gram.isActive() is True
+    gram.switchOff()
+    assert gram.isLoaded() is False
+    assert gram.isActive() is False
+    gram.switchOn()
+    assert gram.isLoaded() is True
+    assert gram.isActive() is True
+    
+    
     
 def test_ExclusiveMode(unimacro_setup):
     """see if grammars can switch on and off exclusive mode, with _control following
@@ -168,6 +244,7 @@ def test_get_unimacro_grammars(unimacro_setup):
     utilGrammar.startInifile()
     utilGrammar.initialize()
     unimacro_grammars = utilGrammar.getUnimacroGrammars()
+    # _brackets not loaded in this test
     assert len(unimacro_grammars) == 3
     # does not function here, as the grammars are not in separate files:
     gramnames = utilGrammar.getUnimacroGrammarNamesPaths()

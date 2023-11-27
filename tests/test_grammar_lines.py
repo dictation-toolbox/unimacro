@@ -49,17 +49,17 @@ def test_getLineRelativeTo():
     result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
     assert result == expect
     
-# def test_get_accented_numbers_info(unimacro_setup,monkeypatch):
-#     """problem with the numbers spoken forms of accented characters
-#     """
-#      
-#     thisGrammar = _lines.ThisGrammar()
-#     monkeypatch.setattr(thisGrammar, 'switchOnOrOff', do_nothing)
-#     thisGrammar.startInifile() #modName = '_lines')
-#     thisGrammar.initialize()
-#     thisGrammar.showInifile()
-#     the showInifile did not show accented characters, seems ok now.
-#     pass
+def test_get_accented_numbers_info(unimacro_setup,monkeypatch):
+    """problem with the numbers spoken forms of accented characters
+    """
+     
+    thisGrammar = _lines.ThisGrammar()
+    monkeypatch.setattr(thisGrammar, 'switchOnOrOff', do_nothing)
+    thisGrammar.startInifile() #modName = '_lines')
+    thisGrammar.initialize()
+    thisGrammar.showInifile()
+    # the showInifile did not show accented characters before, but seems ok now.
+    
 
 
 if __name__ == "__main__":
