@@ -284,8 +284,8 @@ class GrammarX(GrammarXAncestor):
     #pylint:disable=R0904, C0116
     __inherited=GrammarXAncestor
     allGrammarXObjects = {}
-    GrammarsChanged = []   # take last item just True!
-    LoadedControlGrammars = []
+    GrammarsChanged = set()   # take last item just True!
+    LoadedControlGrammars = set()
 
 
     def __init__(self):
@@ -311,20 +311,20 @@ class GrammarX(GrammarXAncestor):
         return G
 
     def getUnimacroGrammars(self):
-        """duplicate functions
+        """get from allGrammarXObjects the name: grammarobj dict of all Unimacro grammars
         """
-        return copy.copy(self.allGrammarXObjects)
+        return  {grammarobj.getName(): grammarobj for _objname, grammarobj in self.allGrammarXObjects.items()}
 
     def RegisterGrammarObject(self):
-        self.allGrammarXObjects[self.module_name] = self
-        self.GrammarsChanged.append(True)
+        self.allGrammarXObjects[self.getName()] = self
+        self.GrammarsChanged.add(True)
 
     def UnregisterGrammarObject(self):
         """calling at unload time"""
-        if self.LoadedControlGrammars and self.LoadedControlGrammars[-1] is self:
+        if self.LoadedControlGrammars and self in self.LoadedControlGrammars:
             self.LoadedControlGrammars.pop()
         try:
-            del self.allGrammarXObjects[self.module_name]
+            del self.allGrammarXObjects[self.name]
         except KeyError:
             if self.name == self.module_name:
                 print(f'cannot unregister unimacro grammar {self.module_name}')
@@ -334,7 +334,7 @@ class GrammarX(GrammarXAncestor):
         # self.GrammarsChanged.append(True)
 
     def SetGrammarsChangedFlag(self):
-        self.GrammarsChanged.append(True)
+        self.GrammarsChanged.add(True)
         print(f'GrammarsChanged: {self.GrammarsChanged}')   ## seems not to work TODO QH:
     def GetGrammarsChangedFlag(self):
         if self.GrammarsChanged:
@@ -384,16 +384,13 @@ class GrammarX(GrammarXAncestor):
         if len(exclGr) > 1:
             return
         for gram in exclGr.values():
-            if gram is self.LoadedControlGrammars[-1]:
+            if gram in self.LoadedControlGrammars:
                 gram.setExclusive(0)
             
     def RegisterControlObject(self, gramobj):
         """keep this (control grammar) in a special variable
         """
-        if not self.LoadedControlGrammars:
-            self.LoadedControlGrammars.append(gramobj)
-        elif not self.LoadedControlGrammars[0].name is gramobj.name:
-            print(f'RegisterControlObject, WARNING, wanting to set to {gramobj.name}, but already set to {self.LoadedControlGrammars[0].name}')
+        self.LoadedControlGrammars.add(gramobj)
 
     def UnregisterControlObject(self):
         """clear this (control grammar) in a special variable
@@ -411,9 +408,8 @@ class GrammarX(GrammarXAncestor):
             return
         if not self.LoadedControlGrammars:
             return
-        if self.LoadedControlGrammars[0] is self:
-            return
-        self.LoadedControlGrammars[0].setExclusive(value)
+        for control_grammar in self.LoadedControlGrammars:
+            control_grammar.setExclusive(value)
 
 
     def getRegisteredGrammarNames(self):
@@ -441,7 +437,8 @@ class GrammarX(GrammarXAncestor):
 
     def unload(self):
         self.UnregisterGrammarObject()
-        self.UnregisterControlObject()
+        if self in self.LoadedControlGrammars:
+            self.UnregisterControlObject()
         self.__inherited.unload(self)
 
     def beginCallback(self, moduleInfo):
@@ -539,8 +536,10 @@ class GrammarX(GrammarXAncestor):
         self.__inherited.setExclusive(self,exclusive)
         self.exclusive = exclusive
         
+        
+        ## check this, QH TODO
         if self.LoadedControlGrammars:
-            if self is self.LoadedControlGrammars[0]:
+            if self in self.LoadedControlGrammars:
                 # no extra setting if self is _control
                 return
             self.ControlSetExclusiveGrammar(exclusive)
