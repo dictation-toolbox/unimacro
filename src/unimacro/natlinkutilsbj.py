@@ -27,7 +27,7 @@
 #   See the class BrowsableGrammar for documentation on the use of
 #   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
-#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602
+#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602, W0212
 #pylint:disable=E1101
 
 """subclasses classes for natlink grammar files and utility functions
@@ -1024,9 +1024,9 @@ class IniGrammar(IniGrammarAncestor):
         self.module_name = self.__module__.rsplit('.', maxsplit=1)[-1]
         self.inifile_stem = inifile_stem or self.module_name
         self.language = status.get_language()
-        try:
-            self.ini
-        except AttributeError:
+
+
+        if not hasattr(self, 'ini'):
             self.startInifile()
         self.name = self.checkName()
         try:
@@ -2385,7 +2385,10 @@ noot mies
                 self.ini.set('an instruction', 'note 3', 'This section can be deleted after reading')
         
         self.fillDefaultInifile(self.ini)
+        self.ini.writeIfChanged()
         self.ini.close()
+        name = self.getName()
+        print(f'Please edit this new inifile: {self.ini._file}, possibly by calling "edit {name}')
 
     def fillDefaultInifile(self, ini):
         """set initial settings for ini file, overload!
@@ -2396,9 +2399,12 @@ noot mies
         name = self.__module__.strip('_')
         name = name.replace("_", " ")
         ini.set('grammar name', 'name', name)
-        for l in self.validLists:
-            if not('iniIgnoreGrammarLists' in dir(self) and l in self.iniIgnoreGrammarLists):
-                ini.set(l)
+        
+        if hasattr(self, "validLists") and hasattr(self, 'iniIgnoreGrammarLists'):
+            for l in self.validLists:
+                if not l in self.iniIgnoreGrammarLists:
+                    ini.set(l)
+        ini.write()
                 
     def error(self, message):
         """gives an error message, and leaves variable Error
