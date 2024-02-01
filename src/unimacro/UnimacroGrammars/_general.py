@@ -1,22 +1,18 @@
+# This was the old "general" intro for all unimacro grammar files:
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
 #    or the file COPYRIGHT.txt in the natlink\natlink directory 
 #
-#  _general.PY
+#  _general.py
 #
 # written by Quintijn Hoogenboom (QH softwaretraining & advies),
-# developed during the past few years.
 #
 #
 #pylint:disable=C0302, R0904, C0209, C0321, R0912, R0914, R0915, R0911
 #pylint:disable=E1101 
 
-"""do a set of general commands, with language versions possible, version 7
-
-a lot of commands from the previous version removed, inserted a search and dictate
-mode, that only works when spell mode or command mode is on.
-
+"""do a set of general commands
 
 """
 import re
@@ -97,7 +93,7 @@ switchDirection = {
       "{Right}":   "{Left}"}
 
 modes = ['spell', 'command', 'numbers', 'normal', 'dictation', 'dictate']
-normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase', 'batch',
+normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase', 
              'comment', 'documentation', 'modes', 'variable', 'search',
              'highlight',         # for Shane, enable, because Vocola did not fix _anything yet
              'browsewith', 'hyphenatephrase', 'pastepart',
@@ -105,7 +101,7 @@ normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase', 'batch',
 #normalSet = ['hyphenatephrase']  # skip 'openuser'
 
 commandSet = normalSet[:] + ['dictate']
-
+thisGrammar = None
 
 ancestor=natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -127,7 +123,6 @@ class ThisGrammar(ancestor):
 <dgndictation> imported;
 # <dgnwords> imported;
 <documentation> exported = Make documentation;
-<batch> exported = do batch words;
 <test> exported = test micstate;
 <presscode> exported = (press|address) (<dgndictation>|<dgnletters>);
 <choose> exported = choose {n1-10};
@@ -273,83 +268,6 @@ class ThisGrammar(ancestor):
     def gotResults_before(self,words,fullResults):
         if self.hasCommon(words, 'here'):
             natut.buttonClick('left', 1)
-
-    def gotResults_batch(self,words,fullResults):
-        
-        _files = [f[:-4] for f in os.listdir(wordsFolder)]
-        if _files:
-            print('in folder: %s, files: %s'% (wordsFolder, _files))
-        else:
-            print('in folder: %s, no files found'% wordsFolder)
-            return
-        
-        for f in _files:
-            F = f + '.txt'
-            if f == 'deleted words':
-                print('delete words!')
-                for l in open(os.path.join(wordsFolder, F)):
-                    w = l.strip()
-                    if w.find('\\\\') > 0:
-                        w, p = w.split('\\\\')
-                    print(f, ', word to delete :', w)
-                    unimacroutils.deleteWordIfNecessary(w)
-                continue
-
-            if f in FORMATS:
-                formatting = FORMATS[f]
-                print('to formatting for file: %s: %x'% (f, formatting))
-            else:
-                print('no formatting information for file: %s'% f)
-                formatting = 0
-
-            for l in open(os.path.join(wordsFolder, F)):
-                p = 0 # possibly user defined properties
-                w = l.strip()
-                print(f, ', word:', w)
-                if w.find('\\\\') > 0:
-                    w, p = w.split('\\\\')
-                    exec("p = %s"%p)
-##                    pList = unimacroutils.ListOfProperties(p)
-##                    for pp in pList:
-##                        print pp
-                newFormat = p or formatting
-                unimacroutils.addWordIfNecessary(w)
-                formatOld = natlink.getWordInfo(w)
-                if formatOld == newFormat:
-                    print('format already okay: %s (%x)'% (w, newFormat))
-                else:
-                    natlink.setWordInfo(w, newFormat)
-                    print('format set for %s: %x'% (w, newFormat))
-
-##    def gotResults_datetime(self,words,fullResults):
-##        """print copy or playback date, time or date and time
-##        """
-##        Print = self.hasCommon(words, 'print')
-##        Speak = self.hasCommon(words, 'give')
-##        Date  = self.hasCommon(words, 'date')
-##        Time  = self.hasCommon(words, 'time')
-##        if Date and Time:
-##            DateTime  = 1
-##        result = []
-##        if Date:
-##            dateformat = "%m/%d/%Y"
-##            cdate = datetime.date.today()
-##            fdate = cdate.strftime(dateformat)
-##            result.append(fdate)
-##        if Time:
-##            timeformat = "%H:%M"
-##            ctime = datetime.datetime.now().time()
-##            ftime = ctime.strftime(timeformat)
-##            result.append(ftime)
-##        if result:
-##            result = ' '.join(result)
-##        else:
-##            print 'no date or time in result'
-##            return
-##        if Print:
-##            keystroke(result)
-##        elif Speak:
-##            natlink.execScript('TTSPlayString "%s"'% result)
 
     def gotResults_highlight(self,words,fullResults):
         # for Shane
@@ -777,15 +695,16 @@ class ThisGrammar(ancestor):
             T.append(f'  .toporchild\t{p.toporchild}')
             T.append(f'  .classname\t{p.classname}')
             T.append(f'  .hndle:\t{hndle}')
-            childClass = "#32770"
-            overruleIsTop = self.getTopOrChild(self.progInfo, childClass=childClass)
-
-            if p.toporchild != overruleIsTop:
-                T.append('')
-                if overruleIsTop:
-                    T.append("**** treat as TOP window although it is a child window")
-                else:
-                    T.append("**** treat as CHILD window although it is a top window")
+            # # for special behaviour:
+            # childClass = "#32770"
+            # overruleIsTop = self.getTopOrChild(self.progInfo, childClass=childClass)
+            # 
+            # if p.toporchild != overruleIsTop:
+            #     T.append('')
+            #     if overruleIsTop:
+            #         T.append("**** treat as TOP window although it is a child window")
+            #     else:
+            #         T.append(f'**** treat as CHILD window although it is a top window (classname: {classname})')
 
 
         elif self.hasCommon(words,'user'):

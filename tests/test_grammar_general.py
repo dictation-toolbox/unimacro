@@ -20,9 +20,12 @@ def test_getTopOrChild(unimacro_setup,monkeypatch):
     thisGrammar.startInifile() #modName = '_general')
     thisGrammar.initialize()
     hndle = 10
+
     ##(progpath, prog, title, toporchild, classname, hndle)
     ## ProgInfo(progpath, prog, title, toporchild, classname, HNDLE)
+    
     progInfo = unimacroutils.ProgInfo('path/to/program.exe', 'program', 'window title', 'top', 'classname', hndle)
+    
     # thisGrammar.gotBegin(modInfo)
     thisGrammar.progInfo = progInfo
     assert thisGrammar.getTopOrChild(progInfo=progInfo, childClass=None) is True
