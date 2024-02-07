@@ -275,6 +275,7 @@ class UtilGrammar(ancestor):
             for gname, gram in G.items():
                 if gram == self:
                     continue
+                gram.checkForChanges = 1
                 self.switch(gram, gname, switchOn)
         else:
             gname = self.hasCommon(words, Gkeys)
@@ -290,19 +291,28 @@ class UtilGrammar(ancestor):
         """switch on or off grammar, and set in inifile,
         gram is the grammar object
         gname is the grammar name
-        switchOn is True or Fals
+        switchOn is True or False
         """
         if gram == self:
             print(f'should not be here, do not switch on of off _control {gram}')
             return None
         if switchOn:
-            self.checkInifile()
+            gram.checkInifile()
             gram.ini.set('general', 'initial on', 1)
             gram.ini.write()
             unimacroutils.Wait(0.1)
+            gramName = gram.getName()
+            unimacro_grammars_paths = self.getUnimacroGrammarNamesPaths()
+            try:
+                filepath = Path(unimacro_grammars_paths[gramName])
+            except KeyError:
+                print(f'_control, grammar not in unimacro_grammars_paths dict: {gramName}, cannot switchOn')
+                return None
+            # now reload with force option.
+            print(f'_control, now reload grammar "{gramName}":')
+            natlinkmain.seen.clear()
+            natlinkmain.load_or_reload_module(filepath, force_load=True)
 
-            # gram.unload()
-            gram.initialize()
             return 1
 
         # switch off:        
