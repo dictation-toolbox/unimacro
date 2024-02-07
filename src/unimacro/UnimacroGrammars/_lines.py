@@ -780,8 +780,8 @@ if __name__ == "__main__":
     # here code to interactive run this module
     natlink.natConnect()
     try:
-        thisGrammar = ThisGrammar()
-        thisGrammar.startInifile(modName = '_lines')
+        thisGrammar = ThisGrammar(inifile_stem='_lines')
+        thisGrammar.startInifile()
         thisGrammar.initialize()
         thisGrammar.progInfo = unimacroutils.getProgInfo()
         seqsAndRules = [(['line'], 'linenum'), (['seven', 'two', 'three'], '__0to9')]

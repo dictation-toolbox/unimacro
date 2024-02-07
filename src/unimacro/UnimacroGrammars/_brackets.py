@@ -113,8 +113,11 @@ class BracketsGrammar(ancestor):
             text = ""
 
         if self.here:
+            print('do a left buttonClick')
             unimacroutils.buttonClick('left', 1)
+            print('do a "visibleWait')
             unimacroutils.visibleWait()
+            print('after a visibleWait')
 
         leftText = rightText = leftTextDict = rightTextDict = ""
         if text:
@@ -199,9 +202,9 @@ the three parts
     text = text.rstrip()
     return text, leftText, rightText
 
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+# standard stuff Joel (adapted in course of time, QH)
 def unload():
-    #pylint:disable=W0603
+    #pylint:disable=W0603, E0601
     global bracketsGrammar
     if bracketsGrammar:
         bracketsGrammar.unload()
@@ -211,8 +214,8 @@ def unload():
 if __name__ == "__main__":
     natlink.natConnect()
     try:
-        bracketsGrammar = BracketsGrammar()
-        bracketsGrammar.startInifile(modName = '_brackets')
+        bracketsGrammar = BracketsGrammar(inifile_stem='_brackets')
+        bracketsGrammar.startInifile()
         bracketsGrammar.initialize()
     finally:
         natlink.natDisconnect()

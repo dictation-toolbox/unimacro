@@ -7,7 +7,7 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020
-#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915
+#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915, W0212
 #pylint:disable=E1101, C0209
 r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
@@ -47,7 +47,6 @@ The git additional commands are only valid if you specify a valid git client in 
 
 """            
 import re
-import copy
 import pickle    #recentfoldersDict
 import os
 import sys
@@ -57,7 +56,6 @@ import urllib.request
 import urllib.parse
 import urllib.error
 import ctypes    # get window text
-import traceback
 from pathlib import Path
 # from pprint import pprint
 import win32gui
@@ -72,7 +70,7 @@ from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
 from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
+# from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
 from dtactions.unimacro.unimacroactions import UnimacroBringUp
 from dtactions.unimacro import unimacroutils
 # from dtactions.unimacro.unimacroactions import Message
@@ -126,8 +124,6 @@ class ThisGrammar(ancestor):
     optionalfoldercommands = ['new', 'explorer', 'paste', 'copy', 'remote', 'git']
     optionalfilecommands = ['copy', 'paste', 'edit', 'paste', 'remote', 'openwith', 'git']
 
-    # only used if siteRoot is a valid folder
-    optionalsitecommands = ['input', 'output', 'local', 'online']
     
     gramSpec = """
 <folder> exported = folder ({folders}[<foldercommands>]);
@@ -152,8 +148,6 @@ class ThisGrammar(ancestor):
                     <namepathcopy>;
 <remember> = remember;
 <namepathcopy> = (copy (name|path)) | ((name|path) copy);
-## set all environment variables into the folders list...
-<setenvironmentfolders> exported =  set environment folders;
 
 """
     if doRecentFolderCommand:
@@ -175,7 +169,6 @@ class ThisGrammar(ancestor):
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
-        self.lastSite = None
         self.switchOnOrOff() # initialises lists from inifile, and switches on
         
     def gotBegin(self,moduleInfo):
@@ -367,7 +360,8 @@ class ThisGrammar(ancestor):
         foldersList = self.ini.get('folders')
         self.foldersDict = {}
         for f in foldersList:
-            folder = self.substituteFolder(self.ini.get('folders', f))
+            raw_folder = self.ini.get('folders', f)
+            folder = self.substituteFolder(raw_folder)
             if not os.path.isdir(folder):
                 print(f'warning _folders,  folder "{f}" does not exist: "{folder}"')
                 # self.ini.delete('folders', f)
@@ -854,94 +848,6 @@ class ThisGrammar(ancestor):
     #     wantedFolder = self.recentfoldersList[chooseNum]
     #     self.gotoFolder(wantedFolder)
        
-    def gotResults_siteshort(self,words,fullResults):
-        """switch to last mentioned site in the list
-        mainly for private use, a lot of folders reside in the root folder,
-        siteRoot.  They all have an input folder and a output folder.
-
-
-        """
-        if self.lastSite:
-            words.insert(1, self.lastSite)
-            print('lastSite: %s'% words)
-            self.gotResults_site(words, fullResults)
-        else:
-            self.DisplayMessage('no "lastSite" available yet')
-
-
-    def gotResults_setenvironmentfolders(self,words,fullResults):
-        """switch to last mentioned site in the list
-        mainly for private use, a lot of folders reside in the root folder,
-        siteRoot.  They all have an input folder and a output folder.
-
-        """
-        reverseOldValues = {'ignore': []}
-        for k in self.ini.get('folders'):
-            val = self.ini.get('folders', k)
-            if val:
-                reverseOldValues.setdefault(val, []).append(k)
-            else:
-                reverseOldValues['ignore'].append(k)
-        reverseVirtualDrives = {}
-        for k in self.ini.get('virtualdrives'):
-            val = self.ini.get('virtualdrives', k)
-            reverseVirtualDrives.setdefault(val, []).append(k)
-            
-##        print reverseOldValues
-        allFolders = copy.copy(self.envDict)  #  natlinkcorefunctions.getAllFolderEnvironmentVariables()  
-        kandidates = {}
-        ignore = reverseOldValues['ignore']
-        for (k,v) in list(allFolders.items()):
-            kSpeakable = k.replace("_", " ")
-            if k in ignore or kSpeakable in ignore:
-                continue
-            oldV = self.ini.get('folders', k, "") or self.ini.get('folders', kSpeakable)
-            if oldV:
-                vPercented = "%" + k + "%"
-                if oldV == v:
-                    continue
-                if oldV == vPercented:
-                    kPrevious = reverseOldValues[vPercented]
-##                    print 'vPercented: %s, kPrevious: %s'% (vPercented, kPrevious)
-                    if  vPercented in reverseOldValues:
-                        if k in kPrevious or kSpeakable in kPrevious:
-                            continue
-                        print('already in there: %s (%s), but spoken form changed to %s'% \
-                          (k, v, kPrevious))
-                        continue
-                else:
-                    print('different for %s: old: %s, new: %s'% (k, oldV, v))
-            kandidates[k] = v
-        count = len(kandidates)
-        
-        if not kandidates:
-            self.DisplayMessage("no new environment variables to put into the folders section")
-            return
-        mes = ["%s new environment variables for your folders section of the grammar _folders"% count]
-        
-        Keys = list(kandidates.keys())
-        Keys.sort()
-        for k in Keys:
-            mes.append("%s\t\t%s"% (k, kandidates[k]))
-
-        mes.append('\n\nDo you want these new environment variables in your folders section?')
-                       
-                
-
-        if YesNo('\n'.join(mes)):
-            for (k,v) in list(kandidates.items()):
-                if k.find('_') > 0:
-                    kSpeakable = k.replace("_", " ")
-                    if self.ini.get('folders', k):
-                        self.ini.delete('folders', k)
-                else:
-                    kSpeakable = k
-                self.ini.set('folders', kSpeakable, "%" + k + "%")
-            self.ini.write()
-            self.DisplayMessage('added %s entries, say "Show|Edit folders" to browse'% count)
-        else:
-            self.DisplayMessage('nothing added, command canceled')
-            
 
     def gotResults_website(self,words,fullResults):
         """start webbrowser, websites in inifile unders [websites]
@@ -1143,127 +1049,6 @@ class ThisGrammar(ancestor):
         folder = self.recentfoldersDict[name]
         print("recentfolder, name: %s, folder: %s"% (name, folder))
         self.wantedFolder = folder
-
-    def gotResults_site(self,words,fullResults):
-        """switch to one of the sites in the list
-        mainly for private use, a lot of folders reside in the root folder,
-        siteRoot.  They all have an input folder and a output folder.
-
-        """
-        print('site: %s'% words)
-        siteSpoken = words[1]
-        self.lastSite = None # name of site
-        if siteSpoken in self.sitesDict:
-            siteName = self.sitesDict[siteSpoken]
-            self.lastSite = siteName
-        else:
-            raise ValueError("no siteName for %s"% siteSpoken)
-        
-        self.site = self.getSiteInstance(siteName) 
-            
-        if siteName in self.sitesInstances:
-            self.site = self.sitesInstances[siteName]
-        else:
-            site = self.getSiteInstance(siteName)
-            if site:
-                self.sitesInstances[siteName] = site
-                self.lastSite = siteName
-                self.site = site
-            else:
-                self.site = None
-                print('could not get site: %s'% siteName)
-        #
-        #if site is None:
-        #    print 'invalid site: %s, marking in ini file'% site
-        #    self.ini.set('sites', siteName, '')
-        #    self.ini.write()
-        #    return
-        if self.nextRule == 'sitecommands':
-            print('site %s, waiting for sitecommands'% self.site)
-        else:
-            if self.site:
-                self.wantedFolder = self.site.rootDir
-            else:
-                print("_folders, site command (private QH), no site specified")
-    
-    def gotResults_sitecommands(self, words, fullResults):
-        """do the various options for sites (QH special).
-        Assume lastSite is set
-        """
-        if not self.site:
-            print("sitecommands, no last or current site set")
-            return
-        print('sitecommands for "%s": %s (site: %s)'% (self.lastSite, words, self.site))
-        site = self.site
-        website, folder = None, None
-        for command in words:
-            command = self.getFromInifile(words[0], 'sitecommands')
-    
-            if command == 'input':
-                print('input: %s'% words)
-                folder = str(site.sAbs)
-            elif command == 'output':
-                folder = str(site.hAbs)
-            elif command == 'local':
-                website = os.path.join(str(site.hAbs), 'index.html')
-            elif command == 'online':
-                sitePrefix = site.sitePrefix
-                if isinstance(sitePrefix, dict):
-                    for v in sitePrefix.values():
-                        sitePrefix = v
-                        break
-                    
-                website = os.path.join(str(sitePrefix), 'index.html')
-            elif command == 'testsite':
-                if 'sg' in self.sitesInstances:
-                    testsite = self.sitesInstances['sg']
-                else:
-                    testsite = self.getSiteInstance('sg')
-                    if testsite:
-                        self.sitesInstances['sg'] = testsite
-
-                if testsite:
-                    # site at sitegen site:
-                    website = os.path.join(str(testsite.sitePrefix['nl']), self.lastSite, 'index.html')
-
-        if self.nextRule:
-            if folder:
-                self.wantedFolder = folder
-                return
-            if website:
-                self.wantedWebsite = website
-                return
-            print('no valid folder or website for nextRule')
-            return
-        if folder:
-            self.gotoFolder(folder)
-            self.wantedFolder = None
-        elif website:
-            self.gotoWebsite(website)
-            self.wantedWebsite = None
-
-
-    def getSiteInstance(self, siteName):
-        """return pageopen function of site instance, or None
-        """
-        try:
-            site = __import__(siteName)
-        except ImportError:
-            print('cannot import module %s'% siteName)
-            print(traceback.print_exc())
-            currentDir = '.' in sys.path
-            print('currentDir in sys.path: %s'% currentDir)
-            print('sys.path: %s'% sys.path) 
-            return None
-        if 'pagesopen' in dir(site):
-            try:
-                po = site.pagesopen()
-                return po
-            except:
-                print('"pagesopen" failed for site %s'% siteName)
-                return None
-        print('no function "pagesopen" in module: %s'% siteName)
-        return None
         
     def findFolderWithIndex(self, root, allowed, ignore=None):
         """get the first folder with a file index.html"""
@@ -1784,9 +1569,9 @@ class ThisGrammar(ancestor):
         """
         folder = folder.replace('/', '\\')
         folder = self.substituteEnvVariable(folder)
-        if not self.virtualDriveDict:
-            #print 'no virtualDriveDict, return %s'% folder
-            return folder
+        # if not self.virtualDriveDict:
+        #     #print 'no virtualDriveDict, return %s'% folder
+        #     return folder
         if folder in self.virtualDriveDict:
             drive, rest = folder, ""
         elif folder.find(':\\') > 0:
@@ -2329,38 +2114,6 @@ class ThisGrammar(ancestor):
             fparts.pop(0)
         print('_folders, no valid remote file found for %s and remote: %s'% (f, remote))
 
-
-    def getListOfSites(self, root):
-        """return list of sitenames, to be found as python files in root
-        
-        """
-        pyfiles = [f for f in os.listdir(root) if f.endswith('.py')]
-        #print 'pyfiles for sites: %s'% pyfiles
-        D = {}
-        entries = self.ini.get('sites')
-        for p in pyfiles:
-            trunk = p[:-3]
-            if not reOnlyLowerCase.match(trunk):
-                continue   # only lowercase items can be a sites item, so __init__ and HTMLgen etc are skipped
-            if trunk in entries:
-                spokenList = self.ini.getList('sites', trunk)
-                if not spokenList:
-                    #print 'empty item in siteslist: %s'% trunk
-                    continue
-                for spoken in spokenList:
-                    spoken = self.spokenforms.correctLettersForDragonVersion(spoken)
-                    D[spoken] = trunk
-            else:
-                # make new entry in sites section
-                if len(trunk) <= 3:
-                    spoken = '. '.join(list(trunk.upper()))+'.'
-                else:
-                    spoken = trunk
-                spoken = self.spokenforms.correctLettersForDragonVersion(spoken)
-                D[spoken] = trunk
-                #print 'set in sites: %s -> %s'% (trunk, spoken)
-                self.ini.set('sites', trunk, spoken)
-        return D
     
     def gotResults(self, words,fullResults):
         """at last do most of the actions, depending on the variables collected in the rules.
@@ -2730,6 +2483,10 @@ if __name__ == "__main__":
         thisGrammar = ThisGrammar(inifile_stem="_folders")
         thisGrammar.startInifile()
         thisGrammar.initialize()
+        Words = ['folder', 'dtactions']
+        Fr = {}
+        thisGrammar.gotResultsInit(Words, Fr)
+        thisGrammar.gotResults_folder(Words, Fr)
     finally:
         natlink.natDisconnect()
 elif __name__.find('.') == -1:
