@@ -81,12 +81,12 @@ class BracketsGrammar(ancestor):
                 newpleft = pList[0]
                 newpright = pList[1]
             else:
-                lenph = int(len(p)/2)
+                lenph = len(p)//2
                 newpleft, newpright = p[:lenph], p[lenph:]
             # make more brackets together, from outer to inner:
             self.pleft = self.pleft + newpleft
             self.pright = newpright + self.pright
-        #print 'pleft: "%s", pright: "%s"'% (repr(self.pleft), repr(self.pright))
+        # print(f'result rule_brackets: |{self.pleft}|, pright: |{self.pright}|')
 
     def subrule_before(self, words):
         "(here|between|empty)+"
@@ -137,13 +137,13 @@ class BracketsGrammar(ancestor):
         if lSpacing:
             keystroke(lSpacing)
 
-        action(self.pleft)
+        keystroke(self.pleft)
         unimacroutils.visibleWait()
         if text:
             #print 'text: |%s|'% repr(text)
             keystroke(text)
         unimacroutils.visibleWait()
-        action(self.pright)
+        keystroke(self.pright)
         unimacroutils.visibleWait()
 
         if rSpacing:
