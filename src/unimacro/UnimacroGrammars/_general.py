@@ -97,7 +97,7 @@ normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase',
              'comment', 'documentation', 'modes', 'variable', 'search',
              'highlight',         # for Shane, enable, because Vocola did not fix _anything yet
              'browsewith', 'hyphenatephrase', 'pastepart',
-             'password', 'presscode', 'choose']
+             'password', 'choose']
 #normalSet = ['hyphenatephrase']  # skip 'openuser'
 
 commandSet = normalSet[:] + ['dictate']
@@ -124,7 +124,6 @@ class ThisGrammar(ancestor):
 # <dgnwords> imported;
 <documentation> exported = Make documentation;
 <test> exported = test micstate;
-<presscode> exported = (press|address) (<dgndictation>|<dgnletters>);
 <choose> exported = choose {n1-10};
 <reload> exported = reload Natlink;
 <info> exported = give (user | prog |window |unimacro| path) (info|information) ;
@@ -145,8 +144,12 @@ class ThisGrammar(ancestor):
 <browsewith> exported = ('browse with') {browsers};
 <openuser> exported = 'open user' {users};
 <password> exported = 'password' <dgndictation>;
+<presscode> exported = (press letter) <dgnletters>;
 
     """]
+# A\determinerNormalTestThisNowI\pronounTest.\period\full stop
+#NormalTestNormalI\pronounTestNormallyTestNormalAttestNormal.\period\periodSigns
+#HelloTesting
     
     def initialize(self):
         if self.language:
@@ -160,20 +163,9 @@ class ThisGrammar(ancestor):
             # print('specialSearchWords: %s'% self.specialSearchWords)
             self.setNumbersList('count', Counts)
             self.setList('modes', modes)
-##            self.testlist = ['11\\Canon fiftyfive two fifty',
-##                    '12\\Canon',
-##                    '15\\C. Z. J.',
-##                    '19\\Helios fourtyfour M.',
-##                    '38\\Vivitar seventy one fifty',
-##                    '32\\Contax twentyeight millimeter',
-##                    '33\\C. Z. J. one thirtyfive number one',
-##                    'Canon 2870',
-##                    '09\\Canon 1022',
-##                    '31\\Tamron 2875']
-##            #self.setList('testlist', self.testlist)
-##            self.emptyList('testlist')
             self.gotPassword = 0
-            # self.gotPresscode = 0
+            self.passwordEnding = None
+            self.gotPresscode = 0
             # print "%s, activateSet: %s"% (self.name, normalSet)
             # self.deactivateAll()  # why is this necessary? The activateAll in switchOn is definitly now Ok...
             self.title = 'Unimacro grammar "'+__name__+'" (language: '+self.language+')'
@@ -216,8 +208,11 @@ class ThisGrammar(ancestor):
         if number precedes @ 
         
         """
-        self.gotPassword = 1
-        print('gotPassword: ', self.gotPassword)
+        if not self.gotPassword:
+            self.gotPassword = 1
+            print('gotPassword: ', self.gotPassword)
+        else:
+            self.passwordEnding = words[-1]
 
     def gotResults_pastepart(self,words,fullResults):
         """paste part of clipboard, parts are separated by ";"
@@ -372,7 +367,6 @@ class ThisGrammar(ancestor):
             text = nsformat.formatPassword(words)
             keystroke(text)
             self.gotPassword = 0
-            print('reset gotPassword, ', self.gotPassword)
             return
         if self.gotVariable:
             print('do variable trick %s on %s'% (self.gotVariable, words))
@@ -591,21 +585,6 @@ class ThisGrammar(ancestor):
             elapsed = t - self.startTime
             action(f'MSG {elapsed:.2f} seconds')
             self.startTime = t
-
-
-#  sstarting message
-    def gotResults_presscode(self,words,fullResults):
-        """pressing letters or dictation in for example explorer
-        
-        """
-        self.gotPresscode = 1
-        print(f'got presscode: {words}, presscode: {self.gotPresscode}')
-        if self.hasCommon(words, 'address'):
-            action('{alt+d}; VW')
-        # search maybe useful for safari, but does not make sense otherwise
-        # if self.hasCommon(words, 'search'):
-        #     action('{ctrl+k}; VW')
-        
 
     def gotResults_choose(self,words,fullResults):
         """choose alternative, via actions
@@ -1128,7 +1107,9 @@ def unload():
 #
 if __name__ == "__main__":
     # here code to interactive run this module
-    pass
+    thisGrammar = ThisGrammar(inifile_stem='_general')
+    thisGrammar.startInifile()
+    thisGrammar.initialize()
 elif __name__.find('.') == -1:
     # this is caught when this module is imported by the loader (when Dragon/Natlink starts)
     thisGrammar = ThisGrammar()
