@@ -18,6 +18,8 @@
 #
 # the lists {pagecommands} and {tabcommands} in the inifile (edit chrome hah)
 #
+#pylint:disable=C0209
+
 """
 This commands grammar allows clicking by voice
 
@@ -53,7 +55,7 @@ class ThisGrammar(ancestor):
 
     gramSpec = """
 <shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
-<hidenumbers> exported = (hide) (numbers) [after {n1-20}];
+<hidenumbers> exported = (hide) (numbers);
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
 
 # is already in _tasks grammar:
@@ -67,6 +69,7 @@ class ThisGrammar(ancestor):
                             (page (back|forward) [{n1-20}]) |
                             page {pagecommands} |
                             (next|previous) page {pagecommands};
+                            
 #and the numbers grammar (0,...,999 or chain of digits):                             
 """+numberGram
         
@@ -162,10 +165,6 @@ class ThisGrammar(ancestor):
         """hide the numbers
 
         """
-        wordFound, _position = self.hasCommon(words, "after", withIndex=True)
-        if wordFound:
-            print("setting timer later")
-        
         self.getInputcontrol()
         self.doOption(self.hideNumbers)
         self.finishInputControl()
