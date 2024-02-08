@@ -200,19 +200,13 @@ class ThisGrammar(ancestor):
             natut.buttonClick()
             unimacroutils.Wait()
         self.progInfo = unimacroutils.getProgInfo()
-        print(f'progInfo _general: {self.progInfo.prog}, {self.progInfo.title}')
-
     def gotResults_password(self,words,fullResults):
         """interpret password as dictate
         Cap dictation words
         if number precedes @ 
         
         """
-        if not self.gotPassword:
-            self.gotPassword = 1
-            print('gotPassword: ', self.gotPassword)
-        else:
-            self.passwordEnding = words[-1]
+        self.gotPassword = 1
 
     def gotResults_pastepart(self,words,fullResults):
         """paste part of clipboard, parts are separated by ";"
