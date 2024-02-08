@@ -2358,27 +2358,28 @@ def get_clipboard_files(folders=False):
     Enumerate clipboard content and return files either directly copied or
     highlighted path copied
     '''
-    files = None
-    win32clipboard.OpenClipboard()
-    f = get_clipboard_formats()
-    if win32clipboard.CF_HDROP in f:
-        files = win32clipboard.GetClipboardData(win32clipboard.CF_HDROP)
-    else:
-        # print 'get_clipboard_files, not expected clipboard format CF_HDROP, but %s'% f
-        if win32clipboard.CF_UNICODETEXT in f:
-            files = [win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)]
-        elif win32clipboard.CF_TEXT in f:
-            files = [win32clipboard.GetClipboardData(win32clipboard.CF_TEXT)]
-        elif win32clipboard.CF_OEMTEXT in f:
-            files = [win32clipboard.GetClipboardData(win32clipboard.CF_OEMTEXT)]
-    if not files:
-        # print "get_clipboard_files, no files found from clipboard"
-        return None
-    if folders:
-        files = [f for f in files if os.path.isdir(f)] if files else None
-    else:
-        files = [f for f in files if os.path.isfile(f)] if files else None
-    win32clipboard.CloseClipboard()
+    try:
+        win32clipboard.OpenClipboard()
+        f = get_clipboard_formats()
+        if win32clipboard.CF_HDROP in f:
+            files = win32clipboard.GetClipboardData(win32clipboard.CF_HDROP)
+        else:
+            # print 'get_clipboard_files, not expected clipboard format CF_HDROP, but %s'% f
+            if win32clipboard.CF_UNICODETEXT in f:
+                files = [win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)]
+            elif win32clipboard.CF_TEXT in f:
+                files = [win32clipboard.GetClipboardData(win32clipboard.CF_TEXT)]
+            elif win32clipboard.CF_OEMTEXT in f:
+                files = [win32clipboard.GetClipboardData(win32clipboard.CF_OEMTEXT)]
+        if not files:
+            # print "get_clipboard_files, no files found from clipboard"
+            return None
+        if folders:
+            files = [f for f in files if os.path.isdir(f)] if files else None
+        else:
+            files = [f for f in files if os.path.isfile(f)] if files else None
+    finally:
+        win32clipboard.CloseClipboard()
     return files        
 
 def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfolder, exefile, prompt, text, default, inifile, section,  value, pausetime=0):
