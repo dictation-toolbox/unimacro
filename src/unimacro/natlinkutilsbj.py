@@ -1527,7 +1527,7 @@ noot mies
         
         # try:
         self.fillGrammarLists()
-        print(f'IniGrammar switched on: {self.getName()}')
+        # print(f'IniGrammar switched on: {self.getName()}')
 
     def showInifile(self, body=None, grammarLists=None, ini=None,
                     showGramspec=1, prefix=None, commandExplanation=None,

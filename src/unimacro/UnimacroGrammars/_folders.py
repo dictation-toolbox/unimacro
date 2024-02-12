@@ -31,19 +31,12 @@ in actions.ini (call with "Edit Actions"/"Bewerk acties")
 In the inifile also the commands for start this computer or start
 windows explorer must be given. Correct these commands ("Edit
 Folders"/"Bewerk folders") if they do not work correct.
-New feature: if you want to use xxexplorer (can be used hands-free very
-easy, look in https://www.netez.com/xxExplorer), in section [general]
-you can put a variable
 
-xxexplorer = path to exe or false ('')
 
 This explorer is then taken if you are in or if Explorer is explicitly asked for.
 
 The strategy for "New" and "Explorer" (when you say "new", "nieuw",
 "explorer" in the folder command, are complicated, look below
-
-The git additional commands are only valid if you specify a valid git client in the ini file general section
-(git executable) (To be implemented) (##TODO)
 
 """            
 import re
@@ -121,8 +114,8 @@ class ThisGrammar(ancestor):
     # commands with special status, must correspond to a right hand side
     # of a ini file entry (section foldercommands or filecommands)
     # remote, openwith have hardcoded details.
-    optionalfoldercommands = ['new', 'explorer', 'paste', 'copy', 'remote', 'git']
-    optionalfilecommands = ['copy', 'paste', 'edit', 'paste', 'remote', 'openwith', 'git']
+    optionalfoldercommands = ['new', 'explorer', 'paste', 'copy', 'remote']
+    optionalfilecommands = ['copy', 'paste', 'edit', 'paste', 'remote', 'openwith']
 
     
     gramSpec = """
@@ -131,22 +124,19 @@ class ThisGrammar(ancestor):
 <disc> exported = drive {letters} [<foldercommands>]; 
 <thisfolder> exported = ((this|here) folder) (<foldercommands>|<remember>);
 <foldercommands> = new | here | paste | on ({letters}|{virtualdrivesspoken}) |
-                    (git) {gitfoldercommands}|
                     <namepathcopy>| {foldercommands};
                    
 <folderup> exported = folder up|folder up {n1-10};   
-<file> exported = file ({files}|{subfiles})[<filecommands>|<remember>];  # add dot {extensions} later again
+<file> exported = file ({files}|{subfiles})[<filecommands>|<remember>];  
 <thisfile> exported = ((here|this) file) (<filecommands>|<remember>); 
 <filecommands> = {filecommands}| on ({letters}|{virtualdrivesspoken}) |
-                ('open with') {fileopenprograms}|
-                (git) {gitfilecommands}|
-                <namepathcopy>;
+                ('open with') {fileopenprograms}|<namepathcopy>;
 
 <website> exported = website {websites} [<websitecommands>]; 
 <thiswebsite> exported = (this website) (<websitecommands>|<remember>);
 <websitecommands> = ('open with') {websiteopenprograms}|
                     <namepathcopy>;
-<remember> = remember;
+<remember> = remember;  
 <namepathcopy> = (copy (name|path)) | ((name|path) copy);
 
 """
@@ -186,11 +176,10 @@ class ThisGrammar(ancestor):
 
         hndle = self.progInfo.hndle
         classname = self.progInfo.classname
-        activeFolder = self.getActiveFolder(hndle, classname)
+        # activeFolder = self.getActiveFolder(hndle, classname)
         if self.trackAutoFiles or self.trackAutoFolders:
             activeFolder = self.getActiveFolder(hndle, classname)
-            if activeFolder:
-                self.handleTrackFilesAndFolders(activeFolder)
+            self.handleTrackFilesAndFolders(activeFolder)
         
         if hndle and self.trackFoldersHistory:
             self.catchTimerRecentFolders(hndle)
@@ -206,7 +195,7 @@ class ThisGrammar(ancestor):
         # folder options:
         # CopyName and PasteName refers to the folder, file or website name
         # Cut, Copy Paste of file or folder is not implemented
-        self.New = self.Here = self.Remote = self.Git = self.Cut = self.Copy = self.Paste = self.CopyNamePath = self.PastePath = False
+        self.New = self.Here = self.Remote = self.Cut = self.Copy = self.Paste = self.CopyNamePath = self.PastePath = False
         # file options:
         # OpenWith goes via Open.
         self.Open = self.Edit = None
@@ -230,7 +219,8 @@ class ThisGrammar(ancestor):
 
         if activeFolder and os.path.isdir(activeFolder):
             self.fillListsForActiveFolder(activeFolder)
-            print('set %s (sub)files and %s subfolders'% (len(self.subfilesDict), len(self.subfoldersDict)))
+            nFiles, nFolders = len(self.subfilesDict), len(self.subfoldersDict)
+            print(f'set {nFiles} (sub)files and {nFolders} subfolders')
             self.activeFolder = activeFolder
             return
         print(f'_folders, handleTrackFilesAndFolders, invalid activeFolder: {activeFolder}')
@@ -265,17 +255,12 @@ class ThisGrammar(ancestor):
                 self.setList('files', items)
                 return items
         elif listName == 'recentfolders':
+            self.loadRecentFoldersDict()
             if self.recentfoldersDict:
                 items = list(self.recentfoldersDict.keys())
                 self.setList('recentfolders', items)
                 return items
-            print('no recentfolders in iniChangingData.ini')
             self.emptyList('recentfolders')
-
-        elif listName in ['gitfilecommands', 'gitfoldercommands']:
-            if self.doGit:
-                return ancestor.fillList(self, listName)
-            self.emptyList(listName)
         else:
             return ancestor.fillList(self, listName)
         return None
@@ -299,10 +284,6 @@ class ThisGrammar(ancestor):
         
         """
         #pylint:disable=R0914
-        self.citrixApps = self.ini.getList('general', 'citrix apps')
-        if self.citrixApps:
-            print('_folders does special action for citrixApps: %s'% self.citrixApps)
-        self.xxExplorer = self.ini.get('general', '2xexplorer')
         self.useOtherExplorer = self.ini.get('general', 'use other explorer')
         if self.useOtherExplorer:
             if os.path.isfile(self.useOtherExplorer):
@@ -315,7 +296,7 @@ class ThisGrammar(ancestor):
         if interval:
             self.trackFoldersInterval = int(interval*1000)  # give in seconds
         else:
-            self.trackFoldersInterval = 4000  # default 5 seconds
+            self.trackFoldersInterval = 4000  # default 4 seconds
         
         self.recentfoldersDict = {}
         inipath = self.ini.getFilename()
@@ -373,8 +354,8 @@ class ThisGrammar(ancestor):
         self.trackFolders = self.ini.getList('general', 'track folders virtualdrives')
         self.trackFiles = self.ini.getList('general', 'track files virtualdrives')
         # below this threshold, the getting of subfolders and files in a directory is not printed in the messages window
-        self.notifyThresholdMilliseconds = self.ini.getInt("general", "notify threshold milliseconds", 10)
-        print("_folders, notify threshold milliseconds: %s"% self.notifyThresholdMilliseconds)
+        self.notifyThresholdMilliseconds = self.ini.getInt("general", "notify threshold milliseconds", 50)
+        # print("_folders, notify threshold milliseconds: %s"% self.notifyThresholdMilliseconds)
         # in order to accept .py but it should be (for fnmatch) *.py etc.:
         self.acceptFileExtensions = self.ini.getList('general', 'track file extensions')
         self.ignoreFilePatterns = self.ini.getList('general', 'ignore file patterns')
@@ -383,14 +364,6 @@ class ThisGrammar(ancestor):
         self.trackAutoFolders = self.ini.getBool('general', 'automatic track folders')
         self.trackAutoFiles = self.ini.getBool('general', 'automatic track files')
             
-        self.doGit = self.ini.get('general', 'git executable')
-        if self.doGit:
-            if not os.path.isfile(self.doGit):
-                print('not a valid path to git executable: %s, ignore'% self.doGit)
-                self.doGit = None
-        if not self.doGit:
-            self.iniIgnoreGrammarLists.extend(['gitfoldercommands', 'gitfilecommands'])
-                
         self.foldersSections = ['folders']
         # track folders:
         for trf in self.trackFolders:
@@ -609,16 +582,24 @@ class ThisGrammar(ancestor):
         
         this is for the automatic filling of the active window (either explorer, CabinetWClass,
         or child #32770.
-        
-        Seems to fail in windows XP and before.
-        
+       
         """
         subs = os.listdir(activeFolder)
         # print 'subs: %s'% subs
         subfolders = [s for s in subs if os.path.isdir(os.path.join(activeFolder, s))]
         subfiles = [s for s in subs if os.path.isfile(os.path.join(activeFolder, s))]
-        self.subfoldersDict = self.getSpokenFormsDict(subfolders)
-        self.subfilesDict = self.getSpokenFormsDict(subfiles, extensions=1)
+        if len(subfiles) <= 20:
+            self.subfilesDict = self.getSpokenFormsDict(subfiles, extensions=1)
+        else:
+            print(f'_folders, do not set sub files, too many: {len(subfiles)}')
+            self.subfilesDict = {}
+            
+        if len(subfolders) < 50:
+            self.subfoldersDict = self.getSpokenFormsDict(subfolders)
+        else:
+            print(f'_folders, do not set sub folders, too many: {len(subfolders)}')
+            self.subfoldersDict = {}
+            
         # print 'activeFolder, %s, subfolders: %s'% (activeFolder, self.subfoldersDict.keys())
         # print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict.keys())
         # print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict)
@@ -636,20 +617,12 @@ class ThisGrammar(ancestor):
     def emptyListsForActiveFolder(self):
         """no sublists, empty
         """
-        n0 = time.time()
-        lenSubFolders = len(self.subfoldersDict)
-        lenSubFiles = len(self.subfilesDict)
         if self.trackAutoFiles:
             self.emptyList('subfiles')
             self.subfilesDict.clear()
         if self.trackAutoFolders:
             self.emptyList('subfolders')
             self.subfoldersDict.clear()
-        n1 = time.time()
-        elapsed = int((n1 - n0)*1000)
-        if elapsed:
-            # if elapsed > self.notifyThresholdMilliseconds:
-            print('emptyListsForActiveFolder: emptied %s subfolders and %s (sub)files in %s milliseconds'% (lenSubFolders, lenSubFiles, elapsed))
         self.activeFolder = None
 
 
@@ -775,28 +748,21 @@ class ThisGrammar(ancestor):
             # print("refilling recentfolders list with %s items'"% len(self.recentfoldersDict))
             self.setList('recentfolders', list(self.recentfoldersDict.keys()))
             self.dumpRecentFoldersDict()
-            # self.pickleChangingData.delete('recentfolders')
-            # for key, value in self.recentfoldersDict.items():
-            #     # self.pickleChangingData.set("recentfolders", key, value)
-            # self.pickleChangingData.writeIfChanged()
 
         if not Spoken:
             return
         if Spoken in self.recentfoldersDict:
             spokenFolder = self.recentfoldersDict[Spoken]
             if spokenFolder == Folder:
+                print(f'readd {Spoken} to recentfoldersDict')
                 del self.recentfoldersDict[Spoken]
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
-                # self.pickleChangingData.set("recentfolders", Spoken, Folder)                # print('re-enter Folder in recent folders: %s (%s)'% (Spoken, Folder))
             elif Folder not in self.foldersSet:
                 print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s'% (Spoken, Folder, Spoken, spokenFolder))
                 del self.recentfoldersDict[Spoken]
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
-                ## try to maintain order:
-                # self.pickleChangingDatahangingData.delete('recentfolders', Spoken)
-                # self.pickleChangingData.set("recentfolders", Spoken, Folder)                
         else:
             # print('adding Folder in recent folders: %s (%s)'% (Spoken, Folder))
             self.recentfoldersDict[Spoken] = Folder
@@ -829,16 +795,21 @@ class ThisGrammar(ancestor):
     def displayRecentFolders(self):
         """display the list of recent folders
         """
-        message = ["_folders, recent folders:"]
-        for name, value in self.recentfoldersDict.items():
-            message.append('- %s: %s'% (name, value))
-        message.append('-'*20)
-        message = '\n'.join(mess)
+        mess_list = ["--- recent folders:"]
+        if not self.recentfoldersDict:
+            message = 'recent folders list is empty at the moment'
+            self.prevDisplayRecentFolders = message
+            print(message)
+            return
+        for name, value in reversed(self.recentfoldersDict.items()):
+            mess_list.append('- %s: %s'% (name, value))
+        mess_list.append('-'*20)
+        message = '\n'.join(mess_list)  
         if message == self.prevDisplayRecentFolders:
             print("recent folders, no change")
-            return
-        self.prevDisplayRecentFolders = message
-        print(message)
+        else:
+            self.prevDisplayRecentFolders = message
+            print(message)
         
         
     # def gotoRecentFolder(self, chooseNum):
@@ -1097,7 +1068,7 @@ class ThisGrammar(ancestor):
         if not self.wantedFolder:
             print('rule foldercommands, no wantedFolder, return')
             return
-        nextGit = nextRemote = False
+        nextRemote = False
         for w in words:
             if self.hasCommon(w, 'here'):
                 print("got Here: ", w)
@@ -1121,14 +1092,6 @@ class ThisGrammar(ancestor):
                     self.Remote = self.virtualDriveDict[remoteVirtualDrive]
                     print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
                 nextRemote = False
-            elif self.hasCommon(w, 'git'):
-                print("got Git: ", w)
-                nextGit = True
-            elif nextGit:
-                print("got gitCommand: ", w)
-                gitCommand = self.getFromInifile(w, 'gitfoldercommands')
-                self.Git = gitCommand
-                nextGit = False # again
             else:
                 opt = self.getFromInifile(w, 'foldercommands')
                 print("got FolderOptions: ", opt)
@@ -1421,14 +1384,6 @@ class ThisGrammar(ancestor):
                     self.Remote = self.virtualDriveDict[remoteVirtualDrive]
                     print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
                 Remote = False
-            elif self.hasCommon(w, 'git'):
-                print("got Git: ", w)
-                Git = True
-            elif Git:
-                print("got gitCommand: ", w)
-                gitCommand = self.getFromInifile(w, 'gitfilecommands')
-                self.Git = gitCommand
-                Git = False # again
             else:
                 act = self.getFromInifile(w, 'foldercommands')
                 print("got FileCommand: ", act)
@@ -1459,6 +1414,7 @@ class ThisGrammar(ancestor):
         keystroke("{ctrl+c}")
         unimacroutils.Wait()
         paths1 = natlinkclipboard.Clipboard.Get_folderinfo()
+        unimacroutils.restoreClipboard()
         if paths1:
             paths1 = [p for p in paths1 if os.path.isdir(p)]
         paths2 = get_selected_files(folders=True)
@@ -1691,12 +1647,10 @@ class ThisGrammar(ancestor):
         """goto the file f, options in instance variables
         
         FileOptions: list
-        Git (with gitfileoptions), False or the git action to be taken
         Remote, False or the virtual drive to be inserted
         Open, False or app to Open with (default)
         Edit, False or app to Edit with, if fails, take Notepad
 
-        ##special case for citrix
         """
         if self.Open:
             print("gotoWebsite %s with: %s", (f, self.Open))
@@ -1708,30 +1662,13 @@ class ThisGrammar(ancestor):
         """goto the file f, options in instance variables
         
         FileOptions: list
-        Git (with gitfileoptions), False or the git action to be taken
         Remote, False or the virtual drive to be inserted
         Open, False or app to Open with (default)
         Edit, False or app to Edit with, if fails, take Notepad
-
-        ##special case for citrix
         """
-        if self.citrixApps:
-            prog = self.progInfo.prog
-            
-            print('citrixApps: %s app: %s'% (self.citrixApps, prog))
-            if prog in self.citrixApps:
-                print('doing action gotoFolder for citrixApp: %s'% prog)    
-                action("<<openstartmenu>>")
-                keystroke(f)
-              
-                # keystroke("{enter}")
-                return
-
         if not os.path.isfile(f):
             self.DisplayMessage('file does not exist: %s'% f)
             return
-        prog = self.progInfo.prog
-       
         # istop logic, with functions from action.py module, settings from:
         # child behaves like top = natspeak: dragon-balk
         # top behaves like child = komodo: find, komodo; thunderbird: bericht opslaan
@@ -1745,10 +1682,6 @@ class ThisGrammar(ancestor):
             if not f:
                 return
             
-        if self.Git:
-            print('git command "%s" for file "%s"'% (self.Git, f))
-            self.doGitCommand(self.Git, f)
-            return
         mode = 'edit'        
         if self.Open:
             mode = 'open'
@@ -1822,7 +1755,7 @@ class ThisGrammar(ancestor):
     def gotoFolder(self, f):
         """go to the specified folder
         
-        all the options are via instance variables, New, Here, Copy, Paste, Remote, Git (all False by default)
+        all the options are via instance variables, New, Here, Copy, Paste, Remote (all False by default)
         and FolderOptions (a list, initially empty).
         
         f = the (local) folder to go to
@@ -1835,7 +1768,6 @@ class ThisGrammar(ancestor):
         --Remote: pass the (virtual) drive where the folder is wanted
         --Copy: investigate
         --Paste: only paste the path at the place where you are.
-        --Git: do a git command on the folder. To be done.
 
         this is the central routine, with complicated strategy for getting it,
         in pseudocode:
@@ -1879,11 +1811,6 @@ class ThisGrammar(ancestor):
                 else:
                     if part of path is common, switch to that and goto folder
 
-        ## remove subversion support,
-        ## git support if git executable isdefined in section [general]
-
-       ##special if citrixApps is set, just open the folder.
-                        
         """
         ## undoncitionally if folderoption New is used:
         if self.New:
@@ -1891,15 +1818,6 @@ class ThisGrammar(ancestor):
             return                    
         
         prog = self.progInfo.prog
-        if self.citrixApps:
-            
-            print('citrixApps: %s app: %s'% (self.citrixApps, prog))
-            if prog in self.citrixApps:
-                print('doing action gotoFolder for citrixApp: %s'% prog)    
-                action("<<openstartmenu>>")
-                keystroke(f)
-                keystroke("{enter}")
-                return
         f = os.path.normpath(f)
         if not os.path.isdir(f):
             self.DisplayMessage('folder does not exist: %s'% f)
@@ -1911,10 +1829,6 @@ class ThisGrammar(ancestor):
             action('SCLIP(%s)'% f)
             return
         
-        if self.Git:
-            self.doGitCommand(self.Git, f)
-        
-        # xx = self.xxExplorer
         if self.Remote:
             print('Remote: %s'% self.Remote)
             f = self.getValidDirectory(f, self.Remote)
@@ -2124,30 +2038,6 @@ class ThisGrammar(ancestor):
             self.gotoFile(self.wantedFile)
         if self.wantedWebsite:
             self.gotoWebsite(self.wantedWebsite)
-         
-
-    def doGitCommand(self, command, path):
-        """launch git with command and path
-        """
-        args = '/command:%s /path:""%s""'% (command, path)
-        
-        # Construct arguments and spawn TortoiseSVN.
-        name = "git %s %s"% (command, path)
-        print('future git %s, %s'% (name, args))
-        ## does not work (yet)...
-        # unimacroutils.AppBringUp(name, self.doGit, args)
-        
-#                     return 1
-
-    def doStart2xExplorer(self):
-        """starting the 2xExplorer, obsolete
-
-        """        
-        command = 'AppBringUp "%s"'% self.xxExplorer
-##                    print 'starting 2xExplorer: %s'% command
-        natlink.execScript(command)
-        unimacroutils.Wait(1.0)
-        keystroke("{alt+space}{extdown 4}{enter}")
 
     def gotoInThisComputer(self, f):
         """perform the keystrokes to go to a folder in this computer
