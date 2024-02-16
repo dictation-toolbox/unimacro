@@ -284,8 +284,10 @@ class ThisGrammar(ancestor):
           take the lists of folders, virtualdrives (optional) and remotedrives (optional).
         
         """
-        #pylint:disable=R0914
+        optionsdict = {}
+        
         self.useOtherExplorer = self.ini.get('general', 'use other explorer')
+        optionsdict['use other explorer'] = 'use other explorer'
         if self.useOtherExplorer:
             if os.path.isfile(self.useOtherExplorer):
                 print('_folders, use as default explorer: "%s"'% self.useOtherExplorer)
@@ -293,17 +295,17 @@ class ThisGrammar(ancestor):
                 print('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")'% self.useOtherExplorer)
 
         ## callback time in seconds:
+        optionsdict['timer track folders interval'] = 'timer track folders interval'
         interval = self.ini.getFloat('general', 'timer track folders interval')
         self.trackFoldersInterval = int(interval*1000)  # give in seconds
         if self.trackFoldersInterval:
             print(f'track active folder every {interval:f.1} seconds')
         self.recentfoldersDict = {}
-        inipath = self.ini.getFilename()
+        # inipath = self.ini.getFilename()
         self.pickleChangingData = Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle"
         
-        ## automatic tracking of recent folders :
-        self.trackFoldersHistory = self.ini.getInt('general', 'timer track folders interval')
-        if self.trackFoldersHistory:
+        # track recent folder at gotbegin or with timer:
+        if self.trackFoldersHistory or ...:
             if self.pickleChangingData:
                 self.recentfoldersDict = self.loadRecentFoldersDict()
                 if self.recentfoldersDict:
