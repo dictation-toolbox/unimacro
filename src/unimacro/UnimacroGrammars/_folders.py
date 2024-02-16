@@ -299,7 +299,7 @@ class ThisGrammar(ancestor):
             print(f'track active folder every {interval:f.1} seconds')
         self.recentfoldersDict = {}
         inipath = self.ini.getFilename()
-        self.pickleChangingData = Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle")
+        self.pickleChangingData = Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle"
         
         ## automatic tracking of recent folders :
         self.trackFoldersHistory = self.ini.getInt('general', 'timer track folders interval')

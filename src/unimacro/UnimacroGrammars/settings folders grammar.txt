@@ -10,3 +10,19 @@ track file extensions = .py; .txt; .ini;  .docx; .xlsx; .pdf
 track files virtualdrives =
 track folders virtualdrives =
 
+newer settings febr 2024
+[general]
+ignore file patterns = ~*; .*
+initial on = 1
+max files in folder = 40
+max subfolders in folder = 75
+notify threshold milliseconds = 50
+start this computer = HW start, My Computer
+start windows explorer = HW start, Windows explorer
+track file extensions = .py; .txt; .ini; .jpg; .jpeg; .png; .docx; .xlsx
+track files at begin utterance = T
+track files virtualdrives =
+track folders at begin utterance = T
+track folders history = 75
+track folders virtualdrives = md; dr; pr; fb
+track recent folders timer interval = 4
