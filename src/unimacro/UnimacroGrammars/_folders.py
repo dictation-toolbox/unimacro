@@ -58,6 +58,7 @@ import win32clipboard
 import natlink
 from natlinkcore import readwritefile
 from natlinkcore import natlinktimer
+from natlinkcore import natlinkstatus
 from dtactions.unimacro import extenvvars
 from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
@@ -73,7 +74,7 @@ import unimacro.natlinkutilsbj as natbj
 # import natlinkcore.natlinkutils as natut
 
 thisDir = str(Path(__file__).parent)
-
+status = natlinkstatus.NatlinkStatus()
 # for getting unicode explorer window titles:
 GetWindowText = ctypes.windll.user32.GetWindowTextW
 GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
@@ -95,10 +96,6 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 doRecentFolderCommand = True
 # some child windows have to behave as top window (specified in ini file):
 # note: title is converted to lowercase, only full title is recognised
-try:
-    thisGrammar
-except NameError:
-    thisGrammar = None
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -298,7 +295,7 @@ class ThisGrammar(ancestor):
         if self.trackFoldersInterval:
             print(f'track active folder every {interval:f.1} seconds')
         self.recentfoldersDict = {}
-        inipath = self.ini.getFilename()
+        # inipath = self.ini.getFilename()
         self.pickleChangingData = Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle"
         
         ## automatic tracking of recent folders :
@@ -2017,6 +2014,7 @@ class ThisGrammar(ancestor):
                 return tryF
             fparts.pop(0)
         print('_folders, no valid remote folder found for %s and remote: %s'% (f, remote))
+        return ''
 
     def getValidFile(self, f, remote):
         _fdrive, fdir = os.path.splitdrive(f)
@@ -2028,6 +2026,7 @@ class ThisGrammar(ancestor):
                 return tryF
             fparts.pop(0)
         print('_folders, no valid remote file found for %s and remote: %s'% (f, remote))
+        return ''
 
     
     def gotResults(self, words,fullResults):
