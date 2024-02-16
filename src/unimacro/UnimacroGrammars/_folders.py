@@ -151,6 +151,7 @@ class ThisGrammar(ancestor):
         self.dialogNumberRange = [] # ditto
         self.catchRemember = ""
         self.activeFolder = None
+        self.inTimerRecentFolders = False
         self.prevDisplayRecentFolders = None   # displaying recent folders list
         self.subfoldersDict = {}
         self.subfilesDict = {}
@@ -292,22 +293,16 @@ class ThisGrammar(ancestor):
                 print('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")'% self.useOtherExplorer)
 
         ## callback time in seconds:
-        interval = self.ini.getFloat('general', 'track folders interval')
-        if interval:
-            self.trackFoldersInterval = int(interval*1000)  # give in seconds
-        else:
-            self.trackFoldersInterval = 4000  # default 4 seconds
-        
+        interval = self.ini.getFloat('general', 'timer track folders interval')
+        self.trackFoldersInterval = int(interval*1000)  # give in seconds
+        if self.trackFoldersInterval:
+            print(f'track active folder every {interval:f.1} seconds')
         self.recentfoldersDict = {}
         inipath = self.ini.getFilename()
-        if inipath.endswith('.ini'):
-            _changingDataIniPath = inipath.replace(".ini", "changingdata.pickle")
-            self.pickleChangingData = inipath.replace(".ini", "changingdata.pickle")
-        else:
-            self.pickleChangingData = ""
+        self.pickleChangingData = Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle")
         
         ## automatic tracking of recent folders :
-        self.trackFoldersHistory = self.ini.getInt('general', 'track folders history')
+        self.trackFoldersHistory = self.ini.getInt('general', 'timer track folders interval')
         if self.trackFoldersHistory:
             if self.pickleChangingData:
                 self.recentfoldersDict = self.loadRecentFoldersDict()
@@ -718,18 +713,24 @@ class ThisGrammar(ancestor):
         (QH, March 2020)
         """
         # print('_folders, catchTimerRecentFolders')
-        activeFolder = self.getActiveFolder(hndle, className)
-        if not activeFolder:
+        if self.inTimerRecentFolders:
             return
-        if activeFolder == self.activeFolder:
-            return
-        self.activeFolder = activeFolder
-        # print(f'get new folders for {activeFolder}')
-        # activeFolder = os.path.normcase(activeFolder)
-        if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
-            return
-        spokenName = self.getFolderBasenameRemember(activeFolder)
-        self.manageRecentFolders(spokenName, activeFolder)
+        self.inTimerRecentFolders = True
+        try:
+            activeFolder = self.getActiveFolder(hndle, className)
+            if not activeFolder:
+                return
+            if activeFolder == self.activeFolder:
+                return
+            self.activeFolder = activeFolder
+            print(f'get new folders for {activeFolder}')
+            # activeFolder = os.path.normcase(activeFolder)
+            if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
+                return
+            spokenName = self.getFolderBasenameRemember(activeFolder)
+            self.manageRecentFolders(spokenName, activeFolder)
+        finally:
+            self.inTimerRecentFolders = False
 
     def manageRecentFolders(self, Spoken, Folder):
         """manage the internals of the recent folders dict
