@@ -1,0 +1,12 @@
+
+old settings (until feb 2024)
+[general]
+automatic track files = T
+automatic track folders = T
+child behaves like top = natspeak: dragonbar, dictation box, messages
+ignore file patterns = ~*; .*
+initial on = 1
+track file extensions = .py; .txt; .ini;  .docx; .xlsx; .pdf
+track files virtualdrives =
+track folders virtualdrives =
+
