@@ -67,8 +67,9 @@ class UtilGrammar(ancestor):
     # commands for controlling module actions
     specialList = []
     specialList.append("actions")
-    if spokenforms:
-        specialList.append("'spoken forms'")
+
+    # if spokenforms:   ## assume spokenforms is imported!!!
+    specialList.append("'spoken forms'")
     if specialList:
         specials = "|" + '|'.join(specialList)
     else:
@@ -297,10 +298,13 @@ class UtilGrammar(ancestor):
             print(f'should not be here, do not switch on of off _control {gram}')
             return None
         if switchOn:
-            gram.checkInifile()
-            gram.ini.set('general', 'initial on', 1)
-            gram.ini.write()
-            unimacroutils.Wait(0.1)
+            if gram.ini:
+                gram.checkInifile()
+                gram.ini.set('general', 'initial on', 1)
+                gram.ini.write()
+                unimacroutils.Wait(0.1)
+            else:
+                print(f'--- ini file of grammar {gname} is invalid, please try "edit {gname}"...')
             gramName = gram.getName()
             unimacro_grammars_paths = self.getUnimacroGrammarNamesPaths()
             try:
@@ -526,7 +530,7 @@ class UtilGrammar(ancestor):
         # print(f'grammar: {gramName}: {grammar}')
         if self.hasCommon(words, 'grammar'):
             unimacro_grammars_paths = self.getUnimacroGrammarNamesPaths()
-            print(f'unimacro_grammars_paths:\n{unimacro_grammars_paths}\n')
+            # print(f'unimacro_grammars_paths:\n{unimacro_grammars_paths}\n')
             try:
                 filepath = unimacro_grammars_paths[gramName]
             except KeyError:
