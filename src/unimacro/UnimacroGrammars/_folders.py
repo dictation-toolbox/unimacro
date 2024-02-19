@@ -6,7 +6,7 @@
 #  grammar: _folders.py
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
-# moved to the GitHub/Dictation-toolbox April 2020
+# moved to the GitHub/Dictation-toolbox April 2020, improved vastly Febr 2024 (with partly new options)
 #pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915, W0212
 #pylint:disable=E1101, C0209
 r"""with this grammar, you can reach folders, files and websites from any window.
@@ -649,6 +649,7 @@ class ThisGrammar(ancestor):
             print(f'activeFolder, set {len(subfiles)} files')
         elif self.subfoldersDict:
             print(f'activeFolder, set {len(subfolders)} subfolders')
+            
 
     def emptyListsForActiveFolder(self):
         """no sublists, empty
