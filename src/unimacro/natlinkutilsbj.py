@@ -483,7 +483,7 @@ class GrammarX(GrammarXAncestor):
         if exclusive is not None:
             self.setExclusive(exclusive)
 
-    def deactivate(self, ruleName, noError=0):
+    def deactivate(self, ruleName, noError=0, dpi16trick=True):
         self.__inherited.deactivate(self, ruleName, noError)
         # if not self.activeRules:
         #     self.isActive = 0
@@ -1029,6 +1029,8 @@ class IniGrammar(IniGrammarAncestor):
         if not hasattr(self, 'ini'):
             self.startInifile()
         self.name = self.checkName()
+        if self.ini is None:
+            print(f'Serious warning, grammar "{self.name}" has no valid ini file, please correct errors')
         try:
             self.iniIgnoreGrammarLists
         except AttributeError:
@@ -1097,10 +1099,12 @@ class IniGrammar(IniGrammarAncestor):
         else:
             if not self.name is self.__class__.name:
                 return self.name
-
-        n = self.ini.get('grammar name', 'name')
-        if n:
-            return n
+        try:
+            n = self.ini.get('grammar name', 'name')
+            if n:
+                return n
+        except AttributeError:
+            pass 
 
         try:
             n = self.name
@@ -1108,9 +1112,10 @@ class IniGrammar(IniGrammarAncestor):
             n = self.__module__
             n = n.replace('_', ' ')
             n = n.strip()
-        print(f'setting grammar name to: {n}')
-        self.ini.set('grammar name', 'name', n)
-        self.ini.write()
+        if self.ini:
+            print(f'setting grammar name to: {n}')
+            self.ini.set('grammar name', 'name', n)
+            self.ini.write()
         return n
 
     def hasCommon(self, one, two, allResults=None, withIndex=None):
@@ -1173,6 +1178,9 @@ class IniGrammar(IniGrammarAncestor):
         
         """
         #pylint:disable=R0914, R0912, R0915, R1702
+        if not self.ini:
+            return None
+      
         self.gramWords = {} # keys: new grammar words, values mappings to the old grammar words maybe empty if no translateWords
         translateWords = self.getDictOfGrammarWordsTranslations() # from current inifile
         if not translateWords:
@@ -1813,7 +1821,8 @@ noot mies
         """
         #pylint:disable=R0912
         if not self.ini:
-            raise UnimacroError('no ini file active for grammar: %s'% self.GetName())
+            print(f'--- no valid ini file for grammar: "{self.GetName()}", will not fill grammar lists\n\tPlease try to correct via "edit {self.getName()}"')
+            return 
         ini = self.ini
         fromGrammar = copy.copy(self.validLists)
         allListsFromIni = ini.get()

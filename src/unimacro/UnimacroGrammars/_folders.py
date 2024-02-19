@@ -93,7 +93,6 @@ reAltenativePaths = re.compile(r"(\([^|()]+?(\|[^|()]+?)+\))")
 Classes = ('ExploreWClass', 'CabinetWClass')
 
 # together with track folders history:
-doRecentFolderCommand = True
 # some child windows have to behave as top window (specified in ini file):
 # note: title is converted to lowercase, only full title is recognised
 
@@ -124,6 +123,8 @@ class ThisGrammar(ancestor):
                     <namepathcopy>| {foldercommands};
                    
 <folderup> exported = folder up|folder up {n1-10};   
+<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|HIDE|RESET|START|STOP) [<foldercommands>];
+
 <file> exported = file ({files}|{subfiles})[<filecommands>|<remember>];  
 <thisfile> exported = ((here|this) file) (<filecommands>|<remember>); 
 <filecommands> = {filecommands}| on ({letters}|{virtualdrivesspoken}) |
@@ -137,17 +138,14 @@ class ThisGrammar(ancestor):
 <namepathcopy> = (copy (name|path)) | ((name|path) copy);
 
 """
-    if doRecentFolderCommand:
-        gramSpec += """<recentfolder> exported = recent [folder] ({recentfolders}|SHOW|HIDE|RESET|START|STOP) [<foldercommands>];"""
 
     def initialize(self):
         # self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
-        self.subfiles = self.subfiles = self.activeFolder = None  # for catching on the fly in explorer windows (CabinetClassW)
+        self.subfiles = self.subfiles = self.activeFolder = self.activeTimerFolder = None  # for catching on the fly in explorer windows (CabinetClassW)
         self.className = None
         self.dialogWindowTitle = "" # for recent folders dialog, grammar in natspeak.py
         self.dialogNumberRange = [] # ditto
         self.catchRemember = ""
-        self.activeFolder = None
         self.inTimerRecentFolders = False
         self.prevDisplayRecentFolders = None   # displaying recent folders list
         self.subfoldersDict = {}
@@ -175,12 +173,12 @@ class ThisGrammar(ancestor):
         hndle = self.progInfo.hndle
         classname = self.progInfo.classname
         # activeFolder = self.getActiveFolder(hndle, classname)
-        if self.trackAutoFiles or self.trackAutoFolders:
+        if self.trackFilesAtUtterance or self.trackSubfoldersAtUtterance:
             activeFolder = self.getActiveFolder(hndle, classname)
             self.handleTrackFilesAndFolders(activeFolder)
-        
-        if hndle and self.trackFoldersHistory:
-            self.catchTimerRecentFolders(hndle)
+      
+        if hndle and self.trackRecentFoldersAtUtterance:
+            self.catchTimerRecentFolders(hndle, classname)
             
     def gotResultsInit(self,words,fullResults):
         if self.mayBeSwitchedOn == 'exclusive':
@@ -217,11 +215,10 @@ class ThisGrammar(ancestor):
 
         if activeFolder and os.path.isdir(activeFolder):
             self.fillListsForActiveFolder(activeFolder)
-            nFiles, nFolders = len(self.subfilesDict), len(self.subfoldersDict)
-            print(f'set {nFiles} (sub)files and {nFolders} subfolders')
+            # nFiles, nFolders = len(self.subfilesDict), len(self.subfoldersDict)
+            # print(f'set {nFiles} (sub)files and {nFolders} subfolders')
             self.activeFolder = activeFolder
             return
-        print(f'_folders, handleTrackFilesAndFolders, invalid activeFolder: {activeFolder}')
 
     def fillList(self, listName):
         """fill a list in the grammar from the data of the inifile
@@ -266,62 +263,85 @@ class ThisGrammar(ancestor):
     def dumpRecentFoldersDict(self):
         """for making the dict of recent folders persistent
         """
-        dumpToPickle(self.recentfoldersDict, self.pickleChangingData)
+        if self.pickleChangingData:
+            dumpToPickle(self.recentfoldersDict, self.pickleChangingData)
+        else:
+            print('dumpRecentFoldersDict, no self.pickleChangingData')
 
     def loadRecentFoldersDict(self):
         """for getting the dict of recent folders from previous session
         """
-        result = loadFromPickle(self.pickleChangingData)
-        if result and isinstance(result, dict):
-            return result
-        return {}
+        if self.pickleChangingData and Path(self.pickleChangingData).is_file():
+            result = loadFromPickle(str(self.pickleChangingData))
+            if result and isinstance(result, dict):
+                self.recentfoldersDict = result
+                return
+        print('no recent folders dict')
+        self.recentfoldersDict = {}
 
     def fillInstanceVariables(self):
         """fills the necessary instance variables
           take the lists of folders, virtualdrives (optional) and remotedrives (optional).
         
         """
+        # valid options, value possibly corresponding to an previous option text
         optionsdict = {}
+        optionsdict['initial on'] = ''
+        optionsdict['child behaves like top'] = ''
+        
+        actualoptions = set(self.ini.get('general'))
+        
         
         self.useOtherExplorer = self.ini.get('general', 'use other explorer')
-        optionsdict['use other explorer'] = 'use other explorer'
+        optionsdict['use other explorer'] = ''
         if self.useOtherExplorer:
             if os.path.isfile(self.useOtherExplorer):
                 print('_folders, use as default explorer: "%s"'% self.useOtherExplorer)
             else:
                 print('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")'% self.useOtherExplorer)
 
-        ## callback time in seconds:
-        optionsdict['timer track folders interval'] = 'timer track folders interval'
-        interval = self.ini.getFloat('general', 'timer track folders interval')
-        self.trackFoldersInterval = int(interval*1000)  # give in seconds
-        if self.trackFoldersInterval:
-            print(f'track active folder every {interval:f.1} seconds')
-        self.recentfoldersDict = {}
-        # inipath = self.ini.getFilename()
-        self.pickleChangingData = Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle"
-        
+
+        # these are for automatic tracking the current folder at an utterance:
+        optionsdict['track files at utterance'] = 'automatic track files'
+        optionsdict['track subfolders at utterance'] = 'automatic track folders'
+        self.trackSubfoldersAtUtterance = self.ini.getInt('general', 'track subfolders at utterance', 0)
+        self.trackFilesAtUtterance = self.ini.getInt('general', 'track files at utterance', 0)
+
+        optionsdict['track recent folders at utterance'] = ''
+        optionsdict['max recent folders'] = ''
         # track recent folder at gotbegin or with timer:
-        if self.trackFoldersHistory or ...:
-            if self.pickleChangingData:
-                self.recentfoldersDict = self.loadRecentFoldersDict()
-                if self.recentfoldersDict:
-                    print("recentfolders, set %s keys from _folderschangingdata.pickle"% len(self.recentfoldersDict))
-                else:
-                    print("recentfolder, no previous recentfolders cached in _folderschangingdata.pickle")
+        ## callback time in seconds:
+        optionsdict['timer track folders interval'] = ''
+        interval = self.ini.getInt('general', 'timer track folders interval', 4)  # default 4 sec
+        self.trackFoldersTimerInterval = int(interval*1000)  # give in seconds
+        if self.trackFoldersTimerInterval:
+            print(f'track active folder as "recent" every {self.trackFoldersTimerInterval} milliseconds')
+        self.recentfoldersDict = {}
         
-            self.doTrackFoldersHistory = True   # can be started or stopped with command
+        self.trackRecentFoldersAtUtterance = self.ini.getBool('general', 'track recent folders at utterance')
+        self.maxRecentFolders = 0 
+
+        self.pickleChangingData = str(Path(status.getUnimacroDataDirectory())/"recentfoldersdata.pickle")
+        if self.trackFoldersTimerInterval or self.trackRecentFoldersAtUtterance:
+
+            optionsdict['max recent folders'] = ''                
+            self.maxRecentFolders = self.ini.getInt('general', 'max recent folders', 50)        
+            self.doTrackRecentFolders = True   # can be started or stopped with command
                                                 # recent [folders] START or recent [folders] STOP
-            intervalSeconds = self.trackFoldersInterval/1000
-            print('maintain a list of %s recent folders (Explorer or File Dialog) at every utterance and every %s seconds'% (self.trackFoldersHistory, intervalSeconds))
-            natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # every 5 seconds
+            intervalSeconds = int(self.trackFoldersTimerInterval/1000)
+            if self.trackFoldersTimerInterval or self.trackRecentFoldersAtUtterance:
+                if not self.trackFoldersTimerInterval:
+                    print(f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance')
+                elif not self.trackRecentFoldersAtUtterance:
+                    print(f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) every {intervalSeconds} seconds')
+                else:
+                    print(f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance and every {intervalSeconds} seconds')
+            if self.trackFoldersTimerInterval:                      
+                natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)  # every 5 seconds default...
         else:
-            self.doTrackFoldersHistory = False
-        if self.doTrackFoldersHistory:
-            rfList = self.ini.get('recentfolders')
-            for key in rfList:
-                value = self.ini.get('recentfolders', key)
-                self.recentfoldersDict[key] = value
+            self.doTrackRecentFolders = False
+        
+        # virtual drives:
         # extract special variables from ini file:
         self.virtualDriveDict = {}
         wantedVirtualDriveList = self.ini.get('virtualdrives')
@@ -345,18 +365,18 @@ class ThisGrammar(ancestor):
             self.foldersDict[f] = folder
         
         # track virtual drives if in ini file:
+        optionsdict['track folders virtualdrives'] = ''
+        optionsdict['track files virtualdrives'] = ''
         self.trackFolders = self.ini.getList('general', 'track folders virtualdrives')
         self.trackFiles = self.ini.getList('general', 'track files virtualdrives')
-        # below this threshold, the getting of subfolders and files in a directory is not printed in the messages window
-        self.notifyThresholdMilliseconds = self.ini.getInt("general", "notify threshold milliseconds", 50)
-        # print("_folders, notify threshold milliseconds: %s"% self.notifyThresholdMilliseconds)
-        # in order to accept .py but it should be (for fnmatch) *.py etc.:
+
+        # in order to accept files in the list but it should be (for fnmatch) *.py etc.:
+        optionsdict['track file extensions'] = ''
+        optionsdict['ignore file patterns'] = ''
+
         self.acceptFileExtensions = self.ini.getList('general', 'track file extensions')
         self.ignoreFilePatterns = self.ini.getList('general', 'ignore file patterns')
         
-        # these are for automatic tracking the current folder:
-        self.trackAutoFolders = self.ini.getBool('general', 'automatic track folders')
-        self.trackAutoFiles = self.ini.getBool('general', 'automatic track files')
             
         self.foldersSections = ['folders']
         # track folders:
@@ -386,8 +406,6 @@ class ThisGrammar(ancestor):
         self.filesDict = {}
         self.trackFiles = self.ini.getList('general', 'track files virtualdrives')
         # in order to accept .py but it should be (for fnmatch) *.py etc.:
-        self.acceptFileExtensions = self.ini.getList('general', 'track file extensions')
-        self.ignoreFilePatterns = self.ini.getList('general', 'ignore file patterns')
         self.filesSections = ['files']
         # from section files (manual):
         filesList = self.ini.get('files')
@@ -421,8 +439,26 @@ class ThisGrammar(ancestor):
         # self.childBehavesLikeTop = self.ini.getDict('general', 'child behaves like top')
         # self.topBehavesLikeChild = self.ini.getDict('general', 'top behaves like child')
         # save changes if there were any:
-        self.ini.writeIfChanged()        
+        self.ini.writeIfChanged()
+        
+        self.checkValidOptions(optionsdict, actualoptions)
 
+    def checkValidOptions(self, optionsdict, actualoptions):
+        """check if all options given are valid and give feedback
+        """
+        validoptions = set(optionsdict)
+        oldoptions = actualoptions - validoptions
+        if oldoptions:
+            print(f'obsolete options: {oldoptions}')
+            # give new option, if available:
+            for old in oldoptions:
+                for k,v in optionsdict.items():
+                    if v == old:
+                        print(f'replace option "{old}" into "{k}" please')
+                        break
+        unusedoptions = validoptions - actualoptions
+        for unused in unusedoptions:
+            print(f'unset option for _folders: "{unused}",\n\tplease set (possibly without value), section [general]')
 
     def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
@@ -537,6 +573,7 @@ class ThisGrammar(ancestor):
         if not className:
             return None
         f = None
+
         if className == "CabinetWClass":
             f = mess.getFolderFromCabinetWClass(hndle)
             # if f and f.startswith("search-ms"):
@@ -549,7 +586,7 @@ class ThisGrammar(ancestor):
             f = mess.getFolderFromDialog(hndle, className)
             if not f:
                 return None
-            # if not f:
+              # if not f:
             #     print "getActiveFolder, #32770 failed: %s"% hndle
         else:
             # print 'class for activeFolder: %s'% className
@@ -582,39 +619,44 @@ class ThisGrammar(ancestor):
         # print 'subs: %s'% subs
         subfolders = [s for s in subs if os.path.isdir(os.path.join(activeFolder, s))]
         subfiles = [s for s in subs if os.path.isfile(os.path.join(activeFolder, s))]
-        if len(subfiles) <= 20:
+        if self.trackFilesAtUtterance:
+            if len(subfiles) > self.trackFilesAtUtterance:
+                print(f'_folders, only set first {self.trackFilesAtUtterance} files, total: {len(subfiles)}')
+                subfiles = subfiles[:self.trackFilesAtUtterance]
             self.subfilesDict = self.getSpokenFormsDict(subfiles, extensions=1)
         else:
-            print(f'_folders, do not set sub files, too many: {len(subfiles)}')
             self.subfilesDict = {}
-            
-        if len(subfolders) < 50:
+        
+        if self.trackSubfoldersAtUtterance:    
+            if len(subfolders) > self.trackSubfoldersAtUtterance:
+                print(f'_folders, only set first {self.trackSubfoldersAtUtterance} subfolders of total: {len(subfolders)}')
+                subfolders = subfolders[:self.trackSubfoldersAtUtterance]
             self.subfoldersDict = self.getSpokenFormsDict(subfolders)
         else:
-            print(f'_folders, do not set sub folders, too many: {len(subfolders)}')
             self.subfoldersDict = {}
             
         # print 'activeFolder, %s, subfolders: %s'% (activeFolder, self.subfoldersDict.keys())
         # print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict.keys())
         # print 'activeFolder, %s, subfiles: %s'% (activeFolder, self.subfilesDict)
-        if self.trackAutoFiles and self.subfilesDict:
+        if self.subfilesDict:
             self.setList('subfiles', list(self.subfilesDict.keys()))
-        if self.trackAutoFolders and self.subfoldersDict:
-            n0 = time.time()
+        if self.subfoldersDict:
             self.setList('subfolders', list(self.subfoldersDict.keys()))
-            n1 = time.time()
-            elapsed = int((n1 - n0)*1000)
-            if elapsed > self.notifyThresholdMilliseconds:
-                print('set %s subfolders in %s milliseconds'% (len(list(self.subfoldersDict.keys())), elapsed))
         self.activeFolder = activeFolder
+        if self.subfilesDict and self.subfoldersDict:
+            print(f'activeFolder, set {len(subfiles)} files and {len(subfolders)} subfolders')
+        elif self.subfilesDict:
+            print(f'activeFolder, set {len(subfiles)} files')
+        elif self.subfoldersDict:
+            print(f'activeFolder, set {len(subfolders)} subfolders')
 
     def emptyListsForActiveFolder(self):
         """no sublists, empty
         """
-        if self.trackAutoFiles:
+        if self.trackFilesAtUtterance:
             self.emptyList('subfiles')
             self.subfilesDict.clear()
-        if self.trackAutoFolders:
+        if self.trackSubfoldersAtUtterance:
             self.emptyList('subfolders')
             self.subfoldersDict.clear()
         self.activeFolder = None
@@ -706,10 +748,10 @@ class ThisGrammar(ancestor):
         
         Or with the subfolder or folder ... on virtual drive command.
         
-        Whenever there is a folder in the foreground, is is cached as recentfolder.
+        Whenever there is a folder in the foreground, it is cached as recentfolder.
         
         When the buffer grows too large, the first inserted items are removed from the list
-        (QH, March 2020)
+        (QH, March 2020, Febr 2024)
         """
         # print('_folders, catchTimerRecentFolders')
         if self.inTimerRecentFolders:
@@ -719,14 +761,14 @@ class ThisGrammar(ancestor):
             activeFolder = self.getActiveFolder(hndle, className)
             if not activeFolder:
                 return
-            if activeFolder == self.activeFolder:
+            if activeFolder == self.activeTimerFolder:
                 return
-            self.activeFolder = activeFolder
-            print(f'get new folders for {activeFolder}')
+            self.activeTimerFolder = activeFolder
             # activeFolder = os.path.normcase(activeFolder)
             if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
                 return
             spokenName = self.getFolderBasenameRemember(activeFolder)
+            print(f'add activeFolder "{activeFolder}" to recent, spoken name: "{spokenName}"')
             self.manageRecentFolders(spokenName, activeFolder)
         finally:
             self.inTimerRecentFolders = False
@@ -738,10 +780,10 @@ class ThisGrammar(ancestor):
         Or from the subfolder or folder ... on virtual drive commands
         """
         # first see if the buffer needs to be shrinked:    
-        buffer = max(10, self.trackFoldersHistory//10)
-        if len(self.recentfoldersDict) > self.trackFoldersHistory + buffer:
-            print("shrink recentfoldersDict with %s items to %s"% (buffer, self.trackFoldersHistory))
-            while len(self.recentfoldersDict) >= self.trackFoldersHistory:
+        buffer = max(10, self.maxRecentFolders//10)
+        if len(self.recentfoldersDict) > self.maxRecentFolders + buffer:
+            print("shrink recentfoldersDict with %s items to %s"% (buffer, self.maxRecentFolders))
+            while len(self.recentfoldersDict) >= self.maxRecentFolders:
                 keysList = list(self.recentfoldersDict.keys())
                 _removeItem = self.recentfoldersDict.pop(keysList[0])
                 # print('_folders, remove from recent folders: %s (%s)'% (keysList[0], removeItem))
@@ -772,18 +814,18 @@ class ThisGrammar(ancestor):
         # self.pickleChangingData.writeIfChanged()
     
     def startRecentFolders(self):
-        self.doTrackFoldersHistory = True
+        self.doTrackRecentFolders = True
         self.fillList('recentfolders')
-        natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # should have milliseconds
-        print("track folders history is started, the timer callback is on")
+        natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)  # should have milliseconds
+        print("the track recent folders timer is started")
         
     def stopRecentFolders(self):
-        self.doTrackFoldersHistory = True
+        self.doTrackRecentFolders = False
         natlinktimer.setTimerCallback(self.catchTimerRecentFolders, 0)
         self.dumpRecentFoldersDict()
         self.recentfoldersDict = {}
         self.emptyList('recentfolders')
-        print("track folders history is stopped, the timer callback is off")
+        print("the track recent folders timer is stopped, the recentfolder list is emptied")
         
     def resetRecentFolders(self):
         self.recentfoldersDict = {}
@@ -791,7 +833,7 @@ class ThisGrammar(ancestor):
         # self.pickleChangingData.delete('recentfolders')
         # self.pickleChangingData.writeIfChanged()
         self.emptyList('recentfolders')
-
+  
     def displayRecentFolders(self):
         """display the list of recent folders
         """
@@ -981,7 +1023,6 @@ class ThisGrammar(ancestor):
         if self.activeFolder and folderWord in self.subfoldersDict:
             subfolder = self.subfoldersDict[folderWord]
             folder = os.path.join(self.activeFolder, subfolder)
-            print('subfolder: %s'% folder)
         else:
             print('cannot find subfolder: %s'% folderWord)
             print('subfoldersDict: %s'% self.subfoldersDict)
@@ -993,8 +1034,7 @@ class ThisGrammar(ancestor):
         # if no next rule, simply go:
         self.wantedFolder = folder
         self.Here = True
-        if doRecentFolderCommand:
-            self.manageRecentFolders(folderWord, folder)
+        self.manageRecentFolders(folderWord, folder)
         
     def gotResults_recentfolder(self,words,fullResults):
         """give list of recent folders and choose option
@@ -2341,9 +2381,6 @@ def dumpToPickle(data, picklePath):
     """dump the data to picklePath
     """
     # print("dumpToPickle %s, %s"% (picklePath, len(data)))
-    if not data:
-        os.remove(picklePath)
-        return
     try:
         with open(picklePath, 'wb') as pp:
             pickle.dump(data, pp)
@@ -2374,13 +2411,16 @@ if __name__ == "__main__":
     natlink.natConnect()
     try:
         thisGrammar = ThisGrammar(inifile_stem="_folders")
-        thisGrammar.startInifile()
+        # thisGrammar.startInifile()
         thisGrammar.initialize()
+        # get hndle of a explore window (via _general "give window info") and try interactive
+        thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
         Words = ['folder', 'dtactions']
         Fr = {}
         thisGrammar.gotResultsInit(Words, Fr)
         thisGrammar.gotResults_folder(Words, Fr)
     finally:
+        thisGrammar.unload()
         natlink.natDisconnect()
 elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
