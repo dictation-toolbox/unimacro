@@ -769,7 +769,7 @@ class ThisGrammar(ancestor):
             if self.recentfoldersDict and activeFolder == list(self.recentfoldersDict.values())[-1]:
                 return
             spokenName = self.getFolderBasenameRemember(activeFolder)
-            print(f'add activeFolder "{activeFolder}" to recent, spoken name: "{spokenName}"')
+            # print(f'add activeFolder "{activeFolder}" to recent, spoken name: "{spokenName}"')
             self.manageRecentFolders(spokenName, activeFolder)
         finally:
             self.inTimerRecentFolders = False
@@ -802,7 +802,7 @@ class ThisGrammar(ancestor):
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
             elif Folder not in self.foldersSet:
-                print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s'% (Spoken, Folder, Spoken, spokenFolder))
+                # print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s'% (Spoken, Folder, Spoken, spokenFolder))
                 del self.recentfoldersDict[Spoken]
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
