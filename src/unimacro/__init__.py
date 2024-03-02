@@ -1,28 +1,21 @@
 """Unimacro __init__
 
-utility functions, to get calling directory of module (in site-packages),
 
-...and to check the existence of a directory, for example .natlink in the home directory.
+Note there will be a global variable created in the unimacro module 'ulogger' which is Logging.Logger object named 'natlink.unimacro'
+You can always access it by name.  It is created in _control.py.
 
-Note: -as user, having pipped the package, the scripts run from the site-packages directory
-      -as developer, you have to clone the package, then `build_package` and,
-       after a `pip uninstall unimacro`, `flit install --symlink`.
-       See instructions in the file README.md in the source directory of the package.
-
-get_site_packages_dir: can be called in the calling module like:
-
-```
-try:
-    from unimacro.__init__ import get_site_packages_dir
-except ModuleNotFoundError:
-    print('Run this module after "build_package" and "flit install --symlink"\n')
-
-sitePackagesDir = get_site_packages_dir(__file__)
-```
 """
 import os
 import sys
 
+#these functions are in this module so that they can be loaded without loading a lot of unimacro code.
+#they could be in a seperate .py file in unimacro to achieve the same (ie not in the control grammar).
 
+def control_logger_name() -> str : 
+        return "natlink.unimacro.control"
+
+def logname() -> str:
+    """ Returns the name of the unimacro logger."""
+    return "natlink.unimacro"
 __version__ = '4.1.4.2'   
  

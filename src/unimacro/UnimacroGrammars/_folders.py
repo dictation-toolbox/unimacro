@@ -312,10 +312,11 @@ class ThisGrammar(ancestor):
         # track recent folder at gotbegin or with timer:
         ## callback time in seconds:
         optionsdict['timer track folders interval'] = ''
-        interval = self.ini.getInt('general', 'timer track folders interval', 4)  # default 4 sec
+        interval = self.ini.getInt('general', 'timer track folders interval', 0)  # default 0 (off).
+        if interval and interval > 100:
+            print(f'_folders, warning, "timer track folders interval" should be set in seconds, not {interval}')
+            interval = 0
         self.trackFoldersTimerInterval = int(interval*1000)  # give in seconds
-        if self.trackFoldersTimerInterval:
-            print(f'track active folder as "recent" every {self.trackFoldersTimerInterval} milliseconds')
         self.recentfoldersDict = {}
         
         self.trackRecentFoldersAtUtterance = self.ini.getBool('general', 'track recent folders at utterance')
@@ -458,7 +459,7 @@ class ThisGrammar(ancestor):
                         break
         unusedoptions = validoptions - actualoptions
         for unused in unusedoptions:
-            print(f'unset option for _folders: "{unused}",\n\tplease set (possibly without value), section [general]')
+            print(f'-- option "{unused}" is not set, grammar "_folders",\n\tplease set (possibly without value) in section [general]')
 
     def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
@@ -576,35 +577,15 @@ class ThisGrammar(ancestor):
 
         if className == "CabinetWClass":
             f = mess.getFolderFromCabinetWClass(hndle)
-            # if f and f.startswith("search-ms"):
-            #     keystroke("{esc}")
-            #     unimacroutils.Wait()
-            #     f = mess.getFolderFromDialog(hndle, className)
-            if not f:
-                print("getActiveFolder, CabinetWClass failed: %s"% hndle)
         elif className == '#32770':
             f = mess.getFolderFromDialog(hndle, className)
-            if not f:
-                return None
-              # if not f:
-            #     print "getActiveFolder, #32770 failed: %s"% hndle
-        else:
-            # print 'class for activeFolder: %s'% className
-            return None
         if not f:
-            if className == 'CabinetWClass':
-                print('_folders, getActiveFolder, no folder found in className %s'% className)
             return None
         if os.path.isdir(f):
             nf = os.path.normpath(f)
             # print("getActiveFolder: %s"% nf)
             return nf
-        # print("folder in getActiveFolder: %s"% f)
-        realFolder = extenvvars.getFolderFromLibraryName(f)
-        if realFolder:
-            # print("getActiveFolder realFolder for %s: %s"% (f, realFolder))
-            return realFolder
-        print('_folders, getActiveFolder, could not find folder for %s'% f)
+        print(f'getActiveFolder, strange invalid path for folder: "{f}"' )
         return None
     
     def fillListsForActiveFolder(self, activeFolder):
@@ -782,15 +763,17 @@ class ThisGrammar(ancestor):
         """
         # first see if the buffer needs to be shrinked:    
         buffer = max(10, self.maxRecentFolders//10)
-        if len(self.recentfoldersDict) > self.maxRecentFolders + buffer:
-            print("shrink recentfoldersDict with %s items to %s"% (buffer, self.maxRecentFolders))
-            while len(self.recentfoldersDict) >= self.maxRecentFolders:
-                keysList = list(self.recentfoldersDict.keys())
-                _removeItem = self.recentfoldersDict.pop(keysList[0])
-                # print('_folders, remove from recent folders: %s (%s)'% (keysList[0], removeItem))
-            # print("refilling recentfolders list with %s items'"% len(self.recentfoldersDict))
-            self.setList('recentfolders', list(self.recentfoldersDict.keys()))
-            self.dumpRecentFoldersDict()
+        print(f'manageRecentFolders buffer: {buffer}, self.maxRecentFolders: {self.maxRecentFolders}, len(recentfoldersDict): {len(self.recentfoldersDict)}')
+        if self.recentfoldersDict:
+            if len(self.recentfoldersDict) > self.maxRecentFolders + buffer:
+                print("shrink recentfoldersDict with %s items to %s"% (buffer, self.maxRecentFolders))
+                while len(self.recentfoldersDict) >= self.maxRecentFolders:
+                    keysList = list(self.recentfoldersDict.keys())
+                    _removeItem = self.recentfoldersDict.pop(keysList[0])
+                    # print('_folders, remove from recent folders: %s (%s)'% (keysList[0], removeItem))
+                # print("refilling recentfolders list with %s items'"% len(self.recentfoldersDict))
+                self.setList('recentfolders', list(self.recentfoldersDict.keys()))
+                self.dumpRecentFoldersDict()
 
         if not Spoken:
             return
@@ -817,8 +800,13 @@ class ThisGrammar(ancestor):
     def startRecentFolders(self):
         self.doTrackRecentFolders = True
         self.fillList('recentfolders')
+        timerInterval = self.trackFoldersTimerInterval
+        if timerInterval: 
+            print(f'start timer interval {timerInterval} milliseconds')
+        else:
+            timerInterval = 1000
+            print(f'start timer with interval {timerInterval} milliseconds, for this session only')
         natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)  # should have milliseconds
-        print("the track recent folders timer is started")
         
     def stopRecentFolders(self):
         self.doTrackRecentFolders = False
@@ -826,7 +814,11 @@ class ThisGrammar(ancestor):
         self.dumpRecentFoldersDict()
         self.recentfoldersDict = {}
         self.emptyList('recentfolders')
-        print("the track recent folders timer is stopped, the recentfolder list is emptied")
+        if self.trackFoldersTimerInterval:
+            print("the track recent folders timer is stopped, for this session")
+        else:
+            print("the track recent folders timer is stopped.")
+            
         
     def resetRecentFolders(self):
         self.recentfoldersDict = {}
@@ -2414,12 +2406,17 @@ if __name__ == "__main__":
         thisGrammar = ThisGrammar(inifile_stem="_folders")
         # thisGrammar.startInifile()
         thisGrammar.initialize()
+
         # get hndle of a explore window (via _general "give window info") and try interactive
-        thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
-        Words = ['folder', 'dtactions']
-        Fr = {}
-        thisGrammar.gotResultsInit(Words, Fr)
-        thisGrammar.gotResults_folder(Words, Fr)
+        # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
+        thisGrammar.getActiveFolder(198518)
+
+
+        # # Words = ['folder', 'dtactions']
+        # Fr = {}
+        # Words = ['subfolder', 'hello']
+        # thisGrammar.gotResultsInit(Words, Fr)
+        # thisGrammar.gotResults_subfolder(Words, Fr)
     finally:
         thisGrammar.unload()
         natlink.natDisconnect()

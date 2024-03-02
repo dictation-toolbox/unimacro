@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "unimacro"
 authors = [{name = "Quintijn Hoogenboom (maintainer)", email = "q.hoogenboom@antenna.nl"}]
 dynamic = ["version", "description"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 readme = "README.md"
 
 
@@ -35,10 +35,14 @@ test = [
     "pytest >=7.1.2","flake8"
 ]
 dev = [
-	"pyenvutils","entry-point-inspector"
+	"pyenvutils","entry-point-inspector","build"
 ]
 [project.entry-points."natlink.grammars"]
 unimacro_builtins = "unimacro.UnimacroGrammars:locateme"
+
+[project.entry-points."dt.loggers"]
+	unimacro ="unimacro:logname"
+	control="unimacro:control_logger_name"
 
 [tool.pytest.ini_options]
 minversion = "7.1.2"
