@@ -45,6 +45,7 @@ import copy
 import string
 from pathlib import Path
 import win32com
+import logging
 
 import natlink
 from natlinkcore import loader
@@ -69,7 +70,7 @@ from unimacro import BrowseGrammar
 from unimacro import D_
 
 from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
-
+from unimacro import logname
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 
@@ -302,8 +303,40 @@ class GrammarX(GrammarXAncestor):
         self.want_on_or_off = None   # True: on False: off None: no decision
         self.hypothesis = 0
         self.allResults = 0
-                
+
+
+    def loggerName(self) ->str:
+        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
+        return logname()
+
+    def loggerShortName(self) ->str:
+        """A key for use as a  spoken form or user interface item."""
+        return "unimacro"
+
+    def getLogger(self) -> logging.Logger: 
+        print(f"Get Logger , name is {self.loggerName()}")
+        return logging.getLogger(self.loggerName())
                
+    #info,warning,error,exception,debug,log are forwarded the the appropriate logger.+
+
+    
+    def info(self,msg,*args,**kwargs):
+        return self.getLogger().info(msg,*args,**kwargs)
+    def debug(self,msg,*args,**kwargs):
+        return self.getLogger().debug(msg,*args,**kwargs)    
+    def warning(self,msg,*args,**kwargs):
+        return self.getLogger().warning(msg,*args,**kwargs)
+    def error(self,msg,*args,**kwargs):
+        return self.getLogger().error(msg,*args,**kwargs)
+    def exception(self,msg,*args,**kwargs):
+        return self.getLogger().error(msg,*args,**kwargs)
+    def log(self,level,msg,*args,**kwargs):
+        return self.getLogger().error(level,msg,*args,**kwargs)
+
+
+
+
+
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
@@ -1057,7 +1090,6 @@ class IniGrammar(IniGrammarAncestor):
 
         # here the grammar is not loaded yet, but the ini file is present
         # this could have been done in the user grammar already...
-        self.debug = None # can be set in some grammar at initialize time
         #mod = sys.modules[self.__module__]
 ##            version = getattr(mod, '__version__', '---')
         self.DNSVersion = status.getDNSVersion()
@@ -1979,11 +2011,9 @@ noot mies
         # else:
         l = self.ini.get(n)
         if l:
-            #if self.debug:
             #print '%s: filling list %s with %s items'% (self.name, listName, len(l))
             self.setList(n, l)
             return 1
-        #if self.debug:
         #print '%s: not filling list %s, no items found'% (self.name, listName)
         self.emptyList(n)
         return None
@@ -2848,17 +2878,14 @@ noot mies
                 istop = False
             elif childClass and progInfo.classname == childClass:
                 if actions.childWindowBehavesLikeTop( progInfo ):
-                    if self.debug:
-                        print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
+                    self.debug('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
                 else:                
-                    if self.debug:
-                        print('getTopOrChild: child mode, because of className "%s"'% childClass)
+                    self.debug('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
         else:
             if actions.childWindowBehavesLikeTop( progInfo ):
-                if self.debug:
-                    print('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
+                self.debug('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True
         return istop
 

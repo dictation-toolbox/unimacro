@@ -39,7 +39,7 @@ import logging as l
 #for some reason, importing amodule which does this doesn't work.  Likely because natlinkmain must be started first for
 #this sublogger natlink.unimacro to work correctly.
 import unimacro as unimacro_l   #bring in so we can add a variable ulogger to the namespace.  
-ulogger : l.Logger = l.getLogger("natlink.unimacro") 
+ulogger : l.Logger = l.getLogger(unimacro_l.logname()) 
 
 unimacro_l.__dict__['ulogger']=ulogger
 ulogger.debug("natlink.unimacro logger available")
@@ -87,7 +87,7 @@ def natlink_loggers() ->dict:
     loggers=dict()
     for ep in discovered_eps:
         try:
-            (name,_)=ep
+            name=ep.name
             module=ep.module
             module_loaded=module in sys.modules
 
@@ -188,8 +188,16 @@ class UtilGrammar(ancestor):
 ##        if unimacroutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
-        control_logger.info('---now starting other Unimacro grammars:')
+        self.info('---now starting other Unimacro grammars:')
 
+
+    def loggerName(self) ->str:
+        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
+        return unimacro_l.control_logger_name()
+
+    def loggerShortName(self) ->str:
+        """A key for use as a  spoken form or user interface item.  """
+        return "control"
 
     def unload(self):
         self.UnregisterControlObject()
@@ -247,7 +255,7 @@ class UtilGrammar(ancestor):
         for letter in string.ascii_lowercase:
             spoken = ini.get(alph, letter, '')
             if not spoken:
-                control_logger.info('fill in in "%s_spokenform.ini", [alphabet] spoken for: "%s"'% (self.language, letter))
+                self.info('fill in in "%s_spokenform.ini", [alphabet] spoken for: "%s"'% (self.language, letter))
                 continue
             if version < 11:
                 normalform = '%s\\%s'% (letter.upper(), spoken)
@@ -256,7 +264,7 @@ class UtilGrammar(ancestor):
             try:
                 natlink.recognitionMimic([normalform])
             except natlink.MimicFailed:
-                control_logger.info('invalid spoken form "%s" for "%s"'% (spoken, letter))
+                self.info('invalid spoken form "%s" for "%s"'% (spoken, letter))
                 if spoken == spoken.lower():
                     spoken = spoken.capitalize()
                     trying = 'try capitalized variant'
@@ -272,15 +280,15 @@ class UtilGrammar(ancestor):
                 try:
                     natlink.recognitionMimic([normalform])
                 except natlink.MimicFailed:
-                    control_logger.info('%s fails also: "%s" for "%s"'% (trying, spoken, letter))
+                    self.info('%s fails also: "%s" for "%s"'% (trying, spoken, letter))
                 else:
-                    control_logger.info('alphabet section is corrected with: "%s = %s"'% (letter, spoken))
+                    self.info('alphabet section is corrected with: "%s = %s"'% (letter, spoken))
                     ini.set(alph, letter, spoken)
         ini.writeIfChanged()
            
 
     def gotResults_trace(self,words,fullResults):
-        control_logger.info('control, trace: %s'% words)
+        self.info('control, trace: %s'% words)
         traceNumList = self.getNumbersFromSpoken(words) # returns a string or None
         if traceNumList:
             traceNum = int(traceNumList[0])
@@ -299,7 +307,7 @@ class UtilGrammar(ancestor):
             else:
                 actions.debugActions(1)
         elif self.hasCommon(words, 'spoken forms'):
-            control_logger.info("no tracing possible for spoken forms")
+            self.info("no tracing possible for spoken forms")
 
     #def gotResults_voicecode(self,words,fullResults):
     #    """switch on if requirements are fulfilled
@@ -343,7 +351,7 @@ class UtilGrammar(ancestor):
                     self.switch(gram, gname, switchOn)
                     # self never needs switching on
             else:
-                control_logger.info('_control switch, no valid grammar found, command: %s'% words)
+                self.info('_control switch, no valid grammar found, command: %s'% words)
 
     def switch(self, gram, gname, switchOn):
         """switch on or off grammar, and set in inifile,
@@ -352,7 +360,7 @@ class UtilGrammar(ancestor):
         switchOn is True or False
         """
         if gram == self:
-            control_logger.error(f'should not be here, do not switch on of off _control {gram}')
+            self.error(f'should not be here, do not switch on of off _control {gram}')
             return None
         if switchOn:
             if gram.ini:
@@ -361,16 +369,16 @@ class UtilGrammar(ancestor):
                 gram.ini.write()
                 unimacroutils.Wait(0.1)
             else:
-                control_logger.error(f'--- ini file of grammar {gname} is invalid, please try "edit {gname}"...')
+                self.error(f'--- ini file of grammar {gname} is invalid, please try "edit {gname}"...')
             gramName = gram.getName()
             unimacro_grammars_paths = self.getUnimacroGrammarNamesPaths()
             try:
                 filepath = Path(unimacro_grammars_paths[gramName])
             except KeyError:
-                control_logger.error(f'_control, grammar not in unimacro_grammars_paths dict: {gramName}, cannot switchOn')
+                self.error(f'_control, grammar not in unimacro_grammars_paths dict: {gramName}, cannot switchOn')
                 return None
             # now reload with force option.
-            control_logger.info(f'_control, now reload grammar "{gramName}":')
+            self.info(f'_control, now reload grammar "{gramName}":')
             natlinkmain.seen.clear()
             natlinkmain.load_or_reload_module(filepath, force_load=True)
 
@@ -382,13 +390,13 @@ class UtilGrammar(ancestor):
         gram.cancelMode()  
         gram.deactivateAll()
         # gram.unload()
-        control_logger.info('grammar "%s" switched off'% gram.getName())
+        self.info('grammar "%s" switched off'% gram.getName())
         return 1
 
     def gotResults_setlogging(self,words, fullresults):
         """
         """
-        control_logger.debug(f"unimacro logger gotResults_logging_level words: {words} fullResults: {fullresults}")
+        self.debug(f"unimacro logger gotResults_logging_level words: {words} fullResults: {fullresults}")
 
         loglevel_for = words[0]   # something like natlink, unimacro,... 
         new_level_str_mc,_=fullresults[-1]
@@ -397,7 +405,7 @@ class UtilGrammar(ancestor):
         logger_name=self.loggers[loglevel_for]
         new_log_level=l.__dict__[new_log_level_str]
 
-        control_logger.debug(f"New Log Level {new_log_level_str} for logger {logger_name}")
+        self.debug(f"New Log Level {new_log_level_str} for logger {logger_name}")
         logger=l.getLogger(logger_name)
         logger.setLevel(new_log_level)
 
@@ -407,7 +415,7 @@ class UtilGrammar(ancestor):
 #Hide numbers    def gotResults_loglevel(self,words,fullresults):
         """
         """
-        control_logger.debug(f"gotResults_logging_level words: {words} fullResults: {fullresults}")
+        self.debug(f"gotResults_logging_level words: {words} fullResults: {fullresults}")
         return
         
     
@@ -420,7 +428,7 @@ class UtilGrammar(ancestor):
         else:
             Start=()
         # fix state at this moment (in case of Active grammars popup)
-        control_logger.info(f'_control, showexclusive, exclusiveGrammars: {natbj.exclusiveGrammars}')
+        self.info(f'_control, showexclusive, exclusiveGrammars: {natbj.exclusiveGrammars}')
         if natbj.exclusiveGrammars:
             Exclusive = 1
             self.BrowsePrepare(Start, All, Exclusive)
@@ -444,7 +452,7 @@ class UtilGrammar(ancestor):
             
 
     def gotResults_resetexclusive(self,words,fullResults):
-        control_logger.info('reset exclusive')
+        self.info('reset exclusive')
         exclGrammars = natbj.getExclusiveGrammars()
         if exclGrammars:
             T = ['exclusive grammars:']
@@ -483,17 +491,21 @@ class UtilGrammar(ancestor):
         if self.hasCommon(words, 'exclusive'):
             G = self.getExclusiveGrammars()
             exclNames = [gname for gname, gram in G.items() if gram.isExclusive()]
-            control_logger.info(f'exclusive grammars (+ control) are: {exclNames}')
+            self.info(f'exclusive grammars (+ control) are: {exclNames}')
             self.gotResults_showexclusive(words, fullResults)
             return
         if self.hasCommon(words,"loggers"):
-            control_logger.info(f"Available Loggers: {self.loggers}")
+            self.info(f"Available Loggers: {self.loggers}")
             return
 
 
         grammars = self.getUnimacroGrammars()
         gramNames = list(grammars.keys())
-        control_logger.debug(f'_control, gramNames: {gramNames}')
+        print("gramNames")
+        print(f'{gramNames}')
+        print(f"self.debug {self.debug} self.info {self.info}")
+        self.info("info")
+        self.debug(f'_control, gramNames: {gramNames}')
         gramName = self.hasCommon(words, gramNames)
         if gramName:
             grammar = grammars[gramName]
@@ -538,9 +550,9 @@ class UtilGrammar(ancestor):
             activeGrammars = [g for g in G if G[g].isActive()]
             inactiveGrammars = [g for g in G if G[g].isLoaded() and not G[g].isActive()]
             switchedOffGrammars = [g for g in G if not G[g].isLoaded()]
-            control_logger.info(f'activeGrammars: {activeGrammars}')
-            control_logger.info(f'inactiveGrammars: {inactiveGrammars}')
-            control_logger.info(f'switchedOffGrammars: {switchedOffGrammars}')
+            self.info(f'activeGrammars: {activeGrammars}')
+            self.info(f'inactiveGrammars: {inactiveGrammars}')
+            self.info(f'switchedOffGrammars: {switchedOffGrammars}')
             # for grammar_name, gram in G.items():
             #     print(f'grammar_name: {grammar_name}, gram: {gram}')
             
@@ -611,7 +623,7 @@ class UtilGrammar(ancestor):
         try:
             grammar = grammars[gramName]
         except KeyError:
-            control_logger.error(f'grammar {words[-1:]} not found in list of gramNames:\n{gramNames}')
+            self.error(f'grammar {words[-1:]} not found in list of gramNames:\n{gramNames}')
             return
         # print(f'grammar: {gramName}: {grammar}')
         if self.hasCommon(words, 'grammar'):
@@ -620,9 +632,9 @@ class UtilGrammar(ancestor):
             try:
                 filepath = unimacro_grammars_paths[gramName]
             except KeyError:
-                control_logger.error(f'grammar not in unimacro_grammars_paths dict: {gramName}')
+                self.error(f'grammar not in unimacro_grammars_paths dict: {gramName}')
                 return
-            control_logger.info(f'open for edit file: "{filepath}"')
+            self.info(f'open for edit file: "{filepath}"')
             self.openFileDefault(filepath, mode="edit", name=f'edit grammar {gramName}')
         else:
             # edit the inifile
@@ -636,7 +648,7 @@ class UtilGrammar(ancestor):
         """overload, this grammar never switches off
 
         """        
-        control_logger.info('remains switched on: %s' % self)
+        self.info('remains switched on: %s' % self)
 
     def switchOn(self, **kw):
         """overload, just switch on
@@ -696,7 +708,7 @@ class UtilGrammar(ancestor):
                     unimacro_modules[name] = try_file
                     break
             else:
-                control_logger.info(f'not found in natlink_modules_files: {name}')
+                self.info(f'not found in natlink_modules_files: {name}')
                 unimacro_modules[name] = name   # not found
             
         return unimacro_modules
@@ -777,16 +789,13 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
 # standard stuff Joel (adapted for python3, QH, unimacro):
 if __name__ == "__main__":
     ## interactive use, for debugging:
-    natlink.natConnect()
-    try:
+    with natlink.natConnect():
         utilGrammar = UtilGrammar(inifile_stem='_control')
         utilGrammar.startInifile()
         utilGrammar.initialize()
         Words = ['edit', 'grammar', 'control']
         FR = {}
         utilGrammar.gotResults_edit(Words, FR)
-    finally:
-        natlink.natDisconnect()
 elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
     utilGrammar = UtilGrammar()

@@ -54,6 +54,8 @@ from pathlib import Path
 import win32gui
 from win32com.client import Dispatch
 import win32clipboard
+from logging import  Logger,getLogger
+from io import StringIO
 
 import natlink
 from natlinkcore import readwritefile
@@ -97,6 +99,25 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 # note: title is converted to lowercase, only full title is recognised
 
 ancestor = natbj.IniGrammar
+
+#note this is basically copy & pasted into ThisGrammar
+#some global scope functions need the same logger.
+def logger_name():
+    "natlink.unimacro.folders"
+
+logger = getLogger(logger_name())
+
+#logger should be used instead of print
+#replace print to avoid unintended use.
+builtin_print=print
+def our_print(*args,**kwargs):
+    f=StringIO()
+    builtin_print(args,kwargs,file=f)
+    value=f.getvalue()
+    logger.debug("print called instead of logging functions: %s" , value)
+    logger.error(value)
+
+
 class ThisGrammar(ancestor):
     """grammar for quickly going to folders, files and websites
     """
@@ -152,11 +173,19 @@ class ThisGrammar(ancestor):
         self.subfilesDict = {}
         self.foldersSet = set()
         if not self.language:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
+            self.error("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
         self.switchOnOrOff() # initialises lists from inifile, and switches on
         
+    def loggerName(self) ->str:
+        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
+        return "natlink.unimacro.folders"
+
+    def loggerShortName(self) ->str:
+        """A key for use as a  spoken form or user interface item.  """
+        return "folders"
+    
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
             self.checkInifile() # refills grammar lists and instance variables
@@ -165,7 +194,7 @@ class ThisGrammar(ancestor):
                 self.checkForChanges -= 1
               
         if self.mayBeSwitchedOn == 'exclusive':
-            print("exclusive (_folders), do switchOnOrOff")
+            self.info("exclusive (_folders), do switchOnOrOff")
             self.switchOnOrOff()
 
         self.progInfo = unimacroutils.getProgInfo()
@@ -182,7 +211,7 @@ class ThisGrammar(ancestor):
             
     def gotResultsInit(self,words,fullResults):
         if self.mayBeSwitchedOn == 'exclusive':
-            print('recog folders, switch off mic')
+            self.info('recog folders, switch off mic')
             natbj.SetMic('off')
         self.wantedFolder = self.wantedFile = self.wantedWebsite = None
         self.catchRemember = None
@@ -210,7 +239,7 @@ class ThisGrammar(ancestor):
 
         if self.activeFolder:
             self.emptyListsForActiveFolder()
-            # print 'empty lists for active folder %s, now: %s'% (self.activeFolder, activeFolder)
+            self.debug('empty lists for active folder %s, now: %s',self.activeFolder, activeFolder)
             self.activeFolder = None
 
         if activeFolder and os.path.isdir(activeFolder):
@@ -234,14 +263,14 @@ class ThisGrammar(ancestor):
                 # print("foldersSet: %s"% self.foldersSet)
                 self.setList('folders', items)
                 return items
-            print('no folders to set list to')
+            self.info('no folders to set list to')
             self.emptyList('folders')
         elif listName == 'subfolders':
             if self.subfoldersDict:
                 items = list(self.subfoldersDict.keys())
                 self.setList('subfolders', items)
                 return items
-            print('no subfolders to set list to')
+            self.info('no subfolders to set list to')
             self.emptyList('subfolders')
 
         elif listName == 'files':
@@ -266,7 +295,7 @@ class ThisGrammar(ancestor):
         if self.pickleChangingData:
             dumpToPickle(self.recentfoldersDict, self.pickleChangingData)
         else:
-            print('dumpRecentFoldersDict, no self.pickleChangingData')
+            self.info('dumpRecentFoldersDict, no self.pickleChangingData')
 
     def loadRecentFoldersDict(self):
         """for getting the dict of recent folders from previous session
@@ -276,7 +305,7 @@ class ThisGrammar(ancestor):
             if result and isinstance(result, dict):
                 self.recentfoldersDict = result
                 return
-        print('no recent folders dict')
+        self.info('no recent folders dict')
         self.recentfoldersDict = {}
 
     def fillInstanceVariables(self):
@@ -296,11 +325,10 @@ class ThisGrammar(ancestor):
         optionsdict['use other explorer'] = ''
         if self.useOtherExplorer:
             if os.path.isfile(self.useOtherExplorer):
-                print('_folders, use as default explorer: "%s"'% self.useOtherExplorer)
+                self.info('_folders, use as default explorer: "%s"', self.useOtherExplorer)
             else:
-                print('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")'% self.useOtherExplorer)
-
-
+                self.info('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")' , self.useOtherExplorer)
+        
         # these are for automatic tracking the current folder at an utterance:
         optionsdict['track files at utterance'] = 'automatic track files'
         optionsdict['track subfolders at utterance'] = 'automatic track folders'
@@ -314,7 +342,7 @@ class ThisGrammar(ancestor):
         optionsdict['timer track folders interval'] = ''
         interval = self.ini.getInt('general', 'timer track folders interval', 0)  # default 0 (off).
         if interval and interval > 100:
-            print(f'_folders, warning, "timer track folders interval" should be set in seconds, not {interval}')
+            self.warning(f'_folders, warning, "timer track folders interval" should be set in seconds, not {interval}')
             interval = 0
         self.trackFoldersTimerInterval = int(interval*1000)  # give in seconds
         self.recentfoldersDict = {}
@@ -332,11 +360,12 @@ class ThisGrammar(ancestor):
             intervalSeconds = int(self.trackFoldersTimerInterval/1000)
             if self.trackFoldersTimerInterval or self.trackRecentFoldersAtUtterance:
                 if not self.trackFoldersTimerInterval:
-                    print(f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance')
+                    track_message=f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance'
                 elif not self.trackRecentFoldersAtUtterance:
-                    print(f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) every {intervalSeconds} seconds')
+                    track_message=f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) every {intervalSeconds} seconds'
                 else:
-                    print(f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance and every {intervalSeconds} seconds')
+                    track_message=f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance and every {intervalSeconds} seconds'
+                self.info(track_message)
             if self.trackFoldersTimerInterval:                      
                 natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)  # every 5 seconds default...
         else:
@@ -359,7 +388,7 @@ class ThisGrammar(ancestor):
             raw_folder = self.ini.get('folders', f)
             folder = self.substituteFolder(raw_folder)
             if not os.path.isdir(folder):
-                print(f'warning _folders,  folder "{f}" does not exist: "{folder}"')
+                self.warning(f'warning _folders,  folder "{f}" does not exist: "{folder}"')
                 # self.ini.delete('folders', f)
                 # self.ini.set('obsolete folders', f, folder)
                 continue
@@ -387,7 +416,7 @@ class ThisGrammar(ancestor):
             trf2 = self.substituteFolder(trf)
             #print 'input: %s, output: %s'% (trf, trf2)
             if not os.path.isdir(trf2):
-                print('warning, no valid folder associated with: %s (%s) (skip for track virtualdrives)'% (trf, trf2))
+                self.warning('warning, no valid folder associated with: %s (%s) (skip for track virtualdrives)', trf, trf2)
                 continue
             #else:
             #    print 'valid folder for tracking: %s (%s)'% (trf, trf2)
@@ -414,7 +443,7 @@ class ThisGrammar(ancestor):
             for f in filesList[:]:
                 filename = self.substituteFilename(self.ini.get('files', f))
                 if not os.path.isfile(filename):
-                    print(f'warning _folders, file "{f}" does not exist: "{filename}"')
+                    self.warning(f'warning _folders, file "{f}" does not exist: "{filename}"')
                     # self.ini.delete('files', f)
                     # self.ini.set('obsolete files', f, filename)
                     continue
@@ -425,7 +454,7 @@ class ThisGrammar(ancestor):
                 continue
             trf2 = self.substituteFolder(trf)
             if not os.path.isdir(trf2):
-                print('warning, no valid folder associated with: %s (%s) (skip for track files)'% (trf, trf2))
+                self.warning('warning, no valid folder associated with: %s (%s) (skip for track files)', trf, trf2)
                 continue
             filesList = [f for f in os.listdir(trf2) if os.path.isfile(os.path.join(trf2, f))]
             self.trackFilesSection = 'files %s'% trf
@@ -450,16 +479,16 @@ class ThisGrammar(ancestor):
         validoptions = set(optionsdict)
         oldoptions = actualoptions - validoptions
         if oldoptions:
-            print(f'obsolete options: {oldoptions}')
+            self.info(f'obsolete options: {oldoptions}')
             # give new option, if available:
             for old in oldoptions:
                 for k,v in optionsdict.items():
                     if v == old:
-                        print(f'replace option "{old}" into "{k}" please')
+                        self.info(f'replace option "{old}" into "{k}" please')
                         break
         unusedoptions = validoptions - actualoptions
         for unused in unusedoptions:
-            print(f'-- option "{unused}" is not set, grammar "_folders",\n\tplease set (possibly without value) in section [general]')
+            self.warning(f'-- option "{unused}" is not set, grammar "_folders",\n\tplease set (possibly without value) in section [general]')
 
     def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
@@ -504,7 +533,7 @@ class ThisGrammar(ancestor):
         
         if wantedVirtualDrives:
             textline = ", ".join(wantedVirtualDrives)
-            print(f'Warning: could not resolve "virtualdrive" entries: {textline}, ignore')
+            self.warning(f'Warning: could not resolve "virtualdrive" entries: {textline}, ignore')
             # for dr in wantedVirtualDrives:
             #     virtualDrive = self.ini.get('virtualdrives', dr)
             #     self.ini.delete('virtualdrives', dr)
@@ -570,7 +599,7 @@ class ThisGrammar(ancestor):
             return None
         if className is None:
             className = win32gui.GetClassName(hndle)
-        # print 'getActiveFolder, className: %s'% className
+        self.debug('getActiveFolder, className: %s', className)
         if not className:
             return None
         f = None
@@ -583,9 +612,9 @@ class ThisGrammar(ancestor):
             return None
         if os.path.isdir(f):
             nf = os.path.normpath(f)
-            # print("getActiveFolder: %s"% nf)
+            self.debug("getActiveFolder: %s",nf)
             return nf
-        print(f'getActiveFolder, strange invalid path for folder: "{f}"' )
+        self.warning(f'getActiveFolder, strange invalid path for folder: "{f}"' )
         return None
     
     def fillListsForActiveFolder(self, activeFolder):
@@ -602,7 +631,7 @@ class ThisGrammar(ancestor):
         subfiles = [s for s in subs if os.path.isfile(os.path.join(activeFolder, s))]
         if self.trackFilesAtUtterance:
             if len(subfiles) > self.trackFilesAtUtterance:
-                print(f'_folders, only set first {self.trackFilesAtUtterance} files, total: {len(subfiles)}')
+                self.info(f'_folders, only set first {self.trackFilesAtUtterance} files, total: {len(subfiles)}')
                 subfiles = subfiles[:self.trackFilesAtUtterance]
             self.subfilesDict = self.getSpokenFormsDict(subfiles, extensions=1)
         else:
@@ -610,7 +639,7 @@ class ThisGrammar(ancestor):
         
         if self.trackSubfoldersAtUtterance:    
             if len(subfolders) > self.trackSubfoldersAtUtterance:
-                print(f'_folders, only set first {self.trackSubfoldersAtUtterance} subfolders of total: {len(subfolders)}')
+                self.info(f'_folders, only set first {self.trackSubfoldersAtUtterance} subfolders of total: {len(subfolders)}')
                 subfolders = subfolders[:self.trackSubfoldersAtUtterance]
             self.subfoldersDict = self.getSpokenFormsDict(subfolders)
         else:
@@ -625,11 +654,11 @@ class ThisGrammar(ancestor):
             self.setList('subfolders', list(self.subfoldersDict.keys()))
         self.activeFolder = activeFolder
         if self.subfilesDict and self.subfoldersDict:
-            print(f'activeFolder, set {len(subfiles)} files and {len(subfolders)} subfolders')
+            self.info(f'activeFolder, set {len(subfiles)} files and {len(subfolders)} subfolders')
         elif self.subfilesDict:
-            print(f'activeFolder, set {len(subfiles)} files')
+            self.info(f'activeFolder, set {len(subfiles)} files')
         elif self.subfoldersDict:
-            print(f'activeFolder, set {len(subfolders)} subfolders')
+            self.info(f'activeFolder, set {len(subfolders)} subfolders')
             
 
     def emptyListsForActiveFolder(self):
@@ -653,10 +682,10 @@ class ThisGrammar(ancestor):
                 continue
             folder = self.substituteFolder(vd + ':/' + f)
             if not os.path.isdir(folder):
-                print('remove entry from ini folders section %s: %s (%s)'% (section, f, folder))
+                self.info('remove entry from ini folders section %s: %s (%s)', section, f, folder)
                 self.ini.delete(section, f)
             elif not self.acceptFileName(f):
-                print('remove entry from ini folders section %s: %s (%s)(invalid folder name)'% (section, f, folder))
+                self.info('remove entry from ini folders section %s: %s (%s)(invalid folder name)' ,section, f, folder)
                 self.ini.delete(section, f)
         self.ini.writeIfChanged()
 
@@ -667,13 +696,13 @@ class ThisGrammar(ancestor):
             filename = self.substituteFolder(vd + ':/' + f)
             trunk, ext = os.path.splitext(f)
             if not self.acceptExtension(ext):
-                print('remove entry from ini files section %s: %s (%s)(invalid extension)'% (section, f, filename))
+                self.info('remove entry from ini files section %s: %s (%s)(invalid extension)', section, f, filename)
                 self.ini.delete(section, f)
             elif not self.acceptFileName(trunk):
-                print('remove entry from ini files section %s: %s (%s)(invalid filename)'% (section, f, filename))
+                self.info('remove entry from ini files section %s: %s (%s)(invalid filename)', section, f, filename)
                 self.ini.delete(section, f)
             elif not os.path.isfile(filename):
-                print('remove entry from ini files section %s: %s (%s)'% (section, f, filename))
+                self.info('remove entry from ini files section %s: %s (%s)', section, f, filename)
                 self.ini.delete(section, f)
         self.ini.writeIfChanged()
 
@@ -690,7 +719,7 @@ class ThisGrammar(ancestor):
                 if section == prefix + postfix:
                     break
             else:
-                print('_folders grammar, deleting ini file section: %s'% section)
+                self.info('_folders grammar, deleting ini file section: %s', section)
                 self.ini.delete(section)
         self.ini.writeIfChanged()
 
@@ -763,10 +792,10 @@ class ThisGrammar(ancestor):
         """
         # first see if the buffer needs to be shrinked:    
         buffer = max(10, self.maxRecentFolders//10)
-        print(f'manageRecentFolders buffer: {buffer}, self.maxRecentFolders: {self.maxRecentFolders}, len(recentfoldersDict): {len(self.recentfoldersDict)}')
+        self.info(f'manageRecentFolders buffer: {buffer}, self.maxRecentFolders: {self.maxRecentFolders}, len(recentfoldersDict): {len(self.recentfoldersDict)}')
         if self.recentfoldersDict:
             if len(self.recentfoldersDict) > self.maxRecentFolders + buffer:
-                print("shrink recentfoldersDict with %s items to %s"% (buffer, self.maxRecentFolders))
+                self.info("shrink recentfoldersDict with %s items to %s", buffer, self.maxRecentFolders)
                 while len(self.recentfoldersDict) >= self.maxRecentFolders:
                     keysList = list(self.recentfoldersDict.keys())
                     _removeItem = self.recentfoldersDict.pop(keysList[0])
@@ -780,7 +809,7 @@ class ThisGrammar(ancestor):
         if Spoken in self.recentfoldersDict:
             spokenFolder = self.recentfoldersDict[Spoken]
             if spokenFolder == Folder:
-                print(f'readd {Spoken} to recentfoldersDict')
+                self.info(f'readd {Spoken} to recentfoldersDict')
                 del self.recentfoldersDict[Spoken]
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
@@ -802,10 +831,10 @@ class ThisGrammar(ancestor):
         self.fillList('recentfolders')
         timerInterval = self.trackFoldersTimerInterval
         if timerInterval: 
-            print(f'start timer interval {timerInterval} milliseconds')
+            self.info(f'start timer interval {timerInterval} milliseconds')
         else:
             timerInterval = 1000
-            print(f'start timer with interval {timerInterval} milliseconds, for this session only')
+            self.info(f'start timer with interval {timerInterval} milliseconds, for this session only')
         natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)  # should have milliseconds
         
     def stopRecentFolders(self):
@@ -814,10 +843,8 @@ class ThisGrammar(ancestor):
         self.dumpRecentFoldersDict()
         self.recentfoldersDict = {}
         self.emptyList('recentfolders')
-        if self.trackFoldersTimerInterval:
-            print("the track recent folders timer is stopped, for this session")
-        else:
-            print("the track recent folders timer is stopped.")
+        self.info("the track recent folders timer is stopped, for this session" if self.trackFoldersTimerInterval \
+            else "the track recent folders timer is stopped.")
             
         
     def resetRecentFolders(self):
@@ -834,17 +861,17 @@ class ThisGrammar(ancestor):
         if not self.recentfoldersDict:
             message = 'recent folders list is empty at the moment'
             self.prevDisplayRecentFolders = message
-            print(message)
+            self.info(message)
             return
         for name, value in reversed(self.recentfoldersDict.items()):
             mess_list.append('- %s: %s'% (name, value))
         mess_list.append('-'*20)
         message = '\n'.join(mess_list)  
         if message == self.prevDisplayRecentFolders:
-            print("recent folders, no change")
+            self.info("recent folders, no change")
         else:
             self.prevDisplayRecentFolders = message
-            print(message)
+            self.info(message)
         
         
     # def gotoRecentFolder(self, chooseNum):
@@ -890,7 +917,7 @@ class ThisGrammar(ancestor):
         self.wantedWebsite = unimacroutils.getClipboard()
         self.wantedWebsite = self.wantedWebsite.rstrip("/")
         self.catchRemember = "website"
-        print('this website: %s'% self.wantedWebsite)
+        self.info('this website: %s', self.wantedWebsite)
         unimacroutils.restoreClipboard()
         if self.hasCommon(words, "remember"):
             ## dgndictation is not used at the moment!!
@@ -900,11 +927,11 @@ class ThisGrammar(ancestor):
                 self.checkForChanges = True
                 spokenWebsite = self.getWebsiteBasenameRemember(self.wantedWebsite)
                 if not spokenWebsite:
-                    print("_folders, could not extract a nice spoken website from %s\nTry "% self.wantedWebsite)
-                    print('Try "this website remember as <dgndictation>"')
+                    self.info("_folders, could not extract a nice spoken website from %s\nTry ", self.wantedWebsite)
+                    self.info('Try "this website remember as <dgndictation>"')
                     return
                 self.ini.set("websites", spokenWebsite, self.wantedWebsite)
-                print('with "website %s" you can now open %s'% (spokenWebsite, self.wantedWebsite))
+                self.info('with "website %s" you can now open %s', spokenWebsite, self.wantedWebsite)
                 self.ini.write()
 
     def getWebsiteBasenameRemember(self, url):
@@ -926,7 +953,7 @@ class ThisGrammar(ancestor):
         if not spokenList:
             return namePart
         if len(spokenList) > 1:
-            print('getFileBasenameRemember, more spoken alternatives found: %s, return first item'% spokenList)
+            self.info('getFileBasenameRemember, more spoken alternatives found: %s, return first item', spokenList)
         return spokenList[0]
         
     # def checkSubfolderRecent(self, name, folder):
@@ -979,7 +1006,7 @@ class ThisGrammar(ancestor):
         if not spokenList:
             return namePart
         if len(spokenList) > 1:
-            print('getFolderBasenameRemember, more spoken alternatives found: %s'% spokenList)
+            self.info('getFolderBasenameRemember, more spoken alternatives found: %s', spokenList)
         return spokenList[0]
     
             
@@ -991,7 +1018,7 @@ class ThisGrammar(ancestor):
         open with list in inifile, expected right hand sides to be browsers
         """
         if not self.wantedWebsite:
-            print('websitecommands, no valid self.wantedWebsite: %s'% self.wantedWebsite)
+            self.info('websitecommands, no valid self.wantedWebsite: %s', self.wantedWebsite)
 
         nextOpenWith = False
 
@@ -1002,7 +1029,7 @@ class ThisGrammar(ancestor):
                 self.Open = self.getFromInifile(w, 'websiteopenprograms')
                 nextOpenWith = False
             else:
-                print("unexpected website option: %s"% w)
+                self.warning("unexpected website option: %s", w)
 
     def gotResults_subfolder(self, words, fullResults):
         """collects the given command words and try to find the given subfolder
@@ -1017,8 +1044,8 @@ class ThisGrammar(ancestor):
             subfolder = self.subfoldersDict[folderWord]
             folder = os.path.join(self.activeFolder, subfolder)
         else:
-            print('cannot find subfolder: %s'% folderWord)
-            print('subfoldersDict: %s'% self.subfoldersDict)
+            self.info('cannot find subfolder: %s', folderWord)
+            self.info('subfoldersDict: %s', self.subfoldersDict)
             return
             # subfolder = None
             # folder1 = self.foldersDict[words[1]]
@@ -1037,7 +1064,7 @@ class ThisGrammar(ancestor):
             return
         if self.hasCommon("RESET", words[-1]):
             self.resetRecentFolders()
-            print("Reset recent folders list")
+            self.info("Reset recent folders list")
             return
         if self.hasCommon("START", words[-1]):
             self.startRecentFolders()
@@ -1047,11 +1074,11 @@ class ThisGrammar(ancestor):
             return
 
         if not self.recentfoldersDict:
-            print("no recentfolders yet")
+            self.info("no recentfolders yet")
             return
         name = words[-1]
         folder = self.recentfoldersDict[name]
-        print("recentfolder, name: %s, folder: %s"% (name, folder))
+        self.info("recentfolder, name: %s, folder: %s", name, folder)
         self.wantedFolder = folder
         
     def findFolderWithIndex(self, root, allowed, ignore=None):
@@ -1099,53 +1126,53 @@ class ThisGrammar(ancestor):
         different)
         """
         if not self.wantedFolder:
-            print('rule foldercommands, no wantedFolder, return')
+            self.info('rule foldercommands, no wantedFolder, return')
             return
         nextRemote = False
         for w in words:
             if self.hasCommon(w, 'here'):
-                print("got Here: ", w)
+                self.info(f"got Here: {w}")
                 self.Here = True
             elif self.hasCommon(w, 'new'):
-                print("got New: ", w)
+                self.info(f"got New: {w}")
                 self.New = True
             elif self.hasCommon(w, 'paste'):
-                print("got Paste, set PastePath: ", w)
+                self.info(f"got Paste, set PastePath: {w}")
                 self.PastePath = True
             elif self.hasCommon(w, 'on'):
-                print("got Remote: ", w)
+                self.info("got Remote: {w}")
                 nextRemote = True
             elif nextRemote:
                 remoteLetter =  self.getFromInifile(w, 'letters', noWarning=1)
                 remoteVirtualDrive = self.getFromInifile(w, 'virtualdrivesspoken', noWarning=1)
                 if remoteLetter:
-                    print('remoteLetter: %s'% remoteLetter)
+                    self.info('remoteLetter: %s', remoteLetter)
                     self.Remote = remoteLetter.upper() + ":"
                 elif remoteVirtualDrive:
                     self.Remote = self.virtualDriveDict[remoteVirtualDrive]
-                    print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
+                    self.info('remoteVirtualDrive: %s, resolves to: %s', remoteVirtualDrive, self.Remote)
                 nextRemote = False
             else:
                 opt = self.getFromInifile(w, 'foldercommands')
-                print("got FolderOptions: ", opt)
+                self.info("got FolderOptions: %s", opt)
                 self.FolderOptions.append(opt)
 
     def gotResults_namepathcopy(self, words, fullResults):
         """copy the name or the path of a folder, file or website
         """
         if not self.catchRemember:
-            print("_folders, namepathcopy, do not know what to copy, folder, file or website")
+            self.info("_folders, namepathcopy, do not know what to copy, folder, file or website")
             return
         if self.hasCommon(words, "name"):
             what = "name"
         elif self.hasCommon(words, "path"):
             what = "path"
         else:
-            print("_folders, namepathcopy, choose copy name or path, not: %s"% repr(words))
+            self.info("_folders, namepathcopy, choose copy name or path, not: %s", repr(words))
             return
         if self.catchRemember == "folder":
             if not self.wantedFolder:
-                print("_folders, namepathcopy, no valid folder")
+                self.info("_folders, namepathcopy, no valid folder")
                 return
             self.wantedFolder = self.wantedFolder.rstrip("/\\")
             if what == "name":
@@ -1154,7 +1181,7 @@ class ThisGrammar(ancestor):
                 result = self.wantedFolder
         elif self.catchRemember == "file":
             if not self.wantedFile:
-                print("_folders, namepathcopy, no valid file")
+                self.info("_folders, namepathcopy, no valid file")
                 return
             if what == "name":
                 result = os.path.split(self.wantedFile)[-1]
@@ -1163,20 +1190,20 @@ class ThisGrammar(ancestor):
 
         elif self.catchRemember == "website":
             if not self.wantedWebsite:
-                print("_folders, namepathcopy, no valid website")
+                self.info("_folders, namepathcopy, no valid website")
                 return
             if what == 'name':
                 result = self.wantedWebsite.split("/")[-1]
             else:
                 result = self.wantedWebsite.split()[-1]
-        print('namepathcopy, result: %s (type: %s)'% (result, type(result)))
+        self.info('namepathcopy, result: %s (type: %s)', result, type(result))
         unimacroutils.setClipboard(result, 13)   # 13 unicode!!
 
     def gotResults_remember(self, words, fullResults):
         """treat the remember function, filling items in ini files
         """
         if not self.catchRemember:
-            print('_folders, in remember rule, but nothing to remember')
+            self.info('_folders, in remember rule, but nothing to remember')
             return
         if self.catchRemember == "folder":
             self.rememberBase = self.getFolderBasenameRemember(self.wantedFolder)
@@ -1207,7 +1234,7 @@ class ThisGrammar(ancestor):
             default = self.rememberBase
             section = 'files'
         else:
-            print('_folders, invalid value for catchRemember: %s'% self.catchRemember)
+            self.info('_folders, invalid value for catchRemember: %s', self.catchRemember)
             return
         prompt = "Remember in Unimacro _folders grammar"
         inifile = self.ini._file
@@ -1218,11 +1245,11 @@ class ThisGrammar(ancestor):
         pausetime = 3
         # reset variables, no action in gotResults:
         self.wantedFile = self.wantedFolder = self.wantedWebsite = ""
-        print(f'thisDir: {thisDir}')
+        self.info(f'thisDir: {thisDir}')
         UnimacroDirectory = extenvvars.expandEnvVariableAtStart('%Unimacro%')
-        print(f'UnimacroDirectory: {UnimacroDirectory}')
+        self.info(f'UnimacroDirectory: {UnimacroDirectory}')
         UnimacroGrammarsDirectory = extenvvars.expandEnvVariableAtStart('%UnimacroGrammars%')
-        print(f'UnimacroGrammarsDirectory: {UnimacroGrammarsDirectory}')
+        self.info(f'UnimacroGrammarsDirectory: {UnimacroGrammarsDirectory}')
         makeFromTemplateAndExecute(UnimacroDirectory, "unimacrofoldersremembertemplate.py", UnimacroGrammarsDirectory, "rememberdialog.py",
                                       prompt, text, default, inifile, section, value, pausetime=pausetime)
 
@@ -1237,7 +1264,7 @@ class ThisGrammar(ancestor):
         for window in shell.Windows():
             if int(window.HWND) == int(hndle):
                 return window
-        print("_folders: no active explorer.")
+        self.info("_folders: no active explorer.")
         return None        
     
     def get_current_directory(self, hndle=None):
@@ -1255,7 +1282,7 @@ class ThisGrammar(ancestor):
     def get_selected_paths(self):
         window = self.get_active_explorer()
         if window is None:
-            print('get_selected_paths, cannot find application')
+            self.info('get_selected_paths, cannot find application')
             return None
         items = window.Document.SelectedItems()
         paths = []
@@ -1280,12 +1307,12 @@ class ThisGrammar(ancestor):
             ## wait for the mouse to have stoppede moving
             button, nClick = 'left', 1
             if not self.doWaitForMouseToStop():
-                print('_folders, thisfile, mouse did not stop, cannot click')
+                self.info('_folders, thisfile, mouse did not stop, cannot click')
                 return
             unimacroutils.buttonClick(button, nClick)
             unimacroutils.visibleWait()
 
-        # print 'filenames: %s'% self.get_selected_filenames()
+        # self.info 'filenames: %s'% self.get_selected_filenames()
         self.wantedFile = None
         # paths = self.get_selected_paths()
         # if paths:
@@ -1294,7 +1321,7 @@ class ThisGrammar(ancestor):
         #             self.wantedFile = p
         #             break
         #     else:
-        #         print "warning, thisfile: no valid file found"
+        #         self.info "warning, thisfile: no valid file found"
         #             
         # else:
         unimacroutils.saveClipboard()
@@ -1308,32 +1335,32 @@ class ThisGrammar(ancestor):
             paths1 = [p for p in paths1 if os.path.isfile(p)]
 
         paths2 = get_selected_files(folders=False)
-        print('get_system_folderinfo: %s'% paths1)
-        print('get_selected_files: %s'% paths2)
+        self.info('get_system_folderinfo: %s', paths1)
+        self.info('get_selected_files: %s', paths2)
         if paths1 and paths2:
             if paths1 == paths2:
                 paths = paths1
             else:
-                print('_thisfile, different info for both methods:\nVia Clipboard %s\nVia this module functions: %s'% \
-                           (repr(paths1), repr(paths2)))
+                self.info('_thisfile, different info for both methods:\nVia Clipboard %s\nVia this module functions: %s', \
+                           repr(paths1), repr(paths2))
                 paths = paths2
         elif paths1:
-            print('_thisfile, only paths1 (via clipboard) has data: %s'% repr(paths1))
+            self.info('_thisfile, only paths1 (via clipboard) has data: %s', repr(paths1))
             paths = paths1
         elif paths2:
             paths = paths2
-            print('_thisfile, only paths2 (this module functions) has data: %s'% repr(paths2))
+            self.info('_thisfile, only paths2 (this module functions) has data: %s', repr(paths2))
         else:
-            print('no paths info found with either methods')
+            self.info('no paths info found with either methods')
             paths = None
 
         if not paths:
-            print("no selected file found")
+            self.info("no selected file found")
             return
         self.wantedFile = paths[0]
         if len(paths) > 1:
-            print("warning, more files selected, take the first one: %s"% self.wantedFile)
-        print('wantedFile: %s'% self.wantedFile)
+            self.warning("warning, more files selected, take the first one: %s", self.wantedFile)
+        self.info('wantedFile: %s', self.wantedFile)
         self.catchRemember = "file"
 
     def gotResults_disc(self,words,fullResults):
@@ -1342,7 +1369,7 @@ class ThisGrammar(ancestor):
         if letter:
             f = letter + ":\\"
         else:
-            print('_folders, ruls disc, no letter provided: %s'% words)
+            self.info('_folders, ruls disc, no letter provided: %s', words)
             return
         
         if self.nextRule in ['foldercommands']:
@@ -1363,28 +1390,28 @@ class ThisGrammar(ancestor):
             if extension:
                 File, _old_extension = os.path.splitext (File)
                 File = File +'.' + extension
-                print('got file: %s'% File)
+                self.info('got file: %s', File)
             File = os.path.join(self.activeFolder, File)
             if not os.path.isfile(File):
-                print('folders, file, from subfilesList, not a valid path: %s (return None)'% File)
+                self.info('folders, file, from subfilesList, not a valid path: %s (return None)', File)
                 File = None
             else:
-                print('file from subfileslist: %s'% File)
+                self.info('file from subfileslist: %s', File)
             self.catchRemember = "file"
         if not File:
             try:
                 File = self.filesDict[wantedFile]
             except KeyError:
-                print('file cannot be found in filesDict: %s (and not in subfilesDict either)'% wantedFile)
+                self.info('file cannot be found in filesDict: %s (and not in subfilesDict either)', wantedFile)
                 return
             File = self.substituteFolder(File)
-            print("_folders, get file: actual filename (fixed fileslist): %s"% File)
+            self.info("_folders, get file: actual filename (fixed fileslist): %s", File)
             extension =self.getFromInifile(words, 'extensions', noWarning=1)
             if extension:
                 File, _old_extension =os.path.splitext (File)
                 File = File +'.' + extension
             if not os.path.isfile(File):
-                print('invalid file: %s'% File)
+                self.info('invalid file: %s', File)
                 return
         if self.nextRule in ["filecommands", "remember"]:
             self.wantedFile = File
@@ -1395,7 +1422,7 @@ class ThisGrammar(ancestor):
     def gotResults_filecommands(self, words, fullResults):
         
         if not self.wantedFile:
-            print('rule filecommands, no wantedFile, return')
+            self.info('rule filecommands, no wantedFile, return')
             return
         # print 'filecommands: %s'% words
         OpenWith = Remote = False
@@ -1411,15 +1438,15 @@ class ThisGrammar(ancestor):
                 remoteLetter =  self.getFromInifile(w, 'letters', noWarning=1)
                 remoteVirtualDrive = self.getFromInifile(w, 'virtualdrivesspoken', noWarning=1)
                 if remoteLetter:
-                    print('remoteLetter: %s'% remoteLetter)
+                    self.info('remoteLetter: %s', remoteLetter)
                     self.Remote = remoteLetter.upper() + ":"
                 elif remoteVirtualDrive:
                     self.Remote = self.virtualDriveDict[remoteVirtualDrive]
-                    print('remoteVirtualDrive: %s, resolves to: %s'% (remoteVirtualDrive, self.Remote))
+                    self.info('remoteVirtualDrive: %s, resolves to: %s', remoteVirtualDrive, self.Remote)
                 Remote = False
             else:
                 act = self.getFromInifile(w, 'foldercommands')
-                print("got FileCommand: ", act)
+                self.info("got FileCommand: ", act)
                 self.FileOptions.append(act)
        
     def gotResults_thisfolder(self,words,fullResults):
@@ -1435,7 +1462,7 @@ class ThisGrammar(ancestor):
             ## wait for the mouse to have stoppede moving
             button, nClick = 'left', 1
             if not self.doWaitForMouseToStop():
-                print("_folders, command thisfolder: doWaitForMouseToStop fails")
+                self.info("_folders, command thisfolder: doWaitForMouseToStop fails")
                 return
             unimacroutils.buttonClick(button, nClick)
             unimacroutils.visibleWait()
@@ -1456,35 +1483,35 @@ class ThisGrammar(ancestor):
             if paths1 == paths2:
                 paths = paths1
             else:
-                print('_thisfolder, different info for both methods:\nVia Clipboard %s\nVia this module functions: %s'% \
-                           (repr(paths1), repr(paths2)))
+                self.info('_thisfolder, different info for both methods:\nVia Clipboard %s\nVia this module functions: %s', \
+                           repr(paths1), repr(paths2))
                 paths = paths2
         elif paths1:
-            print('_thisfolder, only paths1 (via clipboard) has data: %s'% repr(paths1))
+            self.info('_thisfolder, only paths1 (via clipboard) has data: %s', repr(paths1))
             paths = paths1
         elif paths2: #
             paths = paths2
-            print('_thisfolder, only paths2 (this module functions) has data: %s'% repr(paths2))
+            self.info('_thisfolder, only paths2 (this module functions) has data: %s', repr(paths2))
         else:
-            print('no paths info found with either methods')
+            self.info('no paths info found with either methods')
             paths = None
             
-        print('paths:::: %s'% paths) #
+        self.info('paths:::: %s', paths) #
         if paths:
             self.wantedFolder = paths[0]
             if len(paths) > 1:
-                print("warning, more items selected, take the first one: %s"% self.wantedFolder)
+                self.info("warning, more items selected, take the first one: %s", self.wantedFolder)
         elif self.activeFolder:
-            print('take activeFolder: %s'% self.activeFolder)
+            self.info('take activeFolder: %s', self.activeFolder)
             self.wantedFolder = self.activeFolder
         else:
-            print('"this folder" no selected folder found')
+            self.info('"this folder" no selected folder found')
             return
         if os.path.isdir(self.wantedFolder):
-            # print '_folders, this folder, wantedFolder: %s'% self.wantedFolder
+            # self.info '_folders, this folder, wantedFolder: %s'% self.wantedFolder
             self.catchRemember = "folder" # in case remember follows
         else:
-            print('_folders, wantedFolder not a valid folder: %s'% self.wantedFolder)
+            self.info('_folders, wantedFolder not a valid folder: %s', self.wantedFolder)
            
     #         
     def gotResults_folderup(self,words,fullResults):
@@ -1498,16 +1525,16 @@ class ThisGrammar(ancestor):
         # print 'iambrowser: %s Iamexplorer: %s'% (browser, IamExplorer)
         istop = self.getTopOrChild(self.progInfo, childClass="#32770")  # True if top window
         if IamChild32770:
-            print("IamChild32770: ", self.activeFolder)
+            self.info(f"IamChild32770: {self.activeFolder}")
             if not self.activeFolder:
                 self.activeFolder = mess.getFolderFromDialog(hndle, classname)
-                print("IamChild32770 getFolderFromDialog: ", self.activeFolder)
+                self.info(f"IamChild32770 getFolderFromDialog: {self.activeFolder}")
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
-                #print 'newfolder (up %s): %s'% (upn, newfolder)
+                #self.info 'newfolder (up %s): %s'% (upn, newfolder)
                 self.gotoInThisDialog(newfolder, hndle, classname)
             else:
-                print('method not working (any more) for #32770: %s'% title)
+                self.info('method not working (any more) for #32770: %s', title)
             
         elif not istop:   # child window actions
             
@@ -1533,18 +1560,18 @@ class ThisGrammar(ancestor):
                 self.activeFolder = mess.getFolderFromCabinetWClass(hndle)
             if self.activeFolder:
                 newfolder = self.goUpInPath(self.activeFolder, upn)
-                print('newfolder (up %s): %s'% (upn, newfolder))
+                self.info('newfolder (up %s): %s', upn, newfolder)
                 self.gotoInThisComputer(newfolder)
             else:
-                print('method not working any more, going folder up')
+                self.info('method not working any more, going folder up')
                 action("MP 1, 50, 10, 0")
                 for _i in range(upn):
                     action("{backspace} VW")
             
         else:            
-            print('yet to implement, folder up for  %s'% prog)
+            self.info('yet to implement, folder up for  %s', prog)
             
-        #print 'had folder up: %s'% words
+        #self.info 'had folder up: %s'% words
         
     
     def substituteFolder(self, folder):
@@ -1686,9 +1713,9 @@ class ThisGrammar(ancestor):
 
         """
         if self.Open:
-            print("gotoWebsite %s with: %s", (f, self.Open))
+            self.info("gotoWebsite %s with: %s", f, self.Open)
         else:
-            print("gotoWebsite: ", f)
+            self.info("gotoWebsite: %s", f)
         self.openWebsiteDefault(f, openWith=self.Open)
 
     def gotoFile(self, f):
@@ -1709,7 +1736,7 @@ class ThisGrammar(ancestor):
         istop = self.getTopOrChild( self.progInfo, childClass="#32770") # True if top
     
         if self.Remote:
-            print('Remote: %s'% self.Remote)
+            self.info('Remote: %s', self.Remote)
             f = self.getValidFile(f, self.Remote)
             
             if not f:
@@ -1729,7 +1756,7 @@ class ThisGrammar(ancestor):
 
         if not istop:   # child window actions
             # put the mouse in the left top corner of the window:
-            print("Open file from child window: %s"% f)
+            self.info("Open file from child window: %s", f)
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
             unimacroutils.saveClipboard()
@@ -1752,10 +1779,10 @@ class ThisGrammar(ancestor):
         """
 ##        action('CW')
         if not os.path.isfile(filename):
-            print('file does not exist, cannot open: %s'% filename)
+            self.info('file does not exist, cannot open: %s', filename)
             return
         if not ancestor.openFileDefault(self, filename, mode=mode, openWith=openWith):
-            print('could not open %s (mode: %s, openWith: %s)'% (filename, mode, openWith))
+            self.info('could not open %s (mode: %s, openWith: %s)', filename, mode, openWith)
             return
         try:
             # try is needed in case function is called from another class (dirty trick with _control, sorry)
@@ -1775,12 +1802,12 @@ class ThisGrammar(ancestor):
         #print 'going to open folder: %s'% foldername
             
         if not ancestor.openFolderDefault(self, foldername, mode=mode, openWith=openWith):
-            print('failed to open folder: %s'% foldername)
+            self.info('failed to open folder: %s', foldername)
             return
         
         for act in self.FolderOptions:
             if act:
-                print("openFolderDefault, action: %s"% act)
+                self.info("openFolderDefault, action: %s", act)
                 action(act)
             
     #  This is the function which does the real work, depending on the
@@ -1857,23 +1884,23 @@ class ThisGrammar(ancestor):
             return
         
         if prog == 'cmd':
-            print("_folder, for cmd: %s"% f)
+            self.info("_folder, for cmd: %s", f)
             # t = " " + f
             action('SCLIP(%s)'% f)
             return
         
         if self.Remote:
-            print('Remote: %s'% self.Remote)
+            self.info('Remote: %s', self.Remote)
             f = self.getValidDirectory(f, self.Remote)
-            print('Remote: %s'% f)
+            self.info('Remote: %s', f)
             if not f:
                 return
         if self.PastePath:
             action("SCLIP(%s)"%f)
-            print("PastePath: %s"% f)
+            self.info("PastePath: %s", f)
             return  # 
         if self.CopyNamePath:
-            print('put path on clipboard: "%s"'% f)
+            self.info('put path on clipboard: "%s"', f)
             unimacroutils.setClipboard(f)
             return
 
@@ -1881,7 +1908,7 @@ class ThisGrammar(ancestor):
         prog = self.progInfo.prog
         hndle = self.progInfo.hndle
         if not hndle:
-            print('_folders, gotoFolder: no window handle found, return')
+            self.info('_folders, gotoFolder: no window handle found, return')
         # Iam2x = prog == '2xexplorer'
         IamExplorer = prog == 'explorer'
         _browser = prog in ['iexplore', 'firefox','opera', 'netscp', 'brave']
@@ -1898,13 +1925,13 @@ class ThisGrammar(ancestor):
                 # print("go from here activeFolder: %s"% self.activeFolder)
                 self.gotoInThisDialog(f, hndle, self.className)
                 return
-            print("no files/folder dialog, treat as top window")
+            self.info("no files/folder dialog, treat as top window")
             self.openFolderDefault(f)
             return
                 
         if not istop:   # child window actions
             # put the mouse in the left top corner of the window:
-            print("_folders, child window, comes ever here???")
+            self.info("_folders, child window, comes ever here???")
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
             unimacroutils.saveClipboard()
@@ -1958,11 +1985,11 @@ class ThisGrammar(ancestor):
         if exactList:
 ##                print 'exactList %s' % (exactList)
             if len(exactList) > 1:
-                print('warning, 2 matching windows: %s'% exactList)
+                self.info('warning, 2 matching windows: %s', exactList)
             t, h = exactList[0]
             unimacroutils.SetForegroundWindow(h)
         elif overList:
-##            print 'over List %s' % (overList)
+##            self.info 'over List %s' % (overList)
             # eg f = d:\\a\\b
             # and elements of overList are d:\\a\\b\\c and d:\\a\\b\\c\\d
             # goto shortest element
@@ -1988,7 +2015,7 @@ class ThisGrammar(ancestor):
             # eg f = d:\\a\\b\\c
             # elementes of underList are d:\\a d:\\a\\b etc.
             # go to longest element and switch in that window to folder
-            print('under list, go to first folder')
+            self.info('under list, go to first folder')
             lenMax = 0
             
             for t, h in underList:
@@ -2010,7 +2037,7 @@ class ThisGrammar(ancestor):
                 if unimacroutils.SetForegroundWindow(h):
                     self.gotoInThisComputer(f)
                 else:
-                    print('could not set foregroundwindow: %s'% h)
+                    self.info('could not set foregroundwindow: %s', h)
                     self.openFolderDefault(f)  
                     
             else:
@@ -2018,7 +2045,7 @@ class ThisGrammar(ancestor):
                 self.openFolderDefault(f)
         else:
             # no this computer windows (yet)
-            print("grammar folders shouldn't be here!")  
+            self.info("grammar folders shouldn't be here!")  
 
 
     def getValidDirectory(self, f, remote):
@@ -2048,7 +2075,7 @@ class ThisGrammar(ancestor):
             if os.path.isdir(tryF):
                 return tryF
             fparts.pop(0)
-        print('_folders, no valid remote folder found for %s and remote: %s'% (f, remote))
+        self.info('_folders, no valid remote folder found for %s and remote: %s', (f, remote))
         return ''
 
     def getValidFile(self, f, remote):
@@ -2060,7 +2087,7 @@ class ThisGrammar(ancestor):
             if os.path.isfile(tryF):
                 return tryF
             fparts.pop(0)
-        print('_folders, no valid remote file found for %s and remote: %s'% (f, remote))
+        self.info('_folders, no valid remote file found for %s and remote: %s', f, remote)
         return ''
 
     
@@ -2095,7 +2122,7 @@ class ThisGrammar(ancestor):
         elif os.path.isfile(f):
             folder, filename = os.path.split(f)
         else:
-            print('invalid target for gotoInThisDialog: %s'% f)
+            self.info('invalid target for gotoInThisDialog: %s', f)
             return
         
         if folder != activeFolder:
@@ -2106,7 +2133,7 @@ class ThisGrammar(ancestor):
             action('W')
             keystroke('{shift+tab}')
         if filename:
-            action("SCLIP %s"% filename)
+            action("SCLIP %s", filename)
             # keystroke(filename)
             
     def gotoInOtherExplorer(self, f):
@@ -2118,7 +2145,7 @@ class ThisGrammar(ancestor):
         if self.useOtherExplorer == "xplorer2":
             keystroke("{shift+tab}%s{enter}{down}{up}"% f)
         else:
-            print('_folders, please specify in function "gotoInOtherExplorer" for "use other explorer": "%s"'% self.useOtherExplorer)
+            self.info('_folders, please specify in function "gotoInOtherExplorer" for "use other explorer": "%s"', self.useOtherExplorer)
 
     def goUpInPath(self, PATH, nsteps=None):
         """return a new path, n steps up in hierarchy, default 1
@@ -2145,9 +2172,9 @@ class ThisGrammar(ancestor):
         try:
             unimacroutils.waitForNewWindow(50, 0.05)  # 2,5 seconds max
         except unimacroutils.NatlinkCommandTimeOut:
-            print('Error with action "start windows explorer" (%s) from command in grammar + "_folders".' % \
+            self.info('Error with action "start windows explorer" (%s) from command in grammar + "_folders".' , \
                   startExplorer)
-            print('Correct in ini file by using the command: ' + {'enx': "Edit Folders",
+            self.info('Correct in ini file by using the command: ' + {'enx': "Edit Folders",
                                               'nld': "Bewerk folders"}[self.language])
             return None
         return 1        
@@ -2193,7 +2220,7 @@ def getExplorerTitles():
     """
     TitlesHandles = []
     ## Classes come from global variable at top of this module
-    ##print 'Classes:', Classes
+    ##self.info 'Classes:', Classes
 ##    Classes = None
     win32gui.EnumWindows(getExplWindowsWithText, (TitlesHandles, Classes))
     return TitlesHandles
@@ -2261,7 +2288,7 @@ def get_clipboard_formats():
     while f:
         formats.append(f)
         f = win32clipboard.EnumClipboardFormats(f)
-    # print '_folders, clipboard formats: %s'% formats
+    # self.info '_folders, clipboard formats: %s'% formats
     return formats
 
 def get_selected_files(folders=False):
@@ -2275,7 +2302,7 @@ def get_selected_files(folders=False):
     time.sleep(0.1)
     files = get_clipboard_files(folders)
     # cb.copy_to_system()
-    # print 'files: %s'% files
+    # self.info 'files: %s'% files
     return files
 
 def get_clipboard_files(folders=False):
@@ -2289,7 +2316,7 @@ def get_clipboard_files(folders=False):
         if win32clipboard.CF_HDROP in f:
             files = win32clipboard.GetClipboardData(win32clipboard.CF_HDROP)
         else:
-            # print 'get_clipboard_files, not expected clipboard format CF_HDROP, but %s'% f
+            # self.info 'get_clipboard_files, not expected clipboard format CF_HDROP, but %s'% f
             if win32clipboard.CF_UNICODETEXT in f:
                 files = [win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)]
             elif win32clipboard.CF_TEXT in f:
@@ -2297,7 +2324,7 @@ def get_clipboard_files(folders=False):
             elif win32clipboard.CF_OEMTEXT in f:
                 files = [win32clipboard.GetClipboardData(win32clipboard.CF_OEMTEXT)]
         if not files:
-            # print "get_clipboard_files, no files found from clipboard"
+            # self.info "get_clipboard_files, no files found from clipboard"
             return None
         if folders:
             files = [f for f in files if os.path.isdir(f)] if files else None
@@ -2313,7 +2340,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     meant for setting up a inputbox dialog
     """
     rwfile = readwritefile.ReadWriteFile()
-    print(f'unimacrofolder: {unimacrofolder}')
+    logger.info(f'unimacrofolder: {unimacrofolder}')
     Text = rwfile.readAnything(os.path.join(unimacrofolder, templatefile))
     # print(f'OldText: {Text}')
     for orig, toreplace in  [('$prompt$', prompt), ('$default$', default), ('$text$', text),
@@ -2349,9 +2376,9 @@ def connectOutlook():
         pass
         #outlookApp = win32com.client.Dispatch('Outlook.Application')
     if outlookApp:
-        print('outlook application collected')
+        logger.info('outlook application collected')
         return outlookApp
-    print('outlook not connected')
+    logger.info('outlook not connected')
     outlookApp = None
     outlookAppProgram = None
     return outlookApp
@@ -2396,30 +2423,29 @@ def unload():
         # print("unloading folders grammar")
         thisGrammar.stopRecentFolders()  # stopping the timer callback
         thisGrammar.unload()
-        print("unloaded folders grammar")
+        logger.info("unloaded folders grammar")
         thisGrammar = None
 
 if __name__ == "__main__":
     ## interactive use, for debugging:
-    natlink.natConnect()
-    try:
-        thisGrammar = ThisGrammar(inifile_stem="_folders")
-        # thisGrammar.startInifile()
-        thisGrammar.initialize()
+    with natlink.natConnect():
+        try:
+            thisGrammar = ThisGrammar(inifile_stem="_folders")
+            # thisGrammar.startInifile()
+            thisGrammar.initialize()
 
-        # get hndle of a explore window (via _general "give window info") and try interactive
-        # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
-        thisGrammar.getActiveFolder(198518)
+            # get hndle of a explore window (via _general "give window info") and try interactive
+            # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
+            thisGrammar.getActiveFolder(198518)
 
 
-        # # Words = ['folder', 'dtactions']
-        # Fr = {}
-        # Words = ['subfolder', 'hello']
-        # thisGrammar.gotResultsInit(Words, Fr)
-        # thisGrammar.gotResults_subfolder(Words, Fr)
-    finally:
-        thisGrammar.unload()
-        natlink.natDisconnect()
+            # # Words = ['folder', 'dtactions']
+            # Fr = {}
+            # Words = ['subfolder', 'hello']
+            # thisGrammar.gotResultsInit(Words, Fr)
+            # thisGrammar.gotResults_subfolder(Words, Fr)
+        finally:
+            thisGrammar.unload()
 elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
     thisGrammar = ThisGrammar()
