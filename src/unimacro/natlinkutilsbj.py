@@ -46,7 +46,7 @@ import string
 from pathlib import Path
 import win32com
 import logging
-
+from logging import Logger
 import natlink
 from natlinkcore import loader
 from natlinkcore import gramparser # for translation with GramScannerReverse
@@ -314,27 +314,28 @@ class GrammarX(GrammarXAncestor):
         return "unimacro"
 
     def getLogger(self) -> logging.Logger: 
-        print(f"Get Logger , name is {self.loggerName()}")
         return logging.getLogger(self.loggerName())
-               
-    #info,warning,error,exception,debug,log are forwarded the the appropriate logger.+
-
-    
-    def info(self,msg,*args,**kwargs):
-        return self.getLogger().info(msg,*args,**kwargs)
-    def debug(self,msg,*args,**kwargs):
-        return self.getLogger().debug(msg,*args,**kwargs)    
-    def warning(self,msg,*args,**kwargs):
-        return self.getLogger().warning(msg,*args,**kwargs)
-    def error(self,msg,*args,**kwargs):
-        return self.getLogger().error(msg,*args,**kwargs)
-    def exception(self,msg,*args,**kwargs):
-        return self.getLogger().error(msg,*args,**kwargs)
-    def log(self,level,msg,*args,**kwargs):
-        return self.getLogger().error(level,msg,*args,**kwargs)
 
 
 
+
+    #avoid copy and pasting methods that delegate to getLoger()
+    def wrapped_log(method):
+        """Delegates to {method} of a Logger object from self.getLogger()"""
+        def fn(self,*args,**kwargs):
+            logger=self.getLogger()
+            try:
+                return method(logger,*args,**kwargs)
+            except Exception as e:
+                print("Failure attempting to call {method} on {logger}, \nargs {args} \nkwargs {kwargs}\nException:\n{e}")
+                return False
+
+        return fn
+     
+    #add methods to delegate calls to logger, so we wave info, warn, etc. 
+    wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
+    for n in wrapped_logger:
+        locals()[n.__name__]=wrapped_log(n)
 
 
     def getExclusiveGrammars(self):

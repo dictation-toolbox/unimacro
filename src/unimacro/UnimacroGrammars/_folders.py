@@ -2075,7 +2075,7 @@ class ThisGrammar(ancestor):
             if os.path.isdir(tryF):
                 return tryF
             fparts.pop(0)
-        self.info('_folders, no valid remote folder found for %s and remote: %s', (f, remote))
+        self.info('_folders, no valid remote folder found for %s and remote: %s', f, remote)
         return ''
 
     def getValidFile(self, f, remote):
