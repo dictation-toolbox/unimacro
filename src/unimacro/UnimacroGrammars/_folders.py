@@ -169,6 +169,7 @@ class ThisGrammar(ancestor):
         self.catchRemember = ""
         self.inTimerRecentFolders = False
         self.prevDisplayRecentFolders = None   # displaying recent folders list
+        self.prevActiveFolder = None
         self.subfoldersDict = {}
         self.subfilesDict = {}
         self.foldersSet = set()
@@ -609,10 +610,13 @@ class ThisGrammar(ancestor):
         elif className == '#32770':
             f = mess.getFolderFromDialog(hndle, className)
         if not f:
+            self.prevActiveFolder = f
             return None
         if os.path.isdir(f):
             nf = os.path.normpath(f)
-            self.debug("getActiveFolder: %s",nf)
+            if nf != self.prevActiveFolder:
+                self.debug("getActiveFolder: %s",nf)
+                self.prevActiveFolder = nf
             return nf
         self.warning(f'getActiveFolder, strange invalid path for folder: "{f}"' )
         return None
@@ -2436,7 +2440,7 @@ if __name__ == "__main__":
 
             # get hndle of a explore window (via _general "give window info") and try interactive
             # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
-            thisGrammar.getActiveFolder(198518)
+            thisGrammar.getActiveFolder(329491)
 
 
             # # Words = ['folder', 'dtactions']
