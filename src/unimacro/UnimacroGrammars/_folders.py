@@ -7,7 +7,7 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020, improved vastly Febr 2024 (with partly new options)
-#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915, W0212
+#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915, W0212, W0703
 #pylint:disable=E1101, C0209
 r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
@@ -51,11 +51,11 @@ import urllib.error
 import ctypes    # get window text
 from pathlib import Path
 # from pprint import pprint
+from io import StringIO
+from logging import getLogger
 import win32gui
 from win32com.client import Dispatch
 import win32clipboard
-from logging import  Logger,getLogger
-from io import StringIO
 
 import natlink
 from natlinkcore import readwritefile
@@ -114,7 +114,7 @@ def our_print(*args,**kwargs):
     f=StringIO()
     builtin_print(args,kwargs,file=f)
     value=f.getvalue()
-    logger.debug("print called instead of logging functions: %s" , value)
+    logger.debug("print called instead of logging functions: %s", value)
     logger.error(value)
 
 
@@ -598,13 +598,18 @@ class ThisGrammar(ancestor):
         if not hndle:
             # print("getActiveFolder, not a foreground hndle found: %s"% hndle)
             return None
-        if className is None:
+        try:
             className = win32gui.GetClassName(hndle)
-        self.debug('getActiveFolder, className: %s', className)
+        except Exception as e:
+            if e.args[0] == 1400:
+                print(f'exception: {e}')
+            else:
+                print(f'unexpected exception: {e}')
+            return None
+
         if not className:
             return None
         f = None
-
         if className == "CabinetWClass":
             f = mess.getFolderFromCabinetWClass(hndle)
         elif className == '#32770':
@@ -2344,7 +2349,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     meant for setting up a inputbox dialog
     """
     rwfile = readwritefile.ReadWriteFile()
-    logger.info(f'unimacrofolder: {unimacrofolder}')
+    logger.info('unimacrofolder: %s, unimacrofolder')
     Text = rwfile.readAnything(os.path.join(unimacrofolder, templatefile))
     # print(f'OldText: {Text}')
     for orig, toreplace in  [('$prompt$', prompt), ('$default$', default), ('$text$', text),

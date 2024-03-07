@@ -20,6 +20,8 @@ import string
 from pathlib import Path
 #a global logger for unimacro.  perfectly reasonable to access by name instead.
 import logging as l
+import importlib.metadata as meta
+import sys
 
 import natlink
 from natlinkcore import loader
@@ -30,8 +32,6 @@ from dtactions.unimacro import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
 from unimacro import spokenforms 
-import importlib.metadata as meta
-import sys
 
 #from unimacro.logger import ulogger
 
@@ -105,9 +105,9 @@ class UtilGrammar(ancestor):
     language = status.get_language()
     
     loggers=natlink_loggers()
-    ulogger.debug(f"Control:  Available Loggers  {loggers}")
     loggers_names=sorted(loggers.keys())
-    iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message'] # are set in this module
+    ulogger.debug("Control:  Available Loggers %s", loggers_names)
+    iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message', 'logger_names'] # are set in this module
 
     name = 'control'
 ##    normalSet = ['show', 'edit', 'trace', 'switch', 'message']
@@ -121,6 +121,7 @@ class UtilGrammar(ancestor):
     specialList.append("loggers")
     if specialList:
         specials = "|" + '|'.join(specialList)
+        ulogger.debug('specialList for "show": %s', specials)
     else:
         specials = ""
     
@@ -136,7 +137,7 @@ class UtilGrammar(ancestor):
     gramDict['resetexclusive'] = """<resetexclusive> exported = reset (exclusive | exclusive grammars);"""
     gramDict['checkalphabet'] = """<checkalphabet> exported = check alphabet;"""
     gramDict['message'] = """<message> exported = {message};"""
-    gramDict['setlogging'] = """<setlogging> exported = {logmodulename}  loglevel <loglevel>;"""
+    gramDict['setlogging'] = """<setlogging> exported = {logmodulename} loglevel <loglevel>;"""
     gramDict['loglevel'] = "<loglevel> = (debug|info|warning|error|critical);"
 
 
