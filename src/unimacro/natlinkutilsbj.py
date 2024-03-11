@@ -196,40 +196,21 @@ PythonwinPath, dummy = os.path.split(PythonwinExe)
 PythonServerExe=os.path.join(PythonwinPath, 'pserver1')
 
 # returns the union of two lists
-def Union(L1,L2):
+def Union(L1,L2) -> list:
     """old fashioned union function of two lists
     """
-    if not isinstance(L1, list):
-        raise TypeError(f'function Union, first input variable not a list: {type(L1)}')
-    if not isinstance(L2, list):
-        raise TypeError(f'function Union, second input variable not a list: {type(L2)}')
-    L=L1[:]
-    for i in L2:
-        if not i in L1:
-            L.append(i)
-    return L
+    return list(set(L1).union(L2))
 
 # returns the intersection of two lists
 def Intersect(L1,L2):
     """old fashioned intersection function of two lists
     """
-    if not isinstance(L1, list):
-        raise TypeError(f'function Intersect, first input variable not a list: {type(L1)}')
-    if not isinstance(L2, list):
-        raise TypeError(f'function Intersect, second input variable not a list: {type(L2)}')
-    L=[]
-    for i in L2:
-        if i in L1:
-            L.append(i)
-    return L
+    return set(L1).intersection(L2)
 
-def reverseDict(Dict):
+def reverseDict(Dict : dict):
     """reverse a dict, ignoring multiple values of the original
     """
-    revDict={}
-    for key in list(Dict.keys()):
-        revDict[Dict[key]]=key
-    return revDict
+    return {val: key for (key, val) in Dict.items()}
 
 def joinNestedStringLists(l):
     """nested lists of strings are "flattened" into one string
@@ -321,9 +302,12 @@ class GrammarX(GrammarXAncestor):
 
     #avoid copy and pasting methods that delegate to getLoger()
     def wrapped_log(method):
-        """Delegates to {method} of a Logger object from self.getLogger()"""
+        """Creates a function that delegates to the 'method' of the Logger object from self.getLogger()"""
         def fn(self,*args,**kwargs):
-            logger=self.getLogger()
+            f"""
+                Forwards {method} to the Logger Object from self.getLogger().
+            """
+            logger : Logger=self.getLogger()
             try:
                 return method(logger,*args,**kwargs)
             except Exception as e:
