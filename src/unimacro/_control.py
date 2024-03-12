@@ -106,6 +106,7 @@ class UtilGrammar(ancestor):
     
     loggers=natlink_loggers()
     loggers_names=sorted(loggers.keys())
+    
     ulogger.debug("Control:  Available Loggers %s", loggers_names)
     iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message', 'logger_names'] # are set in this module
 
@@ -343,25 +344,25 @@ class UtilGrammar(ancestor):
         return 1
 
     def gotResults_setlogging(self,words, fullresults):
-        """
+        """Sets a logger (name in first word) to a new loglevel
         """
         self.debug(f"unimacro logger gotResults_logging_level words: {words} fullResults: {fullresults}")
 
         loglevel_for = words[0]   # something like natlink, unimacro,... 
-        new_level_str_mc,_=fullresults[-1]
-        new_log_level_str=new_level_str_mc.upper()
+        new_level_str_mc,_ = fullresults[-1]
+        new_log_level_str = new_level_str_mc.upper()
         #the string should be in the 
-        logger_name=self.loggers[loglevel_for]
-        new_log_level=l.__dict__[new_log_level_str]
+        logger_name = self.loggers[loglevel_for]
+        new_log_level = l.__dict__[new_log_level_str]
 
-        self.debug(f"New Log Level {new_log_level_str} for logger {logger_name}")
+        self.info(f"New Log Level {new_log_level_str} for logger {logger_name}")
         logger=l.getLogger(logger_name)
         logger.setLevel(new_log_level)
 
-    def gotResults_loglevel(self,words,fullresults):
-        """
-        """
-        self.debug(f"gotResults_logging_level words: {words} fullResults: {fullresults}")
+    # def gotResults_loglevel(self,words,fullresults):
+    #     """
+    #     """
+    #     self.debug(f"gotResults_loglevel words: {words} fullResults: {fullresults}")
         
     
     def gotResults_showexclusive(self,words,fullResults):
@@ -440,7 +441,14 @@ class UtilGrammar(ancestor):
             self.gotResults_showexclusive(words, fullResults)
             return
         if self.hasCommon(words,"loggers"):
-            self.info(f"Available Loggers: {self.loggers}")
+            L = ['\nAvailable Loggers apart from the root (natlink) logger:']
+            for key, loggerid in self.loggers.items():
+                logger=l.getLogger(loggerid)
+                level = logger.getEffectiveLevel()
+                levelname = l.getLevelName(level)
+                L.append(f'-- {key}: {loggerid}, loglevel: {levelname}')
+            L.append('The individual loglevels can be changed with "name loglevel (debug|info|warning|error|critical)" \n')
+            self.message('\n'.join(L))
             return
 
 

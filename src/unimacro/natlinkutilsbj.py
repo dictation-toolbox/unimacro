@@ -44,9 +44,9 @@ import shutil
 import copy
 import string
 from pathlib import Path
-import win32com
 import logging
 from logging import Logger
+import win32com
 import natlink
 from natlinkcore import loader
 from natlinkcore import gramparser # for translation with GramScannerReverse
@@ -318,7 +318,7 @@ class GrammarX(GrammarXAncestor):
 
 
 
-
+    # TODO Doug, I can understand this a bit, but is it ok? It seems to stop Dragon... QH
     #avoid copy and pasting methods that delegate to getLoger()
     def wrapped_log(method):
         """Delegates to {method} of a Logger object from self.getLogger()"""
@@ -1611,9 +1611,9 @@ noot mies
             L.append(prefix)
         else:
             try:
-                formatLine = {'nld': 'Uitleg voor Unimacro (NatLink) grammatica "%s" (bestand: %s.py)'}[language]
+                formatLine = {'nld': 'Uitleg voor Unimacro (Natlink) grammatica "%s" (bestand: %s.py)'}[language]
             except:
-                formatLine = 'Help for Unimacro (NatLink) grammar "%s" (file: %s.py)'
+                formatLine = 'Help for Unimacro (Natlink) grammar "%s" (file: %s.py)'
             L.append(formatLine % (self.name, moduleName))
         L.append('')
 
@@ -2867,7 +2867,6 @@ noot mies
         and then always return False, child, except even when rule in actions.ini says different...
         
         """
-        #TODO QH this routine sucks
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
         

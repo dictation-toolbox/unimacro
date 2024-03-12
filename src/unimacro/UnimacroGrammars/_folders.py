@@ -68,6 +68,7 @@ from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 # from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
 from dtactions.unimacro.unimacroactions import UnimacroBringUp
+from dtactions.unimacro.unimacroactions import Message
 from dtactions.unimacro import unimacroutils
 # from dtactions.unimacro.unimacroactions import Message
 # from dtactions.unimacro import unimacroactions as actions
@@ -880,7 +881,7 @@ class ThisGrammar(ancestor):
             self.info("recent folders, no change")
         else:
             self.prevDisplayRecentFolders = message
-            self.info(message)
+            Message(message)
         
         
     # def gotoRecentFolder(self, chooseNum):
@@ -2445,8 +2446,8 @@ if __name__ == "__main__":
 
             # get hndle of a explore window (via _general "give window info") and try interactive
             # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
-            thisGrammar.getActiveFolder(329491)
-
+            # thisGrammar.getActiveFolder(329491)
+            thisGrammar.displayRecentFolders()
 
             # # Words = ['folder', 'dtactions']
             # Fr = {}
