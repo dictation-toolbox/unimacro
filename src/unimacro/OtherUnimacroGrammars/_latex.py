@@ -263,8 +263,8 @@ if __name__ == "__main__":
     # here code to interactive run this module
     natlink.natConnect()
     try:
-        thisGrammar = ThisGrammar()
-        thisGrammar.startInifile(modName = '_latex')
+        thisGrammar = ThisGrammar(inifile_stem='_latex')
+        thisGrammar.startInifile()
         thisGrammar.initialize()
         Words = ['add', 'option', 'draft']
         FR = {}

@@ -27,7 +27,7 @@
 #   See the class BrowsableGrammar for documentation on the use of
 #   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
-#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602
+#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602, W0212
 #pylint:disable=E1101
 
 """subclasses classes for natlink grammar files and utility functions
@@ -44,8 +44,9 @@ import shutil
 import copy
 import string
 from pathlib import Path
+import logging
+from logging import Logger
 import win32com
-
 import natlink
 from natlinkcore import loader
 from natlinkcore import gramparser # for translation with GramScannerReverse
@@ -69,7 +70,7 @@ from unimacro import BrowseGrammar
 from unimacro import D_
 
 from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
-
+from unimacro import logname
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 
@@ -302,8 +303,41 @@ class GrammarX(GrammarXAncestor):
         self.want_on_or_off = None   # True: on False: off None: no decision
         self.hypothesis = 0
         self.allResults = 0
-                
-               
+
+
+    def loggerName(self) ->str:
+        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
+        return logname()
+
+    def loggerShortName(self) ->str:
+        """A key for use as a  spoken form or user interface item."""
+        return "unimacro"
+
+    def getLogger(self) -> logging.Logger: 
+        return logging.getLogger(self.loggerName())
+
+
+
+    # TODO Doug, I can understand this a bit, but is it ok? It seems to stop Dragon... QH
+    #avoid copy and pasting methods that delegate to getLoger()
+    def wrapped_log(method):
+        """Delegates to {method} of a Logger object from self.getLogger()"""
+        def fn(self,*args,**kwargs):
+            logger=self.getLogger()
+            try:
+                return method(logger,*args,**kwargs)
+            except Exception as e:
+                print("Failure attempting to call {method} on {logger}, \nargs {args} \nkwargs {kwargs}\nException:\n{e}")
+                return False
+
+        return fn
+     
+    #add methods to delegate calls to logger, so we wave info, warn, etc. 
+    wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
+    for n in wrapped_logger:
+        locals()[n.__name__]=wrapped_log(n)
+
+
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
@@ -483,7 +517,7 @@ class GrammarX(GrammarXAncestor):
         if exclusive is not None:
             self.setExclusive(exclusive)
 
-    def deactivate(self, ruleName, noError=0):
+    def deactivate(self, ruleName, noError=0, dpi16trick=True):
         self.__inherited.deactivate(self, ruleName, noError)
         # if not self.activeRules:
         #     self.isActive = 0
@@ -1024,11 +1058,13 @@ class IniGrammar(IniGrammarAncestor):
         self.module_name = self.__module__.rsplit('.', maxsplit=1)[-1]
         self.inifile_stem = inifile_stem or self.module_name
         self.language = status.get_language()
-        try:
-            self.ini
-        except AttributeError:
+
+
+        if not hasattr(self, 'ini'):
             self.startInifile()
         self.name = self.checkName()
+        if self.ini is None:
+            print(f'Serious warning, grammar "{self.name}" has no valid ini file, please correct errors')
         try:
             self.iniIgnoreGrammarLists
         except AttributeError:
@@ -1055,7 +1091,6 @@ class IniGrammar(IniGrammarAncestor):
 
         # here the grammar is not loaded yet, but the ini file is present
         # this could have been done in the user grammar already...
-        self.debug = None # can be set in some grammar at initialize time
         #mod = sys.modules[self.__module__]
 ##            version = getattr(mod, '__version__', '---')
         self.DNSVersion = status.getDNSVersion()
@@ -1097,10 +1132,12 @@ class IniGrammar(IniGrammarAncestor):
         else:
             if not self.name is self.__class__.name:
                 return self.name
-
-        n = self.ini.get('grammar name', 'name')
-        if n:
-            return n
+        try:
+            n = self.ini.get('grammar name', 'name')
+            if n:
+                return n
+        except AttributeError:
+            pass 
 
         try:
             n = self.name
@@ -1108,9 +1145,10 @@ class IniGrammar(IniGrammarAncestor):
             n = self.__module__
             n = n.replace('_', ' ')
             n = n.strip()
-        print(f'setting grammar name to: {n}')
-        self.ini.set('grammar name', 'name', n)
-        self.ini.write()
+        if self.ini:
+            print(f'setting grammar name to: {n}')
+            self.ini.set('grammar name', 'name', n)
+            self.ini.write()
         return n
 
     def hasCommon(self, one, two, allResults=None, withIndex=None):
@@ -1173,6 +1211,9 @@ class IniGrammar(IniGrammarAncestor):
         
         """
         #pylint:disable=R0914, R0912, R0915, R1702
+        if not self.ini:
+            return None
+      
         self.gramWords = {} # keys: new grammar words, values mappings to the old grammar words maybe empty if no translateWords
         translateWords = self.getDictOfGrammarWordsTranslations() # from current inifile
         if not translateWords:
@@ -1527,7 +1568,7 @@ noot mies
         
         # try:
         self.fillGrammarLists()
-        print(f'IniGrammar switched on: {self.getName()}')
+        # print(f'IniGrammar switched on: {self.getName()}')
 
     def showInifile(self, body=None, grammarLists=None, ini=None,
                     showGramspec=1, prefix=None, commandExplanation=None,
@@ -1570,9 +1611,9 @@ noot mies
             L.append(prefix)
         else:
             try:
-                formatLine = {'nld': 'Uitleg voor Unimacro (NatLink) grammatica "%s" (bestand: %s.py)'}[language]
+                formatLine = {'nld': 'Uitleg voor Unimacro (Natlink) grammatica "%s" (bestand: %s.py)'}[language]
             except:
-                formatLine = 'Help for Unimacro (NatLink) grammar "%s" (file: %s.py)'
+                formatLine = 'Help for Unimacro (Natlink) grammar "%s" (file: %s.py)'
             L.append(formatLine % (self.name, moduleName))
         L.append('')
 
@@ -1813,7 +1854,8 @@ noot mies
         """
         #pylint:disable=R0912
         if not self.ini:
-            raise UnimacroError('no ini file active for grammar: %s'% self.GetName())
+            print(f'--- no valid ini file for grammar: "{self.GetName()}", will not fill grammar lists\n\tPlease try to correct via "edit {self.getName()}"')
+            return 
         ini = self.ini
         fromGrammar = copy.copy(self.validLists)
         allListsFromIni = ini.get()
@@ -1970,11 +2012,9 @@ noot mies
         # else:
         l = self.ini.get(n)
         if l:
-            #if self.debug:
             #print '%s: filling list %s with %s items'% (self.name, listName, len(l))
             self.setList(n, l)
             return 1
-        #if self.debug:
         #print '%s: not filling list %s, no items found'% (self.name, listName)
         self.emptyList(n)
         return None
@@ -2385,7 +2425,10 @@ noot mies
                 self.ini.set('an instruction', 'note 3', 'This section can be deleted after reading')
         
         self.fillDefaultInifile(self.ini)
+        self.ini.writeIfChanged()
         self.ini.close()
+        name = self.getName()
+        print(f'Please edit this new inifile: {self.ini._file}, possibly by calling "edit {name}')
 
     def fillDefaultInifile(self, ini):
         """set initial settings for ini file, overload!
@@ -2396,9 +2439,12 @@ noot mies
         name = self.__module__.strip('_')
         name = name.replace("_", " ")
         ini.set('grammar name', 'name', name)
-        for l in self.validLists:
-            if not('iniIgnoreGrammarLists' in dir(self) and l in self.iniIgnoreGrammarLists):
-                ini.set(l)
+        
+        if hasattr(self, "validLists") and hasattr(self, 'iniIgnoreGrammarLists'):
+            for l in self.validLists:
+                if not l in self.iniIgnoreGrammarLists:
+                    ini.set(l)
+        ini.write()
                 
     def error(self, message):
         """gives an error message, and leaves variable Error
@@ -2821,7 +2867,6 @@ noot mies
         and then always return False, child, except even when rule in actions.ini says different...
         
         """
-        #TODO QH this routine sucks
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
         
@@ -2833,17 +2878,14 @@ noot mies
                 istop = False
             elif childClass and progInfo.classname == childClass:
                 if actions.childWindowBehavesLikeTop( progInfo ):
-                    if self.debug:
-                        print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
+                    self.debug('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
                 else:                
-                    if self.debug:
-                        print('getTopOrChild: child mode, because of className "%s"'% childClass)
+                    self.debug('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
         else:
             if actions.childWindowBehavesLikeTop( progInfo ):
-                if self.debug:
-                    print('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
+                self.debug('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True
         return istop
 

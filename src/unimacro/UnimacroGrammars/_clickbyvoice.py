@@ -18,6 +18,8 @@
 #
 # the lists {pagecommands} and {tabcommands} in the inifile (edit chrome hah)
 #
+#pylint:disable=C0209
+
 """
 This commands grammar allows clicking by voice
 
@@ -25,8 +27,7 @@ It is a global grammar, that is activated as soon as one of the chromium browser
 in the foreground 
 
 """
-#pylint:disable=
-
+import natlink
 from unimacro import natlinkutilsbj as natbj
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -53,7 +54,7 @@ class ThisGrammar(ancestor):
 
     gramSpec = """
 <shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
-<hidenumbers> exported = (hide) (numbers) [after {n1-20}];
+<hidenumbers> exported = (hide) (numbers);
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
 
 # is already in _tasks grammar:
@@ -67,6 +68,7 @@ class ThisGrammar(ancestor):
                             (page (back|forward) [{n1-20}]) |
                             page {pagecommands} |
                             (next|previous) page {pagecommands};
+                            
 #and the numbers grammar (0,...,999 or chain of digits):                             
 """+numberGram
         
@@ -155,17 +157,15 @@ class ThisGrammar(ancestor):
         self.showNumbers = showNumbers
         self.getInputcontrol()
         self.doOption(showNumbers)
+        print('clickbyvoice, before finishInputControl')
         self.finishInputControl()
-        
+        print('clickbyvoice, after finishInputControl')
+
 
     def gotResults_hidenumbers(self, words, fullResults):
         """hide the numbers
 
         """
-        wordFound, _position = self.hasCommon(words, "after", withIndex=True)
-        if wordFound:
-            print("setting timer later")
-        
         self.getInputcontrol()
         self.doOption(self.hideNumbers)
         self.finishInputControl()
@@ -330,11 +330,26 @@ class ThisGrammar(ancestor):
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    with natlink.natConnect():
+        try:
+            thisGrammar = ThisGrammar(inifile_stem="_clickbyvoice")
+            # thisGrammar.startInifile()
+            thisGrammar.initialize()
+            print('clickbyvoice, before finishInputControl')
+            thisGrammar.finishInputControl()
+            print('clickbyvoice, after finishInputControl')
+
+
+
+        finally:
+            thisGrammar.unload()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
     thisGrammar.initialize()
-else:
-    thisGrammar = None
+
     
 def unload():
     #pylint:disable=W0603

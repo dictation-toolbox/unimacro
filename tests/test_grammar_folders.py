@@ -12,6 +12,8 @@ def test_fill_folders_list(unimacro_setup):
     thisGrammar = ThisGrammar()
     thisGrammar.startInifile() #modName = '_folders')
     thisGrammar.initialize()
+    # minor assertion, mainly for interactive use
+    assert thisGrammar.foldersDict 
 
 def test_folder_remember(unimacro_setup):
     """go through folder remember functions
@@ -26,7 +28,7 @@ def test_folder_remember(unimacro_setup):
     thisGrammar.wantedFolder = r'C:\Windows'
     
     thisGrammar.gotResults_remember(words, FR)
-    
+    # no assertion, for interactive use
 
 
 if __name__ == "__main__":
