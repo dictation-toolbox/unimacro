@@ -343,8 +343,6 @@ if __name__ == "__main__":
 
 
 
-
-
         finally:
             thisGrammar.unload()
 elif __name__.find('.') == -1:

@@ -621,10 +621,14 @@ class ThisGrammar(ancestor):
         if os.path.isdir(f):
             nf = os.path.normpath(f)
             if nf != self.prevActiveFolder:
-                self.debug("getActiveFolder: %s",nf)
+                self.debug("getActiveFolder, got: %s",nf)
                 self.prevActiveFolder = nf
             return nf
-        self.warning(f'getActiveFolder, strange invalid path for folder: "{f}"' )
+        result = extenvvars.getFolderFromLibraryName(f)
+        if result and os.path.isdir(f):
+            self.debug("getActiveFolder, via getFolderFromLibraryName %s: %s", f, result)
+            return os.path.normpath(result)
+        self.warning('getActiveFolder, strange invalid path for folder: %s', f)
         return None
     
     def fillListsForActiveFolder(self, activeFolder):
@@ -2446,7 +2450,7 @@ if __name__ == "__main__":
 
             # get hndle of a explore window (via _general "give window info") and try interactive
             # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
-            # thisGrammar.getActiveFolder(329491)
+            thisGrammar.getActiveFolder(67062)
             thisGrammar.displayRecentFolders()
 
             # # Words = ['folder', 'dtactions']
