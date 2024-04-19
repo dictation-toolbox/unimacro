@@ -171,7 +171,6 @@ class ThisGrammar(ancestor):
         self.dialogNumberRange = [] # ditto
         self.catchRemember = ""
         self.inTimerRecentFolders = False
-        self.prevDisplayRecentFolders = None   # displaying recent folders list
         self.prevActiveFolder = None
         self.subfoldersDict = {}
         self.subfilesDict = {}
@@ -878,18 +877,13 @@ class ThisGrammar(ancestor):
         mess_list = ["--- recent folders:"]
         if not self.recentfoldersDict:
             message = 'recent folders list is empty at the moment'
-            self.prevDisplayRecentFolders = message
             self.info(message)
             return
         for name, value in reversed(self.recentfoldersDict.items()):
             mess_list.append('- %s: %s'% (name, value))
         mess_list.append('-'*20)
         message = '\n'.join(mess_list)  
-        if message == self.prevDisplayRecentFolders:
-            self.info("recent folders, no change")
-        else:
-            self.prevDisplayRecentFolders = message
-            Message(message)
+        Message(message)
         
         
     # def gotoRecentFolder(self, chooseNum):
