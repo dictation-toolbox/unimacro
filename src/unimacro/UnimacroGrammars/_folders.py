@@ -2450,6 +2450,10 @@ if __name__ == "__main__":
             # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
             active_folder = thisGrammar.getActiveFolder(198434)
             print(f'active_folder: {active_folder}')
+
+            # get hndle of a explore window (via _general "give window info") and try interactive
+            # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
+            thisGrammar.getActiveFol>>> master
             thisGrammar.displayRecentFolders()
 
             # # Words = ['folder', 'dtactions']
