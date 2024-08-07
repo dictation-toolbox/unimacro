@@ -231,6 +231,7 @@ class ThisGrammar(ancestor):
         self.progInfo = unimacroutils.getProgInfo()
 
 
+
     def handleTrackFilesAndFolders(self, activeFolder):
         """set or empty lists for activeFolder and set/reset self.activeFolder
         """

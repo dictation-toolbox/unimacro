@@ -317,11 +317,22 @@ class GrammarX(GrammarXAncestor):
         return fn
      
     #add methods to delegate calls to logger, so we wave info, warn, etc. 
-    wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
-    for n in wrapped_logger:
-        locals()[n.__name__]=wrapped_log(n)
+    #this would be the better way to do it, but we haven't found a way to get code completion
+    #wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
+    #for n in wrapped_logger:     
+    #    locals()[n.__name__]=wrapped_log(n)
+    #instead, copy and paste. 
+    
 
-
+    info=wrapped_log(Logger.info)
+    setLevel=wrapped_log(Logger.setLevel)
+    debug=wrapped_log(Logger.debug)
+    warning=wrapped_log(Logger.warning)
+    error=wrapped_log(Logger.error)
+    exception=wrapped_log(Logger.exception)
+    critical=wrapped_log(Logger.critical)
+    log=wrapped_log(Logger.log)
+    
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
