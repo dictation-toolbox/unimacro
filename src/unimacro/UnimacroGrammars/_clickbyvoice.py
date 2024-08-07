@@ -27,8 +27,7 @@ It is a global grammar, that is activated as soon as one of the chromium browser
 in the foreground 
 
 """
-#pylint:disable=
-
+import natlink
 from unimacro import natlinkutilsbj as natbj
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doAction as action
@@ -158,8 +157,10 @@ class ThisGrammar(ancestor):
         self.showNumbers = showNumbers
         self.getInputcontrol()
         self.doOption(showNumbers)
+        print('clickbyvoice, before finishInputControl')
         self.finishInputControl()
-        
+        print('clickbyvoice, after finishInputControl')
+
 
     def gotResults_hidenumbers(self, words, fullResults):
         """hide the numbers
@@ -329,11 +330,26 @@ class ThisGrammar(ancestor):
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    with natlink.natConnect():
+        try:
+            thisGrammar = ThisGrammar(inifile_stem="_clickbyvoice")
+            # thisGrammar.startInifile()
+            thisGrammar.initialize()
+            print('clickbyvoice, before finishInputControl')
+            thisGrammar.finishInputControl()
+            print('clickbyvoice, after finishInputControl')
+
+
+
+        finally:
+            thisGrammar.unload()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
     thisGrammar.initialize()
-else:
-    thisGrammar = None
+
     
 def unload():
     #pylint:disable=W0603

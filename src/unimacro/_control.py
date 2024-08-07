@@ -10,6 +10,7 @@
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003, for python3 2023
 #pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107, C0209, E0601, W0602, C0112
+#pylint:disable=R1735, W0703
 #pylint:disable=E1101
 
 import os
@@ -17,6 +18,11 @@ import filecmp
 import shutil
 import string
 from pathlib import Path
+#a global logger for unimacro.  perfectly reasonable to access by name instead.
+import logging as l
+import importlib.metadata as meta
+import sys
+
 import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
@@ -47,8 +53,6 @@ ulogger.debug("natlink.unimacro logger available")
 #Loggers can be created for any module, and they can propogate to the parent  Logger, or not.
 #As an example, this module for the control grammar has its own child logger of unimacro.
 #Note an entry point has to be defined as well, in pyproject.toml, so Loggers for various natlink components can be discovered.
-
-
 
 
 control_logger=l.getLogger(unimacro_l.control_logger_name())
@@ -83,8 +87,8 @@ def natlink_loggers() ->dict:
 
 
     discovered_eps=meta.entry_points(group='dt.loggers')
-    ulogger.debug(f"Entry Points for natlink.loggers:  {discovered_eps}")
-    loggers=dict()
+    ulogger.debug('Entry Points for natlink.loggers: %s', discovered_eps)
+    loggers = dict()
     for ep in discovered_eps:
         try:
             name=ep.name
@@ -107,9 +111,10 @@ class UtilGrammar(ancestor):
     language = status.get_language()
     
     loggers=natlink_loggers()
-    ulogger.debug(f"Control:  Available Loggers  {loggers}")
     loggers_names=sorted(loggers.keys())
-    iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message'] # are set in this module
+    
+    ulogger.debug("Control:  Available Loggers %s", loggers_names)
+    iniIgnoreGrammarLists = ['gramnames', 'tracecount', 'message', 'logger_names'] # are set in this module
 
     name = 'control'
 ##    normalSet = ['show', 'edit', 'trace', 'switch', 'message']
@@ -123,6 +128,7 @@ class UtilGrammar(ancestor):
     specialList.append("loggers")
     if specialList:
         specials = "|" + '|'.join(specialList)
+        ulogger.debug('specialList for "show": %s', specials)
     else:
         specials = ""
     
@@ -138,7 +144,7 @@ class UtilGrammar(ancestor):
     gramDict['resetexclusive'] = """<resetexclusive> exported = reset (exclusive | exclusive grammars);"""
     gramDict['checkalphabet'] = """<checkalphabet> exported = check alphabet;"""
     gramDict['message'] = """<message> exported = {message};"""
-    gramDict['setlogging'] = """<setlogging> exported = {logmodulename}  loglevel <loglevel>;"""
+    gramDict['setlogging'] = """<setlogging> exported = {logmodulename} loglevel <loglevel>;"""
     gramDict['loglevel'] = "<loglevel> = (debug|info|warning|error|critical);"
 
 
@@ -150,19 +156,6 @@ class UtilGrammar(ancestor):
 
     for rulename in gramRules:
         gramSpec.append(gramDict[rulename])
-    
-    
-    ## extra: the trace rule:
-    ## TODO QH, switchoff for the moment, febr24
-    if specials:
-        specials2 = specials[1:]  # remove initial "|" (at show it is  "| actions | 'spoken forms'", here it is
-                                  #     "actions | 'spoken forms'" only, because gramnames etc are not implemented
-                                  #     for tracing)
-        traceSpecial = """<trace> exported = trace (("""+ specials2 +""") |
-                              ((on|off| {tracecount})("""+ specials2 +""")) |
-                              (("""+ specials2 +""") (on|off|{tracecount}))) ;"""
-        # gramSpec.append(traceSpecial) # add trace for actions of spoken forms (latter not implemented)
-    ulogger.info('check, correct _control?????')
 
     Mode = Normal
     LastMode = Normal
@@ -173,15 +166,14 @@ class UtilGrammar(ancestor):
         # temp set allResults to 0, disabling the messages trick:
         if not self.load(self.gramSpec, allResults=showAll):
             return
+        
+        print(f'loggers_names: {self.loggers_names}')
         self.setList('logmodulename',self.loggers_names)
         self.RegisterControlObject(self)
         self.emptyList('message')
         # at post load
         # allGramNames = self.getUnimacroGrammarNames()
         # self.setList('gramnames', allGramNames)
-        ## TODO QH switch on again if tracing is activated again
-        # self.setNumbersList('tracecount', tracecount)
-        
         self.activateAll()
         self.setMode(Normal)
         self.startExclusive = self.exclusive # exclusive state at start of recognition!
@@ -286,42 +278,6 @@ class UtilGrammar(ancestor):
                     ini.set(alph, letter, spoken)
         ini.writeIfChanged()
            
-
-    def gotResults_trace(self,words,fullResults):
-        self.info('control, trace: %s'% words)
-        traceNumList = self.getNumbersFromSpoken(words) # returns a string or None
-        if traceNumList:
-            traceNum = int(traceNumList[0])
-        else:
-            traceNum = None
-
-        if self.hasCommon(words, 'actions'):
-            if self.hasCommon(words, 'show'):
-                actions.debugActionsShow()
-            elif self.hasCommon(words, 'off'):
-                actions.debugActions(0)
-            elif self.hasCommon(words, 'on'):
-                actions.debugActions(1)
-            elif traceNum:
-                actions.debugActions(traceNum)
-            else:
-                actions.debugActions(1)
-        elif self.hasCommon(words, 'spoken forms'):
-            self.info("no tracing possible for spoken forms")
-
-    #def gotResults_voicecode(self,words,fullResults):
-    #    """switch on if requirements are fulfilled
-    #
-    #    voicecodeHome must exist
-    #    emacs must be in foreground
-    #    """
-    #    wxmed = os.path.join(voicecodeHome, 'mediator', 'wxmediator.py')
-    #    if os.path.isfile(wxmed):
-    #        commandLine = r"%spython.exe %s > D:\foo1.txt >> D:\foo2.txt"% (sys.prefix, wxmed)
-    #        os.system(commandLine)
-    #    else:
-    #        print 'not a file: %s'% wxmed
-            
     def gotResults_switch(self,words,fullResults):
         #print 'control, switch: %s'% words
         if self.hasCommon(words, 'on'):
@@ -394,29 +350,25 @@ class UtilGrammar(ancestor):
         return 1
 
     def gotResults_setlogging(self,words, fullresults):
-        """
+        """Sets a logger (name in first word) to a new loglevel
         """
         self.debug(f"unimacro logger gotResults_logging_level words: {words} fullResults: {fullresults}")
 
         loglevel_for = words[0]   # something like natlink, unimacro,... 
-        new_level_str_mc,_=fullresults[-1]
-        new_log_level_str=new_level_str_mc.upper()
+        new_level_str_mc,_ = fullresults[-1]
+        new_log_level_str = new_level_str_mc.upper()
         #the string should be in the 
-        logger_name=self.loggers[loglevel_for]
-        new_log_level=l.__dict__[new_log_level_str]
+        logger_name = self.loggers[loglevel_for]
+        new_log_level = l.__dict__[new_log_level_str]
 
-        self.debug(f"New Log Level {new_log_level_str} for logger {logger_name}")
+        self.info(f"New Log Level {new_log_level_str} for logger {logger_name}")
         logger=l.getLogger(logger_name)
         logger.setLevel(new_log_level)
 
-        
-    
-
-#Hide numbers    def gotResults_loglevel(self,words,fullresults):
-        """
-        """
-        self.debug(f"gotResults_logging_level words: {words} fullResults: {fullresults}")
-        return
+    # def gotResults_loglevel(self,words,fullresults):
+    #     """
+    #     """
+    #     self.debug(f"gotResults_loglevel words: {words} fullResults: {fullresults}")
         
     
     def gotResults_showexclusive(self,words,fullResults):
@@ -496,6 +448,14 @@ class UtilGrammar(ancestor):
             return
         if self.hasCommon(words,"loggers"):
             self.info(f"Available Loggers: {self.loggers}")
+            L = ['\nAvailable Loggers apart from the root (natlink) logger:']
+            for key, loggerid in self.loggers.items():
+                logger=l.getLogger(loggerid)
+                level = logger.getEffectiveLevel()
+                levelname = l.getLevelName(level)
+                L.append(f'-- {key}: {loggerid}, loglevel: {levelname}')
+            L.append('The individual loglevels can be changed with "name loglevel (debug|info|warning|error|critical)" \n')
+            self.message('\n'.join(L))
             return
 
 

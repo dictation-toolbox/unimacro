@@ -7,7 +7,7 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 # starting 2003, revised QH march 2011
 # moved to the GitHub/Dictation-toolbox April 2020, improved vastly Febr 2024 (with partly new options)
-#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915, W0212
+#pylint:disable=C0302, W0613, W0702, R0911, R0912, R0913, R0914, R0915, W0212, W0703
 #pylint:disable=E1101, C0209
 r"""with this grammar, you can reach folders, files and websites from any window.
 From some windows (my computer and most dialog windows) the folders and files
@@ -51,6 +51,8 @@ import urllib.error
 import ctypes    # get window text
 from pathlib import Path
 # from pprint import pprint
+from io import StringIO
+from logging import getLogger
 import win32gui
 from win32com.client import Dispatch
 import win32clipboard
@@ -68,6 +70,7 @@ from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 # from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
 from dtactions.unimacro.unimacroactions import UnimacroBringUp
+from dtactions.unimacro.unimacroactions import Message
 from dtactions.unimacro import unimacroutils
 # from dtactions.unimacro.unimacroactions import Message
 # from dtactions.unimacro import unimacroactions as actions
@@ -75,6 +78,8 @@ import unimacro.natlinkutilsbj as natbj
 # from unimacro.unimacro_wxpythondialogs import InputBox
 # import natlinkcore.natlinkutils as natut
 
+# manipulating file names with env variables etc...
+envvars = extenvvars.ExtEnvVars()
 thisDir = str(Path(__file__).parent)
 status = natlinkstatus.NatlinkStatus()
 # for getting unicode explorer window titles:
@@ -114,7 +119,7 @@ def our_print(*args,**kwargs):
     f=StringIO()
     builtin_print(args,kwargs,file=f)
     value=f.getvalue()
-    logger.debug("print called instead of logging functions: %s" , value)
+    logger.debug("print called instead of logging functions: %s", value)
     logger.error(value)
 
 
@@ -159,7 +164,6 @@ class ThisGrammar(ancestor):
 <namepathcopy> = (copy (name|path)) | ((name|path) copy);
 
 """
-
     def initialize(self):
         # self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
         self.subfiles = self.subfiles = self.activeFolder = self.activeTimerFolder = None  # for catching on the fly in explorer windows (CabinetClassW)
@@ -168,10 +172,12 @@ class ThisGrammar(ancestor):
         self.dialogNumberRange = [] # ditto
         self.catchRemember = ""
         self.inTimerRecentFolders = False
-        self.prevDisplayRecentFolders = None   # displaying recent folders list
+        self.prevActiveFolder = None
         self.subfoldersDict = {}
         self.subfilesDict = {}
         self.foldersSet = set()
+
+
         if not self.language:
             self.error("no valid language in grammar "+__name__+" grammar not initialized")
             return
@@ -546,7 +552,7 @@ class ThisGrammar(ancestor):
         also make alternative paths possible  like (C|D):/Documents
         """
         # natlinkcorefunctions.printAllEnvVariables()
-        vd = extenvvars.expandEnvVariables(vd)
+        vd = envvars.expandEnvVariables(vd)
         for possiblePath in loop_through_alternative_paths(vd):
             folder = self.substituteFolder(possiblePath)
             if os.path.isdir(folder):
@@ -598,9 +604,15 @@ class ThisGrammar(ancestor):
         if not hndle:
             # print("getActiveFolder, not a foreground hndle found: %s"% hndle)
             return None
-        if className is None:
+        try:
             className = win32gui.GetClassName(hndle)
-        self.debug('getActiveFolder, className: %s', className)
+        except Exception as e:
+            if e.args[0] == 1400:
+                print(f'exception: {e}')
+            else:
+                print(f'unexpected exception: {e}')
+            return None
+
         if not className:
             return None
         f = None
@@ -610,12 +622,19 @@ class ThisGrammar(ancestor):
         elif className == '#32770':
             f = mess.getFolderFromDialog(hndle, className)
         if not f:
+            self.prevActiveFolder = f
             return None
         if os.path.isdir(f):
             nf = os.path.normpath(f)
-            self.debug("getActiveFolder: %s",nf)
+            if nf != self.prevActiveFolder:
+                self.debug("getActiveFolder, got: %s",nf)
+                self.prevActiveFolder = nf
             return nf
-        self.warning(f'getActiveFolder, strange invalid path for folder: "{f}"' )
+        result = envvars.getFolderFromLibraryName(f)
+        if result and os.path.isdir(result):
+            self.debug("getActiveFolder, via getFolderFromLibraryName %s: %s", f, result)
+            return os.path.normpath(result)
+        self.warning('getActiveFolder, strange invalid path for folder: %s', f)
         return None
     
     def fillListsForActiveFolder(self, activeFolder):
@@ -861,18 +880,13 @@ class ThisGrammar(ancestor):
         mess_list = ["--- recent folders:"]
         if not self.recentfoldersDict:
             message = 'recent folders list is empty at the moment'
-            self.prevDisplayRecentFolders = message
             self.info(message)
             return
         for name, value in reversed(self.recentfoldersDict.items()):
             mess_list.append('- %s: %s'% (name, value))
         mess_list.append('-'*20)
         message = '\n'.join(mess_list)  
-        if message == self.prevDisplayRecentFolders:
-            self.info("recent folders, no change")
-        else:
-            self.prevDisplayRecentFolders = message
-            self.info(message)
+        Message(message)
         
         
     # def gotoRecentFolder(self, chooseNum):
@@ -1247,9 +1261,9 @@ class ThisGrammar(ancestor):
         # reset variables, no action in gotResults:
         self.wantedFile = self.wantedFolder = self.wantedWebsite = ""
         self.info(f'thisDir: {thisDir}')
-        UnimacroDirectory = extenvvars.expandEnvVariableAtStart('%Unimacro%')
+        UnimacroDirectory = envvars.expandEnvVariableAtStart('%Unimacro%')
         self.info(f'UnimacroDirectory: {UnimacroDirectory}')
-        UnimacroGrammarsDirectory = extenvvars.expandEnvVariableAtStart('%UnimacroGrammars%')
+        UnimacroGrammarsDirectory = envvars.expandEnvVariableAtStart('%UnimacroGrammars%')
         self.info(f'UnimacroGrammarsDirectory: {UnimacroGrammarsDirectory}')
         makeFromTemplateAndExecute(UnimacroDirectory, "unimacrofoldersremembertemplate.py", UnimacroGrammarsDirectory, "rememberdialog.py",
                                       prompt, text, default, inifile, section, value, pausetime=pausetime)
@@ -1616,7 +1630,7 @@ class ThisGrammar(ancestor):
         With expandEnvVars, also NATLINK and related variables can be handled.
         NATLINKDIRECTORY, COREDIRECTORY etc.
         """
-        substitute = extenvvars.expandEnvVariables(folder)
+        substitute = envvars.expandEnvVariables(folder)
         return substitute
 
     def substituteFilename(self, filename):
@@ -2341,7 +2355,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     meant for setting up a inputbox dialog
     """
     rwfile = readwritefile.ReadWriteFile()
-    logger.info(f'unimacrofolder: {unimacrofolder}')
+    logger.info('unimacrofolder: %s, unimacrofolder')
     Text = rwfile.readAnything(os.path.join(unimacrofolder, templatefile))
     # print(f'OldText: {Text}')
     for orig, toreplace in  [('$prompt$', prompt), ('$default$', default), ('$text$', text),
@@ -2434,11 +2448,16 @@ if __name__ == "__main__":
             thisGrammar = ThisGrammar(inifile_stem="_folders")
             # thisGrammar.startInifile()
             thisGrammar.initialize()
+            # print(thisGrammar.envvars)
+            # get hndle of a explore window (via _general "give window info") and try interactive
+            # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
+            active_folder = thisGrammar.getActiveFolder(198434)
+            print(f'active_folder: {active_folder}')
 
             # get hndle of a explore window (via _general "give window info") and try interactive
             # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
-            thisGrammar.getActiveFolder(198518)
-
+            thisGrammar.getActiveFol>>> master
+            thisGrammar.displayRecentFolders()
 
             # # Words = ['folder', 'dtactions']
             # Fr = {}

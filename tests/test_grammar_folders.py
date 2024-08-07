@@ -5,6 +5,7 @@ from unimacro.UnimacroGrammars._folders import ThisGrammar
 
 thisDir = Path(__file__).parent
 
+
 def test_fill_folders_list(unimacro_setup):
     """see if (with debugging) the list folders  (foldersDict) is filled
     """
