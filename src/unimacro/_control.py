@@ -32,24 +32,30 @@ from dtactions.unimacro import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
 from unimacro import spokenforms 
+import importlib.metadata as meta
+import sys
 
 #from unimacro.logger import ulogger
+status = natlinkstatus.NatlinkStatus()
+natlinkmain = loader.NatlinkMain()
 
+#a global logger for unimacro.  perfectly reasonable to access by name instead.
+import logging as l
 
 #for some reason, importing amodule which does this doesn't work.  Likely because natlinkmain must be started first for
 #this sublogger natlink.unimacro to work correctly.
 import unimacro as unimacro_l   #bring in so we can add a variable ulogger to the namespace.  
 ulogger : l.Logger = l.getLogger(unimacro_l.logname()) 
-#Loggers can be created for any module, and they can propogate to the parent  Logger, or not.
-#As an example, this module for the control grammar has its own child logger of unimacro.
-#Note an entry point has to be defined as well, in pyproject.toml, so Loggers for various natlink components can be discovered.
-control_logger=l.getLogger(unimacro_l.control_logger_name())
-
 
 unimacro_l.__dict__['ulogger']=ulogger
 ulogger.debug("natlink.unimacro logger available")
-status = natlinkstatus.NatlinkStatus()
-natlinkmain = loader.NatlinkMain()
+
+#Loggers can be created for any module, and they can propogate to the parent  Logger, or not.
+#As an example, this module for the control grammar has its own child logger of unimacro.
+#Note an entry point has to be defined as well, in pyproject.toml, so Loggers for various natlink components can be discovered.
+
+
+control_logger=l.getLogger(unimacro_l.control_logger_name())
 
 
 
@@ -441,6 +447,7 @@ class UtilGrammar(ancestor):
             self.gotResults_showexclusive(words, fullResults)
             return
         if self.hasCommon(words,"loggers"):
+            self.info(f"Available Loggers: {self.loggers}")
             L = ['\nAvailable Loggers apart from the root (natlink) logger:']
             for key, loggerid in self.loggers.items():
                 logger=l.getLogger(loggerid)

@@ -56,6 +56,8 @@ from logging import getLogger
 import win32gui
 from win32com.client import Dispatch
 import win32clipboard
+from logging import  Logger,getLogger
+from io import StringIO
 
 import natlink
 from natlinkcore import readwritefile
@@ -78,7 +80,6 @@ import unimacro.natlinkutilsbj as natbj
 
 # manipulating file names with env variables etc...
 envvars = extenvvars.ExtEnvVars()
-
 thisDir = str(Path(__file__).parent)
 status = natlinkstatus.NatlinkStatus()
 # for getting unicode explorer window titles:
@@ -234,6 +235,7 @@ class ThisGrammar(ancestor):
         self.WebsiteOptions = []
         # redo getProgInfo, in case the focus did change:
         self.progInfo = unimacroutils.getProgInfo()
+
 
 
     def handleTrackFilesAndFolders(self, activeFolder):
@@ -614,6 +616,7 @@ class ThisGrammar(ancestor):
         if not className:
             return None
         f = None
+
         if className == "CabinetWClass":
             f = mess.getFolderFromCabinetWClass(hndle)
         elif className == '#32770':
