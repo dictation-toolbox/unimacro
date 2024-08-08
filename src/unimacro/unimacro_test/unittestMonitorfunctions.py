@@ -12,24 +12,18 @@
 #
 #
 # Developed by Quintijn Hoogenboom, q.hoogenboom@antenna.nl /
-# http://qh.antenna.nl/unimacroß
-import sys
+# http://qh.antenna.nl/unimacro
+#pylint:disable=R0904, R0913, W0212, C0209, R0915, R0914
 import os
 import os.path
-
-# trick in order to be sure the unimacro directory is in sys.path:
-thisDir = os.path.dirname(__file__)
-unimacroDir = os.path.normPath(os.path.join(thisDir, '..'))
-if os.path.isdir(unimacroDir):
-    if unimacroDir not in sys.path:
-        sys.path.append(unimacroDir)
-
 import unittest
 import time
-import win32gui
-import win32ui
+from dtactions import monitorfunctions as mf
 import TestCaseWithHelpers
-class TestError(Exception):pass
+
+class TestError(Exception):
+    pass
+thisDir = os.path.dirname(__file__)
 
 #---------------------------------------------------------------------------
 class UnittestMonitorfunctions(TestCaseWithHelpers.TestCaseWithHelpers):

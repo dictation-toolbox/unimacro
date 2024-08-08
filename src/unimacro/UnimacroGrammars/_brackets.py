@@ -32,6 +32,7 @@ from dtactions.unimacro.unimacroactions import doAction as action
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
 from dtactions.natlinkclipboard import Clipboard
 import unimacro.natlinkutilsbj as natbj
+import natlink
 
 language = unimacroutils.getLanguage()
 
@@ -80,12 +81,12 @@ class BracketsGrammar(ancestor):
                 newpleft = pList[0]
                 newpright = pList[1]
             else:
-                lenph = int(len(p)/2)
+                lenph = len(p)//2
                 newpleft, newpright = p[:lenph], p[lenph:]
             # make more brackets together, from outer to inner:
             self.pleft = self.pleft + newpleft
             self.pright = newpright + self.pright
-        #print 'pleft: "%s", pright: "%s"'% (repr(self.pleft), repr(self.pright))
+        # print(f'result rule_brackets: |{self.pleft}|, pright: |{self.pright}|')
 
     def subrule_before(self, words):
         "(here|between|empty)+"
@@ -112,8 +113,11 @@ class BracketsGrammar(ancestor):
             text = ""
 
         if self.here:
+            print('do a left buttonClick')
             unimacroutils.buttonClick('left', 1)
+            print('do a "visibleWait')
             unimacroutils.visibleWait()
+            print('after a visibleWait')
 
         leftText = rightText = leftTextDict = rightTextDict = ""
         if text:
@@ -133,13 +137,13 @@ class BracketsGrammar(ancestor):
         if lSpacing:
             keystroke(lSpacing)
 
-        action(self.pleft)
+        keystroke(self.pleft)
         unimacroutils.visibleWait()
         if text:
             #print 'text: |%s|'% repr(text)
             keystroke(text)
         unimacroutils.visibleWait()
-        action(self.pright)
+        keystroke(self.pright)
         unimacroutils.visibleWait()
 
         if rSpacing:
@@ -198,18 +202,27 @@ the three parts
     text = text.rstrip()
     return text, leftText, rightText
 
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-bracketsGrammar = BracketsGrammar()
-if bracketsGrammar.gramSpec:
-    bracketsGrammar.initialize()
-else:
-    bracketsGrammar = None
-
-
+# standard stuff Joel (adapted in course of time, QH)
 def unload():
-    #pylint:disable=W0603
-    #pylint:disable=W0603
+    #pylint:disable=W0603, E0601
     global bracketsGrammar
     if bracketsGrammar:
         bracketsGrammar.unload()
     bracketsGrammar = None
+
+
+if __name__ == "__main__":
+    natlink.natConnect()
+    try:
+        bracketsGrammar = BracketsGrammar(inifile_stem='_brackets')
+        bracketsGrammar.startInifile()
+        bracketsGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+else:
+    bracketsGrammar = BracketsGrammar()
+    if bracketsGrammar.gramSpec:
+        bracketsGrammar.initialize()
+    else:
+        bracketsGrammar = None
+        

@@ -61,7 +61,7 @@ class BringupTest(UnimacroTestHelpers.UnimacroTestHelpers):
         actions.UnimacroBringUp("dragonpad")
         time.sleep(2)
         self.assert_mod_partoftitle('natspeak', 'DragonPad', " when bringing up DragonPad")
-        natlinkutils.playString("this should last 2 seconds")
+        sendkeys("this should last 2 seconds")
         time.sleep(2)
         actions.do_KW()
 

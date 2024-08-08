@@ -22,6 +22,8 @@
 #
 # June 2020: adapt for python3, Quintijn Hoogenboom
 # Author: Bart Jan van Os, Version: 1.0
+#pylint:disable = C0209, W0622, C0321, W0612, W0702
+#pylint:disable = E1101
 """This file implements a dialog/window to browse and train NatLink
 grammars
 
@@ -51,18 +53,20 @@ from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
 import natlink
-from natlink.natlinkutils import *
+from natlinkcore.natlinkutils import *
+from natlinkcore import natlinkstatus
 from natlinkutilsbj import SetMic,GrammarFileName
-from operator import methodcaller
-# hopelijk: QH
-from natlinkutilsqh import getUnimacroDirectory
-baseDirectory = getUnimacroDirectory()
-print('baseDirectory: %s'% baseDirectory)
 
 from BrowseGrammar import *
 from listdialogs import ListDialog
 import TrainDialog
 import D_train
+
+status = natlinkstatus.NatlinkStatus()
+dataDirectory = status.getUnimacroDataDirectory()
+
+# seems to have gone from comctrl:
+LVCFMT_LEFT = 0
 
 
 class GramHierList(hierlist.HierList):
@@ -108,8 +112,8 @@ class GramHierList(hierlist.HierList):
         self.OpenNext(self.root,0,RulePath)
 
     def OpenStart(self):
-        if len(self.Start)==2:
-            Rule,Path,objPath=self.root.FindRulePath(self.Start)
+        if len(self.Start) == 2:
+            _Rule, _Path, objPath=self.root.FindRulePath(self.Start)
             for o in objPath:
                 if not IsText(o):
                     self.OpenRule(objPath)
@@ -118,8 +122,7 @@ class GramHierList(hierlist.HierList):
         HandlesFor=InverseDict(self.itemHandleMap)
         if item in HandlesFor:
             return HandlesFor[item]
-        else:
-            return None
+        return None
 
 
 IDC_EDIT=1000
@@ -154,7 +157,7 @@ class GrammarDialog(dialog.Dialog):
             win32con.WS_CHILD           | win32con.WS_BORDER |
             win32con.WS_VISIBLE         | win32con.WS_TABSTOP |
             commctrl.LVS_ALIGNLEFT      |
-            commctrl.LVS_REPORT         | LVS_EDITLABELS
+            commctrl.LVS_REPORT         | commctrl.LVS_EDITLABELS
             )
         t = [ [title, (0, 0, 500, 300), style, None, (8, "MS Sans Serif")],
             ["SysTreeView32", None, win32ui.IDC_LIST1, (0, 0, 1, 1), cs],
@@ -205,7 +208,7 @@ class GrammarDialog(dialog.Dialog):
         return 1
 
     def OnOK(self):
-        if (self.LastFocused==IDC_SYNTAX):
+        if self.LastFocused==IDC_SYNTAX:
             self.ExpandSyntaxItem(self.SyntaxItem)
 
     def GotFocus(self,std, extra):
@@ -219,7 +222,7 @@ class GrammarDialog(dialog.Dialog):
         self.LayoutControls(w, h)
     
     def LayoutControls(self, w, h):
-        d=w/4
+        d=int(w/4)
         self.Tree.MoveWindow((0,0,d,h))
         self.Syntax.MoveWindow((d,0,w,h))
 
@@ -311,9 +314,10 @@ class GrammarDialog(dialog.Dialog):
         numCols = len(self.colHeadings)
         index = 0
         for col in self.colHeadings:
-            itemDetails = (commctrl.LVCFMT_LEFT, width*colw[index], col, 0)
-            self.Syntax.In
-            sertColumn(index, itemDetails)
+            ## change second variable to int, QH, 23092022::
+            itemDetails = (LVCFMT_LEFT, int(width*colw[index]), col, 0)
+            print(f'index: {index}, itemDetails: {itemDetails}')
+            self.Syntax.InsertColumn(index, itemDetails)
             index = index + 1
         index = 0
 
@@ -456,7 +460,7 @@ class TrainGrammarDialog(GrammarDialog):
         self.SelItems=[0]
 
     def OnOK(self):
-        if (self.LastFocused==IDC_SYNTAX):
+        if self.LastFocused==IDC_SYNTAX:
             if len(self.SelItems)==1:
                 self.ExpandSyntaxItem(self.SelItems[0])
 
@@ -490,6 +494,7 @@ class TrainGrammarDialog(GrammarDialog):
                 self.goTrain(ToTrain)
 
     def onTrainSpecial(self,nID,code):
+        #pylint:disable=W0101
         return  ## just disable...
         Names=[]
         Keys=list(D_train.SpecialTraining.keys())
@@ -511,9 +516,9 @@ class TrainGrammarDialog(GrammarDialog):
         pass
 
     def onEdit(self,nID,code):
-        pass
+        #pylint:disable=W0101
         return
-        if (self.LastFocused==IDC_SYNTAX):
+        if self.LastFocused==IDC_SYNTAX:
             if len(self.SelItems)==1:
                 print(self.SelItems[0])
                 self.EditControl=self.Syntax.EditLabel(0)
@@ -546,8 +551,7 @@ class BrowseDialogApp(dlgappcore.DialogApp):
         win32ui.Enable3dControls()
         self.dlg = self.frame = self.CreateDialog()
         if self.frame is None:
-            raise error("No dialog was created by CreateDialog()")
-            return
+            raise Exception("No dialog was created by CreateDialog()")
         self.PreDoModal()
         self.dlg.PreDoModal()
         self.dlg.DoModal()
@@ -568,15 +572,15 @@ def CreateBrowseDialog():
     try:
         GrammarFile=open(GrammarFileName,'rb')
     except:
-        GrammarFile=open(baseDirectory+'\\TestGrammar.bin','rb')
+        GrammarFile=open(dataDirectory+'\\TestGrammar.bin','rb')
     (Grammars,Start,All,Exclusive)=pickle.load(GrammarFile)
     GrammarFile.close()
     Grammars.Sort()
     if Exclusive: Name='Exclusive Grammars (Active Rules)'
     elif All: Name='All Grammars'
     else:   Name='Active Grammars'
-    # dlg=GrammarDialog(Name,GramHierList(Grammars,Start))
-    dlg=TrainGrammarDialog(Name,GramHierList(Grammars,Start))
+    dlg=GrammarDialog(Name,GramHierList(Grammars,Start))
+    # dlg=TrainGrammarDialog(Name,GramHierList(Grammars,Start))
     return dlg
 
 
@@ -595,8 +599,12 @@ def CheckCreateApp():
 
 
 if __name__=='__main__':
-    pass
-    demodlg()
-    #demomodeless()
+    ## assume there is a "grammar.bin" in the UnimacroDataDirectory 
+    CheckCreateApp()
+    # 
+    # 
+    # demodlg()
+    # #demomodeless()
 else:
     CheckCreateApp()
+    

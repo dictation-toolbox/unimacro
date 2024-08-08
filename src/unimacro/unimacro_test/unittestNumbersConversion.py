@@ -22,7 +22,7 @@ import TestCaseWithHelpers
 import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
-from gramparser import GrammarError, SyntaxError
+from natlinkcore.gramparser import GrammarError, GrammarSyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 

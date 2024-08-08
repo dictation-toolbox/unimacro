@@ -27,8 +27,9 @@
 #   See the class BrowsableGrammar for documentation on the use of
 #   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
-#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902
+#pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602, W0212
 #pylint:disable=E1101
+
 """subclasses classes for natlink grammar files and utility functions
 
 """
@@ -43,8 +44,11 @@ import shutil
 import copy
 import string
 from pathlib import Path
+import logging
+from logging import Logger
 import win32com
-
+import logging
+from logging import Logger
 import natlink
 from natlinkcore import loader
 from natlinkcore import gramparser # for translation with GramScannerReverse
@@ -62,12 +66,13 @@ from dtactions.unimacro.unimacroactions import UnimacroBringUp
 from dtactions.unimacro import utilsqh
 from dtactions.unimacro.utilsqh import formatListColumns
 from dtactions.unimacro import inivars
+from dtactions.sendkeys import sendsystemkeys
 
 from unimacro import BrowseGrammar
 from unimacro import D_
 
 from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
-
+from unimacro import logname
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 
@@ -177,11 +182,9 @@ def letterUppercase(l):
     written, spoken = L[0], L[1].capitalize()
     return f'{written}\\{spoken}'
 
-tmpDirectory = os.path.join(status.getUnimacroUserDirectory(), 'tmp')
-if not os.path.isdir(tmpDirectory):
-    os.mkdir(tmpDirectory)
+dataDirectory = status.getUnimacroDataDirectory()
 
-GrammarFileName = os.path.join(tmpDirectory, 'grammar.bin')
+GrammarFileName = os.path.join(dataDirectory, 'grammar.bin')
 for somePath in sys.path:
     files = glob.glob(somePath + '\\pythonwin.exe')
     if files:
@@ -195,40 +198,21 @@ PythonwinPath, dummy = os.path.split(PythonwinExe)
 PythonServerExe=os.path.join(PythonwinPath, 'pserver1')
 
 # returns the union of two lists
-def Union(L1,L2):
+def Union(L1,L2) -> list:
     """old fashioned union function of two lists
     """
-    if not isinstance(L1, list):
-        raise TypeError(f'function Union, first input variable not a list: {type(L1)}')
-    if not isinstance(L2, list):
-        raise TypeError(f'function Union, second input variable not a list: {type(L2)}')
-    L=L1[:]
-    for i in L2:
-        if not i in L1:
-            L.append(i)
-    return L
+    return list(set(L1).union(L2))
 
 # returns the intersection of two lists
 def Intersect(L1,L2):
     """old fashioned intersection function of two lists
     """
-    if not isinstance(L1, list):
-        raise TypeError(f'function Intersect, first input variable not a list: {type(L1)}')
-    if not isinstance(L2, list):
-        raise TypeError(f'function Intersect, second input variable not a list: {type(L2)}')
-    L=[]
-    for i in L2:
-        if i in L1:
-            L.append(i)
-    return L
+    return set(L1).intersection(L2)
 
-def reverseDict(Dict):
+def reverseDict(Dict : dict):
     """reverse a dict, ignoring multiple values of the original
     """
-    revDict={}
-    for key in list(Dict.keys()):
-        revDict[Dict[key]]=key
-    return revDict
+    return {val: key for (key, val) in Dict.items()}
 
 def joinNestedStringLists(l):
     """nested lists of strings are "flattened" into one string
@@ -250,7 +234,7 @@ def getAllWords(fullResults):
 
 def ActivateDragonBarMenu():
     """activate the DragonBar"""
-    natlinkutils.playString("{NumKey-}", natlinkutils.hook_f_systemkeys)        
+    sendsystemkeys("{NumKey-}")        
 
 def SetMic(state):
     """switch on or off the microphone
@@ -263,221 +247,9 @@ def SetMic(state):
         natlink.setMicState(state)
     except :
         pass
-
-# Utility functions for global accessing of GrammarX objects.
-# The CallAllGrammarObjects(funcName,args) method provides
-# a means to send or receive signals/data to other grammar objects
-# See also the GrammarX class
-loadedGrammars = {}
-grammarsChanged = 0
-
-exclusiveGrammars = {}
-
-def ClearGrammarsChangedFlag():
-    """clears this flag, is used solely by grammar _control
-
-    this flag was set when the grammar was registered or and registered
-
-    """
-    #pylint:disable=W0603
-    global grammarsChanged
-    grammarsChanged = 0
-
-def RegisterGrammarObject(GrammarObject):
-    """registers a grammar object in global variable
-
-    also sets the flag "grammarsChanged"
-    key in the dictionary loadedGrammars is the name,
-    value is the instance object itself
-    """    
-    #pylint:disable=W0603
-    global loadedGrammars, grammarsChanged
-    loadedGrammars[GrammarObject.GetName()] = GrammarObject
-    grammarsChanged = 1
-
-
-def UnRegisterGrammarObject(GrammarObject):
-    """unregisters a grammar object from the global variable
-
-    also sets the flag "grammarsChanged"
-    delete the item in the dictionary "loadedGrammars"
-
-    """    
-    #pylint:disable=W0603
-    global loadedGrammars, grammarsChanged
-    for k, v in list(loadedGrammars.items()):
-        if v is GrammarObject:
-            del loadedGrammars[k]
-            # print('UNregistering grammar object: %s: %s'% (GrammarObject.GetName(), GrammarObject))
-            grammarsChanged = 1
-            return
-
-def CallAllGrammarObjects(funcName,args):
-    """calls a function through all grammar objects
-
-    funcName should be a string with the function name
-    args should be a tuple of arguments, can be empty tuple ()
-    exits silently if function doesn't exist in a grammar
-
-    """    
-    if args and len(args) == 1 and isinstance(args[0], tuple):
-        args = args[0] # in order to be able to give arguments "loose" in the call instead of
-                       # in a explicit tuple: CAGO(func, a, b, c) instead of
-                       #                      CAGO(func, (a, b, c))
-    for name, grammar in list(loadedGrammars.items()):
-        try:
-            func = getattr(grammar, funcName)
-        except AttributeError:
-            print('func not found for %s'% name)
-        func(*args)
-        # except AttributeError:
-        #     print 'apply %s of %s fails'% (funcName, name)
-        #     pass
-
-def getRegisteredGrammarNames():
-    return list(loadedGrammars.keys())
-
-def GetGrammarObject(grammarName):
-    """return the grammar object, if in correct dict, by user name
-    """
-    if grammarName in loadedGrammars:
-        return loadedGrammars[grammarName]
-    return None
-
-# Utility functions for displaying messages in the results box.
-# The module _control registers these, and should be available.
-# loadedMessageGrammar is a DictGrammar, which resides in _control. Is activated and
-# deactivated only through DisplayMessage function.
-#
-# loadedControlGrammar is the grammar for control commands, which always run together with
-# an exclusive mode, and can catch rejected recognitions when in exclusive mode.
-# this control grammar never switches off.
-loadedMessageGrammar = None
-loadedControlGrammar = None
-IsDisplayingMessage = 0
-
-# if Display is asked for in gotBegin, it is waited for:
-# displaying is controlled in _repeat:
-pendingMessage = []
-
-
-def SetPendingMessage(mess):
-    #pylint:disable=W0603, C0116
-    global pendingMessage
-    pendingMessage.append(mess)
-def ClearPendingMessage():
-    #pylint:disable=W0603, C0116
-    global pendingMessage
-    pendingMessage = []
-def GetPendingMessage():
-    #pylint:disable=W0603, C0116
-    return pendingMessage
-
-def SetDisplayingMessage():
-    #pylint:disable=W0603, C0116
-    global IsDisplayingMessage
-##    print 'setting display message'
-    IsDisplayingMessage = 1
-
-def ClearDisplayingMessage():
-    #pylint:disable=W0603, C0116
-    global IsDisplayingMessage
-##    print 'clearing display message'
-    IsDisplayingMessage = 0
-
-##def GlobalIsDisplayingMessage():
-##    return IsDisplayingMessage
-# instead of this function simply the variable natbj.IsDisplayingMessage can be checked
-
-def RegisterMessageObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedMessageGrammar
-    loadedMessageGrammar=GrammarObject
-
-def UnRegisterMessageObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedMessageGrammar
-    if loadedMessageGrammar is GrammarObject:
-        loadedMessageGrammar = None
-
-def RegisterControlObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedControlGrammar
-    loadedControlGrammar = GrammarObject
-
-def UnRegisterControlObject(GrammarObject):
-    #pylint:disable=W0603, C0116
-    global loadedControlGrammar
-    if loadedControlGrammar is GrammarObject:
-        loadedControlGrammar = None
-
-def GlobalResetExclusiveMode():
-    #pylint:disable=C0116
-    for _k, v in list(exclusiveGrammars.items()):
-##        print 'resetting: %s'% k
-        v[0].resetExclusiveMode()
-
-##def Global(MessageText):
-##    """displays message in the message window
-##
-##    works only if the grammar _message is active.
-##
-##    """    
-##    global loadedMessageGrammar
-##    if (loadedMessageGrammar):
-##        try:
-##            print 'global display message: %s'% MessageText
-##            func = getattr(loadedMessageGrammar, 'DisplayMessage')
-##            apply(func, [MessageText])
-##        except AttributeError:
-##            pass
-##
-##    
-def  ControlResetExclusiveGrammar():
-    """resets the exclusive flag of the _control grammar
-
-    If the exclusive state of a/the last grammar is reset (becoming
-    non-exclusive again), the grammar _control.
-    This is done through this function
-
-    """    
-    #pylint:disable=W0603
-    global loadedControlGrammar
-    if exclusiveGrammars:    # should not come here
-        print('no reset, still exclusiveGrammars present: %s'% exclusiveGrammars)
-        return
-    if loadedControlGrammar:
-##        print 'resetting exclusive grammar control'
-        loadedControlGrammar.setExclusive(0)
-
-def ControlSetExclusiveGrammar():
-    """sets the exclusive flag of the message grammar
-
-    (the control grammar, including the message rule)
-
-    This is to ensure the exclusive state together with
-    another exclusive grammar. If in an exclusive grammar
-    speech is not recognised, it is intercepted by the
-    grammar _control, which invokes DisplayMessage.
-
-    """    
-    #pylint:disable=W0603
-    global loadedControlGrammar
-    if not exclusiveGrammars:     # should not come here
-        print('no set of grammar, though exclusiveGrammars exist')
-        return
-    if loadedControlGrammar:
-        if loadedControlGrammar.exclusive == 1:
-##            print 'messageGrammar already exclusive'
-            return
-##        print 'setting exclusive grammar control'
-        loadedControlGrammar.setExclusive(1)
-  
-
-#---------------------------------------------------------------------------
 # GrammarX
 
-GrammarXAncestor=natlinkutils.GrammarBase # do not use self.__class__.bases[0]., see Python FAQ
+GrammarXAncestor=natlinkutils.GrammarBase
 class GrammarX(GrammarXAncestor):
     """first subclass of GrammarBase
 
@@ -495,31 +267,196 @@ class GrammarX(GrammarXAncestor):
     """
     #pylint:disable=R0904, C0116
     __inherited=GrammarXAncestor
-    # status = 'new'
+    allGrammarXObjects = {}
+    GrammarsChanged = set()   # take last item just True!
+    LoadedControlGrammars = set()
+
 
     def __init__(self):
         self.__inherited.__init__(self)
+        # set in list of allUnimacroGrammars, also when not loaded into
+        self.RegisterGrammarObject()
         self.inGotBegin = 1 # initialise behave like being there
         self.mayBeSwitchedOn = 1
         # self.isActive = 0 # now user isActive() from GrammarBase
         self.language = status.get_language()
         self.version = status.getDNSVersion()
         self.exclusive = 0
-        self.name = ""
+        # self.name = ""
         self.want_on_or_off = None   # True: on False: off None: no decision
         self.hypothesis = 0
         self.allResults = 0
+
+
+    def loggerName(self) ->str:
+        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
+        return logname()
+
+    def loggerShortName(self) ->str:
+        """A key for use as a  spoken form or user interface item."""
+        return "unimacro"
+
+    def getLogger(self) -> logging.Logger: 
+        return logging.getLogger(self.loggerName())
+
+
+
+    # TODO Doug, I can understand this a bit, but is it ok? It seems to stop Dragon... QH
+    #avoid copy and pasting methods that delegate to getLoger()
+    def wrapped_log(method):
+        """Delegates to {method} of a Logger object from self.getLogger()"""
+        def fn(self,*args,**kwargs):
+            logger=self.getLogger()
+            try:
+                return method(logger,*args,**kwargs)
+            except Exception as e:
+                print("Failure attempting to call {method} on {logger}, \nargs {args} \nkwargs {kwargs}\nException:\n{e}")
+                return False
+
+        return fn
+     
+    #add methods to delegate calls to logger, so we wave info, warn, etc. 
+    #this would be the better way to do it, but we haven't found a way to get code completion
+    #wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
+    #for n in wrapped_logger:     
+    #    locals()[n.__name__]=wrapped_log(n)
+    #instead, copy and paste. 
+    
+
+    info=wrapped_log(Logger.info)
+    setLevel=wrapped_log(Logger.setLevel)
+    debug=wrapped_log(Logger.debug)
+    warning=wrapped_log(Logger.warning)
+    error=wrapped_log(Logger.error)
+    exception=wrapped_log(Logger.exception)
+    critical=wrapped_log(Logger.critical)
+    log=wrapped_log(Logger.log)
+    
+    def getExclusiveGrammars(self):
+        """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
+        """
+        G = {name: gram for name, gram in self.allGrammarXObjects.items() if gram.isExclusive()}
+        return G
+
+    def getUnimacroGrammars(self):
+        """get from allGrammarXObjects the name: grammarobj dict of all Unimacro grammars
+        """
+        return  {grammarobj.getName(): grammarobj for _objname, grammarobj in self.allGrammarXObjects.items()}
+
+    def RegisterGrammarObject(self):
+        self.allGrammarXObjects[self.getName()] = self
+        self.GrammarsChanged.add(True)
+
+    def UnregisterGrammarObject(self):
+        """calling at unload time"""
+        if self.LoadedControlGrammars and self in self.LoadedControlGrammars:
+            self.LoadedControlGrammars.pop()
+        try:
+            del self.allGrammarXObjects[self.name]
+        except KeyError:
+            if self.name == self.module_name:
+                print(f'cannot unregister unimacro grammar {self.module_name}')
+            else:
+                print(f'cannot unregister unimacro grammar {self.module_name}, name: {self.name}')
+                
+        # self.GrammarsChanged.append(True)
+
+    def SetGrammarsChangedFlag(self):
+        self.GrammarsChanged.add(True)
+        print(f'GrammarsChanged: {self.GrammarsChanged}')   ## seems not to work TODO QH:
+    def GetGrammarsChangedFlag(self):
+        if self.GrammarsChanged:
+            return self.GrammarsChanged.pop()
+        return False
+    def ClearGrammarsChangedFlag(self):
+        self.GrammarsChanged.clear()
+
+    def CallAllGrammarObjects(self, funcName, args):
+        """calls a function through all grammar objects
+    
+        funcName should be a string with the function name
+        args should be a tuple of arguments, can be empty tuple ()
+        exits silently if function doesn't exist in a grammar
+    
+        """    
+        if args and len(args) == 1 and isinstance(args[0], tuple):
+            args = args[0] # in order to be able to give arguments "loose" in the call instead of
+                           # in a explicit tuple: CAGO(func, a, b, c) instead of
+                           #                      CAGO(func, (a, b, c))
+        for name, grammar in list(self.allGrammarXObjects.items()):
+            if not grammar.isLoaded():
+                # only loaded grammars...
+                continue
+            try:
+                func = getattr(grammar, funcName)
+            except AttributeError:
+                print('func not found for %s'% name)
+            func(*args)
+
+    def GetGrammarObject(self, grammarName):
+        """return the grammar object, if in correct dict, by user name
+        """
+        if grammarName in self.allGrammarXObjects:
+            return self.allGrammarXObjects[grammarName]
+        return None
+
+    def ControlResetExclusiveGrammar(self):
+        """resets the exclusive flag of the _control grammar
+    
+        If the exclusive state of a/the last grammar is reset (becoming
+        non-exclusive again), the grammar _control.
+        """    
+        exclGr = self.getExclusiveGrammars()
+        if not exclGr:
+            return
+        if len(exclGr) > 1:
+            return
+        for gram in exclGr.values():
+            if gram in self.LoadedControlGrammars:
+                gram.setExclusive(0)
+            
+    def RegisterControlObject(self, gramobj):
+        """keep this (control grammar) in a special variable
+        """
+        self.LoadedControlGrammars.add(gramobj)
+
+    def UnregisterControlObject(self):
+        """clear this (control grammar) in a special variable
+        """
+        self.LoadedControlGrammars.clear()
+                
+    def ControlSetExclusiveGrammar(self, value):
+        """sets the exclusive flag of the _control grammar if another grammar is also exclusive
         
+        In this way, the commands of the _control grammar remain accessible when
+        other (Unimacro) grammars are exclusive
+        """
+        exclGr = self.getExclusiveGrammars()
+        if not exclGr:
+            return
+        if not self.LoadedControlGrammars:
+            return
+        for control_grammar in self.LoadedControlGrammars:
+            control_grammar.setExclusive(value)
+
+
+    def getRegisteredGrammarNames(self):
+        return list(self.allGrammarXObjects.keys())
+
     def getPrimaryAncestor(self):
         # the default primary ancestor is the first baseclass
         return self.__class__.__bases__[0] 
+
+
+
+
+
+
 
     def load(self,gramSpec,allResults=0,hypothesis=0, grammarName=None):
         
         if gramSpec:
             success = self.__inherited.load(self,gramSpec,allResults,hypothesis, grammarName=grammarName)
-            if success:
-                RegisterGrammarObject(self)
             return success
         return None
     
@@ -527,7 +464,9 @@ class GrammarX(GrammarXAncestor):
         return '<grammarx: %s>'% self.GetName()
 
     def unload(self):
-        UnRegisterGrammarObject(self)
+        self.UnregisterGrammarObject()
+        if self in self.LoadedControlGrammars:
+            self.UnregisterControlObject()
         self.__inherited.unload(self)
 
     def beginCallback(self, moduleInfo):
@@ -535,8 +474,6 @@ class GrammarX(GrammarXAncestor):
 
         """
         # intercept here if grammar is switched off, or inside displaying message
-        if IsDisplayingMessage:
-            return
         if self.mayBeSwitchedOn:
             # onOrOff = what the user wants
             # onOrOffState = the actual state.
@@ -550,7 +487,7 @@ class GrammarX(GrammarXAncestor):
     def hypothesisCallback(self, words):
         # intercept here if grammar is switched off, or inside displaying message
         # when is this used?
-        if self.mayBeSwitchedOn and not IsDisplayingMessage:
+        if self.mayBeSwitchedOn:
             self.callIfExists( "gotHypothesis", (words,) )
 
     def resultsCallback(self, wordsAndNums, resObj):
@@ -560,13 +497,8 @@ class GrammarX(GrammarXAncestor):
     # if that member function is defined.
 
     def getName(self):
-        if self.name:
-            return self.name
-        n = self.__module__
-        if n[0] == "_":
-            n = n[1:]
-        self.name = n
-        return n
+        return self.name
+
     GetName = getName   # consistency with Bart Jan
 
     # These methods are adapted to keep track of the exclusive state.
@@ -579,7 +511,7 @@ class GrammarX(GrammarXAncestor):
         if exclusive is not None:
             self.setExclusive(exclusive)
 
-    def deactivate(self, ruleName, noError=0):
+    def deactivate(self, ruleName, noError=0, dpi16trick=True):
         self.__inherited.deactivate(self, ruleName, noError)
         # if not self.activeRules:
         #     self.isActive = 0
@@ -624,82 +556,52 @@ class GrammarX(GrammarXAncestor):
 
         state is maintained in self.exclusive
         """
-        #pylint:disable=R0912, W0603
-        global exclusiveGrammars
+        #pylint:disable=
         if exclusive is None:
             return
         if exclusive == self.exclusive:
             return
         self.__inherited.setExclusive(self,exclusive)
         self.exclusive = exclusive
-        name = self.GetName()
-##        print 'setting exclusive %s, self: %s'% (exclusive, self)
-        if loadedControlGrammar and self is loadedControlGrammar:
-            return
-        if exclusive:
-            if name in exclusiveGrammars:
+        
+        
+        ## check this, QH TODO
+        if self.LoadedControlGrammars:
+            if self in self.LoadedControlGrammars:
+                # no extra setting if self is _control
                 return
-            moduleInfo = natlink.getCurrentModule()
-            if self.isActive():
-                rules = list(self.activeRules.keys())
-                if rules:
-                    rule = rules[0]
-                else:
-                    rule = 'no rules active'
-            else:
-                rule = '%s, no rules active'% self.name
-            exclusiveGrammars[name] = (self, moduleInfo[2], rule)
-            ControlSetExclusiveGrammar()
-        elif exclusive == 0:
-            if name in exclusiveGrammars:
-                del exclusiveGrammars[name]
-                if not exclusiveGrammars:
-                    ControlResetExclusiveGrammar()
-        else:
-            print('setExclusive, invalid value: %s (grammar: %s)'% (exclusive, name))
+            self.ControlSetExclusiveGrammar(exclusive)
+       
 
     def cancelMode(self):
         """overload for grammars that can go exclusive"""
-        #pylint:disable=R0201
         return
-
-    #Now we can get info on the exclusive state
-    def getExclusiveInfo(self):
-        name = self.GetName()
-        if exclusiveGrammars and name in exclusiveGrammars:
-            return exclusiveGrammars[name]
-        return None
-    
-    def printExclusiveInfo(self):
-        """global print info on exclusive grammar states"""
-        #pylint:disable=R0201
-        if not exclusiveGrammars:
-            print('no grammars are exclusive')
-        else:
-            print('exclusive are: %s'% list(exclusiveGrammars.keys()))
 
     def switchOnOrOff(self, **kw):
         # print(f'{self.name}, switchOnOrOff')
-        result = None
+        allResults = kw.get('allResults', 0)
+        hypothesis = kw.get('hypothesis', 0)
+        grammarName = kw.get('grammarName', self.name)
+        if not self.isLoaded():
+            may_be_loaded = self.ini.getBool('general', 'initial on', False)
+            if may_be_loaded:
+                self.load(self.gramSpec, allResults=allResults, hypothesis=hypothesis, grammarName=grammarName)
+            else:
+                print(f"\t{self.name}: grammar is not loaded (inactive)")    
+                return
         if self.want_on_or_off is None:
-            if self.mayBeSwitchedOn == 'exclusive':
-                print('switch on exclusive: %s'% self.name)
-                result = self.switchOn(**kw)
-                self.setExclusive(1)
-            elif self.mayBeSwitchedOn:
-                print(f'switch on: {self.name}')
-                result = self.switchOn(**kw)
+            if self.mayBeSwitchedOn:
+                # print(f'switch on: {self.name}')
+                self.switchOn(**kw)
             else:
                 if self.isActive():
-                    result = self.switchOff()
+                    self.switchOff()
         elif self.want_on_or_off is True:
-            result = self.switchOn(**kw)
+            self.switchOn(**kw)
         elif self.want_on_or_off is False:
-            result = self.switchOff()
+            self.switchOff()
         else:
             raise ValueError(f'grammar {self.name}, invalid value for want_on_or_off: {self.want_on_or_off}')
-            
-        return result
             
     def switchOn(self, **kw):
         """switches grammar on, activates all rules
@@ -747,15 +649,18 @@ class GrammarX(GrammarXAncestor):
             rule = kw['activateRule']
             del kw['activateRule']
             if self.mayBeSwitchedOn:
-                self.activate(rule, **kw)
+                window = kw.get('window', 0)
+                exclusive = kw.get('exclusive', None)
+                noError = kw.get('noError', 0)
+                self.activate(rule, window=window, exclusive=exclusive, noError=noError)
                 return 1
             print('mayBeSwitchedOn False (%s), not switched on: %s'% (self.mayBeSwitchedOn, self.getName()))
             return None
         if self.mayBeSwitchedOn:
             if kw:
-                print(f'{self.name}, switch on all rules, kw: {kw}')
-            else:
-                print(f'{self.name}, switch on all rules')
+                print(f'{self.name}, switch rules, kw: {kw}')
+            # else:
+            #     print(f'{self.name}, switch on all rules')
             self.activateAll(**kw)
             return 1
         # else:
@@ -774,136 +679,26 @@ class GrammarX(GrammarXAncestor):
         if self.is_loaded:
             self.unload()
         return 1
-
-    def DisplayMessage(self, MessageText, pauseAfter=0, alert=None, alsoPrint=1):
-        #pylint:disable=R0912, R0915, R0201
-        print("DisplayMessage for the time being:\n%s"% MessageText)
-
-#         if self.inGotBegin:
-# ##            print 'message from gotBegin not allowed: %s'% MessageText
-#             SetPendingMessage(MessageText)
-#             return
-# 
-#         if not loadedMessageGrammar:
-#             print('display message no message grammar: %s'% MessageText)
-#             return
-#         if IsDisplayingMessage:
-#             print('recursive call DisplayMessage, no display')
-#             return
-# 
-#         # if six.PY2:
-#         #     MessageText = utilsqh.convertToBinary(MessageText)
-# 
-#         mayDisplay = 1
-#         for t in DisplayMessageForbiddenCharacters:
-#             if MessageText.find(t) >= 0:
-#                 mayDisplay = 0
-#                 break
-#         if len(MessageText) > maxDisplayMessage or not mayDisplay or alert:
-#             Message(MessageText, alert=alert)
-#             return
-#         if status.getDNSVersion() < 11:
-#             AddedMessage = '\\' + MessageText
-#         else:
-#             AddedMessage = '\\\\' + MessageText
-#         #print 'DisplayMessage: %s'% AddedMessage
-#         try:
-#             SetDisplayingMessage()
-#             if exclusiveGrammars:
-#                 for g in exclusiveGrammars:
-#                     grammar = exclusiveGrammars[g][0]
-#     ##                print 'resetting exclusive: %s'% grammar
-#                     grammar.gramObj.setExclusive(0)
-#                 if loadedControlGrammar:
-#                     loadedControlGrammar.gramObj.setExclusive(0)
-# ##                print 'reset exclusive state in display message'
-# 
-#             hasWord = 0
-#             try:
-#                 if (natlink.getWordInfo(AddedMessage)):
-#                     #print 'message already exists, text: %s' % MessageText
-#                     hasWord = 11
-#                 else:
-#                     if status.getDNSVersion() < 8:
-#                         flags = natlinkutils.dgnwordflag_useradded | \
-#                                 natlinkutils.dgnwordflag_no_space_next | \
-#                                 natlinkutils.dgnwordflag_no_space_before
-#                         natlink.addWord(AddedMessage, flags)
-#                         #print 'added word: %s'% AddedMessage
-#                         hasWord = 1
-#                     else:
-#                         natlink.addWord(AddedMessage)
-#                         hasWord = 1
-#                         pass
-# ##                        # flags for 8, 9...
-# ##                        flagList = ['InternalUseOnly2', 'InternalUseOnly5',
-# ##                                 'NoSpaceFollowingThisWord', 'NoSpacePreceedingThisWord',
-# ##                                 'WordWasAddedByTheUser']
-# ##                        flags = status.makeWordProperties(flagList)
-# ##                    print 'flags: %x, intflags: %s'% (flags, int(flags))
-#             except natlink.InvalidWord:
-#                 print('error with addWord of: %s'% AddedMessage)
-#  
-#             if hasWord:
-# ##                print 'loadedMessageGrammar activate, with specific handle'
-#                 hndle = natlink.getCurrentModule()[2]
-#                 loadedMessageGrammar.activate(hndle)
-#                 try:
-# ##                    print 'send to messageDictGrammar: %s'% [AddedMessage]
-#                     natlink.recognitionMimic([AddedMessage])
-#                 except (natlink.NatError, natlink.MimicFailed):
-#                     print('error displaying message: %s'% AddedMessage)
-# 
-#                 # temporary changing the mode (only for version 7)                
-#     ##            if currentMode > 1:
-#     ##               natlink.execScript('SetRecognitionMode %s'% currentMode)
-#                 if hasWord != 11:  # do not delete words that were already in voc
-#                     try:
-#                         natlink.deleteWord(AddedMessage)
-#                     except natlink.UnknownName:
-#                         pass  # for unknown reason a just added word sometimes cannot be deleted
-#                               # some other word in other capitalization?
-#                               #    (like \processing grammar and \Processing Grammar) ???
-#             else:
-#                 # version 9 or error:
-#                 loadedControlGrammar.setList('message',[AddedMessage])
-#                 try:
-# ##                    hndle = natlink.getCurrentModule()[2]
-# ##                    loadedMessageGrammar.activate(hndle)
-#                     natlink.recognitionMimic([AddedMessage])
-#                     loadedControlGrammar.emptyList('message')
-#                 except (natlink.NatError, natlink.MimicFailed):
-#                     print('error displaying message (command): %s'% MessageText)
-#         finally:
-# ##            print 'loadedMessageGrammar deactivate'
-#             loadedMessageGrammar.deactivate()
-#             if exclusiveGrammars:
-# ##                print 'set exclusive state again'
-#                 for g in exclusiveGrammars:
-#                     print('reset exclusive: %s'% g)
-#                     grammar = exclusiveGrammars[g][0]
-#                     grammar.gramObj.setExclusive(1)
-#                 if loadedControlGrammar:
-#                     loadedControlGrammar.gramObj.setExclusive(1)
-# 
-# ##                loadedMessageGrammar.gramObj.setExclusive(1)
-#   
-#             ClearDisplayingMessage()
-#         if pauseAfter:
-#             print('pause after DisplayMessage: %s'% pauseAfter)
-#             time.sleep(pauseAfter)
+    
+    def DisplayMessage(self, mess):
+        """display as a message
+        
+        This was with the DisplayMessage grammar trick,
+        a recognition without effect, but showing in the recognition window.
+        Maybe could be restored some time...
+        """
+        self.message(mess)
 
     def message(self, mess):
         """only print to Messages window
         """
-        #pylint:disable=R0201
         print(mess)
 
     # progress report
     def IProgressReport(self,Case,TotalCases,NPeriods):
         Period=round(TotalCases/NPeriods)
         if (Case%Period==0) or (Case==TotalCases) or (Case==1):
-            self.DisplayMessage('%3.0f%% Done' % (round(100.0*Case/TotalCases)), alsoPrint=0)
+            self.DisplayMessage('%3.0f%% Done' % round(100.0*Case/TotalCases))
 
     def onTrayIcon(self, message):
         """needs this call when from actions the systemtray is called and clicked on
@@ -919,7 +714,6 @@ class GrammarX(GrammarXAncestor):
         does not work when called from an action...
         
         """
-        #pylint:disable=R0201
         time.sleep(Time)
 
     def wait(self, multiple=1):
@@ -1024,10 +818,12 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         elif isinstance(words, list):
             lentwo = len(words)
         else:
-            raise TypeError('appendList, invalid type for appending to words list "%s": %s'% (listName, type(words)))
+            # assume list like object:
+            words = list(words)
+            lentwo = len(words)
 
         # may become a smaller list if grammarListLengthMaximum is exceeded:
-        _wordsToAppend = words
+        _wordsToAppend = list(words)
     
         if lenone + lentwo > grammarListLengthMaximum:
             if lenone:
@@ -1080,18 +876,16 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         if ' '.join(words) != 'Cancel This': #make sure one global grammar has this active!
             Start=(self.GetName(),list(results.keys()))
             self.Browse(Start,0)
-        CallAllGrammarObjects('setInterceptMode',[0])
-        if ' '.join(words)=='Cancel This':
-            self.DisplayMessage('Canceled', alsoPrint=0)
+        # probably obsolete:
+        # CallAllGrammarObjects('setInterceptMode',[0])
+        # if ' '.join(words)=='Cancel This':
+        #     self.DisplayMessage('Canceled', alsoPrint=0)
 
     def resultsCallback(self, wordsAndNums, resObj):
         # see natlinkutils for documentation. This method is changed
         # to implement interceptMode.
         # Uses the original behavior whenever NOT in intercept mode.
         # also intercept when in display mode:
-        if IsDisplayingMessage:
-##            print 'displaying message, ignore callback, grammar: %s'% self
-            return
         if not self.interceptMode:
             self.__inherited.resultsCallback(self, wordsAndNums, resObj)
         else:
@@ -1113,7 +907,6 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
     def GetDictionaries(self):
         """Overload to define Dictionaries; used in the grammar browser.
         """
-        #pylint:disable=R0201
         # Suppose you have a rule with a variable part (List or enumeration
         # of alternatives), and the gotResults function uses a dictionary
         # that defines different actions to be taken, dependent on the variable
@@ -1182,7 +975,6 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
         """only prepare the current state, should be followed by the BrowseShow
         
         """
-        #pylint:disable=R0201
         if Exclusive:
             print('browse for exclusive grammars only')
             All = 0
@@ -1193,24 +985,20 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
             title = 'Active Grammars'
         Grammars=BrowseGrammar.GrammarElement()
         Grammars.Init(BrowseGrammar.RuleCode,title)
-        CallAllGrammarObjects('InsertGrammarData',[Grammars,All,Exclusive])
+        self.CallAllGrammarObjects('InsertGrammarData',[Grammars,All,Exclusive])
         Data=(Grammars,Start,All,Exclusive)
-        GrammarFile=open(GrammarFileName,'wb')
-        pickle.dump(Data, GrammarFile)
-        GrammarFile.close()
-
+        with  open(GrammarFileName,'wb') as GrammarFile:
+            pickle.dump(Data, GrammarFile)
+# 
     def BrowseShow(self):
         """show the grammars as prepared in the function BrowsePrepare
         """
-        #pylint:disable=R0201
         pypath = str(Path(__file__).parent)
         if pypath not in sys.path:
-            sys.path.append(pypath)
+            sys.path.insert(0, pypath) 
         pypath = ';'.join(sys.path)
         os.environ['PYTHONPATH'] = pypath
         unimacroutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
-
-
 ###
 ##GlobalGrammarBaseAncestor=BrowsableGrammar    
 ##class GlobalGrammarBase(GlobalGrammarBaseAncestor):
@@ -1235,7 +1023,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
 ##        App=getBaseName(getCurrentModule(.lower()[0]))
 ##        if not (App in ['pythonwin']):        
 ##            AppBringUp('Pythonw',Exec=PythonwinExe)
-##        natlinkutils.playString('{Ctrl+l}'+module+'{Enter}')
+##        sendkeys('{Ctrl+l}'+module+'{Enter}')
 ##  
 ##LocalGrammarBaseAncestor=BrowsableGrammar    
 ##class LocalGrammarBase(BrowsableGrammar):
@@ -1245,7 +1033,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
 ##        App=getBaseName(getCurrentModule(.lower()[0]))
 ##        if not (App in ['pythonwin']):        
 ##            AppBringUp('Pythonw',Exec=PythonwinExe)
-##        natlinkutils.playString('{Ctrl+l}'+module+'{Enter}')
+##        sendkeys('{Ctrl+l}'+module+'{Enter}')
 ##
 IniGrammarAncestor=BrowsableGrammar    
 class IniGrammar(IniGrammarAncestor):
@@ -1254,13 +1042,28 @@ class IniGrammar(IniGrammarAncestor):
     """
     #pylint:disable=R0902, R0904
     __inherited=IniGrammarAncestor
-    def __init__(self):
+    inifile_stem = None
+    
+    def __init__(self, inifile_stem=None):
+        """modname is name of module, for "normal" Unimacro grammars, residing in a module.
+        
+        Can be overridden for for example test grammars, or when more than one grammar is in a module.
+        """
+        self.module_name = self.__module__.rsplit('.', maxsplit=1)[-1]
+        self.inifile_stem = inifile_stem or self.module_name
+        self.language = status.get_language()
+
+
+        if not hasattr(self, 'ini'):
+            self.startInifile()
+        self.name = self.checkName()
+        if self.ini is None:
+            print(f'Serious warning, grammar "{self.name}" has no valid ini file, please correct errors')
         try:
             self.iniIgnoreGrammarLists
         except AttributeError:
             self.iniIgnoreGrammarLists = []
         self.__inherited.__init__(self)
-        self.language = status.get_language()
         
         if not self.gramSpec:
             print('Serious error: IniGrammar did not find gramSpec')
@@ -1282,13 +1085,8 @@ class IniGrammar(IniGrammarAncestor):
 
         # here the grammar is not loaded yet, but the ini file is present
         # this could have been done in the user grammar already...
-        if not 'ini' in dir(self):
-            self.startInifile()
-        self.name = self.checkName()
-        self.debug = None # can be set in some grammar at initialize time
         #mod = sys.modules[self.__module__]
 ##            version = getattr(mod, '__version__', '---')
-        self.version = None  #SVN change
         self.DNSVersion = status.getDNSVersion()
         self.spokenforms = spokenforms.SpokenForms(self.language, self.DNSVersion) # for spoken forms numbers!!
 
@@ -1321,18 +1119,30 @@ class IniGrammar(IniGrammarAncestor):
 
     def checkName(self):
         """get possibly from inifile, if not present, start a inifile entry"""
-        n = self.ini.get('grammar name', 'name')
-        if n:
-            return n
-        if 'name' in dir(self):
-            n = self.name
+        try:
+            self.name
+        except AttributeError:
+            pass
         else:
+            if not self.name is self.__class__.name:
+                return self.name
+        try:
+            n = self.ini.get('grammar name', 'name')
+            if n:
+                return n
+        except AttributeError:
+            pass 
+
+        try:
+            n = self.name
+        except AttributeError:
             n = self.__module__
-        n = n.replace('_', ' ')
-        n = n.strip()
-        print('setting grammar name to: %s'% n)
-        self.ini.set('grammar name', 'name', n)
-        self.ini.write()
+            n = n.replace('_', ' ')
+            n = n.strip()
+        if self.ini:
+            print(f'setting grammar name to: {n}')
+            self.ini.set('grammar name', 'name', n)
+            self.ini.write()
         return n
 
     def hasCommon(self, one, two, allResults=None, withIndex=None):
@@ -1395,6 +1205,9 @@ class IniGrammar(IniGrammarAncestor):
         
         """
         #pylint:disable=R0914, R0912, R0915, R1702
+        if not self.ini:
+            return None
+      
         self.gramWords = {} # keys: new grammar words, values mappings to the old grammar words maybe empty if no translateWords
         translateWords = self.getDictOfGrammarWordsTranslations() # from current inifile
         if not translateWords:
@@ -1508,7 +1321,6 @@ class IniGrammar(IniGrammarAncestor):
     def stripDefaultTranlations(self, D):
         """strip from D (self.gramWords) the synonyms which are equal to the gramWord itself
         """
-        #pylint:disable=R0201
         for k, v in list(D.items()):
             if len(v) == 1 and v[0] == k:
                 del D[k]
@@ -1551,7 +1363,7 @@ class IniGrammar(IniGrammarAncestor):
                     self.ini.set(notTransSection, 'info1', 'De volgende grammatica woorden kunnen worden vertaald.')
                 else:
                     self.ini.set(notTransSection, 'info1', 'These grammar words can be translated.')
-                self.ini.set(notTransSection, 'info2', 'See http://qh.antenna.nl/unimacro/features/translations for more info')
+                self.ini.set(notTransSection, 'info2', 'See https://qh.antenna.nl/unimacro/features/translations for more info')
                 self.ini.write()
         else:
             if self.ini.get(notTransSection):
@@ -1705,7 +1517,6 @@ note mies
 noot mies
 
         """
-        #pylint:disable=R0201
         w = word.strip()
         w = word.strip('"\'')
         w = ' '.join(w.split())
@@ -1718,7 +1529,6 @@ noot mies
         this is the way from the inifile into the grammar
         
         """
-        #pylint:disable=R0201
         if t.find(' ') > 0:
             return "'" + t + "'"
         if t.find('-') > 0:
@@ -1734,9 +1544,9 @@ noot mies
         # if you want rules dynamically activated in gotBegin,
         # the following line should be skipped in the overloaded function,
         # and the variable self.prevModInfo should be set to None
-        fillLists = kw.get('fillLists')
+        fillLists = kw.get('fillLists', None)
         if fillLists:
-            del kw['fillLists']
+            print(f'{self.name}, switchOn, with fillLists: {fillLists}')
         if not self.__inherited.switchOn(self, **kw):
             print('switching on "%s" failed'% self.name)
             return
@@ -1752,16 +1562,8 @@ noot mies
         
         # try:
         self.fillGrammarLists()
-        if self.version:
-            print('IniGrammar switched on: %s (%s)'% (self.getName(), self.version))
-        else:
-            print('IniGrammar switched on: %s'% self.getName())
-                
-        # except:
-        #     self.message('error switching on grammar %s, deactivate all rules\n\n (%s, %s)'% 
-        #                        (self.getName(), sys.exc_info()[0], sys.exc_info()[1]))
-        #     self.deactivateAll()            
-        # 
+        # print(f'IniGrammar switched on: {self.getName()}')
+
     def showInifile(self, body=None, grammarLists=None, ini=None,
                     showGramspec=1, prefix=None, commandExplanation=None,
                     postfix=None, lineLen=60, sort=1):
@@ -1803,9 +1605,9 @@ noot mies
             L.append(prefix)
         else:
             try:
-                formatLine = {'nld': 'Uitleg voor Unimacro (NatLink) grammatica "%s" (bestand: %s.py)'}[language]
+                formatLine = {'nld': 'Uitleg voor Unimacro (Natlink) grammatica "%s" (bestand: %s.py)'}[language]
             except:
-                formatLine = 'Help for Unimacro (NatLink) grammar "%s" (file: %s.py)'
+                formatLine = 'Help for Unimacro (Natlink) grammar "%s" (file: %s.py)'
             L.append(formatLine % (self.name, moduleName))
         L.append('')
 
@@ -2025,8 +1827,7 @@ noot mies
         self.checkForChanges = 1
         self.openFileDefault(inifile, mode="edit")
 
-    def fillGrammarLists(self, listOfLists=None, ignoreFromIni='general',
-                         ignoreFromGrammar=None):
+    def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
 
         If listOfLists is not provided, all sections from the inifile
@@ -2038,14 +1839,8 @@ noot mies
         
         Numbers are taken from spokenforms, as well as 'character'.
 
-        If a list of names is given in "ignoreFromIni", or this variable is
-        a valid section name, this/these name(s) are ignored in this function
-
         Also if listName is found in self.iniIgnoreGrammarLists, it is skipped,
         but with a warning
-
-        If "ignoreFromGrammar" is or contains valid list names in the grammar,
-        these are ignored when filling the lists.
 
         At the end of the function it is checked if there are no
         remaining lists from the grammar that should be filled.
@@ -2053,7 +1848,8 @@ noot mies
         """
         #pylint:disable=R0912
         if not self.ini:
-            raise UnimacroError('no ini file active for grammar: %s'% self.GetName())
+            print(f'--- no valid ini file for grammar: "{self.GetName()}", will not fill grammar lists\n\tPlease try to correct via "edit {self.getName()}"')
+            return 
         ini = self.ini
         fromGrammar = copy.copy(self.validLists)
         allListsFromIni = ini.get()
@@ -2082,10 +1878,13 @@ noot mies
         if fromGrammar:
             changes = 0
             for l in fromGrammar[:]:
+                if l in self.iniIgnoreGrammarLists:
+                    continue
                 if self.fillList(l):
                     fromGrammar.remove(l)
-                elif l in allListsFromIni: 
-                    print('%s: warning, empty section for list "%s" in inifile'% (self.name, l))
+                elif l in allListsFromIni:
+                    pass
+                    # print('\t%s: warning, empty section for list "%s" in inifile'% (self.name, l))
                 else:
                     changes = 1
                     self.emptyList(l)
@@ -2143,7 +1942,7 @@ noot mies
         else:
             spokenList = [i for i in puncts if i in allPunctsSpoken]
 
-        print('characters list "%s": %s'% (name, spokenList))
+        # print('characters list "%s": %s'% (name, spokenList))
         self.setList(name, spokenList)
         return spokenList
             
@@ -2207,11 +2006,9 @@ noot mies
         # else:
         l = self.ini.get(n)
         if l:
-            #if self.debug:
             #print '%s: filling list %s with %s items'% (self.name, listName, len(l))
             self.setList(n, l)
             return 1
-        #if self.debug:
         #print '%s: not filling list %s, no items found'% (self.name, listName)
         self.emptyList(n)
         return None
@@ -2222,7 +2019,6 @@ noot mies
         default: nothing happens, must be supplied by the calling grammar    
 
         """
-        #pylint:disable=R0201
         return
 
     def startInifile(self):
@@ -2244,28 +2040,31 @@ noot mies
         inifile, the full path of the inifile that is opened
         inifileDate, the date/time the inifile was last modified        
 
+        For debugging purposes, modName can be specified
+
         """
         # get default inifile name:
         self.checkForChanges = 1
         self.openedInifile = 0
         self.ignore = None
-        modName = self.__module__
+        inifile_stem = self.inifile_stem
+        if not inifile_stem:
+            raise ValueError(f'startInifile, {self.name}, no inifile_stem found ')
         # baseDir = status.getUnimacroDirectory()
         userDir = status.getUnimacroUserDirectory()
         
         commandDir = os.path.join(userDir,
                                         self.language +"_inifiles")
-        inifile = os.path.join(commandDir, modName + '.ini')
+        inifile = os.path.join(commandDir, inifile_stem + '.ini')
         if not os.path.isfile(inifile):
-            print('\tCannot find inifile: %s'% inifile)
-            self.lookForExampleInifile(commandDir, modName + '.ini')
+            print(f'\tCannot find inifile: {inifile}')
+            self.lookForExampleInifile(commandDir, inifile_stem + '.ini')
             if not os.path.isfile(inifile):
-                print('\tcannot find an example inifile for %s'% modName)
+                print(f'\tcannot find an example inifile for {inifile_stem}')
                 self.inifile = inifile
-                self.TryToMakeDefaultInifile(commandDir,modName + '.ini', self.language)
+                self.TryToMakeDefaultInifile(commandDir, inifile_stem + '.ini', self.language)
                 if not  os.path.isfile(inifile):
-                    self.message('cannot make a default inifile for: %s (%s)'%
-                                        (modName, inifile))
+                    self.message(f'cannot make a default inifile for: {inifile_stem} ({inifile})')
                     self.inifile = None
                     return
             #self.openFileDefault(inifile)
@@ -2275,7 +2074,7 @@ noot mies
             except KeyError:
                 commandWord = "edit"
             name = self.getName()
-            self.message(f'===Created new inifile for grammar "{modName}"\n===Please edit this file by calling the command "{commandWord} {name}"')
+            self.message(f'===Created new inifile for grammar "{inifile_stem}"\n===Please edit this file by calling the command "{commandWord} {name}"')
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
@@ -2469,7 +2268,6 @@ noot mies
 
         
         """
-        #pylint:disable=R0201
         print('openWebsiteDefault: %s (openWith: %s)'% (website, openWith))
         # appname = "website %s"% website
         if openWith:
@@ -2621,7 +2419,10 @@ noot mies
                 self.ini.set('an instruction', 'note 3', 'This section can be deleted after reading')
         
         self.fillDefaultInifile(self.ini)
+        self.ini.writeIfChanged()
         self.ini.close()
+        name = self.getName()
+        print(f'Please edit this new inifile: {self.ini._file}, possibly by calling "edit {name}')
 
     def fillDefaultInifile(self, ini):
         """set initial settings for ini file, overload!
@@ -2632,9 +2433,12 @@ noot mies
         name = self.__module__.strip('_')
         name = name.replace("_", " ")
         ini.set('grammar name', 'name', name)
-        for l in self.validLists:
-            if not('iniIgnoreGrammarLists' in dir(self) and l in self.iniIgnoreGrammarLists):
-                ini.set(l)
+        
+        if hasattr(self, "validLists") and hasattr(self, 'iniIgnoreGrammarLists'):
+            for l in self.validLists:
+                if not l in self.iniIgnoreGrammarLists:
+                    ini.set(l)
+        ini.write()
                 
     def error(self, message):
         """gives an error message, and leaves variable Error
@@ -2661,7 +2465,7 @@ noot mies
         if not L:
             if not toRemove:
                 return
-            self.error('removedFromList, list is empty, but toRemove is not empty: %s'% toRemove)
+            print(f'{self.name}, removedFromList: list is empty, but toRemove is not empty: {toRemove}')
             return
         if not toRemove:
             return
@@ -2850,7 +2654,6 @@ noot mies
 
     def stopSearch(self, progInfo=None):
         """action after the search"""
-        #pylint:disable=R0201
         if not progInfo:
             progInfo = unimacroutils.getProgInfo()
         if beforeOrAfter == 'before':
@@ -2870,12 +2673,11 @@ noot mies
             
     def getLastSearchDirection(self):
         """get global var lastSearchDirection"""
-        #pylint:disable=R0201
         return lastSearchDirection
 
     def setLastSearchDirection(self, direc):
         """set global var lastSearchDirection"""
-        #pylint:disable=W0603, R0201
+        #pylint:disable=W0603
         global lastSearchDirection
         if direc not in ['up', 'down']:
             raise UnimacroError('invalid search direction: "%s"'% direc)
@@ -2992,11 +2794,10 @@ noot mies
 
     def searchFailed(self, progInfo=None):
         """signal if search was fail, invalid string or end of document"""
-        #pylint:disable=R0201
         if not progInfo:
             return None # no information
         # old info:
-        _progpath, prog, title, topchild, _classname, _hndle = progInfo
+        _progpath, prog, title, toporchild, _classname, _hndle = progInfo
         nprogInfo = unimacroutils.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
@@ -3005,14 +2806,14 @@ noot mies
             if progInfo != nprogInfo:
                 print('%s: window changed, cancel search'% prog)
                 return -2 # cancelMode, because window title changed
-        elif (prog == 'winword' and topchild == 'top' and nprogInfo[2] == 'child'):
+        elif (prog == 'winword' and toporchild == 'top' and nprogInfo[2] == 'child'):
             print('%s: search failed, cancel search'% prog)
             return -2 # cancelMode, because window title changed
         return None
 
     def searchMarkSpot(self, progInfo=None):
         """Mark the place where you can return with searchGoBack"""
-        #pylint:disable=W0603, R0201
+        #pylint:disable=W0603
         global comingFrom
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
@@ -3029,7 +2830,6 @@ noot mies
 
     def searchGoBack(self, progInfo=None):
         """go back to previous place, excel or word"""
-        #pylint:disable=R0201
         if progInfo is None:
             progInfo = unimacroutils.getProgInfo()
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
@@ -3051,40 +2851,35 @@ noot mies
 ##            doc.Range().GoTo(-1,Name="unimacrosearch")
             print('search go back does not work yet')
             
-    def getTopOrChild(self, modInfo=None, childClass=None):
+    def getTopOrChild(self, progInfo=None, childClass=None):
         """return true if top window or child behaves like top
-        
         and False if child window or top behaves like child
         
-        If class == #32770, always return False, child, except when rule in actions.ini says different...
+        complicated function, which depends on the unimacroactions.ini settings. 
+
+        As a shortcut: childClass can be set to "#32770" (file open etc dialogs),
+        and then always return False, child, except even when rule in actions.ini says different...
         
         """
-        if modInfo is None:
-            modInfo = natlink.getCurrentModule()
-
-        # ProgInfo = collections.namedtuple('ProgInfo', 'progpath prog title toporchild classname hndle'.split(' '))
-
-        progInfo = unimacroutils.getProgInfo(modInfo=modInfo)
-
+        if progInfo is None:
+            progInfo = unimacroutils.getProgInfo()
         
-        istop = (progInfo.toporchild == 'top')
+        assert len(progInfo) == 6
+        
+        istop = progInfo.toporchild == 'top'
         if istop:
-            if actions.topWindowBehavesLikeChild( modInfo ):
+            if actions.topWindowBehavesLikeChild( progInfo ):
                 istop = False
             elif childClass and progInfo.classname == childClass:
-                if actions.childWindowBehavesLikeTop( modInfo ):
-                    if self.debug:
-                        print('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
+                if actions.childWindowBehavesLikeTop( progInfo ):
+                    self.debug('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
                 else:                
-                    if self.debug:
-                        print('getTopOrChild: child mode, because of className "%s"'% childClass)
+                    self.debug('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
-                    # IamChild32770 = topchild, hndle == 'child' and win32gui.GetClassName(hndle) == '#32770'
         else:
-            if actions.childWindowBehavesLikeTop( modInfo ):
-                if self.debug:
-                    print('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
+            if actions.childWindowBehavesLikeTop( progInfo ):
+                self.debug('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True
         return istop
 
@@ -3093,7 +2888,6 @@ noot mies
         
         used at click command in several grammars (excel, keystrokes) and in _lines.
         """
-        #pylint:disable=R0201
         if actions.do_MOUSEISMOVING():
             if actions.do_WAITMOUSESTOP():
                 return 1
@@ -3111,11 +2905,11 @@ class DocstringGrammar(DocstringGrammarAncestor):
     nIndentSubrule = 4
     giveFullResults = 0
     
-    def __init__(self):
+    def __init__(self, **kw):
         self.ruleFuncsDict = {} # records the functions corresponding to rules
         gramSpecFromDocstring = self.buildGramSpecFromDocstrings() or ""
         try:
-            classGramSpec = self.__class__.gramSpec
+            classGramSpec = copy.copy(self.gramSpec)
             if not isinstance(classGramSpec, str):
                 classGramSpec = '\n'.join(classGramSpec)
         except AttributeError:
@@ -3124,7 +2918,7 @@ class DocstringGrammar(DocstringGrammarAncestor):
         totalgramSpec = gramSpecFromDocstring + '\n' + classGramSpec
         self.gramSpec = totalgramSpec.strip()
         self.originalGramSpec = self.gramSpec
-        self.__inherited.__init__(self)
+        self.__inherited.__init__(self, **kw)
 
     def buildGramSpecFromDocstrings(self):
         L = []
@@ -3210,7 +3004,6 @@ class DocstringGrammar(DocstringGrammarAncestor):
     def addSemicolonToRule(self, line):
         """add a semicolon after the line, before comments
         """
-        #pylint:disable=R0201
         parts = line.split("#", 1)
         if len(parts) == 1:
             line = line.rstrip()
@@ -3229,7 +3022,6 @@ class DocstringGrammar(DocstringGrammarAncestor):
         """remove consistent leading spaces from subsequent lines
         also remove empty first and/or empty last line
         """
-        #pylint:disable=R0201
         lenLeader = 11
         if not docList:
             return docList
@@ -3276,6 +3068,8 @@ class DocstringGrammar(DocstringGrammarAncestor):
         the latter are only visited if the former fail.
         """
         ruleName, ruleWords = None, None
+        # print(f'seqsAndRules = {seqsAndRules}')
+
         for i, x in enumerate(seqsAndRules):
             if i == 0:
                 ruleName, self.nextRule = None, x[1]
@@ -3283,10 +3077,12 @@ class DocstringGrammar(DocstringGrammarAncestor):
             else:
                 self.prevRule, ruleName, self.nextRule = ruleName, self.nextRule, x[1]
                 self.prevWords, ruleWords, self.nextWords = ruleWords, self.nextWords, x[0]
+                # print(f'ruleName: {ruleName}, words: {ruleWords}, FR: {fullResults}')
                 self.doRuleIfExists( ruleName, ruleWords, fullResults)
 
         self.prevRule, ruleName, self.nextRule = ruleName, self.nextRule, None
         self.prevWords, ruleWords, self.nextWords = ruleWords, self.nextWords, []
+        # print(f'ruleName: {ruleName}, words: {ruleWords}, FR: {fullResults}')
         self.doRuleIfExists(ruleName, ruleWords, fullResults)
 
     def doRuleIfExists(self, ruleName, ruleWords, fullResults):
@@ -3530,4 +3326,4 @@ def splitList(L, n):
             O = []
     if O:
         yield O
-
+        

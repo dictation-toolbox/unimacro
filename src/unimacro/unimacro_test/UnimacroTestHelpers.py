@@ -10,9 +10,7 @@
 from pathlib import Path
 from pprint import pprint
 import sys
-unimacrodir = Path('./..').normPath()
-if unimacrodir not in sys.path:
-    sys.path.append(unimacrodir)
+
 from dtactions.unimacro import unimacroactions as actions
 import unittest
 import TestCaseWithHelpers
@@ -88,7 +86,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
     # to the end of the window to handle the case that the window is empty.
 
 ##    def getWindowContents(self):
-##        natlinkutils.playString('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
+##        sendkeys('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
 ##        contents = natlink.getClipboard()
 ##        if contents == 'x':
 ##            raise TestError,'Failed to read the contents of the NatSpeak window'
@@ -137,7 +135,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
             self.assert_equal(expected, contents, testText)
             
     def clearWindow(self):
-        natlinkutils.playString('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
+        sendkeys('{ctrl+end}x{ctrl+a}{ctrl+c}{ctrl+end}{backspace}')
     #---------------------------------------------------------------------------
     # Utility function which calls a routine and tests the return value
 
@@ -151,7 +149,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
     # by the OS, we must send as system keys.
 
     def playAltEsc(self):
-        natlinkutils.playString('{alt+esc}',hook_f_systemkeys)
+        sendkeys('{alt+esc}',hook_f_systemkeys)
 
     #---------------------------------------------------------------------------
 

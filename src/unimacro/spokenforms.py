@@ -2,12 +2,13 @@
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 #  June 2011/March 2022
 #
-#pylint:disable=C0115, C0116, R0912, R0914, R0915, R0911
+#pylint:disable=C0115, C0116, R0912, R0914, R0915, R0911, C0209
 """This module contains a class spokenforms that maintains spoken forms
 for numbers, thus making it possible to use spoken forms for all numbers lists
 in Unimacro grammars which need numbers 
 
-tested with unittestSpokenForms.py (in unimacro_test directory of Unimacro)
+tested with test_spokenforms.py (in tests directory of the unimacro repository)
+(with pytest)
 """
 import re
 import os
@@ -233,10 +234,10 @@ class SpokenForms:
   
     language = None
     
-    def __init__(self, language, DNSVersion):
+    def __init__(self, language, DNSVersion=None):
         # global in this module, does not extra work if language did not change:
         checkSpokenformsInifile(language)
-        self.DNSVersion = DNSVersion
+        self.DNSVersion = DNSVersion or 15
         
         if self.language is None or self.language != language:
             self.__class__.language = None
@@ -388,7 +389,7 @@ class SpokenForms:
                 for name in spokenforms:
                     # needed for retrieving the numbers
                     # spokenforms back to the numbers:
-                    if not name in self.s2n:
+                    if name not in self.s2n:
                         self.s2n[name] = i
             else:
                 print('no spoken forms found for %s'% i)
@@ -489,7 +490,9 @@ class SpokenForms:
         if name startswith number_ skip it optionally
         if name endswith (number) skip it optionally
             
-        if name startswith letter_ skip it optionally    
+        if name startswith letter_ skip it optionally
+        
+        This is a too complicated function!!! (QH, 2023-10-02)
             
         """
         # make number _ at start and numbers in brackets at end of name optional
@@ -525,7 +528,7 @@ class SpokenForms:
         # s = reNonAlphaNumeric.sub(' ', s)
         s = reNumeric.split(s)
         s = [_f for _f in s if _f]
-        for i, phrase in enumerate(s):
+        for i, phrase in enumerate(list(s)):
             if phrase.find(' ') > 0:
                 phraseList = phrase.split()
                 s[i:i+1] = phraseList
@@ -548,12 +551,12 @@ class SpokenForms:
         for item in result:
             if isinstance(item, list):
                 if Result:
-                    Result = ['%s %s'% (i,j) for i in result for j in item]
+                    Result = ['%s %s'% (i,j) for i in Result for j in item]
                 else:
                     Result = item
             else:
                 if Result:
-                    Result = ['%s %s'% (r, item) for r in result]
+                    Result = ['%s %s'% (r, item) for r in Result]
                 else:
                     Result = [item]
         if prevResult:
@@ -730,7 +733,6 @@ class SpokenForms:
     Note:
         0-360 or number1to360 gives [0, 10, ..., 360]
         """
-        #pylint:disable=R0201
         #print 'try to fill numbers list: "%s"'% listName
         try:
             return globals()[listName]

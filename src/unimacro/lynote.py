@@ -23,7 +23,7 @@ reIsWhiteSpace = re.compile(r'\s')
 
 
 
-class LyNote
+class LyNote:
     def __init__(self, s):
         self.originalInput = s
         self.setVariables(s)
