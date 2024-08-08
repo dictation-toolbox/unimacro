@@ -24,8 +24,8 @@ import TestCaseWithHelpers
 import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
-from natlinkcore import inivars
-from gramparser import GrammarError, SyntaxError
+from dtactions.unimacro import inivars
+from natlinkcore.gramparser import GrammarError, GrammarSyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 

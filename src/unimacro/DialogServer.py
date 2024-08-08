@@ -16,17 +16,18 @@ from pywin.tools import hierlist
 from pywin.framework import dlgappcore
 
 import natlink
-from natlink.natlinkutils import *
+from natlinkcore.natlinkutils import *
+from natlinkcore import natlinkstatus
 from natlinkutilsbj import SetMic
 import listdialogs
 import D_
-
+status = natlinkstatus.NatlinkStatus()
 RequestFileName=listdialogs.RequestFileName
 ResultFileName=listdialogs.ResultFileName
 
 # hopelijk: QH
-from natlinkutilsqh import getUnimacroDirectory
-baseDirectory = getUnimacroDirectory()
+
+dataDirectory = status.getUnimacroDataDirectory()
 
 
 IDC_EDIT=1000
@@ -110,7 +111,8 @@ class SelectGrammar(GrammarBase):
                 chars=chars+'\\'                
             else:
                 chars=chars+c
-        natlinkutils.playString(chars)
+        
+        sendkeys(chars)
         if self.dlg:
             self.dlg.setCurrentAtTop()
 
@@ -205,7 +207,7 @@ class MainWindow(dlgappcore.AppDialog):
         try:
             RequestFile=open(RequestFileName,'r')
         except:
-            RequestFile=open(baseDirectory+'\\TestRequest.bin','r')
+            RequestFile=open(dataDirectory+'\\TestRequest.bin','r')
         Data=pickle.load(RequestFile)
         GrammarFile.close()
         return Data

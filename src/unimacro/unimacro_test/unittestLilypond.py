@@ -8,13 +8,14 @@
 #   This has nothing to do with speech recognition, but here because a Unimacro grammar "frescobaldi.py"
 #   is developed in order to do inputs for lilypond in frescobalde.
 #
+#pylint:disable=C0209, R0913, R0914
+
 import sys
 import unittest
-import types
 import os
 import os.path
+from unimacro import lynote
 import TestCaseWithHelpers
-import lynote
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.
@@ -81,7 +82,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         for s, expNote in [(",8.", ("", ",", "8.", "", None)),
                         ("8", ("", "", "8", "", None)),
-                        ("\melismaEnd", ("", "", "", "", [r"\melismaEnd"])),
+                        (r"\melismaEnd", ("", "", "", "", [r"\melismaEnd"])),
                         (r",,1\melismaEnd]\break\)", ("", ",,", "1", r"]\)", [r'\melismaEnd', r'\break']))]:
                         
             lyn = lynote.LyNote(s)
@@ -125,7 +126,7 @@ class UnittestLyNote(TestCaseWithHelpers.TestCaseWithHelpers):
 
 
 
-        updateNote = "c'8..\melisma"            
+        updateNote = r"c'8..\melisma"            
         orgNote = "b'4("
         lyorg = lynote.LyNote(orgNote)
         lyorg.updateNote(updateNote)

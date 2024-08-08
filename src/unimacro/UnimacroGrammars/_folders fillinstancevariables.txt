@@ -1,0 +1,151 @@
+fillinstancevariables old:
+    def fillInstanceVariables(self):
+        """fills the necessary instance variables
+          take the lists of folders, virtualdrives (optional) and remotedrives (optional).
+        
+        """
+        #pylint:disable=R0914
+        self.useOtherExplorer = self.ini.get('general', 'use other explorer')
+        if self.useOtherExplorer:
+            if os.path.isfile(self.useOtherExplorer):
+                print('_folders, use as default explorer: "%s"'% self.useOtherExplorer)
+            else:
+                print('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")'% self.useOtherExplorer)
+
+        ## callback time in seconds:
+        interval = self.ini.getFloat('general', 'track folders interval')
+        if interval:
+            self.trackFoldersInterval = int(interval*1000)  # give in seconds
+        else:
+            self.trackFoldersInterval = 4000  # default 4 seconds
+        
+        self.recentfoldersDict = {}
+        inipath = self.ini.getFilename()
+        if inipath.endswith('.ini'):
+            _changingDataIniPath = inipath.replace(".ini", "changingdata.pickle")
+            self.pickleChangingData = inipath.replace(".ini", "changingdata.pickle")
+        else:
+            self.pickleChangingData = ""
+        
+        ## automatic tracking of recent folders :
+        self.trackFoldersHistory = self.ini.getInt('general', 'track folders history')
+        if self.trackFoldersHistory:
+            if self.pickleChangingData:
+                self.recentfoldersDict = self.loadRecentFoldersDict()
+                if self.recentfoldersDict:
+                    print("recentfolders, set %s keys from _folderschangingdata.pickle"% len(self.recentfoldersDict))
+                else:
+                    print("recentfolder, no previous recentfolders cached in _folderschangingdata.pickle")
+        
+            self.doTrackFoldersHistory = True   # can be started or stopped with command
+                                                # recent [folders] START or recent [folders] STOP
+            intervalSeconds = self.trackFoldersInterval/1000
+            print('maintain a list of %s recent folders (Explorer or File Dialog) at every utterance and every %s seconds'% (self.trackFoldersHistory, intervalSeconds))
+            natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersInterval)  # every 5 seconds
+        else:
+            self.doTrackFoldersHistory = False
+        if self.doTrackFoldersHistory:
+            rfList = self.ini.get('recentfolders')
+            for key in rfList:
+                value = self.ini.get('recentfolders', key)
+                self.recentfoldersDict[key] = value
+        # extract special variables from ini file:
+        self.virtualDriveDict = {}
+        wantedVirtualDriveList = self.ini.get('virtualdrives')
+        if wantedVirtualDriveList:
+            self.resolveVirtualDrives(wantedVirtualDriveList)
+        self.virtualDriveList = list(self.virtualDriveDict.keys())
+        # print '_folders, virtual drives from dict: %s'% repr(self.virtualDriveDict)
+        # print '_folders, virtual drives from list: %s'% ', '.join(self.virtualDriveList)
+
+        #  checking the passes of all folders:
+        foldersList = self.ini.get('folders')
+        self.foldersDict = {}
+        for f in foldersList:
+            raw_folder = self.ini.get('folders', f)
+            folder = self.substituteFolder(raw_folder)
+            if not os.path.isdir(folder):
+                print(f'warning _folders,  folder "{f}" does not exist: "{folder}"')
+                # self.ini.delete('folders', f)
+                # self.ini.set('obsolete folders', f, folder)
+                continue
+            self.foldersDict[f] = folder
+        
+        # track virtual drives if in ini file:
+        self.trackFolders = self.ini.getList('general', 'track folders virtualdrives')
+        self.trackFiles = self.ini.getList('general', 'track files virtualdrives')
+        # below this threshold, the getting of subfolders and files in a directory is not printed in the messages window
+        self.notifyThresholdMilliseconds = self.ini.getInt("general", "notify threshold milliseconds", 50)
+        # print("_folders, notify threshold milliseconds: %s"% self.notifyThresholdMilliseconds)
+        # in order to accept .py but it should be (for fnmatch) *.py etc.:
+        self.acceptFileExtensions = self.ini.getList('general', 'track file extensions')
+        self.ignoreFilePatterns = self.ini.getList('general', 'ignore file patterns')
+        
+        # these are for automatic tracking the current folder:
+        self.trackAutoFolders = self.ini.getBool('general', 'automatic track folders')
+        self.trackAutoFiles = self.ini.getBool('general', 'automatic track files')
+            
+        self.foldersSections = ['folders']
+        # track folders:
+        for trf in self.trackFolders:
+            if not trf:
+                continue
+            trf2 = self.substituteFolder(trf)
+            #print 'input: %s, output: %s'% (trf, trf2)
+            if not os.path.isdir(trf2):
+                print('warning, no valid folder associated with: %s (%s) (skip for track virtualdrives)'% (trf, trf2))
+                continue
+            #else:
+            #    print 'valid folder for tracking: %s (%s)'% (trf, trf2)
+            subf = [f for f in os.listdir(trf2) if os.path.isdir(os.path.join(trf2, f))]
+            self.trackFoldersSection = 'folders %s'% trf
+            self.ini.delete(self.trackFoldersSection)  # not in inifile
+            self.foldersSections.append(self.trackFoldersSection)
+            self.acceptVirtualDrivesFolder(trf, trf2) # without f, take virtualdrive itself...
+            for f in subf:
+                ## if no strange signs in folder name:
+                self.acceptVirtualDrivesFolder(trf, trf2, f)
+            #self.cleanupIniFoldersSection(self.trackFoldersSection, trf)
+        #self.removeObsoleteIniSections(prefix="folders ", validPostfixes=self.trackFolders)
+        self.removeObsoleteIniSections(prefix="folders ", validPostfixes=[])  # do not keep in ini file
+ 
+        # do the files:
+        self.filesDict = {}
+        self.trackFiles = self.ini.getList('general', 'track files virtualdrives')
+        # in order to accept .py but it should be (for fnmatch) *.py etc.:
+        self.acceptFileExtensions = self.ini.getList('general', 'track file extensions')
+        self.ignoreFilePatterns = self.ini.getList('general', 'ignore file patterns')
+        self.filesSections = ['files']
+        # from section files (manual):
+        filesList = self.ini.get('files')
+        if filesList:
+            for f in filesList[:]:
+                filename = self.substituteFilename(self.ini.get('files', f))
+                if not os.path.isfile(filename):
+                    print(f'warning _folders, file "{f}" does not exist: "{filename}"')
+                    # self.ini.delete('files', f)
+                    # self.ini.set('obsolete files', f, filename)
+                    continue
+                self.filesDict[f] = filename
+
+        for trf in self.trackFiles:
+            if not trf:
+                continue
+            trf2 = self.substituteFolder(trf)
+            if not os.path.isdir(trf2):
+                print('warning, no valid folder associated with: %s (%s) (skip for track files)'% (trf, trf2))
+                continue
+            filesList = [f for f in os.listdir(trf2) if os.path.isfile(os.path.join(trf2, f))]
+            self.trackFilesSection = 'files %s'% trf
+            self.ini.delete(self.trackFoldersSection)  # not in inifile
+            self.filesSections.append(self.trackFilesSection)
+            for f in filesList:
+                self.acceptFileInFilesDict(trf, trf2, f)
+            #self.cleanupIniFilesSection(self.trackFilesSection, trf)
+        self.removeObsoleteIniSections(prefix="files ", validPostfixes=[])
+        #self.removeObsoleteIniSections(prefix="files ", validPostfixes=self.trackFiles) # not in inifile any more
+
+        # self.childBehavesLikeTop = self.ini.getDict('general', 'child behaves like top')
+        # self.topBehavesLikeChild = self.ini.getDict('general', 'top behaves like child')
+        # save changes if there were any:
+        self.ini.writeIfChanged()        
