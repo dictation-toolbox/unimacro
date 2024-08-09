@@ -56,7 +56,6 @@ pythonpath = [
 ]
 testpaths= [
 		"tests",
-		"src/unimacro/unimacro_test"
 ]
 python_files = [
 			"unittest*.py",
