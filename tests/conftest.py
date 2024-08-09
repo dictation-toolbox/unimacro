@@ -64,7 +64,7 @@ def unimacro_setup(tmpdir):
     #copy the unimacro user directory to the unimacro_user_directory
     copy_tree(str(thisDir/"test_sample_unimacro_userdir"),str(unimacro_userdir))
 
-    pytest.MonkeyPatch().setenv("NATLINK_USERDIR",str(natlink_config_dir))
+    pytest.MonkeyPatch().setenv("NATLINK_SETTINGSDIR",str(natlink_config_dir))
     oo=natlink.natConnect()
     yield [natlink_config_dir,unimacro_userdir,oo]
     natlink.natDisconnect()
