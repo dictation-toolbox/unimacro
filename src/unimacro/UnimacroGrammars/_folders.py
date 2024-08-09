@@ -1182,6 +1182,7 @@ class ThisGrammar(ancestor):
         else:
             self.info("_folders, namepathcopy, choose copy name or path, not: %s", repr(words))
             return
+
         if self.catchRemember == "folder":
             if not self.wantedFolder:
                 self.info("_folders, namepathcopy, no valid folder")
@@ -1208,6 +1209,8 @@ class ThisGrammar(ancestor):
                 result = self.wantedWebsite.split("/")[-1]
             else:
                 result = self.wantedWebsite.split()[-1]
+        else:
+            result = ''
         self.info('namepathcopy, result: %s (type: %s)', result, type(result))
         unimacroutils.setClipboard(result, 13)   # 13 unicode!!
 
@@ -1928,6 +1931,15 @@ class ThisGrammar(ancestor):
 ##        print 'xx: %s, Iam2x: %s, IamExplorer: %s'% (xx, Iam2x, IamExplorer)
 ##
         IamExplorer = prog == 'explorer'
+        try:
+            classname = win32gui.GetClassName(hndle)
+        except:
+            logger.debug('Invalid hndle for GetClassName: {hndle}')
+            classname = ''
+        IamChild32770 = (not istop) and classname == '#32770'
+
+        
+        
         IamChild32770 = (not istop) and win32gui.GetClassName(hndle) == '#32770'
         if IamChild32770:
             self.className = '#32770'
@@ -2015,7 +2027,9 @@ class ThisGrammar(ancestor):
                 if len(t) < lenMin:
                     take = h
                     lenMin = len(t)
-                
+                    break
+            else:   ## TODO QH simplify this!
+                take = 0
 ##                print 'i: %s, take: %s'% (i, nearList[i])
             toHandle = take
             thisHandle = hndle   ## ?? TODO
@@ -2335,6 +2349,8 @@ def get_clipboard_files(folders=False):
                 files = [win32clipboard.GetClipboardData(win32clipboard.CF_TEXT)]
             elif win32clipboard.CF_OEMTEXT in f:
                 files = [win32clipboard.GetClipboardData(win32clipboard.CF_OEMTEXT)]
+            else:
+                files = []     ## OK? Quintijn
         if not files:
             # self.info "get_clipboard_files, no files found from clipboard"
             return None
