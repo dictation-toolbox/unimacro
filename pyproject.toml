@@ -10,11 +10,11 @@ requires-python = ">=3.10"
 readme = "README.md"
 
 
-dependencies = ["dtactions >= 1.5.7",
+dependencies = ["dtactions >= 1.6.1",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
-		"natlinkcore >= 5.3.7",
-        "pysimplegui"]
+		"natlinkcore >= 5.4.0",
+        "FreeSimpleGUI>=5.1.0"]
 		  		
 classifiers=[	"Development Status :: 4 - Beta",
 				"Topic :: Multimedia :: Sound/Audio :: Speech",
