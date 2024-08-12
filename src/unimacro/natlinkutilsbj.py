@@ -1624,6 +1624,31 @@ noot mies
                 L.append(body)
             L.append('')
 
+
+        ## the gramspec, was at bottom before, now put at top:
+        if showGramspec:
+            try:
+                L.append({'nld': '\n--- grammatica:'}[language])
+            except:
+                L.append('\n--- grammar:')
+            if self.gramSpecTranslated:
+                try:
+                    L.append({'nld': ' --- vertaald', 'enx': ' --- with synonyms'}[language])
+                except:
+                    L.append(' --- translated')
+            L.append('')
+            if self.gramSpecTranslated:
+                t = copy.copy(self.gramSpecTranslated)
+            else:
+                t = copy.copy(self.gramSpec)
+
+            t = gramparser.splitApartLines(t)
+            
+            #print 'gramSpec %s %s'% (type(t), repr(t))
+            L.extend(t)
+
+
+
         if grammarLists or activeLists:
             # get from ini, using again utilsqh:
             try:
@@ -1736,27 +1761,6 @@ noot mies
                 L.append('')
                 
                 
-        if showGramspec:
-            try:
-                L.append({'nld': '\n--- grammatica:'}[language])
-            except:
-                L.append('\n--- grammar')
-            if self.gramSpecTranslated:
-                try:
-                    L.append({'nld': ' --- vertaald', 'enx': ' --- with synonyms'}[language])
-                except:
-                    L.append(' --- translated')
-                    
-            L.append(' ---\n')
-            if self.gramSpecTranslated:
-                t = copy.copy(self.gramSpecTranslated)
-            else:
-                t = copy.copy(self.gramSpec)
-
-            t = gramparser.splitApartLines(t)
-            
-            #print 'gramSpec %s %s'% (type(t), repr(t))
-            L.extend(t)
 
 ##        if grammarwordsLists:
 ##            continue
@@ -1794,7 +1798,7 @@ noot mies
             try:
                 formatLine = {'nld': '\n--- gebruiker: %s, %s'}[language]
             except:
-                formatLine = '\n--- user:- %s, %s'
+                formatLine = '\n--- user: %s, %s'
             L.append(formatLine %(natlink.getCurrentUser()[0], time.asctime(time.localtime(time.time()))))
 
         try:
