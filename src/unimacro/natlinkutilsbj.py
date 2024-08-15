@@ -196,40 +196,21 @@ PythonwinPath, dummy = os.path.split(PythonwinExe)
 PythonServerExe=os.path.join(PythonwinPath, 'pserver1')
 
 # returns the union of two lists
-def Union(L1,L2):
+def Union(L1,L2) -> list:
     """old fashioned union function of two lists
     """
-    if not isinstance(L1, list):
-        raise TypeError(f'function Union, first input variable not a list: {type(L1)}')
-    if not isinstance(L2, list):
-        raise TypeError(f'function Union, second input variable not a list: {type(L2)}')
-    L=L1[:]
-    for i in L2:
-        if not i in L1:
-            L.append(i)
-    return L
+    return list(set(L1).union(L2))
 
 # returns the intersection of two lists
 def Intersect(L1,L2):
     """old fashioned intersection function of two lists
     """
-    if not isinstance(L1, list):
-        raise TypeError(f'function Intersect, first input variable not a list: {type(L1)}')
-    if not isinstance(L2, list):
-        raise TypeError(f'function Intersect, second input variable not a list: {type(L2)}')
-    L=[]
-    for i in L2:
-        if i in L1:
-            L.append(i)
-    return L
+    return set(L1).intersection(L2)
 
-def reverseDict(Dict):
+def reverseDict(Dict : dict):
     """reverse a dict, ignoring multiple values of the original
     """
-    revDict={}
-    for key in list(Dict.keys()):
-        revDict[Dict[key]]=key
-    return revDict
+    return {val: key for (key, val) in Dict.items()}
 
 def joinNestedStringLists(l):
     """nested lists of strings are "flattened" into one string
@@ -333,11 +314,22 @@ class GrammarX(GrammarXAncestor):
         return fn
      
     #add methods to delegate calls to logger, so we wave info, warn, etc. 
-    wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
-    for n in wrapped_logger:
-        locals()[n.__name__]=wrapped_log(n)
+    #this would be the better way to do it, but we haven't found a way to get code completion
+    #wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
+    #for n in wrapped_logger:     
+    #    locals()[n.__name__]=wrapped_log(n)
+    #instead, copy and paste. 
+    
 
-
+    info=wrapped_log(Logger.info)
+    setLevel=wrapped_log(Logger.setLevel)
+    debug=wrapped_log(Logger.debug)
+    warning=wrapped_log(Logger.warning)
+    error=wrapped_log(Logger.error)
+    exception=wrapped_log(Logger.exception)
+    critical=wrapped_log(Logger.critical)
+    log=wrapped_log(Logger.log)
+    
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """

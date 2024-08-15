@@ -50,6 +50,7 @@ unimacro_l.__dict__['ulogger']=ulogger
 ulogger.debug("natlink.unimacro logger available")
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
+##control_logger=l.getLogger(unimacro_l.control_logger_name())
 
 
 
@@ -441,6 +442,7 @@ class UtilGrammar(ancestor):
             self.gotResults_showexclusive(words, fullResults)
             return
         if self.hasCommon(words,"loggers"):
+            self.info(f"Available Loggers: {self.loggers}")
             L = ['\nAvailable Loggers apart from the root (natlink) logger:']
             for key, loggerid in self.loggers.items():
                 logger=l.getLogger(loggerid)

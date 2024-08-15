@@ -1,0 +1,71 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "unimacro"
+authors = [{name = "Quintijn Hoogenboom (maintainer)", email = "q.hoogenboom@antenna.nl"}]
+dynamic = ["version", "description"]
+requires-python = ">=3.10"
+readme = "README.md"
+
+
+dependencies = ["dtactions >= 1.5.7",
+        "debugpy >= 1.2.0",
+		"pywin32 >= 304",
+		"natlinkcore >= 5.3.7",
+        "pysimplegui"]
+		  		
+classifiers=[	"Development Status :: 4 - Beta",
+				"Topic :: Multimedia :: Sound/Audio :: Speech",
+				"Topic :: Scientific/Engineering :: Human Machine Interfaces",
+				"Environment :: Win32 (MS Windows)",
+				"Intended Audience :: Developers",
+				"Operating System :: Microsoft :: Windows",
+				"Programming Language :: Python :: 3.9",
+				"Programming Language :: Python :: 3.10",
+				"Programming Language :: Python :: 3.11",
+				"Programming Language :: Python :: Implementation :: CPython",
+				"Topic :: Multimedia :: Sound/Audio :: Speech",
+				"Topic :: Software Development :: Libraries :: Python Modules",
+        ]
+				
+[project.optional-dependencies]
+test = [
+    "pytest >=7.1.2","flake8"
+]
+dev = [
+	"pyenvutils","entry-point-inspector","build"
+]
+[project.entry-points."natlink.grammars"]
+unimacro_builtins = "unimacro.UnimacroGrammars:locateme"
+
+[project.entry-points."dt.loggers"]
+	unimacro ="unimacro:logname"
+	control="unimacro:control_logger_name"
+	folders="unimacro:folders_logger_name"
+
+[tool.pytest.ini_options]
+minversion = "7.1.2"
+addopts = "--capture=tee-sys "
+# very important
+#the pythonpath lets pytest load code in your source area
+#in addition to that in site-packages etc.
+#you may want to run your tests without install natlinkcore with flit or pip
+pythonpath = [
+]
+testpaths= [
+		"tests",
+		"src/unimacro/unimacro_test"
+]
+python_files = [
+			"unittest*.py",
+			"test_*.py",
+	]
+ 
+[project.scripts]
+
+[project.urls]
+homepage = "https://qh.antenna.nl/unimacro/"
+repository="https://github.com/dictation-toolbox/unimacro"
+source="https://github.com/dictation-toolbox/unimacro"		

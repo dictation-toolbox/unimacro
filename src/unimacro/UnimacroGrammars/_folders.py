@@ -78,7 +78,6 @@ import unimacro.natlinkutilsbj as natbj
 
 # manipulating file names with env variables etc...
 envvars = extenvvars.ExtEnvVars()
-
 thisDir = str(Path(__file__).parent)
 status = natlinkstatus.NatlinkStatus()
 # for getting unicode explorer window titles:
@@ -234,6 +233,7 @@ class ThisGrammar(ancestor):
         self.WebsiteOptions = []
         # redo getProgInfo, in case the focus did change:
         self.progInfo = unimacroutils.getProgInfo()
+
 
 
     def handleTrackFilesAndFolders(self, activeFolder):
@@ -2467,6 +2467,8 @@ if __name__ == "__main__":
             active_folder = thisGrammar.getActiveFolder(198434)
             print(f'active_folder: {active_folder}')
             thisGrammar.displayRecentFolders()
+            # get hndle of a explore window (via _general "give window info") and try interactive
+            # thisGrammar.catchTimerRecentFolders(132524, "CabinetWClass")
 
             # # Words = ['folder', 'dtactions']
             # Fr = {}
