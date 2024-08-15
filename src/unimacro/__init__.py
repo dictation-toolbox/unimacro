@@ -13,12 +13,13 @@ __version__ = '4.1.6'   # requires the dtactions 1.5.5, with new sendkeys (from 
 #these will possilby be removed since we may not need them to enumerate the grammars and ask for log names.
 
 def folders_logger_name() -> str:
-      return "natlink.unimacro.folders"
+    return "natlink.unimacro.folders"
 
 def control_logger_name() -> str : 
-        return "natlink.unimacro.control"
+    return "natlink.unimacro.control"
 
 def logname() -> str:
     """ Returns the name of the unimacro logger."""
     return "natlink.unimacro"
- 
+
+__version__ = '4.1.7'

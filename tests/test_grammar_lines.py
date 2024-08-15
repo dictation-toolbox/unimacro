@@ -11,41 +11,35 @@ thisDir = Path(__file__).parent
 def do_nothing(*args, **kwargs):
     return None
 
-
-def test_getLineRelativeTo():
-    """test the relative to (modulo 100 or modulo 10) trick for getting line numbers
+@pytest.mark.parametrize(
+    "current, relative, expect",
+    [ (55, 2, 52),
+      (355, 1, 351),
+    ],
+)
+def test_getLineRelativeToModulo10(current, relative, expect):
+    """test the relative to (modulo 10) trick for getting line numbers
     """
     modulo = 10
-    current, relative, expect = 55, 2, 52
     result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
     assert result == expect
 
-    current, relative, expect = 355, 1, 351
-    result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
-    assert result == expect
 
-    current, relative, expect = 55, 0, 60
-    result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
-    assert result == expect
-
-    current, relative, expect = 355, 0, 360
-    result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
-    assert result == expect
-
+@pytest.mark.parametrize(
+    "current, relative, expect",
+    [ (55, 3, 103),
+      (55, 3, 103),
+      (255, 9, 209),
+      (255, 29, 229),
+      (251, 1, 301),
+      (358, 7, 407),
+      (358, 47, 347),
+    ],
+)
+def test_getLineRelativeToModulo100(current, relative, expect):
+    """test the relative to (modulo 100) trick for getting line numbers
+    """
     modulo = 100
-    current, relative, expect = 55, 3, 103
-    result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
-    assert result == expect
-
-    current, relative, expect = 255, 9, 209
-    result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
-    assert result == expect
-
-    current, relative, expect = 251, 1, 301
-    result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
-    assert result == expect
-    
-    current, relative, expect = 358, 7, 407
     result = _lines.getLineRelativeTo(relative, currentLine=current, modulo=modulo)
     assert result == expect
     

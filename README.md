@@ -29,13 +29,11 @@ More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgra
 # Developer instructions.
 
 If you want to install your local unimacro development environment as the working unimacro:
-`pip install -e . `.  
+`pip install -e .[dev,test] `.  
 
 `py -m build` to build the Python package locally.
 
-Publishing to PyPi is done through the [trusted publisher mechanism](https://docs.pypi.org/trusted-publishers/using-a-publisher/) when a release is created on github using github actions. 
-
-BEFORE YOU PUBLISH review the version number of dependencies in pyproject.toml, see if you require newer ones.
+To publish a release to [Python Packaging Index](https://pypi.org/), [draft a new release](https://github.com/dictation-toolbox/unimacro/releases). 
 
 
 

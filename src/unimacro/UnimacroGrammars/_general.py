@@ -28,6 +28,7 @@ import natlink
 from natlinkcore import natlinkstatus
 from natlinkcore import nsformat 
 from natlinkcore import natlinkutils as natut
+from natlinkcore import natlinktimer
 from unimacro import natlinkutilsbj as natbj
 from unimacro import namelist # for name phrases
 
@@ -126,7 +127,7 @@ class ThisGrammar(ancestor):
 <test> exported = test micstate;
 <choose> exported = choose {n1-10};
 <reload> exported = reload Natlink;
-<info> exported = give (user | prog |window |unimacro| path) (info|information) ;
+<info> exported = give (user|prog|window|unimacro|path|timer) (info|information) ;
 <undo> exported = Undo [That] [{count} [times]];
 <redo> exported = Redo [That] [{count} [times]];
 <namephrase> exported = Make That [Name] phrase;
@@ -699,6 +700,14 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words,'path'):
             T.append('the python path:')
             T.append(pprint.pformat(sys.path))
+        elif self.hasCommon(words, "timer"):
+            timer_info = natlinktimer.getNatlinktimerStatus()
+            if timer_info is None:
+                T.append('natlinktimer is not active')
+            elif timer_info == 1:
+                T.append('there is 1 timer active')
+            else:
+                T.append(f'there are {timer_info} timers active')
         elif self.hasCommon(words, "class"):
             T.append()
         else:
