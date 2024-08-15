@@ -5,17 +5,21 @@ called "unimacro" see http://qh.antenna.nl/unimacro
     or the file COPYRIGHT.txt in the natlink\natlink directory 
 
   _tags.py: make HTML tags
+  
+  The basics, make a tags work (again), more testing should be done
 
 written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-august 2003/March 2022 (python3)
+august 2003/March 2022 (python3)/August 2024
 #
 """
-#pylint:disable=C0116, W0603, W0613, W0201
+#pylint:disable=C0116, W0603, W0613, W0201, R0912
 import natlink
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacro import unimacroutils
 from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.natlinkclipboard import Clipboard
+from dtactions.unimacro.unimacroactions import doAction as action
+# from dtactions.natlinkclipboard import Clipboard
+# natlinkclipboard is not safe at the moment. 
 
 language = unimacroutils.getLanguage()        
 
@@ -51,7 +55,7 @@ class ThisGrammar(ancestor):
         self.pleft = ''
         self.pright = ''
         self.dictated = ''
-        self.onlyOpen = self.onlyClose = self.empty = 0
+        self.onlyOpen = self.onlyClose = self.empty = False
         
     def gotResults_tags(self,words,fullResults):
         self.letters = self.getFromInifile(words, 'tagname', noWarning=1)
@@ -71,10 +75,12 @@ class ThisGrammar(ancestor):
     
 
     def gotResults_prefix(self,words,fullResults):
-        self.empty = self.hasCommon(words, ['Empty', 'Lege'])
-        self.onlyOpen = self.hasCommon(words, ['Begin', 'Open'])
-        self.onlyClose = self.hasCommon(words, ['Sluit', 'Close', 'End', 'Eind'])
-
+        """set the following instance variables
+        """
+        self.empty = bool(self.hasCommon(words, 'Empty'))
+        self.onlyOpen = bool(self.hasCommon(words, ['Begin', 'Open']))
+        self.onlyClose = bool(self.hasCommon(words, ['Close', 'End']))
+        
 
     def gotResults(self,words,fullResults):
         tag = self.letters.strip()
@@ -90,20 +96,40 @@ class ThisGrammar(ancestor):
         pright = f'</{endTag}>'
 
         # see of something selected, leave clipboard intact 
-        cb =  Clipboard(save_clear=True)
-        keystroke('{ctrl+x}')  # try to cut the selection
-        contents = cb.Get_text()   #.replace('\r','').strip()
-        
-        keystroke(pleft)
-        if contents:
-            #print 'contents: |%s|'% repr(contents)
-            keystroke(contents)
-        keystroke(pright)
+        # cb =  Clipboard(save_clear=True)
+        unimacroutils.saveClipboard()
+        keystroke('{shift+right}')   # take one extra char for the clipboard to hit
+        action('<<cut>>')
+        action('W')
+        cb_text = unimacroutils.getClipboard()
+        unimacroutils.restoreClipboard()
+        if cb_text:
+            contents, lastchar = cb_text[:-1], cb_text[-1]
+        else:
+            action('<<undo>>')
+            raise OSError('no value in clipboard, restore cut text (probably at end of file)')
+        print(f'_tags, got from clipboard: "{contents}" + extra char: "{lastchar}"')
 
-        if not contents:
-            # go back so you stand inside the brackets:
-            nLeft = len(pright)
-            keystroke(f'{{left {nLeft}}}')
+        # contents = cb.Get_text()   #.replace('\r','').strip()
+        if not self.onlyClose:
+            keystroke(pleft)
+        if self.empty:
+            if contents:
+                print(f'_tags: ask for empty, but have contents: "{contents}", ignore these')
+        else:
+            keystroke(contents)
+        if self.onlyOpen:
+            if lastchar:
+                keystroke(lastchar)
+                keystroke('{left %s}'% len(lastchar))
+        else:            
+            keystroke(pright)
+            if lastchar:
+                keystroke(lastchar)
+                keystroke('{left %s}'% len(lastchar))
+            if not self.onlyClose:
+                if pright:
+                    keystroke('{left %s}'% len(pright))
 
     def fillDefaultInifile(self, ini):
         """filling entries for default ini file
