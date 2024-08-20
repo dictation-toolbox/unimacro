@@ -10,7 +10,6 @@ import sys
 
 import importlib.metadata
 __version__ = importlib.metadata.version(__package__)  #version set in pyproject.toml now.
-
 def folders_logger_name() -> str:
     return "natlink.unimacro.folders"
 
