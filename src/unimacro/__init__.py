@@ -18,4 +18,4 @@ def logname() -> str:
     """ Returns the name of the unimacro logger."""
     return "natlink.unimacro"
 
-__version__ = '4.1.7'
+__version__ = '4.1.6'
