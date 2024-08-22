@@ -72,7 +72,7 @@ from dtactions.unimacro.unimacroactions import Message
 from dtactions.unimacro import unimacroutils
 # from dtactions.unimacro.unimacroactions import Message
 # from dtactions.unimacro import unimacroactions as actions
-import unimacro.natlinkutilsbj as natbj
+from unimacro import natlinkutilsbj as natbj
 # from unimacro.unimacro_wxpythondialogs import InputBox
 # import natlinkcore.natlinkutils as natut
 
