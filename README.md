@@ -7,6 +7,17 @@ Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/uni
 Unimacro is reasonably stable, but still in alpha.  Check the [Unimacro Issues](https://github.com/dictation-toolbox/unimacro/issues) to see the problem
 areas - probably nothing you can't live without.
 
+A limited number of grammars are by default available when you install unimacro:
+
+  _control.py
+  _general.py 
+  _folders.py
+  _lines.py
+  _brackets.py
+  _tags.py
+  _tasks.py
+  _clickbyvoice.py
+  _number simple.py
 
 ## Install unimacro
 
@@ -15,14 +26,15 @@ with the following.
 
 `pip install unimacro`
 
+But... when you install Natlink via the natlink installer, and proceed with "Configure Natlink via GUI" or "Configure Natlink via CLI", and choose to activate Unimacro, this "pip" action is automatically performed. 
+
 
 
 # Location of Grammars
 
-Grammars installed with Unimacro will be installed in:
+The Grammars listed above are installed with Unimacro in:
 the Lib\site-packages\unimacro\UnimacroGrammars sub-directory of your 
-Python installation.  Good ones to start with include _folders.py and _clickbyvoice.py 
-as most users will  find web and file system navigation by voice useful.
+Python installation.  
 
 More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgrammars/folders/index.html)
 
