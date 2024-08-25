@@ -755,4 +755,5 @@ elif __name__.find('.') == -1:
     utilGrammar.initialize()
     # set special function as a callback...
     natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
+    print(f'unimacro _ctrl grammar started, directory: "{thisDir}"')
     # utilGrammar.checkUnimacroGrammars() 
