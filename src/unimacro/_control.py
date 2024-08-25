@@ -51,8 +51,7 @@ ulogger.debug("natlink.unimacro logger available")
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 ##control_logger=l.getLogger(unimacro_l.control_logger_name())
-
-
+thisDir = str(Path(__file__).parent)
 
 
 
@@ -757,4 +756,5 @@ elif __name__.find('.') == -1:
     utilGrammar.initialize()
     # set special function as a callback...
     natlinkmain.set_post_load_callback(utilGrammar.UnimacroControlPostLoad)
+    print(f'unimacro _ctrl grammar started, directory: "{thisDir}"')
     # utilGrammar.checkUnimacroGrammars() 
