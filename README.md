@@ -28,6 +28,13 @@ with the following.
 
 But... when you install Natlink via the natlink installer, and proceed with "Configure Natlink via GUI" or "Configure Natlink via CLI", and choose to activate Unimacro, this "pip" action is automatically performed. 
 
+If you want to install directly from github (say to install something between releases a developer is working on).
+
+```
+pip uninstall unimacro
+pip install unimacro@git+https://github.com/dougransom/unimacro@d1cbfb0d9559b9ba656a1d1bb1579f1c2b2562ae
+```
+replacing "https://github.com/dougransom/unimacro"  with the repository in github you wish to install from and "d1cbfb0d9559b9ba656a1d1bb1579f1c2b2562ae" with the version commit you wish to install.    
 
 
 # Location of Grammars
