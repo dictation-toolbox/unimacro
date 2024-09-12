@@ -17,7 +17,7 @@ dependencies = ["dtactions >= 1.6.2",
 		"natlinkcore >= 5.4.1",
         "FreeSimpleGUI>=5.1.0"]
 		  		
-classifiers=[	"Development Status :: 4 - Beta",
+classifiers=[	"Development Status :: 2 - Pre-Alpha",
 				"Topic :: Multimedia :: Sound/Audio :: Speech",
 				"Topic :: Scientific/Engineering :: Human Machine Interfaces",
 				"Environment :: Win32 (MS Windows)",
