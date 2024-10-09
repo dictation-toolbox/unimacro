@@ -15,8 +15,8 @@
 import natlink
 from natlinkcore import nsformat 
 from natlinkcore import natlinkstatus
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions import unimacroutils
+from dtactions.unimacroactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 

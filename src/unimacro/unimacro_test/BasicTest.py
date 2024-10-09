@@ -9,8 +9,8 @@
 #   performed.
 # from pathlib import Path
 import unittest
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroutils
+from dtactions import unimacroactions as actions
 from natlinkcore import natlinkutils
 import TestCaseWithHelpers
 
