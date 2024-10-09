@@ -56,14 +56,14 @@ from natlinkcore import readwritefile
 
 # for IniGrammar:
 # was natlinkutilsqh:
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroactions as actions
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import UnimacroBringUp
-from dtactions.unimacro import utilsqh
-from dtactions.unimacro.utilsqh import formatListColumns
-from dtactions.unimacro import inivars
+from dtactions import unimacroutils
+from dtactions import unimacroactions as actions
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacroactions import UnimacroBringUp
+from dtactions import utilsqh
+from dtactions.utilsqh import formatListColumns
+from dtactions import inivars
 from dtactions.sendkeys import sendsystemkeys
 
 from unimacro import BrowseGrammar

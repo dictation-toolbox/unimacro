@@ -47,16 +47,16 @@ If just input notes are given, the strategy of insert/update of notes is
   
 """
 
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 import natlink
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doAction as action
 from itertools import cycle
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 import re
 import copy
 import time

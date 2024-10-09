@@ -5,7 +5,7 @@ is put in the _folders.ini config file.
 #pylint:disable=W0621
 import time
 import PySimpleGUI as sg      
-from dtactions.unimacro import inivars
+from dtactions import inivars
 
 prompt = """Remember in Unimacro _folders grammar"""  # readable text
 text = """Remember folder "C:/DT/NatlinkcoreDoug/src/natlinkcore/SampleMacros" for future calling?

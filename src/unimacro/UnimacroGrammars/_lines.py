@@ -46,11 +46,11 @@ For more information on this number part, see grammar _testnumbersspokenforms.py
 import natlink
 from natlinkcore import natlinkutils
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro import inivars
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions import inivars
+from dtactions import unimacroutils
+from dtactions.unimacroactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 
 class LinesError(Exception):
     pass

@@ -10,10 +10,10 @@ import sys
 unimacrodir = Path('./..').normPath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from natlinkcore import natlinkutils
 import natlink
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 # reload(actions)
 action = actions.doAction
 

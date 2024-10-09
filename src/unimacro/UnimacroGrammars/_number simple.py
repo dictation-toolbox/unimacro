@@ -23,7 +23,7 @@ QH september 2013: rewriting of the functions, ruling out optional command words
 further comments in _number extended.py. Also see the page "number grammar" on the Unimacro we
 """
 #pylint:disable=C0115, C0116, W0613
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 import natlink

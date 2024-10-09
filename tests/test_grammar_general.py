@@ -2,8 +2,8 @@
 from pathlib import Path
 import pytest
 from unimacro.UnimacroGrammars._general import ThisGrammar
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroactions
+from dtactions import unimacroutils
+from dtactions import unimacroactions
 
 thisDir = Path(__file__).parent
 
