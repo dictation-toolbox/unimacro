@@ -17,19 +17,17 @@ import os
 import os.path
 import time
 import win32gui
-from pathqh import path
+from pathlib import Path
 
-thisDir = path('.')
-unimacroFolder = (thisDir/'..').normpath()
-if not unimacroFolder in sys.path:
-    sys.path.append(unimacroFolder)
+thisDir = Path('.')
+
 import TestCaseWithHelpers
 import natlink
-import natlinkclipboard
-import actions
-from actions import doAction as action
-import natlinkutilsqh
-import natlinkutils
+from dtactions import natlinkclipboard
+from dtactions.unimacro import unimacroactions as actions
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro import unimacroutils
+from natlinkcore import natlinkutils
 
 class TestError(Exception):
     pass
@@ -44,7 +42,7 @@ print('printing will go to %s'% logFileName)
 print('start unittestClipboard', file=open(logFileName, 'w'))
 
 testFilesDir = thisDir/'test_clipboardfiles'
-if not testFilesDir.isdir():
+if not testFilesDir.is_dir():
     testFilesDir.mkdir()
 
 #---------------------------------------------------------------------------
@@ -81,8 +79,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
                 # print('window hndle %s may not match "thisHndle": %s'% (hndle, self.thisHndle))
                 continue
             # print('close window with hndle: %s'% hndle)
-            natlinkutilsqh.SetForegroundWindow(hndle)
-            curHndle = natlinkutilsqh.GetForegroundWindow()
+            unimacroutils.SetForegroundWindow(hndle)
+            curHndle = unimacroutils.GetForegroundWindow()
 
             if hndle == curHndle:
                 if hndle in self.killActions:
@@ -91,7 +89,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
                     # natlinkutilsqh.SetForegroundWindow(curHndle)
                     action(self.killActions[hndle], modInfo=self.modInfos[hndle])
                 else:
-                    natlinkutils.playString("{alt+f4}")
+                    sendkeys("{alt+f4}")
         natlinkutilsqh.SetForegroundWindow(self.thisHndle)
         self.disconnect()  # disabled, natConnect
         notClosedHndles = []
@@ -250,9 +248,9 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
         """open Word file and do the testing on it...
         """
         docxFile2 = "natlink.docx"
-        docxPath2 = os.path.normpath( os.path.join(testFilesDir, docxFile2))
+        docxPath2 = os.path.normPath( os.path.join(testFilesDir, docxFile2))
         if not os.path.isfile(docxPath2):
-            raise IOError('file does not exist: %s'% docxPath2)
+            raise OSError('file does not exist: %s'% docxPath2)
         result = actions.AutoHotkeyBringUp(app=None, filepath=docxPath2)
         if result:
             pPath, wTitle, hndle = result
@@ -509,7 +507,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             print("now testempty.txt -----------------")
             # empty file: 
             natlinkutilsqh.SetForegroundWindow(self.text0Hndle)
-            natlinkutils.playString("{ctrl+a}{ctrl+c}")
+            sendkeys("{ctrl+a}{ctrl+c}")
             got = cb.get_text(waitTime)
             print('after select all copy of empty file, no change should have happened:')
             # print('got: %s, (cb: %s)'% (got, cb))
@@ -519,7 +517,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
 
             print("now testsmall.txt -----------------")
             natlinkutilsqh.SetForegroundWindow(self.text1Hndle)
-            natlinkutils.playString("{ctrl+a}{ctrl+c}")
+            sendkeys("{ctrl+a}{ctrl+c}")
             got = cb.get_text(waitTime)
             print('after select all copy of testsmall.txt')
             # print('got: %s, (cb: %s)'% (got, cb))
@@ -530,7 +528,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
             # test large.txt
             print("now testlarge.txt -----------------")
             natlinkutilsqh.SetForegroundWindow(self.text2Hndle)
-            natlinkutils.playString("{ctrl+a}{ctrl+c}")
+            sendkeys("{ctrl+a}{ctrl+c}")
             cb.get_text(waiting_interval=waitTime)
             got = cb.get_text()
             if got:
@@ -551,7 +549,7 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
                 print("word document not available: %s"% (self.docx2Hndle))
                 continue
             natlinkutilsqh.SetForegroundWindow(self.docx2Hndle)
-            natlinkutils.playString("{ctrl+a}{ctrl+c}")
+            sendkeys("{ctrl+a}{ctrl+c}")
             cb.get_text(waiting_interval=waitTime)
             got = cb.get_text()
             if got:

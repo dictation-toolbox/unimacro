@@ -2,10 +2,10 @@
 This template is filled with the actual values and fired. It asks for a spoken form to "remember a given file", this value
 is put in the _folders.ini config file.
 """
-
-import wx
+#pylint:disable=W0621
 import time
-import inivars
+import PySimpleGUI as sg      
+from dtactions.unimacro import inivars
 
 prompt = """$prompt$"""  # readable text
 text = """$text$"""          # input text, the key of the 
@@ -19,16 +19,17 @@ pausetime = "$pausetime$"  # should be replaced by 0 or a positive int value
 
 
 def InputBox(text, prompt, title, default):
-    """the dialog, which returns the spoken form"""
-    app = wx.App()
-    dialog = wx.TextEntryDialog(None,
-    text, prompt, default, style=wx.OK|wx.CANCEL)
-    if dialog.ShowModal() == wx.ID_OK:
-        result = dialog.GetValue()
-    else:
-        result = None
-    dialog.Destroy()
-    return result
+    """the dialog, which returns the wanted spoken form"""
+    layout = [[sg.Text(prompt)],      
+                     [sg.InputText(default)],      
+                     [sg.OK(), sg.Cancel()]]      
+    
+    window = sg.Window(title, layout)    
+    
+    _event, values = window.read()    
+    window.close()
+    
+    return values[0]    
 
 if __name__ == "__main__":
     result = InputBox(text, prompt, title, default)
@@ -37,7 +38,7 @@ if __name__ == "__main__":
         ini = inivars.IniVars(inifile)
         ini.set(section, key, value)
         ini.write()
-        print('Wrote "%s = %s" to inifile'% (key, value))
+        print(f'Wrote "{key} = {value}" to inifile')
         print('Call "edit folders" to edit or delete')
     else:
         print("Action canceled, no change of ini file")

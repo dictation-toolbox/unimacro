@@ -5,8 +5,12 @@ __pycache__/
 /unimacro_test/testresult.txt
 /_number extended.py
 /_repeat.py
+.vscode
 .vscode/launch.json
 /dist
 /configurenatlink_error.txt
 /README.html
 /website unimacro/html/
+/src/unimacro/UnimacroGrammars/rememberdialog.py
+/tests/rememberdialog.py
+/src/unimacro/UnimacroGrammars/rememberdialog.py

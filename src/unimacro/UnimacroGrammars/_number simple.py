@@ -1,29 +1,9 @@
+#
 # (unimacro - natlink macro wrapper/extensions)
-# (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
-#                    Ben Staniford (ben_staniford@users.sourceforge.net)
-#                    Bart Jan van Os (bjvo@users.sourceforge.net)
-#
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net).
-#
-# "unimacro" is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, see:
-# http://www.gnu.org/licenses/gpl.txt
-#
-# "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
-# "unimacro" makes use of another SourceForge project "natlink",
-# which has the following copyright notice:
-#
-# Python Macro Language for Dragon NaturallySpeaking
-#   (c) Copyright 1999 by Joel Gould
-#   Portions (c) Copyright 1999 by Dragon Systems, Inc.
-#
 # _number.py 
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-#  August 2003
-# 
+#  August 2003//April 2022 (python3)
+#
 """smart and reliable number dictation
 
 the number part of the grammar was initially provided by Joel Gould in
@@ -42,16 +22,17 @@ QH september 2013: rewriting of the functions, ruling out optional command words
 
 further comments in _number extended.py. Also see the page "number grammar" on the Unimacro we
 """
-from actions import doKeystroke as keystroke
+#pylint:disable=C0115, C0116, W0613
+from dtactions.unimacro import unimacroutils
+from dtactions.sendkeys import sendkeys as keystroke
+import unimacro.natlinkutilsbj as natbj
+import natlink
 
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-
+thisGrammar = None
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
 
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
@@ -66,13 +47,12 @@ class ThisGrammar(ancestor):
 <number> = <integer> | Minus <integer> | <float> | Minus <float>;
 """+number_rules+"""
     """
+    def __init__(self):
+        self.minus = False
+        self.number = False
+        super().__init__()
   
     def initialize(self):
-        if not self.language:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
-            return
-        self.load(self.gramSpec)
-        # if switching on fillInstanceVariables also fill numbers lists like {n1-9} or {number1to99}
         self.switchOnOrOff() 
 
     def gotResultsInit(self, words, fullResults):
@@ -96,7 +76,7 @@ class ThisGrammar(ancestor):
     def gotResults(self,words,fullResults):
         # step 4, in gotResults collect the number (as a string):
         self.collectNumber() # setting self.number, see self.waitForNumber above
-        print('number from the _number simple grammar: %s'% self.number)
+        print(f'number from the _number simple grammar: {self.number}')
         if self.minus:
             self.number = '-' + self.number
         # disable when testing through unittestIniGrammar.py (in unimacro_test directory):
@@ -107,7 +87,7 @@ class ThisGrammar(ancestor):
         keystroke(number)
         #Step 5:
         # Here some extra postprocessing for different programs:
-        prog = natqh.getProgName()
+        prog = unimacroutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:  # DragonPad
@@ -116,13 +96,23 @@ class ThisGrammar(ancestor):
             keystroke('{tab}')
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
-
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None 
+
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    natlink.natConnect()
+    try:
+        thisGrammar = ThisGrammar()
+        # thisGrammar.startInifile()
+        thisGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
+    thisGrammar.initialize()

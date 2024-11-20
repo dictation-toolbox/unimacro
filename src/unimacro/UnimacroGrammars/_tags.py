@@ -1,30 +1,34 @@
-__version__ = "$Rev: 606 $ on $Date: 2019-04-23 14:30:57 +0200 (di, 23 apr 2019) $ by $Author: quintijn $"
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
-# (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
-#
-#  _tags.py: make HTML tags
-#
-# written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-# august 2003
-#
-"""grammar that makes html tags, as defined in an inifile
-
 """
+This file is part of a Github project (formerly a SourceForge project)
+called "unimacro" see http://qh.antenna.nl/unimacro
+(c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
+    or the file COPYRIGHT.txt in the natlink\natlink directory 
 
+  _tags.py: make HTML tags
+  
+  The basics, make a tags work (again), more testing should be done
+
+written by: Quintijn Hoogenboom (QH softwaretraining & advies)
+august 2003/March 2022 (python3)/August 2024
+#
+"""
+#pylint:disable=C0116, W0603, W0613, W0201, R0912
 import natlink
-import natlinkutilsqh as natqh
-import natlinkutils as natut
-import natlinkutilsbj as natbj
-from actions import doAction as action
-import nsformat
+import unimacro.natlinkutilsbj as natbj
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacro.unimacroactions import doAction as action
+# from dtactions.natlinkclipboard import Clipboard
+# natlinkclipboard is not safe at the moment. 
 
-language = natqh.getLanguage()        
+language = unimacroutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
-    language = natqh.getLanguage()        
+    """grammar that makes html tags, as defined in an inifile
+    """
+
+    language = unimacroutils.getLanguage()        
     iniIgnoreGrammarLists = ['character']
 
     name = "tags"
@@ -51,12 +55,12 @@ class ThisGrammar(ancestor):
         self.pleft = ''
         self.pright = ''
         self.dictated = ''
-        self.onlyOpen = self.onlyClose = self.empty = 0
+        self.onlyOpen = self.onlyClose = self.empty = False
         
     def gotResults_tags(self,words,fullResults):
         self.letters = self.getFromInifile(words, 'tagname', noWarning=1)
         if not self.letters:
-            print('_tags, no valid tagname found: %s'% words)
+            print('_tags, no valid tagname found: {words}')
             return
         for w in words:
             char = self.getCharacterFromSpoken(w)
@@ -71,10 +75,12 @@ class ThisGrammar(ancestor):
     
 
     def gotResults_prefix(self,words,fullResults):
-        self.empty = self.hasCommon(words, ['Empty', 'Lege'])
-        self.onlyOpen = self.hasCommon(words, ['Begin', 'Open'])
-        self.onlyClose = self.hasCommon(words, ['Sluit', 'Close', 'End', 'Eind'])
-
+        """set the following instance variables
+        """
+        self.empty = bool(self.hasCommon(words, 'Empty'))
+        self.onlyOpen = bool(self.hasCommon(words, ['Begin', 'Open']))
+        self.onlyClose = bool(self.hasCommon(words, ['Close', 'End']))
+        
 
     def gotResults(self,words,fullResults):
         tag = self.letters.strip()
@@ -82,69 +88,48 @@ class ThisGrammar(ancestor):
         pleft = pright = ""
         if not tag:
             return
-        pleft = '<%s>' % tag
+        pleft = f'<{tag}>'
         if tag.find(' ') >= 0:
-            endTag  = ' '.split(tag)[0]
+            endTag  = ' '.split(tag, maxsplit=1)[0]
         else:
             endTag = tag
-        pright = '</%s>' % endTag
+        pright = f'</{endTag}>'
 
         # see of something selected, leave clipboard intact 
-        natqh.saveClipboard()
-        keystroke('{ctrl+x}')  # try to cut the selection
-        contents = natlink.getClipboard().replace('\r','').strip()
-        natqh.restoreClipboard()
-        
-        leftText = rightText = leftTextDict = rightTextDict = ""
-        #if contents:
-        #    # strip from clipboard contents:
-        #    contents, leftText, rightText = self.stripFromBothSides(contents)
-        #if self.dictated.strip():
-        #    contents, leftTextDict, rightTextDict = self.stripFromBothSides(self.dictated)
-        #elif self.dictated:
-        #    # the case of only a space-bar:
-        #    leftTextDict = self.dictated
-        #
-        #lSpacing = leftText + leftTextDict
-        #rSpacing = rightTextDict + rightText
-        #
-        #if lSpacing:
-        #    keystroke(lSpacing)
-        
-        keystroke(pleft)
-        if contents:
-            #print 'contents: |%s|'% repr(contents)
-            keystroke('{ctrl+v}')
-        keystroke(pright)
+        # cb =  Clipboard(save_clear=True)
+        unimacroutils.saveClipboard()
+        keystroke('{shift+right}')   # take one extra char for the clipboard to hit
+        action('<<cut>>')
+        action('W')
+        cb_text = unimacroutils.getClipboard()
+        unimacroutils.restoreClipboard()
+        if cb_text:
+            contents, lastchar = cb_text[:-1], cb_text[-1]
+        else:
+            action('<<undo>>')
+            raise OSError('no value in clipboard, restore cut text (probably at end of file)')
+        print(f'_tags, got from clipboard: "{contents}" + extra char: "{lastchar}"')
 
-        #if rSpacing:
-        #    keystroke(rSpacing)
-
-        if not contents:
-            # go back so you stand inside the brackets:
-            nLeft = len(pright)
-            keystroke('{ExtLeft %s}'% nLeft)
-    #
-    #
-    #def stripFromBothSides(self, text):
-    #    """strip whitespace from left side and from right side and return the three parts
-    #    
-    #    input: text
-    #    output: stripped, leftSpacing, rightSpacing
-    #    """
-    #    leftText = rightText = ""
-    #    lSpaces = len(text) - len(text.lstrip())
-    #    leftText = rightText = ""
-    #    if lSpaces:
-    #        leftText = text[:lSpaces]
-    #    text = text.lstrip()
-    #    rSpaces = len(text) - len(text.rstrip())
-    #    if rSpaces:
-    #        rightText = text[-rSpaces:]
-    #    text = text.rstrip()
-    #    return text, leftText, rightText
-    #
-
+        # contents = cb.Get_text()   #.replace('\r','').strip()
+        if not self.onlyClose:
+            keystroke(pleft)
+        if self.empty:
+            if contents:
+                print(f'_tags: ask for empty, but have contents: "{contents}", ignore these')
+        else:
+            keystroke(contents)
+        if self.onlyOpen:
+            if lastchar:
+                keystroke(lastchar)
+                keystroke('{left %s}'% len(lastchar))
+        else:            
+            keystroke(pright)
+            if lastchar:
+                keystroke(lastchar)
+                keystroke('{left %s}'% len(lastchar))
+            if not self.onlyClose:
+                if pright:
+                    keystroke('{left %s}'% len(pright))
 
     def fillDefaultInifile(self, ini):
         """filling entries for default ini file
@@ -176,8 +161,7 @@ class ThisGrammar(ancestor):
                 'script':  'script'
             }
         else:
-            print('-----filling ini file %s , invalid language: "%s"! '% \
-                  (self.__module__, self.language))
+            print('-----filling ini file {self.__module__}, invalid language: "{self.language}"!')
             ini.set('general', 'error', 'invalid language')
             return
         for k, v in list(tagNames.items()):
@@ -190,19 +174,21 @@ def stripSpokenForm(w):
     pos = w.find('\\')
     if pos == -1:
         return w
-    elif pos == 0:
+    if pos == 0:
         return ' '
-    else:
-        return w[:pos]
+    return w[:pos]
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
-    thisGrammar.initialize()
-else:
-    thisGrammar = None
+if natlink.isNatSpeakRunning(): 
+    thisGrammar = ThisGrammar()
+    if thisGrammar.gramSpec:
+        thisGrammar.initialize()
+    else:
+        thisGrammar = None
+    
+    def unload():
+        global thisGrammar
+        if thisGrammar:
+            thisGrammar.unload()
+        thisGrammar = None
 
-def unload():
-    global thisGrammar
-    if thisGrammar: thisGrammar.unload()
-    thisGrammar = None

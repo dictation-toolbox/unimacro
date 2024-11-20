@@ -18,6 +18,8 @@
 #
 # the lists {pagecommands} and {tabcommands} in the inifile (edit chrome hah)
 #
+#pylint:disable=C0209
+
 """
 This commands grammar allows clicking by voice
 
@@ -25,19 +27,16 @@ It is a global grammar, that is activated as soon as one of the chromium browser
 in the foreground 
 
 """
-
-
 import natlink
-natqh = __import__('natlinkutilsqh')
-natut = __import__('natlinkutils')
-natbj = __import__('natlinkutilsbj')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
+from unimacro import natlinkutilsbj as natbj
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doKeystroke  as keystroke
 
 # use extension Click by Voice
 visiblePause = 0.4
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -55,52 +54,62 @@ class ThisGrammar(ancestor):
 
     gramSpec = """
 <shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
-<hidenumbers> exported = (hide) (numbers) [after {n1-20}];
+<hidenumbers> exported = (hide) (numbers);
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
+
+# is already in _tasks grammar:
+# <navigatetabs> exported = ((next|previous) tab) [{n1-20} | {tabcommands}]|
+#                            (tab (back|forward) [{n1-20} | {tabcommands}]);
+# <numberedtabs> exported = tab {n1-n20} [{tabcommands}];
+# <tabactions> exported = tab {tabcommands};
+
 
 <navigatepages> exported = ((next|previous|{pagecommands}) page)|
                             (page (back|forward) [{n1-20}]) |
                             page {pagecommands} |
                             (next|previous) page {pagecommands};
+                            
 #and the numbers grammar (0,...,999 or chain of digits):                             
 """+numberGram
         
     def initialize(self):
         self.prevHandle = -1
+        self.ActiveHndle = None
         self.load(self.gramSpec)
 
     def gotBegin(self,moduleInfo):
-        if not language: return
+        if not language:
+            return
         if self.checkForChanges:
             self.prevHandle = None
 
         winHandle = moduleInfo[2]
         if not winHandle:
-            print('no window handle in %s'% self.name)
+            print(f'no window handle in {self.name}')
             return
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        progInfo = natqh.getProgInfo(moduleInfo)
+        progInfo = unimacroutils.getProgInfo(moduleInfo)
         # print('progInfo: %s'% repr(progInfo))
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
         if prog in chromiumBrowsers:
-            if progInfo.topchild == 'child':
-                print('in child window, the clickbyvoice window?')
+            if progInfo.toporchild == 'child':
+                print(f'in child window, of a clickbyvoice program {prog}')
             if self.checkForChanges:
-                print('_clickbyvoice (%s), prog: %s, checking the inifile'% (self.name, prog))
+                print(f'_clickbyvoice ({self.name}, prog: {prog}, checking the inifile')
                 self.checkInifile()
             self.switchOnOrOff(window=winHandle)
-            if not self.isActive == winHandle:
-                print("activate _clickbyvoice, %s, %s"% (prog, winHandle))
+            if not self.ActiveHndle == winHandle:
+                print(f'activate _clickbyvoice, {prog}, hndle: {winHandle}')
                 self.activateAll(window=winHandle)
-                self.isActive = winHandle
+                self.ActiveHndle = winHandle
         else:
-            if self.isActive:
+            if self.isActive():
                 print("deactivate _clickbyvoice")
                 self.deactivateAll()
-                self.isActive = False
+                self.ActiveHndle = False
                 
 
     def gotResultsInit(self,words,fullResults):
@@ -127,9 +136,10 @@ class ThisGrammar(ancestor):
         additionalOptions = False
         while 1:
             additional = self.getFromInifile(words[-1], 'additionalonoroff', noWarning=1)
-            if additional is None: break
+            if additional is None:
+                break
             if additional == '-':
-                print('%s: hide the numbers'% self.name)
+                print(f'{self.name}: hide the numbers')
                 self.gotResults_hidenumbers(words, fullResults)
                 return
             words.pop() # remove last word of list.
@@ -140,42 +150,90 @@ class ThisGrammar(ancestor):
                 additionalOptions = True
                 
         if additionalOptions:
-            print('%s: showNumbers command: %s, set as new default for the current session.'% (self.name, showNumbers))
+            print(f'{self.name}: showNumbers command: {showNumbers}, set as new default for the current session.')
             # set new chosen string:
             # self.setInInifile("general", "show numbers", showNumbers)
 
         self.showNumbers = showNumbers
         self.getInputcontrol()
         self.doOption(showNumbers)
+        print('clickbyvoice, before finishInputControl')
         self.finishInputControl()
-        
+        print('clickbyvoice, after finishInputControl')
+
 
     def gotResults_hidenumbers(self, words, fullResults):
         """hide the numbers
 
         """
-        wordFound, position = self.hasCommon(words, "after", withIndex=True)
-        if wordFound:
-            print("setting timer later")
-        
         self.getInputcontrol()
         self.doOption(self.hideNumbers)
         self.finishInputControl()
 
+    def gotResults_tabactions(self,words,fullResults):
+        """do an actions to the current tab (doc)"""
+        # print(f'tabactions words: {words}')
+        command = self.getFromInifile(words, 'tabcommands')
+            
+        if command:
+            action(command)
+
+    def gotResults_numberedtabs(self,words,fullResults):
+        """go to a numbered tab (doc) and do an optional action"""
+        print(f'numberedtabs: {words}')
+        command = self.getFromInifile(words, 'tabcommands')
+
+        counts = self.getNumbersFromSpoken(words)
+        if not counts:
+            print(f'_clickbyvoice, numberedtabs, no valid tab number found: {words}')
+            return
+            
+        if command:
+            action(command)
+
+    def gotResults_navigatetabs(self,words,fullResults):
+        """go to next or previous tab(s) (documents) and refresh possibly"""
+        print(f'navigate tabs: {words}')
+        direction = None
+        command = self.getFromInifile(words, 'tabcommands',noWarning=1)
+        
+        if self.hasCommon(words, ['next', 'verder', 'volgende', 'vooruit', 'forward']):
+            direction = 'tab'
+        elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
+            direction = 'shift+tab'
+        else:
+            print(f'no direction found in command: {words}')
+        
+        counts = self.getNumbersFromSpoken(words)
+        if counts:
+            count = counts[0]
+        else:
+            count = 1
+##        print 'tabs:     direction: %s, count: |%s|, command: |%s|'% (direction, counlinker balkt, command)
+
+        if direction:        
+            while count > 0:
+                count -= 1
+                keys = '{ctrl+' + direction + '}'
+                keystroke(keys)
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back tabs in chrome
+            
+        if command:
+            action(command)
 
     def gotResults_navigatepages(self,words,fullResults):
         """go to next or previous page(s) and refresh possibly"""
 ##        print 'navigate pages: %s'% words
         ## not active at the moment, possibly reactivate...
-        dir = None
+        direction = None
         command = self.getFromInifile(words, 'pagecommands',noWarning=1)
         
         if self.hasCommon(words, ['next', 'verder', 'volgende', 'vooruit', 'forward']):
-            dir = 'right'
+            direction= 'right'
         elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
-            dir = 'left'
+            direction= 'left'
         else:
-            print('no direction found in command: %s'% words)
+            print(f'no direction found in command: {words}')
         
         counts = self.getNumbersFromSpoken(words)
         if counts:
@@ -184,11 +242,11 @@ class ThisGrammar(ancestor):
             count = 1
 ##        print 'PAGES:     dir: %s, count: |%s|, command: |%s|'% (dir, counlinker balkt, command)
 
-        if dir:        
+        if direction:        
             while count > 0:
                 count= count -1
-                keystroke('{alt+%s}'%(dir))
-                natqh.Wait(0.5) #0.3 seem too short for going back pages in chrome
+                keystroke('{alt+%s}'%(direction))
+                unimacroutils.Wait(0.5) #0.3 seem too short for going back pages in chrome
             
         if command:
             action(command)
@@ -212,13 +270,13 @@ class ThisGrammar(ancestor):
                 command += ":"
             command += self.navOption
         if command.find(';') >= 0:
-            print('command: %s'% command)
+            print(f'command: {command}')
             commandparts = command.split(';')
             command = commandparts.pop(0)
-            print('command: %s, commandparts: %s'% (command, commandparts))
+            print(f'command: {command}, commandparts: {commandparts}')
         self.doOption(command)
         for additional in commandparts:
-            natqh.Wait(visiblePause)
+            unimacroutils.Wait(visiblePause)
             keystroke(additional)
         self.finishInputControl()
         
@@ -227,17 +285,18 @@ class ThisGrammar(ancestor):
     def getInputcontrol(self):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
-        natqh.Wait()   ## longer: natqh.Wait(visiblePause)
+        unimacroutils.Wait()   ## longer: unimacroutils.Wait(visiblePause)
         for i in range(10):
-            progInfo = natqh.getProgInfo()
-            if progInfo.topchild == 'child':
-                if i: print('found input window after %s steps'% i)
+            progInfo = unimacroutils.getProgInfo()
+            if progInfo.toporchild == 'child':
+                if i:
+                    print(f'found input window after {i} steps')
                 break
-            natqh.Wait()
+            unimacroutils.Wait()
         else:
             print("_clickbyvoice failed to reach input window")
         # print("found input window of clickbyvoice")
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
         
         
     def doOption(self, option):
@@ -247,8 +306,8 @@ class ThisGrammar(ancestor):
     def finishInputControl(self):
         """press enter, after a little bit of waiting
         """
-        natqh.visibleWait()
-        natqh.visibleWait()
+        unimacroutils.visibleWait()
+        unimacroutils.visibleWait()
         keystroke("{enter}")
         
     def fillInstanceVariables(self):
@@ -256,14 +315,14 @@ class ThisGrammar(ancestor):
 
         """
         self.showNumbers = self.ini.get('general', 'show numbers') or ':+'
-        if not self.showNumbers.find(":") == 0:
+        if self.showNumbers.find(":") != 0:
             if self.showNumbers.find(":") == -1:
                 self.showNumbers = ":" + self.showNumbers
             else:
-                print('%s, "+" sign missing in inifile, "general", "show numbers": "%s", replace by default: "%s"'% (self.name, self.showNumbers, ":+"))
+                print(f'{self.name}, "+" sign missing in inifile, "general", "show numbers": "{self.showNumbers}", replace by default: ":+"')
                 self.showNumbers = ":+"
         if self.showNumbers.find("+") != 1:
-            print('%s, "+" sign missing or in wrong position in inifile, "general", "show numbers": "%s", replace by default: "%s"'% (self.name, self.showNumbers, ":+"))
+            print('{self.name}, "+" sign missing or in wrong position in inifile, "general", "show numbers": "{self.showNumbers}", replace by default: ":+"')
             self.showNumbers = ":+"
         # not in inifile:
         self.hideNumbers = ":-"
@@ -271,13 +330,31 @@ class ThisGrammar(ancestor):
 
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-thisGrammar = ThisGrammar()
-if thisGrammar.gramSpec:
+if __name__ == "__main__":
+    ## interactive use, for debugging:
+    with natlink.natConnect():
+        try:
+            thisGrammar = ThisGrammar(inifile_stem="_clickbyvoice")
+            # thisGrammar.startInifile()
+            thisGrammar.initialize()
+            print('clickbyvoice, before finishInputControl')
+            thisGrammar.finishInputControl()
+            print('clickbyvoice, after finishInputControl')
+
+
+
+        finally:
+            thisGrammar.unload()
+elif __name__.find('.') == -1:
+    # standard startup when Dragon starts:
+    thisGrammar = ThisGrammar()
     thisGrammar.initialize()
-else:
-    thisGrammar = None
+
     
 def unload():
+    #pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
+

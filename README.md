@@ -7,47 +7,45 @@ Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/uni
 Unimacro is reasonably stable, but still in alpha.  Check the [Unimacro Issues](https://github.com/dictation-toolbox/unimacro/issues) to see the problem
 areas - probably nothing you can't live without.
 
+A limited number of grammars are by default available when you install unimacro:
 
-
-## Install a prerelease of [Python for Win 32](https://github.com/mhammond/pywin32) 
-The latest the version of [Python for Win 32](https://github.com/mhammond/pywin32)  in the Python Packing Index (300) has some bugs that affect Unimacro.
-So you need to install a later version.
-
-You can download can updated pywin32 from https://github.com/mhammond/pywin32/pull/1622/checks, click on Artifacts,  download the artifacts, extract the files to your computer somehwhere.  
-
-In a shell with administrator privileges, 
-`pip install --force-reinstall .\pywin32-300.1-cp38-cp38-win32.whl`.
+  _control.py
+  _general.py 
+  _folders.py
+  _lines.py
+  _brackets.py
+  _tags.py
+  _tasks.py
+  _clickbyvoice.py
+  _number simple.py
 
 ## Install unimacro
 
-Install from the [Test Python Package Index](https://test.pypi.org/)
+Install from the [Python Package Index](https://pypi.org/)
 with the following.
 
-`pip install --no-cache --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple unimacro`
+`pip install unimacro`
+
+But... when you install Natlink via the natlink installer, and proceed with "Configure Natlink via GUI" or "Configure Natlink via CLI", and choose to activate Unimacro, this "pip" action is automatically performed. 
+
 
 
 # Location of Grammars
 
-Grammars installed with Unimacro will be installed in:
+The Grammars listed above are installed with Unimacro in:
 the Lib\site-packages\unimacro\UnimacroGrammars sub-directory of your 
-Python installation.  Good ones to start with include _folders.py and _clickbyvoice.py 
-as most users will  find web and file system navigation by voice useful.
+Python installation.  
 
 More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgrammars/folders/index.html)
 
 # Developer instructions.
 
-Follow the instructions for [Natlink](https://test.pypi.org/project/natlinkpy/), replacing 'natlink' with 'unimacro'.
-The same commands for building packages and publishing are available in the unimacro root.
+If you want to install your local unimacro development environment as the working unimacro:
+`pip install -e .[dev,test] `.  
 
-If you wish to build or publish a package, there are:
+`py -m build` to build the Python package locally.
 
-- build_package.ps1 and build_package.ps1 to build the packages.  
-- publish_package_pypi.ps1/.cmd to upload the package to the  [Python Packaging Index](https://pypi.org/)
-- publish_package_testpypi.ps1/.cmd to upload the packkage to the [Test Python Packaging Index](https://test.pypi.org/)
-
- 
-
+To publish a release to [Python Packaging Index](https://pypi.org/), [draft a new release](https://github.com/dictation-toolbox/unimacro/releases). 
 
 
 

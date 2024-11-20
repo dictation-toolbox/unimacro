@@ -17,8 +17,8 @@ import os
 import os.path
 import natlink
 import math
-from actions import doAction as action
-import natlinkutilsqh as natqh
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro import unimacroutils as natqh
 print('file: %s'% __file__)
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = r"C:\natlink\unimacro", r"D:\natlink\unimacro"
@@ -26,7 +26,7 @@ for extraPath in extraPaths:
     if os.path.isdir(extraPath):
         if extraPath not in sys.path:
             sys.path.append(extraPath)
-import natlinkutilsqh
+from dtactions.unimacro import unimacroutils
 import sys
 import unittest
 import unittest
@@ -191,7 +191,7 @@ class UnittestMouse(TestCaseWithHelpers.TestCaseWithHelpers):
   
     def test_doMouse(self):
         """problem with doMouse (natlinkutilsqh) with second screen LEFT of first"""
-        natqh.doMouse(0, 0, 35, 188, 0)
+        unimacroutils.doMouse(0, 0, 35, 188, 0)
         pass
                             
 

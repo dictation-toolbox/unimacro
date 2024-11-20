@@ -1,4 +1,3 @@
-__version__ = "$Rev: 571 $ on $Date: 2017-02-13 14:17:09 +0100 (ma, 13 feb 2017) $ by $Author: quintijn $"
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
@@ -6,44 +5,45 @@ __version__ = "$Rev: 571 $ on $Date: 2017-02-13 14:17:09 +0100 (ma, 13 feb 2017)
 #
 #  _brackets.py
 # written by: Quintijn Hoogenboom (QH softwaretraining & advies)
-# august 2003, revision october 2011
+# august 2003, revision october 2011, python3: september 2021
 """ unimacro grammar that puts brackets, braces etc.
 
-import rule
-import "dgndictation"
-import used.
-import Unfortunately
-import the
-import other
-import "imported
-import rules"
-(dgnletters and dgnwords) do not
-work any more in Dragon 11
+Basically two ways are implemented:
+
+1. Say: "between brackets hello comma this is a test"
+2. select text, and say "between brackets"
+3. say "empty braces"
+4. say "here parens"
 
 Notes:
+======
 1. If you start or end with space-bar (or other white space),
    this will be put OUTSIDE the brackets.
 
 2. No capitalisation is done unless you call as directive.
 
-3. Dictation errors cannot be corrected with the spell window. Select,
-dictate again and
-   correct then if needed.
+3. Dictation errors cannot be corrected with the spell window. Select, 
+dictate again and then correct then if needed.
+
+Note: the natlinkclipboard module from dtactions is not ready for use. Use
+the unimacroutils module of unimacro.
+
 
 """
+#pylint:disable=C0115, C0116, W0201, W0613
+from natlinkcore import nsformat
+from dtactions.unimacro import unimacroutils
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+# from dtactions.natlinkclipboard import Clipboard
+import unimacro.natlinkutilsbj as natbj
 import natlink
-import nsformat
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-natut = __import__('natlinkutils')
-from actions import doAction as action
-from actions import doKeystroke as keystroke
 
-language = natqh.getLanguage()
+language = unimacroutils.getLanguage()
 
 ancestor = natbj.DocstringGrammar
 class BracketsGrammar(ancestor):
-    language = natqh.getLanguage()
+    language = unimacroutils.getLanguage()
     name = "brackets"
 
     def initialize(self):
@@ -62,9 +62,9 @@ class BracketsGrammar(ancestor):
     def gotResultsInit(self, words, fullResults):
         self.dictated = ''  # analysis of dgndictation or dgnletters
         self.pleft = self.pright = '' # the left and right parts of the brackets
-
+        self.here, self.between, self.empty = False, False, False
         if self.mayBeSwitchedOn == 'exclusive':
-            print('recog brackets, switch off mic: %s'% words)
+            print(f'recog brackets, switch off mic: {words}')
             natbj.SetMic('off')
 
     def importedrule_dgndictation(self, words):
@@ -78,7 +78,7 @@ class BracketsGrammar(ancestor):
 
             p = self.getFromInifile(w, 'brackets')
             if not p:
-                print('no valid brackets found for word: "%s"'% w)
+                print(f'no valid brackets found for word: "{w}"')
                 continue
             #print 'brackets, found: %s, %s'% (w, p)
             if len(p) > 2 and p.find("|") > 0:
@@ -86,135 +86,127 @@ class BracketsGrammar(ancestor):
                 newpleft = pList[0]
                 newpright = pList[1]
             else:
-                lenph = len(p)/2
+                lenph = len(p)//2
                 newpleft, newpright = p[:lenph], p[lenph:]
             # make more brackets together, from outer to inner:
             self.pleft = self.pleft + newpleft
             self.pright = newpright + self.pright
-        #print 'pleft: "%s", pright: "%s"'% (repr(self.pleft), repr(self.pright))
+        # print(f'result rule_brackets: |{self.pleft}|, pright: |{self.pright}|')
 
     def subrule_before(self, words):
         "(here|between|empty)+"
-        self.here, self.between = False, False
+
         for w in words:
             if self.hasCommon(w, 'between'):   # this is the trigger word, ignore
                 self.between = True
             if self.hasCommon(w, 'here'):   # this is the trigger word, ignore
                 self.here = True
             if self.hasCommon(w, 'empty'):   # this is the trigger word, ignore
-                self.between = False
-
+                self.empty = True
+  
 
     def gotResults(self, words, fullResults):
 
         #  see if something selected, leaving the clipboard intact
         #  keystroke('{ctrl+x}')  # try to cut the selection
-        if self.between:
-            natqh.saveClipboard()
-            action('<<cut>>')
-            contents = natlink.getClipboard().replace('\r','')
-            natqh.restoreClipboard()
-        else:
-            contents = ""
+        # if no text is dictated, self.dictated = ""
+        text, leftTextDict, rightTextDict = stripFromBothSides(self.dictated)
 
         if self.here:
-            natqh.buttonClick('left', 1)
-            natqh.visibleWait()
-
-        leftText = rightText = leftTextDict = rightTextDict = ""
-        if contents:
-            # strip from clipboard contents:
-            contents, leftText, rightText = self.stripFromBothSides(contents)
-
-        if self.dictated.strip():
-            contents, leftTextDict, rightTextDict = self.stripFromBothSides(self.dictated)
-        elif self.dictated:
-            # the case of only a space-bar:
-            leftTextDict = self.dictated
+            print('do a left buttonClick')
+            unimacroutils.buttonClick('left', 1)
+            unimacroutils.visibleWait()
 
 
-        lSpacing = leftText + leftTextDict
-        rSpacing = rightTextDict + rightText
+        if self.empty:
+            if self.dictated:
+                print(f'_brackets, warning, dictated text "{self.dictated}" is ignored, because of keyword "empty"')
+            self.do_keystrokes_brackets()
+            return
+        
+        # only if no dictated text, try to cut the selection (if there, add one char for safety with
+        # the clipboard actions, only fails when at end of file)
+        if not self.dictated:
+            unimacroutils.saveClipboard()
+            keystroke('{shift+right}')   # take one extra char for the clipboard to hit
+            action('<<cut>>')
+            action('W')
+            cb_text = unimacroutils.getClipboard()
+            unimacroutils.restoreClipboard()
+            if cb_text:
+                text, lastchar = cb_text[:-1], cb_text[-1]
+            else:
+                action('<<undo>>')
+                raise OSError('no value in clipboard, restore cut text')
+            print(f'_brackets, got from clipboard: "{text}" + extra char: "{lastchar}"')
+            self.do_keystrokes_brackets(text=text, lastchar=lastchar)
+            return
 
-        if lSpacing:
-            keystroke(lSpacing)
+        self.do_keystrokes_brackets(text=text, l_spacing=leftTextDict, r_spacing=rightTextDict)
 
-        action(self.pleft)
-        natqh.visibleWait()
-        if contents:
-            #print 'contents: |%s|'% repr(contents)
-            keystroke(contents)
-        natqh.visibleWait()
-        action(self.pright)
-        natqh.visibleWait()
+#
+    def do_keystrokes_brackets(self, text='', lastchar='', l_spacing='', r_spacing=''):
+        """do the pleft text pright keystrokes with spacing issues
+        
+        handle the "between" keyword here!
+        """
+        keystroke(l_spacing)
+        keystroke(self.pleft)
+        unimacroutils.visibleWait()
+        if text:
+            keystroke(text)
+            unimacroutils.visibleWait()
+        keystroke(self.pright)
+        keystroke(r_spacing)
+        if lastchar:
+            keystroke(lastchar)
+            keystroke("{left %s}"% len(lastchar))
+        if self.between:
+            keystroke("{left %s}"% len(self.pright))
+        
 
-        if rSpacing:
-            keystroke(rSpacing)
-
-        if not contents:
-            # go back so you stand inside the brackets:
-            nLeft = len(self.pright) + len(rSpacing)
-            keystroke('{ExtLeft %s}'% nLeft)
-
-
-    def stripFromBothSides(self, text):
-        """strip whitespace from left side and from right side and return
+def stripFromBothSides(text):
+    """strip whitespace from left side and from right side and return
 the three parts
 
-        input: text
-        output: stripped, leftSpacing, rightSpacing
-        """
-        leftText = rightText = ""
-        lSpaces = len(text) - len(text.lstrip())
-        leftText = rightText = ""
-        if lSpaces:
-            leftText = text[:lSpaces]
-        text = text.lstrip()
-        rSpaces = len(text) - len(text.rstrip())
-        if rSpaces:
-            rightText = text[-rSpaces:]
-        text = text.rstrip()
-        return text, leftText, rightText
+    input: text
+    output: stripped, leftSpacing, rightSpacing
+    """
+    if not text:
+        return "", "", ""
+    leftText = rightText = ""
+    lSpaces = len(text) - len(text.lstrip())
+    leftText = rightText = ""
+    if lSpaces:
+        leftText = text[:lSpaces]
+    text = text.lstrip()
+    rSpaces = len(text) - len(text.rstrip())
+    if rSpaces:
+        rightText = text[-rSpaces:]
+    text = text.rstrip()
+    return text, leftText, rightText
 
-
-    def fillDefaultInifile(self, ini):
-        """filling entries for default ini file
-
-        """
-        if self.language == 'nld':
-            ini.set('brackets', 'aanhalingstekens', '""')
-            ini.set('brackets', 'kwoots', "''")
-            ini.set('brackets', 'brekkits', '[]')
-            ini.set('brackets', 'haakjes', '()')
-            ini.set('brackets', 'punt haakjes', '<>')
-            ini.set('brackets', 'driedubbele aanhalingstekens', '""""""')
-            ini.set('brackets', 'accolades', '{}')
-            ini.set('brackets', 'html punt haakjes', "&lt;|>")
-            ini.set('brackets', 'html brekkits', "&#091;|]")
-        else:
-            ini.set('brackets', 'double quotes', '""')
-            ini.set('brackets', 'quotes', "''")
-            ini.set('brackets', 'single quotes', "''")
-            ini.set('brackets', 'square brackets', '[]')
-            ini.set('brackets', 'brackets', '()')
-            ini.set('brackets', 'parenthesis', '()')
-            ini.set('brackets', 'backticks', '``')
-            ini.set('brackets', 'parens', '()')
-            ini.set('brackets', 'angle brackets', '<>')
-            ini.set('brackets', 'triple quotes', '""""""')
-            ini.set('brackets', 'html angle brackets', "&lt;|>")
-            ini.set('brackets', 'html square brackets', "&#091;|]")
-            ini.set('brackets', 'braces', '{}')
-
-# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
-bracketsGrammar = BracketsGrammar()
-if bracketsGrammar.gramSpec:
-    bracketsGrammar.initialize()
-else:
-    bracketsGrammar = None
-
-
+# standard stuff Joel (adapted in course of time, QH)
 def unload():
+    #pylint:disable=W0603, E0601
     global bracketsGrammar
-    if bracketsGrammar: bracketsGrammar.unload()
+    if bracketsGrammar:
+        bracketsGrammar.unload()
     bracketsGrammar = None
+
+
+if __name__ == "__main__":
+    natlink.natConnect()
+    try:
+        bracketsGrammar = BracketsGrammar(inifile_stem='_brackets')
+        bracketsGrammar.startInifile()
+        bracketsGrammar.initialize()
+    finally:
+        natlink.natDisconnect()
+else:
+    bracketsGrammar = BracketsGrammar()
+    if bracketsGrammar.gramSpec:
+        bracketsGrammar.initialize()
+    else:
+        bracketsGrammar = None
+        

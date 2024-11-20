@@ -12,27 +12,18 @@
 #
 import sys
 import unittest
-import types
 import os
 import os.path
 import time
-import traceback        # for printing exceptions
-import TestCaseWithHelpers
+from pathlib import Path
 import natlink
-import natlinkmain
-import natlinkstatus
-from actions import doAction as action
-from actions import doKeystroke as keystroke
-from pathqh import path
-import actions
+from natlinkcore import natlinkstatus
+from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacro import unimacroactions as actions
+import TestCaseWithHelpers
 
 status = natlinkstatus.NatlinkStatus()
-
-natut = __import__('natlinkutils')
-natqh = __import__('natlinkutilsqh')
-natbj = __import__('natlinkutilsbj')
-from actions import doKeystroke as keystroke
-from actions import doAction as action
 
 class TestError(Exception):
     pass
@@ -57,17 +48,17 @@ def getBaseFolder(globalsDict=None):
         print('baseFolder was empty, take wd: %s'% baseFolder)
     return baseFolder
 
-thisDir = path(getBaseFolder(globals()))
+thisDir = Path(getBaseFolder(globals()))
 
 natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
                      # with spurious error (if set to 1), missing gotBegin and all that...
 logFileName = os.path.join(thisDir, "testresult.txt")
 
-testFilesDir = path(thisDir)/'test_clipboardfiles'
-if testFilesDir.isdir():
+testFilesDir = Path(thisDir)/'test_clipboardfiles'
+if testFilesDir.is_dir():
     print("test files for Bringup: %s"% testFilesDir)
 else:
-    raise IOError("no valid directory for test files: %s"% testFilesDir)
+    raise OSError("no valid directory for test files: %s"% testFilesDir)
 #---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
 # no reopen user at each test anymore..
@@ -159,7 +150,7 @@ class UnittestActions(TestCaseWithHelpers.TestCaseWithHelpers):
     def tttestGetSectionList(self):
         """test with fake program info for sections to be selected
         """
-        progInfo = ("notepad", "title of notepad window", "child", 12345)
+        progInfo = (r'C:\Windows\SysWOW64\notepad.exe', 'notepad', 'Untitled - Notepad', 'child', 'Notepad', 12345)
         sectionsList = actions.getSectionList(progInfo)
         expList = []
         

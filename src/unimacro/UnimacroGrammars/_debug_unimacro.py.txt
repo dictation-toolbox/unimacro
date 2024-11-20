@@ -1,0 +1,54 @@
+"""
+Grammar to help with natlink hosted python debugging.
+"""
+
+
+import natlink
+import natlinkutilsqh as natqh
+import natlinkutils as natut
+import natlinkutilsbj as natbj
+# import gramparser as gp
+from actions import doAction as action
+import nsformat
+
+ancestor = natbj.IniGrammar  #QH1
+
+class DebugGrammar(ancestor):
+    # language = natqh.getLanguage()
+    name = "Natlink Debug"
+    gramSpec = """
+<starter> exported = debug starter;    ## extra rule
+<debug> exported = debug <deb_cmd>;
+<deb_cmd> = <dap_cmd>;
+<dap_cmd> exported = code <dap_arg>;
+<dap_arg> = Info | Start;
+"""
+    # def __init__(self):n  ##QH2
+    #     return print(f"debug __init__ ")
+    #     ancestor.__init__(self,self.gramSpec,self.name)  ## should be ancestor.__init__(self) only. but not needed.
+    
+    def initialize(self):
+        print(f"debug initialize, by loading self.gramSpec")
+        self.load(self.gramSpec)
+        self.switchOnOrOff()   ## based on the ini settings, by default, on
+        
+    def gotResults_starter(self,words,fullResults):  ## extra result
+        print(f"debug starter caught")
+    def gotResults_debug(self,words,fullResults):
+        print(f"debug gotResults_results words: {words} {fullResults} ")
+    def gotBegin(self,moduleInfo):
+        return print(f"debug gotBegin moduleInfo {moduleInfo}")
+
+#unsure if required Yes, this IS the way!
+# standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+debug_grammar = DebugGrammar()
+if debug_grammar.gramSpec:
+    print(f'debug_grammar initialize')
+    debug_grammar.initialize()
+else:
+    print(f'debug_grammar not initialize, no gramSpec found')
+    debug_grammar = None
+
+def unload():
+    global debug_grammar
+    debug_grammar = None

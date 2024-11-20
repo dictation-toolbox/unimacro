@@ -1,0 +1,27 @@
+
+old settings (until feb 2024)
+[general]
+automatic track files = T
+automatic track folders = T
+child behaves like top = natspeak: dragonbar, dictation box, messages
+ignore file patterns = ~*; .*
+initial on = 1
+track file extensions = .py; .txt; .ini;  .docx; .xlsx; .pdf
+track files virtualdrives =
+track folders virtualdrives =
+
+newer settings febr 2024
+[general]
+ignore file patterns = ~*; .*
+initial on = 1
+notify threshold milliseconds = 50
+start this computer = HW start, My Computer
+start windows explorer = HW start, Windows explorer
+track file extensions = .py; .txt; .ini; .jpg; .jpeg; .png; .docx; .xlsx
+*****track files at utterance = 45
+track files virtualdrives =
+track recent folder at utterance = 50
+*****track subfolders at utterance = 100
+max recent folders = 75
+track folders virtualdrives = md; dr; pr; fb
+track recent folders timer interval = 4
