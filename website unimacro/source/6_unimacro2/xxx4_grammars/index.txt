@@ -1,0 +1,62 @@
+Grammars
+
+The different commands of Unimacro are ordered in grammar files, and are located in the *UserDirectory* of NatLink, by default _NatLink\Unimacro_ on the drive you installed NatLink in. Each grammar file contains grammar rules, defining simple and more complex commands, and their corresponding actions whenever a command hits. 
+
+
+ Global grammars
+
+Grammar files that start with a  *_* (underscore) are global, i.e. accessible all the time. You can use commands from these grammars in any window/application (although the grammar  may activate/deactivate itself or can be activated/deactivated in some cases).
+
+From release 3.9 on only a small set of grammars is published by default, currently:
+
+:TABLE firstcoldifferent=0:
+:HEADING:Grammar
+:COL:Comment
+:ROW:
+link(control/index.html, _control)
+:COL:This grammar can control the on or off state of other grammars and gives introspection about Unimacro grammars.
+
+This grammar should not be removed from the Unimacro directory, and cannot be switched off by a voice command.
+:ROW:link(globalgrammars/folders/index.html, _folders)
+:COL:With commands from this grammar you can jump to folders, either in a _My Computer_ window or in a dialog window (like _File Open_).
+
+With additional commands you can jump to specific _files_ or specific _websites_.
+
+:ROW:link(globalgrammars/tasks/index.html, _tasks.py)
+:COL:Switch to a _task_, as found (and numbered) on the taskbar or as defined by name.
+
+
+:ROW:link(globalgrammars/lines/index.html, _lines.py)
+:COL:With this grammar you can jump to a specific _line_ in some editable file (for example for programmers), or in Excel (version to come).
+
+Also cut, copy, delete and insert lines, and move or copy lines from one place to another.
+:ROW:link(globalgrammars/general/index.html, _general.py)
+:COL:A lot of general commands, from which _give window info_ is important for introspection.
+::
+
+ Program specific grammars:
+
+There are only a few of them currently, and not displaying by default:
+
+:TABLE firstcoldifferent=0:
+:HEADING:Grammar
+:COL:Comment
+:ROW:link(specificgrammars/chromebrowsing/index.html, chrome_browsing.py)
+:COL:Allows you to browse in Chrome by calling the numbers that are shown by the "Click by Voice" extension written by Mark Lillibridge.
+::
+
+ Activate other grammars
+ 
+If you want to use other grammars, you can move/copy them from the subfolder *DisabledGrammars* into your _UnimacroDirectory_.
+
+Also note some grammars will have the *initial on* flag *disabled*. You can either switch on the grammar with the speech command *switch on grammarname*, or change this flag in the .ini file (say *edit grammarname*)
+
+ Minimise your Unimacro configuration
+
+If you only want Unimacro facilities for your Vocola commands, you may want to switch off (remove from the Unimacro directory, by deleting the python (*.py*) files or moving them into the subfolder _DisabledGrammars_). You can do this with all grammar files mentioned above, *except for _control.py*.
+
+Restart Dragon after you make such changes.
+
+ Updating configuration files
+If you used some grammar before, but new options have been added, or options changed, you may have to update your configuration (.ini) file. See link(/features/inifiles.html, ini files section) for more instructions.
+

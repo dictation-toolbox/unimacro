@@ -1,0 +1,89 @@
+Changes in natlinkmain.py
+
+Quite a few changes in this basic file in the course of the years.
+
+-August 2011: function reorderKeys to influence the order of loading the grammars. Needed for some Unimacro grammars.
+
+ Below the details of the changes:
+
+ Global variables (see also link("/features/grammarclasses/natlinkutilsqh/index.html", " natlinkutilsqh module "))
+
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING colspan=2: Most of them taken from status (natlinkstatus)
+:HEADING: variable
+:COL: meaning
+:ROW:DNSdirectory
+:COL:holds the NatSpeak folder
+:ROW:DNSversion
+:COL:holds the version (5??,6??, 7??, 8, 9) as an integer
+:ROW:WindowsVersion
+:COL:holds the current windows version
+:ROW:DNSmode
+:COL:can hold the mode (1 for dictate, 2 for command etc), not used currently
+:ROW:language
+:COL: the language code of the NatSpeak speech profile (*enx*, *nld* etc) ,
+:ROW:BaseModel
+:COL: the acoustic model of the current user
+:ROW:BaseTopic
+:COL: the topic of the current user (vocabulary)
+:ROW:checkForGrammarChanges
+:COL:set initially 0, can be set to one, see below, but not needed
+::
+
+ Some functions of natlinkmain
+(collect values of status through natlinkstatus or (in Unimacro) through wrapper functions in natlinkutilsqh.py)
+ 
+:TABLE firstcoldifferent=1, border=1:
+:HEADING colspan=2: some of the functions are mentioned here, consult the source file also
+:HEADING:function
+:COL:comment
+:ROW:setCheckForGrammarChanges
+:COL:Sets the variable checkForGrammarChanges, should be called from the identical function in natlinkutilsqh.  This function is used  in the grammar *control*, see below, that is in other cases probably not needed.
+:ROW:beginCallback
+:COL:An optional parameter *checkAll* is added, and also the value of*checkForGrammarChanges*is checked.  See below,
+Also a special arrangement for _vocola_main has been made.
+
+:ROW:changeCallbackLoadedModules
+:COL:This function ensures an extra *changeCallback* function in each grammar can be called, in order to switch off exclusive modes when the microphone is toggled.  Used presently in the Unimacro grammars *oops*, *control* and *repeat*,
+::
+
+ Debug possibilities:
+
+The following variables at the top of the file can be set to 1, if you want to have more in the back output.  Restart natspeak in that case (this is now in the configuration functions)
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:Variable
+:COL:comment
+:ROW:debugLoad
+:COL:Print extra information at load time (can be configured in configuration procedure)
+:ROW:debugCallback
+:COL:Print lots of information at callback time (can be configured in configuration procedure)
+:ROW:debugTiming
+:COL:Print some information when natpython checks for changed global grammar file (not much used, check if you want)
+::
+
+ The automatic checking for changed grammars
+
+This feature has been turned off in this version of natlinkmain!  Originally Joel Gould designed to system to check for changed grammar files at each speech utterance.  This saves a delay of *0.01 to 0.02 seconds* each utterance.
+
+With this version of natlinkmain, only when the microphone toggles, the complete check is performed.
+
+BUT the global variable *checkForGrammarChanges* can be set in the natlinkmain.py file.  The Unimacro grammar *control* sets this variable as soon as you call *edit grammar grammarname* for some grammarname.  So as soon as you call through the Unimacro system that you want to change a grammar file, the automatic checking for grammar files is turned on, through the function *setCheckForGrammarChanges*.
+
+And... if _vocola_main reports changes of user files at beginCallback also the grammars will be checked once.
+
+When the natpython macrosystem restarts, most often when restarting NatSpeak, the automatic checking is switched off again.
+
+ Search order of python modules
+If the userDirectory of NatLink is set (most often Unimacro is on then), this directory is inserted at the front off *sys.path*. When modules are loaded, this directory goes first.
+
+-The order of the modules can be hardcoded in the function _reorderKeys_. See source code.
+-The Unimacro grammar "_control" (if present) is loaded last. Because it can then fill the lists with introspection commands in the correct away.
+-For some special applications in the grammar _lines the _tasks grammar is called, so _task goes first in the loading order (after _vocola_main)
+
+
+ Allowed application names
+the regular expression for searching application-specific grammars has been generalised.  I believe all characters can now appear in the programme name, like *++* (in Notepad++). There is one exception: a leading *_* (underscore) as this is for global grammars.
+ 
+ Order of loading

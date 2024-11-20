@@ -1,0 +1,32 @@
+fullResults
+
+The fullResults can be collected from the *gotResultsInit* function.
+
+
+:CODE:
+    def gotResultsInit(self, words, fullResults):
+        self.fullResults = fullResults
+::
+
+
+   The complete calling order of a recognition is:
+
+-gotResultsObject(self, recogType, resObj)
+-gotResultsInit(self, words, fullResults)
+
+ Then the rules functions, either
+-rule_name(self, words)
+-subrule_name(self, words)
+-importedrule_dgndictation(self, words)
+
+ or
+
+-gotResults_name(self, words, fullResults)
+ 
+ and after all these functions:
+ 
+-gotResults(self, words, fullResults)
+
+ All functions are optional. If you leave them out, no action is taken.
+ 
+

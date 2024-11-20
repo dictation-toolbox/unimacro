@@ -1,0 +1,70 @@
+Word properties
+
+In the original natlinkutils there was a list of word properties (like no_spacing_before or cap_next).
+
+With newer versions of NatSpeak some things seem to have changed.  In natlinkutils.py that word properties are defined, but natlinkutilsqh.py these properties are *redefined*, together with some utility functions.  Also a few flags have been added in order to fix/observe some changes in version 8 and version 9.  As far as some trial and error has shown.
+
+
+ So trial and error gives a few results:
+
+When you add a new word by hand, the properties will be: ['InternalUseOnly5', 'WordWasAddedByTheUser'] (hex number 0x20 00 00 01)
+
+When you add a new word, and give it the properties "has no preceding or following space", you will get:['InternalUseOnly2', 'InternalUseOnly5', 'NoSpaceFollowingThisWord', 'NoSpacePreceedingThisWord', 'WordWasAddedByTheUser'] (or hex: 0x20 20 01 05).
+
+ The complete list of word properties:
+
+:CODE:
+wordFormatting = {
+    'WordWasAddedByTheUser': 0x00000001,
+    'InternalUseOnly1': 0x00000002,
+    'InternalUseOnly2': 0x00000004,
+    'WordCanNotBeDeleted': 0x00000008,
+    'NormallyCapitalizeTheNextWord': 0x00000010,
+    'AlwaysCapitalizeTheNextWord': 0x00000020,
+    'UppercaseTheNextWord': 0x00000040,
+    'LowercaseTheNextWord': 0x00000080,
+    'NoSpaceFollowingThisWord': 0x00000100,
+    'TwoSpacesFollowingThisWord': 0x00000200,
+    'NoSpacesBetweenWordsWithThisFlagSet': 0x00000400,
+    'TurnCapitalizationModeOn': 0x00000800,
+    'TurnUppercaseModeOn': 0x00001000,
+    'TurnLowercaseModeOn': 0x00002000,
+    'TurnOffSpacingBetweenWords': 0x00004000,
+    'RestoreNormalSpacing': 0x00008000,
+    'InternalUseOnly3': 0x00010000,
+    'SuppressAfterAWordWhichEndsInAPeriod': 0x00020000,
+    'DoNotApplyFormattingToThisWord': 0x00040000,
+    'DoNotResetTheSpacingState': 0x00080000,
+    'DoNotResetTheCapitalizationState': 0x00100000,
+    'NoSpacePreceedingThisWord': 0x00200000,
+    'RestoreNormalCapitalization': 0x00400000,
+    'FollowThisWordWithOneNewLineCharacters': 0x00800000,
+    'FollowThisWordWithTwoNewLineCharacters': 0x01000000,
+    'DoNotCapitalizeThisWordInATitle': 0x02000000,
+    'InternalUseOnly': 0x04000000,
+    'AddAnExtraSpaceFollowingThisWord': 0x08000000,
+    'InternalUseOnly4': 0x10000000,
+    'InternalUseOnly5': 0x20000000,
+    'WordWasAddedByTheVocabularyBuilder': 0x40000000,
+    }
+::
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING colspan=2:functions to support this
+
+:ROW:NatLink.getWordInfo(word)
+:COL:NatLink returns the word properties of a word(as hex number)
+
+None if word is non existent.
+ 
+:ROW:ListOfProperties(props)
+:COL:returns a list of readable properties (like the examples above). 
+
+:ROW:makeWordProperties(listOfProps)
+:COL:returns the props number from the list again
+
+::
+ 
+
+

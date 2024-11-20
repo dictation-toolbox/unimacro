@@ -1,0 +1,52 @@
+Chrome Browsing, all commands
+
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:show numbers &#091;additionalonoroff&#93;
+
+numbers &#091;additionalonoroff&#93;
+:COL:Switch on the numbers feature, with optional additional options.
+
+The options are configurable, but for example contrast, overlay, hybrid.
+
+
+:ROW:hide numbers  
+
+numbers off
+:COL:Switch off the displayed numbers
+
+:ROW:
+pick {number}
+
+pick {number} {navigateoptions}
+:COL: follow the numbered link,
+
+The optional options are configurable, but for example "new tab", "new window", "focus" or "copy link"
+::
+
+
+ Other commands:
+
+:TABLE firstcoldifferent=1, border=1:
+:ROW: next page | previous page
+
+page (back|forward) &#091;{1-20}&#93;
+
+{pagecommands} page | page {pagecommands}
+:COL: navigate the pages inside a tab. 
+::
+
+*pagecommands* contains by default only *refresh*.
+
+::
+
+-Note: for navigating the different tabs (documents) of Chrome, see link(/grammars/globalgrammars/tasks/index.html, "*Tasks (taken) grammar*"), but documentation is not complete yet.
+
+
+
+
+

@@ -1,0 +1,100 @@
+Instructions for the programmers that want to to make grammars based on the IniGrammar class.
+
+When initialising an instance of an IniGrammar, the following actions are performed:
+-the method _startInifile_ performs starts the inifile (copies and opens a sample or default if needed)
+-set the variable _checkForChanges_ to 0; this variable is only put to 1 when the _editGrammar_ function is called.
+-get the inifile, creating this if necessary.
+-get the (pronouncable) name
+-get the initial on or off state
+-set the variable _prevModInfo_ to _None_
+-translate the grammar words with the data from the configuration (.ini) file.
+-fill the instance variables through the function 'fillInstanceVariables'.
+
+If all went well the variable 'Error' is set to '0'.
+
+
+ Name
+The name of the grammar (most often set in the grammar definition or in the inifile) can be used to call for info about the grammar or to call the edit mode for the grammar. The name is also displayed in the *show all grammars* window.
+
+ Filling lists
+Grammar lists are automatically filled through the function *fillGrammarLists* at start or at changes of inifile (provided _self.checkForChanges_ is on). This function can be overloaded.
+
+When you want grammar lists filled not through the inifile, but directly in your grammar, you should define here the variable. 
+-*iniIgnoreGrammarLists*, being the list name, or a list of list names.
+-Another possibility to do this, is overloading the method _fillGrammarLists_ or the method _fillList_.
+
+ 
+ 
+ Difference fillInstanceVariables and fillGrammarLists
+The method _fillInstanceVariables_ is run at initialization time of the grammar instance, before the grammar is loaded into NatSpeak. In order to redo this method, it is best to reloaded grammar, by:
+
+:CODE:
+	  fullPath = natlinkmain.loadedFiles[self.__module__]
+	  natqh.setCheckForGrammarChanges(1)
+	  os.utime(fullPath, None)
+::
+At the next utterance the grammar will be reloaded.
+
+The method _fillGrammarLists_ is run at _initialize_ time, after the grammar is loaded into NatSpeak. This method can be rerun, for example when lists have been changed.
+
+ New inifiles
+When initialising the grammar, an inifile is opened, or created when not yet existent.  Some special methods can be overloaded to provide default data for a new inifile.  The following variables are set:
+-self.ini: the inivars instance that gets the data from the inifile is
+-self.inifile: the full path of the ini file: macrosystem folder \ language+__module__.ini
+-self.inifileDate: date/time of last modification of inifile
+-self.onOrOff: overload from GrammarX, is set to 0 if specified in section [general], key "initial on or off = 0"
+-self.Error: initially set to 0. Is set to 1 if in the starting phase (mainly in the switchOn method) an error is encountered.  All rules are deactivated, self.Error is only cleared when a new switchOn try is done.
+-self.prevModInfo: set to None, used when things I changed inside the gotBegin method.  
+-self.checkForChanges: initially set to 0, meaning in gotBegin no checking for changes of inifile is done.  When asked for the method self.editInifile, this variable is set to 1, meaning at each call in gotBegin the checkForChanges function is performed.
+
+-The function fillInstanceVariables (default empty, to be overloaded by a user class) is called, in order to set/control variables that remained outside the grammar lists.
+ 
+ Switching on (or off)
+In the function _initialize_ (of the grammar itself, no default in the grammar classes), after loading the grammar the function self.switchOnOrOff() should be called in order to complete the switching on/off process.  All rules are activated by default.  If an error occurs, all rules are deactivated, but the grammar remains On. Is another behaviour is wanted, the function switchOn should be overloaded in the grammar.
+
+
+
+4. In the function gotBegin in the minimal case (as sketched above), you should call:
+if self.checkForChanges:
+    checkForChanges()
+
+Above variable is normally set to 0.  It is changed to 1 in the editInifile method.  After editing the inifile, at each utterance this check is performed.  It is only reset when the grammar is reloaded.
+
+If you want to activate or deactivate rules in gotBegin, or maintain grammar lists here, you should do more work.  Basically use the variable self.prevModInfo, to be ready as quick as possible if the module info didn't change.  Also check for the variable self.Error.
+
+By the way if the grammar is switched off, gotBegin is not entered, it is skipped already in the GrammarX callback method.
+After that in the 'gotBegin' function is to
+
+
+ gramSpec variable
+ 
+Because of the possible translations/synonyms that are possible to insert in IniGrammar grammars, some manipulation is done with the *gramSpec* variable, which holds the grammar definition.
+
+- gramSpec is the compulsory name for the grammar specification, and the load statement (most often in the initialize function) should have self.gramSpec as parameter:
+
+:CODE:
+    def initialize(self):
+        self.load(self.gramSpec)
+        # if switching on fillGrammarLists, also with lists like {n1-9} or {number1to99}, will be called:
+        self.switchOnOrOff() 
+::
+
+-The class variable gramSpec can be a string or a list. But if the grammar is translated (or there are synonyms) a copy of the class variable gramSpec is put into self.originalGramSpec,  and converted into a string.
+-If the translation/synonym process has changes, the resulting grammar specification is put as a string in *self.gramSpec* (so becomes an instance variable).
+
+-As a consequence changes to be original grammar specification can not be done after the *__init__* function. If you want to add or remove grammar rules, typically because of settings in the [general] section of the inifile of the grammar, you should add your own __init__ function, as is done in the _tasks.py grammar of Unimacro. 
+-- First the inifile is started  (startIniFile()), resulting in the fillInstanceVariables() function to be called.
+--Then the wanted action on the gramSpec is done.
+--Only then the IniGrammar.__init__ is called.
+
+-The grammar is NOT automatically loaded again after you change options in the [general] section of a grammar inifile. Call *switch on grammar_name* or restart Dragon.
+
+
+ Useful functions at recognition time
+ 
+ link(/features/translations/callbacklogic.html, hasCommon)
+Check if word or words of the recognition match words of the grammar
+
+
+
+ 

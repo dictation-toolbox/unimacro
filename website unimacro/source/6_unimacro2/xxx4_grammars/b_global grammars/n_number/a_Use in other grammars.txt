@@ -1,0 +1,41 @@
+Number grammar rules in other Unimacro grammars
+
+For simple use, take _number simple.py as example. For more difficult things study _number extended.py.
+
+-The definition of the number grammar rules and the processing functions is in the class definition of IniGrammar, in the file natlinkutilsbj.py.
+-Especially the rules *&lt;integer>* and *&lt;float>* are defined for use in another Unimacro grammar
+-The functions *waitForNumber* and *collectNumber* are used to initialize and finalize the process.
+
+ The Steps
+
+ Step 1. Choose your set of grammar rules:
+    number_rules = natbj.numberGrammarTill999[language] # hundreds, really up to 99999 (99 hundred 99).
+    number_rules = natbj.numberGrammarTill999999[language] # including thousands
+    number_rules = natbj.numberGrammar[language] #  including millions
+
+-Take one of the lines above in your grammar specification.
+-Note with each set you can dictate long numbers with parts below 100: "number three twenty two fifty six nine"
+
+-Call the numbers grammar part with &lt;integer> or &lt;float>
+
+
+ Step 2 or Step 3
+
+In *gotResultsInit* or in your exported rule do initialisation and *waitForNumber*
+-Basically set *self.waitForNumber('number')*. 
+
+ Step 4
+In *gotResults* your number is collected with *self.collectNumber()*.
+-In the simple example, the number (as string, see below) is now in the instance variable *self.number*.
+
+ Step 5
+You need to do something with this number. For example output to the foreground window and do some  keystroke(s)  following it. See the function *outputNumber*. As you see you can do different actions after printing the number depending on the program that is in the foreground. 
+
+ Numbers or Strings
+-Numbers are by default collected as strings. It is therefore also possible to dictate leading zero's.
+-When you want to collect an *integer* as an *int* (not as a *string*), give this as named parameter in *self.collectNumber(asNumber=1)*
+-A *float* is always returned (collected) as a string. No leading zero's of the first part are returned, and the latter part (behind the *point* or *dot*) can only be dictated as digits or numbers below 100.
+
+ Spoken forms
+This grammar and other grammars using large numbers now used to spoken forms mechanism, which is described in
+link(/features/numbers/index.html, numbers spoken forms).

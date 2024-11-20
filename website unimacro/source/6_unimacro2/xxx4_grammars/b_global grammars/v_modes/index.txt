@@ -1,0 +1,51 @@
+Modes
+
+This grammar is developed after a question of Angela Wigmore about making special modes for MathML and LaTeX.  For testing I included also a password mode.  
+
+The grammar is global command but at start only the control rule is switched on.
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:&#123;mode&#125;  mode (on | off) 
+:COL: switch on or off one of the modes
+
+::
+
+The modes are *normal*, *password*, *latex* and *math*.
+
+If you switch on one of the modes, the rules for that specific mode are switched on, possibly exclusive.  See control variables at the top of the grammar.
+
+ Password mode
+
+This mode has defined the rules: &lt;letters&gt;, &lt;ucletters&gt; (upper case) and the numbers rule.
+
+So you can say for example *alpha bravo Cap charlie delta* and *abCd* should appear.
+
+The numbers rule is a more complicated one which needs probably the always the word *number* in front, so dictate *alpha number 2 Cap bravo number 2 hundred twenty three* to get *a2B223*.  As long as the mode is exclusive it is possible to experiment with leaving out the word *number*.
+ 
+ The lists
+The different rules can use lists, which must be filled.  This can be done in several ways:
+
+- the *letters* are predefined in ICAlphabet (in the super class)
+- the *number* parts are already defined in the superclass 
+- the *operators* and the *Greek letters* (LaTeX and Math mode) can be defined in the ini file *_modes.ini*.  Study the examples.
+
+ Translations
+If you want to use the grammar in another language (Dutch, French), *command words* and *list words* have to be translated.  The Unimacro *IniGrammar*as this possibility, and most can be done in the appropriate *ini file*.  So if you go French, and you say the translated version of *Edit modes*, the French version of the inifile is opened, and you can put in all the translations of the grammar words and of the several list words.
+
+For the *letters* some extra work probably has to be done in the superclass (natlinkutilsbj.py).
+
+For the *number* part also extra work should be done, probably best first in the grammar _number. Most things should be adapted in the file natlinkutilsbj.py).
+
+ Exclusive
+If exclusive rules are used a few special functions should be included in order to stop the exclusive mode if the microphone is toggled.  See the source file for this.
+
+ Repetition/quasi recursive rules
+Note the careful way the *+* sign for the repetition of rules is used.  This way was adopted in the grammar *_keystrokes*.  As this grammar can hit very often, it should be switched off when you use modes in a non-exclusive way.  Be careful with changing this way of repetition.
+
+ Reuse of (translated) ini files
+If you make a better inifile than the previous one, in English or in another language, and you are on subverion (SVN), you can leave this one in appropriate subdirectory of *sample_ini*. After committing others can profit from this.
+
+

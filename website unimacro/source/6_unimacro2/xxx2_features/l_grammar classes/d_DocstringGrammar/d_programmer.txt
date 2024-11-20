@@ -1,0 +1,10 @@
+Instructions for the programmers that want to to make grammars based on the DocstringGrammar class
+
+
+ gramSpec variable
+ 
+This variable will be a string, constructed from the docstrings and from the *gramSpec* variable at the top of the class definition. In any case, in the __init__ phase, the gramSpec is converted into a string.
+
+-When you want to include/exclude grammar rules at start of the grammar, do this the way that is described for the IniGrammar specification, before you call the DocstringGrammar.__init__ function.
+-When translated further, in the IniGrammar superclass, the other link(/features/grammarclasses/inigrammar/programmer.html, considerations about the variable *gramSpec*) should be noticed.
+

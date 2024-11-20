@@ -1,0 +1,174 @@
+Natlinkstatus module
+
+This module holds "status" information about NatLink (new around 2008, version 3.7). It is in the core folder of NatLink.  Both *natlinkmain* and the NatLink install functions (*natlinkconfigfunctions*)can make use of the status info in the same way.
+
+In a grammar a *status* instance can be got:
+
+:CODE:
+import natlinkstatus
+status = natlinkstatus.NatlinkStatus()
+::
+
+and the functions can be called accordingly with eg:
+
+:CODE:
+    userDir = status.getUserDirectory()
+::
+
+So, most data are collected through this instance "status" of the NatlinkStatus class.
+
+Up to version 3.8 most of these data were stored and retrieved in the registry, HKCU\software\NatLink (HKEY_CURRENT_USER).  Only the username and the folder of the speech profile of the current user is collected when the user changes, and is maintained in this class, as a class variable.
+
+Starting with version 3.9 the user settings are stored in a configuration file (*natlinkstatus.ini*), which is created on first use in the *Core* directory. When migrating from a previous version, the registry settings are copied into this natlinkstatus.ini file.
+
+:CODE:
+The functions below are in class NatlinkStatus. The natlinkconfigfunctions
+can subclass this class. 
+::
+
+ The following  functions manage information that partly can change at changeCallback time
+(when a new user opens)
+
+:CODE:
+
+setUserInfo(args) put username and directory of speech profiles of the last opened user in this class.
+getUserName: get active username (only if NatSpeak/NatLink is running)
+getDNSuserDirectory: get directory of user speech profile (only if NatSpeak/NatLink is running)
+::
+
+
+ The functions below should not change anything in settings, only  get information.
+
+:CODE:
+getDNSInstallDir:
+    returns the directory where NatSpeak is installed.
+    if the registry key NatspeakInstallDir exists(CURRENT_USER/Software/NatLink),
+    this path is taken (if it points to a valid folder)
+    Otherwise one of the default paths is taken,
+    %PROGRAMFILES%\Nuance\... or %PROGRAMFILES%\ScanSoft\...
+    It must contain at least a Program subdirectory
+
+getDNSIniDir:
+    returns the directory where the NatSpeak Inifiles are located,
+    notably nssystem.ini and nsapps.ini.
+    If the registry key NatspeakIniDir exists (CURRENT_USER/Software/NatLink),
+    and the folder exists and the needed inifiles are in this folder this path is returned.
+    Otherwise it is looked for in %COMMON_APPDATA%\Nuance\... or %COMMON_APPDATA%\Scansoft\...
+
+getDNSVersion:
+    returns the in the version number of NatSpeak, as an integer. So 9, 8, 7, ... (???)
+    note distinction is made here between different subversions.
+
+getWindowsVersion:
+    see source below
+
+getLanguage:
+    returns the 3 letter code of the language of the speech profile that
+    is open (only possible when NatSpeak/NatLink is running)
+
+getPythonVersion:
+    returns, as a string, the python version. Eg. "2.3"
+    If it cannot find it in the registry it returns an empty string
+
+getUserDirectory: get the NatLink user directory, Unimacro will be there. If not return ''
+
+getVocolaUserDirectory: get the directory of Vocola User files, if not return ''
+
+NatlinkIsEnabled:
+    return 1 or 0 whether NatLink is enabled or not
+    returns None when strange values are found 
+    (checked with the Ini file settings of NSSystemIni and NSAppsIni)
+
+getNSSYSTEMIni(): get the path of nssystem.ini
+getNSAPPSIni(): get the path of nsapps.ini
+
+getBaseModelBaseTopic:
+    return these as strings, not ready yet, only possible when
+    NatSpeak/NatLink is running.
+
+getDebugLoad:
+    get value from registry, if set do extra output of natlinkmain at (re)load time
+getDebugCallback:
+    get value from registry, if set do extra output of natlinkmain at callbacks is given
+
+getVocolaTakesUnimacroActions
+getVocolaTakesLanguages: additional settings for Vocola
+
+more: see source...
+::
+
+When run the module in IDLE or Pythonwin on my desktop (Quintijn) I get:
+
+:CODE:
+UserDirectory: D:\natlink\unimacro
+inserted in sys.path: D:\natlink\unimacro
+---NatLink is enabled
+	CoreDirectory	D:\natlink\natlink\MacroSystem\core
+	InstallVersion	3.8
+---Vocola is enabled
+	VocolaUserDirectory	D:\Documenten\vocolaqh
+	VocolaTakesLanguages	1
+---Unimacro is enabled
+	UserDirectory	D:\natlink\unimacro
+	UnimacroUserDirectory	D:\Documenten\unimacroqh
+	UnimacroIniFilesEditor	C:\Program Files\ActiveState Komodo IDE 5\komodo.exe
+other NatLink info:
+	DebugLoad	-
+	DebugCallback	-
+	NatlinkDebug	-
+system information:
+	DNSInstallDir	C:\Program Files\Nuance\NaturallySpeaking9
+	DNSIniDir	C:\Documents and Settings\All Users\Application Data\Nuance\NaturallySpeaking9
+	DNSVersion	9
+	WindowsVersion	XP
+	PythonVersion	2.5
+remaining information:
+	DNSFullVersion	9.51.200.282
+	NatlinkDllRegistered	1
+	IncludeUnimacroInPythonPath	-
+::
+
+ Expanding Environment Variables
+
+This was described already in link(natlinkcorefunctions). But via natlinkstatus, this expansion mechanism can also use a few *Natlink* related variables. Note the variables are *case sensitive*.
+
+Usage example:
+:CODE:
+import natlinkstatus
+
+short = "~/Quintijn"
+expanded = natlinkstatus.expandEnvVars(short)
+print 'Some directory in home:', expanded
+
+# the Dragon directory:
+short = "%PROGRAMFILES%/Nuance"
+expanded = natlinkstatus.expandEnvVars(short)
+print "The dragon directory: %s"% expanded
+# the Dragon ini files directory:
+short = "%COMMON_APPDATA%/Nuance"
+expanded = natlinkstatus.expandEnvVars(short)
+print "The dragon config files: %s"% expanded
+
+# log files in Unimacro:
+short = "%UNIMACROUSERDIRECTORY%/enx_log"
+expanded = natlinkstatus.expandEnvVars(short)
+print "log files directory Unimacro: %s"% expanded
+
+# My VocolaUserDirectory:
+short = "%VOCOLAUSERDIRECTORY%"
+expanded = natlinkstatusexpandEnvVars(short)
+print "My VocolaUserDirectory: %s"% expanded
+
+::
+
+prints for example:
+
+:CODE:
+Some directory in home: C:\Documenten\Quintijn
+The dragon directory: C:\Program Files (x86)\Nuance
+The dragon config files: C:\ProgramData\Nuance
+My UnimacroUserDirectory: C:\Documenten\unimacro_qh\enx_log
+My VocolaUserDirectory: C:\Documenten\vocola_qh
+::
+
+Read more about these extended environment variables in link(/grammars/globalgrammars/folders/environmentvariables.html, grammar folders).

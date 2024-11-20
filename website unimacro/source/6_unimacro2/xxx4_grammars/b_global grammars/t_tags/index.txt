@@ -1,0 +1,59 @@
+Making html tags
+
+A simple grammar, which helps with putting HTML tags in a file. 
+
+Out of order at the moment, will be fixed in due time (oct 2011)
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+:ROW:&#091;HTML&#93; Tag ({letters}+ | {tagname})
+:COL: Make a HTML tag, by either calling letters from the international alphabet, or one of your predefined tag names.
+
+Note the word HTML is optional (probably should be removed or made compulsory).
+
+:ROW: (Open | Close | Begin | End | Empty) Tag ({letters}+ | {tagname})
+:COL: Make only the open tag or close tag, or make an empty tag.
+::
+
+-The letters come from the international alphabet, so say *Tag delta delta* for a *&lt;dd&gt;&lt;/dd&gt;* tag.
+-The tag names can be defined in the  inifile section  *&#091;tagname&#93;*  by calling "Edit Tags", for example:
+
+:CODE:
+[tagname]
+Form = form
+Header 2 = h2
+Header one = h1
+Java script = script language="JavaScript"
+meta = meta
+script = script
+special header = h1 class="special"
+table = table
+table data = td
+table row = tr
+table header = th
+::
+
+ Putting tags around existing text
+As a special feature is included: if text is selected before you give a tag command, the begin tag and the end tag are placed around the selection.
+
+ Initiall Off!
+
+Note this grammar is by default NOT in the macrosystem directory.  It is in the *DisabledGrammars* subdirectory of Unimacro.  In order to activate move or copy it into the macrosystem directory.  Toggle the microphone to get it recognized.
+
+Even then it is initially deactivated.  Either say "switch on grammar tags" to activate, or set in inifile (say *"Edit Tags"*):
+
+:CODE:
+[general]
+initial on = 1
+::
+
+Note that grammar is then on in all windows, because it's a global grammar.  More should be done with the window policy if this should be avoided.
+
+You can always say "switch on grammar Tags" or "switch off grammar Tags" to enable or disable on-the-fly.
+
+
+ Development
+
+When this grammar is going to be used, probably more refinements could be made.
+

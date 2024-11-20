@@ -1,0 +1,74 @@
+ Meta actions
+(Parts of) actions in can be defined as *meta action*. The actions module recognises such a string, and tries to resolve the meta action through the specifications in the *ini file actions.ini* (see below).  Meta actions can be nested. As soon as actions are different across different programs/Windows, a meta action is appropriate: commands can be kept global, the actions can be different for different applications.
+
+Most meta actions are now written without spacing, so 
+*&lt;&lt;filesaveas&gt;&gt;* instead of 
+&lt;&lt;file save as&gt;&gt;.
+
+This mechanism is made because several commands (like *"file save as"*) can have different keystrokes (or other actions) in different windows. 
+It can be defined as a global command, either Unimacro or as Vocola command. The default action will do for most applications, and some applications require different actions, for example another keystroke sequence. 
+
+
+ Actions with a count
+Some actions, *exclusively called from grammars*, can have a optional count. If the last letter of the meta action is "n", 
+
+
+ ini files
+The meta action mechanism is controlled by the user by the file *actions.ini*, and can be called with commands *show actions* and *edit actions* (commands from the grammar *_control*.
+
+"Show actions" gives information about the window from which it was called, which ini files sections are active, and which actions are taken from which section.
+
+"Edit actions" gives you the complete ini file. On the left side of the _*=*_ is the meta action, on the right side the actual action to be performed.  See below for program and window specific actions.
+
+Edit your own actions in the &#091;default]  section or in the appropriate section of your program.  If you want to add a new action for a program that is not in the file yet, make a new section. If you do not know the name of the program, look at the top of the text that is shown with the command *show actions*, or give the command *give window info* (from the grammar *_general*).
+
+ program and window specific meta actions
+
+Specific actions can even be defined for specific window titles inside the program, for example in &#091;outlook html&#093; (if your window title contains "html"). If your window title does not contain "html" only the section &#091;outlook&#093; is taken.
+
+
+ Examples
+
+In the description the use of link(/features/unimacroandvocola/metaactions.html, meta actions in Vocola), you'll find examples of *file save as* and of *save|close window|document*.
+
+A short example goes about highlighting (searching) for dictated text. It is in the grammar link(/grammars/globalgrammars/general/index.html, *_general*).
+
+The keystrokes to start the search and to finish the search can be different in different applications. They are controlled by the *meta actions* *&lt;&lt;startsearch>>* and *&lt;&lt;searchgo>>*.
+
+Often you can then rely on default actions for *startsearch* and *searchgo*, which are (probably, check your own *actions.ini* file):
+
+ 
+:CODE:
+[default]
+startsearch = {ctrl+f}
+searchgo = {enter}
+::
+
+For several applications you have to change one or both of these meta actions in order to get things work:
+
+:CODE:
+[emacs]
+startsearch = {ctrl+s}
+
+[excel]
+searchgo = {enter}{esc}
+
+[notepad]
+searchgo = {enter}; {esc}
+
+[winword]
+searchgo = {enter}{esc}
+
+[wordpad]
+searchgo = {enter}{esc}
+
+[outlook]
+startsearch = {f4}
+searchgo = {enter}{esc}
+::
+
+ Section == application name
+
+One detail: how do you know which application you are working in, the application name must be filled in between the &#091;]. Well, the command *give window info* (a command of the grammar *_general* again), gives you the required information.
+
+A few examples are given in the link(/features/unimacroandvocola/metaactions.html, Unimacro and Vocola section).

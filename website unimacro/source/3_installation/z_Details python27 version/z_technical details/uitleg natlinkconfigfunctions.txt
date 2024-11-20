@@ -1,0 +1,64 @@
+baseFolder from argv: C:\NatLink\NatLink\confignatlinkvocolaunimacro
+checking PythonPathAndRegistry
+Type 'u' for a usage message
+
+NatLink/Vocola/Unimacro config> u
+------------------------------------------------------------
+Use either from the command line like 'natlinkconfigfunctions.py -i'
+or in an interactive session using the CLI (command line interface). 
+
+[Status]
+
+i       - info, print information about the NatLink status
+I       - settings, print information about the natlinkstatus.ini settings
+j       - print PythonPath variable
+
+[NatLink]
+
+e/E     - enable/disable NatLink
+
+y/Y     - enable/disable debug callback output of natlinkmain 
+x/X     - enable/disable debug load output     of natlinkmain
+
+d/D     - set/clear DNSInstallDir, the directory where NatSpeak/Dragon is installed
+c/C     - set/clear DNSINIDir, where NatSpeak/Dragon INI files are located
+
+[Vocola]
+
+v/V     - enable/disable Vocola by setting/clearing VocolaUserDir, the user
+          directory for Vocola user files (~ or %HOME% allowed).
+
+b/B     - enable/disable distinction between languages for Vocola user files
+a/A     - enable/disable the possibility to use Unimacro actions in Vocola
+
+[Unimacro]
+
+o/O     - enable/disable Unimacro, by setting/clearing the UnimacroUserDirectory, where
+          the Unimacro user INI files are located, and several other directories (~ or %HOME% allowed)
+p/P     - set/clear path for program that opens Unimacro INI files.
+l       - copy header file Unimacro.vch into Vocola User Directory
+m/M     - insert/remove an include line for Unimacro.vch in all Vocola
+          command files
+
+[UserDirectory]
+n/N     - enable/disable UserDirectory, the directory where
+          User NatLink grammar files are located (e.g., ...\My Documents\NatLink)
+
+[Repair]
+r/R     - register/unregister NatLink, the natlink.pyd (natlink.pyd) file
+          (should not be needed)
+z/Z     - silently enables NatLink and registers natlink.pyd / disables NatLink
+          and unregisters natlink.pyd.
+[AutoHotkey]
+h/H     - set/clear the AutoHotkey exe directory.
+k/K     - set/clear the User Directory for AutoHotkey scripts.
+[Other]
+
+u/usage - give this list
+q       - quit
+
+help <command>: give more explanation on <command>
+        
+============================================================
+
+NatLink/Vocola/Unimacro config> 

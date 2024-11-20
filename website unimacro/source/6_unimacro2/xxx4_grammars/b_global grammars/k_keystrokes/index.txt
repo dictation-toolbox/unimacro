@@ -1,0 +1,130 @@
+Hitting (multiple) keystrokes
+
+:CODE:
+Many improvements in release 4.0. 
+
+WARNING: "_keystrokes" is a powerful grammar, but it can also hit too easily when you do not want so. 
+
+So switch this grammar on when you really use it, and otherwise keep it switched off!
+::
+
+This grammar was originally designed to provide a multiple keystrokes alternative for DragonDictate. DragonDictate could handle only one word or (keystroke) command in each phrase, but was responding very fast. With the introduction of NaturallySpeaking this responsiveness was much less (slower), so it seemed useful to provide the possibility of saying more keystrokes in one phrase.
+
+So, with this grammar you can hit multiple keystrokes in one command, *simple*, see first examples below, and *extended*, with an optional mouse click in front, and arbitrary dictation at the end.
+
+ Simple keystrokes, examples:
+
+-Repeatable keys, like *up*, *page down* and *tab*, which can have an optional count (so you can say the *up*, but also *up 3*) and
+-Non-repeatable keys like *alpha*, *bravo*, *home*, *context menu*.
+
+ 
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:produces
+
+
+
+:ROW: alpha bravo Charlie delta
+:COL:abcd
+
+:ROW: up right page down two word right three
+:COL: silly example moving around the screen
+
+:ROW:alt foxtrot Oscar
+:COL: possible file open command
+
+:ROW:control papa OK
+:COL:print file in one command
+
+:ROW: home delete three
+:COL: go to beginning of line and delete three characters
+
+:ROW:end of line backspace 5 Zulu
+:COL:
+
+:ROW:word left 2 delete 3
+:COL: go 2 words to the left and delete 3 characters
+
+:ROW:control (eff|function) one 
+:COL: show or hide the ribbon in Office (word, excel, outlook, etc)
+
+::
+
+ Examples of extended keystrokes:
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%: command
+:COL:produces
+
+
+:ROW: here space
+:COL: clicks at the place where the mouse is, and insert a space (splitting words)
+
+:ROW: click backspace
+:COL: similar: clicks, and hit the backspace key (merging two words)
+
+:ROW: here click
+:COL: same as "mouse click", same as "click", but only "here" is not allowed 
+
+:ROW: here context menu
+:COL: do a right click, so showing the context menu on the place where the mouse is
+
+:ROW: here dictate this is a demonstration
+:COL: inserts to dictate "this is a demonstration" at the position of the mouse pointer
+
+:ROW: &#091;here] double click dictate replacement
+:COL: selects the word under the mouse pointer and replace by the text "replacement" 
+
+(the word here is optional)
+
+::
+
+
+ Controlling keystrokes and alternative command sets:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:switch on/off keystrokes
+:COL:enable or disable this grammar (this is a command from the grammar _control).
+
+
+
+:ROW: show keystrokes
+:COL: Shows the current possible keystrokes commands if grammar is enabled.
+
+ Shows dialog box if grammar is disabled
+ 
+ (this is also a command from the grammar _control)
+
+:ROW:do keystrokes simple
+:COL:Doing all the keystrokes, but without mouse clicking or optional dictation
+:ROW:do keystrokes extended
+:COL:Doing all the keystrokes as in the above examples, including *here* or some clicking at the beginning and *dictate ...* at the end
+
+
+:ROW:codes of
+:COL:Prints the codes of the keys that follow, instead of doing the keystrokes itself (useful when defining commands for these or other grammars or in Vocola command files)
+
+:ROW:here context menu
+:COL: special case, instead of (left) clicking and then the *shift+f10 key*, a right click is performed
+::
+ 
+ Modifiers
+Before each key one or more modifiers (*shift*, *alt* and/or *control*) can be spoken.  These modifiers are augmented with *Cap* and 
+*All-Caps*. 
+
+:CODE:
+Dutch: hoofdletter, grootschrift, sjift, shift, control, alt
+::
+
+
+ Modes
+In this grammar " link(modes.html, *Modes*) " are introduced, so that in some programs special
+keystrokes can be defined. These can be used in combination with all the
+other keystrokes.
+
+ More info follows soon... some things above are NOT implemented in the current beta version...

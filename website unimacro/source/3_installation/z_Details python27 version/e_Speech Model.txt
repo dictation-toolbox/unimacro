@@ -1,0 +1,35 @@
+Problems with Speech Model BestMatch V
+
+ NatLink functions poorly with Speech Model BestMatch V (Dragon 12)
+ 
+-Note: this problem seems to have been only for Dragon 12.
+ 
+Dragon NaturallySpeaking versions 12 and onwards offer a new Speech Model, BestMatch V, by default on many machines. It is claimed  that accuracy is improved with this Speech Model, although independent tests seem to indicate that the improvement often fades over time.
+
+Unfortunately, this new speech model handles even mildly-complicated command grammars very poorly: when using such grammars, it can take multiple seconds for your utterances to be typed or take effect, which is extremely frustrating.  Accordingly, we recommend that if you use NatLink you stick with BestMatch IV, which has essentially the same accuracy and does not suffer from slow recognition.
+
+When starting up NatLink (together with Dragon) the speech model of the User Profile that is open is checked.  A warning is given in the *Messages from NatLink* window, at start when you use the BestMatch V Speech model.  This check is also performed when you change your User Profile.
+
+ How to use BestMatch IV (or even BestMatch III) instead of BestMatch V?
+
+image(settingupbestmatchfournewuser.png, title=setting up a new User Profile, class=imageleft, displayscale=0.5)
+
+You should create a new User Profile.
+
+
+With the Dragon option Profile, New User Profile, New or with Profile, Manage User Profiles, New you find this dialog window.
+
+break()
+
+image(createbestmatchfouradvanced.png, title=choose advanced options, class=imageleft, displayscale=0.5)
+
+After several screens in the setup wizard you come to this dialog. Choose the Advanced button!
+
+break()
+
+image(choosebestmatchfourinsteadofbestmatchfive.png, title=choose bestmatch iv option, class=imageleft, displayscale=0.5)
+
+Choose in this dialog for the BestMatch IV option that is closest to the BestMatch V option that was specified already. Note that BestMatch III is probably even faster if your work relies more on commands than on dicate.
+
+break()
+

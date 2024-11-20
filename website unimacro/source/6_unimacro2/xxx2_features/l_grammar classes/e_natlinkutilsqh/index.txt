@@ -1,0 +1,11 @@
+natlinkutilsqh
+
+A lot of utility functions reside in this file some of which are reviewed in the following pages
+
+For example 
+-link(/features/grammarclasses/natlinkutilsqh/getfunctions.html, get functions), 
+-link(/features/grammarclasses/natlinkutilsqh/moduleinfo.html, module and program info) and functions to see if a window matches certain requirements
+-link(/features/grammarclasses/natlinkutilsqh/wordproperties.html, word properties), (must probably be revised with NatSpeak 11).
+
+Also see in Miscelaneous the elaborated SetForegroundWindow function!
+

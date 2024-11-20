@@ -1,0 +1,7 @@
+BrowsableGrammar
+
+This grammar base is developed by Bart Jan van Os. It makes it possible to browse through all the grammars (that subclass this grammar base) in a special pythonwin window.  Pythonwin is also one of the IDE's for python in a Windows environment.
+
+Basically all lists that are set with the setList (emptyList, appendList) calls are also remembered by each grammar for these displaying purposes.  With the GrammarBase, as provided by Joel Gould, lists are pumped into the SAPI system, but not available any more for the NatLink/python user.
+
+The calling of the grammar browser is done through the grammar _control.  See there for more instructions.

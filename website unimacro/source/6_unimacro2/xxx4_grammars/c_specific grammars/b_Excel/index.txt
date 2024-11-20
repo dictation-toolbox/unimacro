@@ -1,0 +1,14 @@
+Grammar for Microsoft Excel
+
+This grammar obtains specific knowledge about the running Excel instance by the link(/features/actions/actionclassesforapplications.html, action classes module for Excel).
+
+Note: Excel can only connect to one Excel instance, if you have more instances running, you will able to do the commands only in one of them. Solution: close all Excel instances and work only from one instance.
+
+This grammar is still work in progress. Please try "show excel" and you will see the possible commands.
+
+Jumping to Columns is done by this grammar,
+
+Jumping to Rows is done by the link(/grammars/globalgrammars/lines/index.html, *grammar _lines*). A *Row* is thus called *line*, unless you change the command words in the grammar lines (*edit lines*, and change the section [grammar words]).
+
+
+

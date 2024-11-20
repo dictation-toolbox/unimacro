@@ -1,0 +1,100 @@
+Brackets (put around text)
+
+Note: this grammar is initially in the DisabledGrammars subdirectory of Unimacro. Copy the python file (_brackets.py) to the Unimacro directory, and switch the grammar on with the next command:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:switch (on|off) brackets
+:COL: control the on/off state of this grammar.
+::
+
+ The grammar:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:between {brackets}
+:COL:insert brackets around the selected text, or simply put the brackets, with the cursor inside.
+:ROW:between {brackets} &lt;dgndictation>
+:COL:print your dictated text inside the brackets 
+
+::
+
+ Examples: 
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:result ( | shows the cursor position after the command)
+
+:ROW:between brackets hello world
+:COL:(hello world)|
+:ROW:between quotes Cap my favorite test period just kidding period
+:COL:"My favorite test.  Just kidding."|
+
+:ROW:between braces space-bar another thing space-bar
+:COL:&nbsp;{another thing}&nbsp;|  (put a space before and after the braces)
+
+:ROW:between angle brackets space-bar
+:COL: &nbsp;&lt;|> (a special case, and insert a space *before the &lt;*. Position the cursor between the angle brackets.)
+
+:ROW:between quotes brackets
+:COL:"(|)"  (more brackets together, and puts the cursor in the middle)
+
+:ROW:between HTML angle brackets 
+:COL:&amp;lt;|>   (special case, if a *|* in a brackets definition, the cursor is put in the place of this vertical bar)
+
+::
+
+
+
+-If you put brackets around selected text, whitespace before or after the selection is maintained and put outside the brackets.
+-If you dictate *space-bar* at the start or the end of the dictated text, a space will be inserted before or after, but outside the brackets.
+-But note: first give the command words like *between brackets* or *between single quotes* etc.
+-Control your own set of brackets by calling  *edit brackets* and editing the _brackets.ini configuration file (and see sample below).
+
+ Warning
+You cannot correct dictation errors when you use the &lt;dgndictation> imported rule. Select text that went wrong, and redictate. If then an error occurs, you can correct your dictate.
+
+ Sample configuration file
+
+:CODE:
+[brackets]
+angle brackets = <>
+asteriscs = **
+braces = {}
+brackets = ()
+colons = ::
+double angle brackets = <<>>
+double quotes = '""'
+double underscores = ____
+parens = ()
+parenthesis = ()
+quotes = '""'
+single quotes = "''"
+square brackets = []
+triple quotes = '""""""'
+underscores = __
+vertical bars = ||
+HTML square brackets = &#091;|]
+HTML angle brackets = &lt;|>
+
+[general]
+initial on = 0
+
+
+[grammar name]
+name = brackets
+
+
+[grammar words]
+between = between
+::
+
+-Note the vertical bar to give the cursor position in case of asymmetric brackets.
+-The grammar word *between* can have synonyms, for example *between = between | inside*
+-When the grammar is switched on, you will see *initial on = 1*.
+-For single and double quotes the definition must be double or single quoted, a peculiarity of the ini file mechanism.
+

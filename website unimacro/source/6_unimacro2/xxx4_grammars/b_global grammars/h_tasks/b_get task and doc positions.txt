@@ -1,0 +1,83 @@
+Getting the taskbar and document positions
+
+-The taskbar positions are global,
+-The document positions are application specific.
+
+ Get Taskbar positions
+:TABLE firstcoldifferent=0:
+:ROW colspan=2:
+Before you can use the commands below, the correct mouse positions must be collected, once. 
+
+I now prefer the taskbar at the bottom, with tasks stacked, like:
+
+image(task numbers on taskbar.jpg, displayscale=0.2)
+
+But other positioning works too.
+
+:ROW colspan=2:
+:H3:Getting the proper mouse positions
+
+-Position the mouse on the first task, and say the command _get task position one_.
+-Position the mouse on one of the other tasks (eg 5) and say _get task position n_ (in this case *five*).  The difference between the mouse positions of each task is now calculated.
+::
+
+ Get Document positions
+ 
+:TABLE firstcoldifferent=0:
+:ROW colspan=2:
+For applications that you want to use, eg Chrome or an IDE (in this example Komodo), youshould now get the correct mouse positions. This needs to be done once, as long as the task remains in the same place.
+
+I have the chrome documents at the top, of course, and the Komodo documents on the left. On paper strips I have marked the numbers for the different documents. For Chrome the tabs shrink when there are more tabs on, so you have to smuggle a bit.
+
+
+:ROW:
+image(document numbers chrome.jpg, displayscale=0.3)
+
+Example document numbers chrome (above) and Komodo (right)
+:COL:image(document numbers komodo.jpg, displayscale=0.2)
+:ROW colspan=2:
+-Be sure the application is in focus!
+-Position the mouse on the tab of the first document, and say the command _get document position one_.
+-Position the mouse on the tab of one of the other documents (eg 5) and say _get document position n_ (in this case *five*).  
+::
+
+
+
+ Get the icon position
+
+Note: I hardly ever use this command any more. If there are users that have profit of this option, please let me know!
+-For  the icon commands and for getting the taskbar menu you need the position of the computer clock in the system tray: position the mouse there and say _task position clock_ 
+ 
+ How is it stored?
+
+These data  are stored in the configuration file *actions.ini*.  Say *edit actions* to inspect. This means that speech profiles of different languages can use the same settings. 
+
+Moreover, other grammars and even Vocola commands can use these positions via the 
+link("/features/actions/shorthandcommands.html", "*unimacro shorthand commands") *TASK n* and *DOCUMENT n*.
+
+But note currently these two commands are not in the compatibility file Unimacro.vch.
+
+:CODE:
+[positions]
+clockx = -40
+clocky = 998
+mousex1 = 122
+mousexdiff = 69
+mousey1 = 1030
+mouseydiff = 0
+
+
+[positions chrome]
+mousex1 = 75
+mousexdiff = 146
+mousey1 = 47
+mouseydiff = 0
+
+
+[positions komodo]
+mousex1 = 97
+mousexdiff = -1
+mousey1 = 168
+mouseydiff = 27
+::
+

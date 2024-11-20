@@ -1,0 +1,62 @@
+Problems with the proper functioning of NatLink?
+
+ NatLink does not seem to function at all
+
+-The first check is whether the window "Messages from NatLink" comes up when Dragon starts. If that is not the case, NatLink is not enabled, or you have multiple instances of Dragon running:
+
+image(messages window.jpg, displayscale=0.7)
+
+--Sometimes more "instances" of Dragon (Dragon.exe) appear to be active. Kill all *natspeak.exe* * 32 processes in the task management window:
+
+image(task management.png, title=kill Dragon.exe in the task management window, displayscale=0.7)(see below).
+
+--and restart Dragon/Dragon.
+
+-If the problem persists, try to (re)run the configuration program. This is done either from the link(/installation/configuration.ml, Start menu) or from the files itself in the subdirectory as pointed  out below.
+
+ Rerun the configure program from the files itself (not the Start menu):
+
+-*You need to do this only if the procedure from the Start menu does not work*
+
+-Go (in the Windows Explorer) to the *natlink\confignatlinkvocolaunimacro* subdirectory of your NatLink installation (often on *C:\NatLink*).
+-Double click on the file *start_configurenatlink.py* ("*.py*" may be hidden in your view of the Explorer)
+-The configure GUI program is started in "elevated mode".
+
+-Likewise the Command Line Interpreter (CLI) can be run by double clicking on *start_natlinkconfigfunctions.py*.
+
+ Commands are not recognised after opening another speech profile
+-This sometimes happens after switching from English to another language or vice versa. It seems Dragon 11 sometimes doesn't *callback* correct to NatLink if the user has changed. Solution: restart Dragon, possibly check for other Dragon instances (see next). Please report if this problem happens more often.
+
+
+ Dragon influences accuracy of dictate (issue solved??)
+
+This  should  not happen anymore  in Dragon 12 and later.
+
+This is/was a very serious issue, which is the same time hard to test. Several users think this happened (including me, Quintijn, the maintainer of this website). The problem seems to have been solved in Dragon 12.
+
+
+ Vocola commands are not updated
+-When this is still an issue, please report this.
+
+   How to revert to Dragon without NatLink:
+   
+ 1. Disable NatLink:
+-Disable NatLink (uninstall is NOT needed, just Disable)(in the Configure GUI of Configure CLI, run in elevated mode).
+-If this does not work, you can disable NatLink manually by removing the following 2 lines at or near the bottom of the file *nsapps.ini* (on my NatSpeak 10, Windows Vista installation located on 
+*C:\ProgramData\Nuance\NaturallySpeaking10*). I did not need to be there for quite a number of years.
+
+:CODE:
+[.Natlink]
+App Support GUID={dd990001-bb89-11d2-b031-0060088dc929}
+::
+
+-Be sure no instances of Dragon are still running, see instructions at the top of this page.
+-When you restart Dragon the "Messages from NatLink" should not show up any more.
+
+
+ 2. If you still have problems with your speech profile/Dragon installation:
+-*Repair* your Dragon (Dragon NaturallySpeaking) installation, do not forget possible Service Packs.
+-*Import* your previously exported speech profiles (Manage Users -> Advanced -> Import...).
+-If you did not export your speech profiles before starting with NatLink, you can try to *Restore* your automatic Backup of your speech profiles (Manage Users -> Advanced -> Restore...).
+-As last resort make new speech profiles.
+

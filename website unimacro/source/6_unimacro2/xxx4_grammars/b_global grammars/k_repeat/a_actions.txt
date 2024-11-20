@@ -1,0 +1,25 @@
+ Actions needed for this Grammar
+ 
+ Searching:
+ 
+The search uses actions, which can be specialised for different programs.
+
+The basic action is SEARCH, which must be called with and action ('up' or 'down') and an optional text.  The repeat grammar only uses the variant in which the optional text is NOT given.
+When inside the action SEARCH several detail actions are used for this case:
+
+:CODE:
+search forward (default <<search start>> followed by <<search go>>, but preferably overruled e.g. by {F3})
+search back    (default not there, but overruled e.g. by {shift+f3})
+
+leftafterforwardsearch n 
+leftafterbacksearch n
+::
+
+these last two variables take a count, which is the length of the search string.  In most programs this count can be ignored, and both commands result in a simple _{left}_.
+
+In emacs for example _leftafterforwardsearch_ must do _{left n}_, and _leftafterbacksearch_ must do nothing.
+
+I can imagine the commands are extended with _rigthafterforwardsearch_ and _rigthafterbacksearch_, in order to position the cursor after the search text.
+
+See the sections on link("/features/actions/index.html", "actions") and 
+link("/grammars/globalgrammars/general/index.html", "grammar general") for more details.

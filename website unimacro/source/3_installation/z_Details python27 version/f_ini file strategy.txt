@@ -1,0 +1,57 @@
+Ini file strategy
+
+
+From the release unimacro2.6 on (and from natlink3.* releases), user link("/features/inifiles.html", "*ini files*") should never be overwritten by a new Unimacro release.  Instead a folder *sample_ini* contains all the default ini files.  If a user needs an ini file  (actions.ini or a grammar configuration ini file), and it is not yet present, Unimacro tries to find it in the *sample_ini* folder and copy from there into your UnimacroUserDirectory.
+
+ New releases problem:
+
+The drawback is that new entries, mainly improvements in actions.ini file or changed options in grammar configuration files are not updated with a new release.  You can either
+
+-Delete your own ini file, and the sample ini file will be found (possibly after restarting NatSpeak) and copied into the correct location.
+-Inspect the sample ini file and copy relevant lines into your own copy.
+
+ actions.ini
+A file *actions.ini* is needed for Unimacro actions. Is was (prior to natlink3.7) in the userDirectory of NatLink (where the unimacro grammar files are). 
+
+
+From natlink3.7 on this file is (expected) in the UnimacroUserDirectory, ie where the user ini files are. If after installation the file actions.ini is *not* in this directory, Unimacro tries to copy from:
+- the userDirectory (if you upgrade from a previous version of Natlink it should be found there, the file in the userDirectory is removed!)
+- the *sample_ini* directory of Unimacro (after a first install it should be found there).
+
+If these copy actions do not succeed, Unimacro grammars cannot start properly. 
+- Check in the Configuration GUI or CLI *if the userDirectory is set correct*!
+- Check if you have a *sample_ini* directory in your *userDirectory*.
+- As a last resort, try to find an actions.ini file and copy it into your UnimacroUserDirectory. 
+
+ spokenforms.ini
+New in release 4.0 is the xxx_spokenforms.ini configuration file, where *xxx* is the language code of your speech profiles. So for English *enx_spokenforms.ini*, etc.
+
+A sample is copied automatically from the *sample_ini* directory of Unimacro, if needed. At the moment this configuration file is mainly used for getting spoken forms for numbers and lists. This process is done automatically, and fairly complex, so please report any issues that arise.
+
+For non-English languages please provide the community with the correct contents, if your language is not yet in the sample_ini directory.
+
+More information in link(/features/inifiles.html, *inifiles*) and link(/features/numbers/index.html, *numbers and spoken forms*)
+
+ Updating
+So, according to the remark above, from release *natlink3.7* on, the default file actions.ini is in the *sample_ini* directory. Changes you made yourself in your own copy are not overwritten when you install a newer NatLink/Vocola/Unimacro release. But you can miss default changes. So, if you encounter problems, check the differences of the *sample_ini/actions.ini* file and your own actions.ini file in the UnimacroUserDirectory.
+
+ If you find empty sections in your inifiles, these are probably new due to a change in a grammar. Please compare carefully with the examples from the sample_ini directory!
+
+ Example grammar _tasks
+Recently (2010) the *taskotherdisplay* meta action has been changed. This means that in the file *_tasks.ini* the following should be changed:
+
+:CODE:
+[taskaction]
+(snip)
+other display = <<taskotherdisplay>>
+::
+ 
+ into:
+ 
+:CODE:
+[taskaction]
+(snip)
+other display = TASKOD
+::
+
+

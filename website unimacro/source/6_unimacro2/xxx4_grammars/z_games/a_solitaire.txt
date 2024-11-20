@@ -1,0 +1,81 @@
+The game of solitaire by voice!
+
+With the grammar "sol" it is now possible to play solitaire by voice.
+
+This grammar relies on mouse movement and mouse dragging commands. 
+
+ The basic commands are:
+
+:TABLE firstcoldifferent=1, border=1:
+
+:HEADING:command:
+:COL:result:
+
+:ROW:card 1-7
+:COL:move the mouse to one of the card piles (1, 2, 3, 4, 5, 6 or 7)
+
+:ROW:new card<br>next<br>go on<br>continue
+:COL:draw a new card
+
+:ROW:to stack 1-4
+:COL:drag a card from the mouse position to one of the four stacks
+
+:ROW:to 1-7
+:COL:drag a card from the mouse position to one of the seven piles
+
+:ROW:1-7 to stack 1-4
+:COL:drag from one of the piles to one of the stacks
+
+:ROW:1-7 to 1-7
+:COL:drag from one pile to another
+
+:ROW:card to 1-7
+:COL:drag the last drawn card to one of the piles
+
+:ROW:card to stack 1-4
+:COL:drag the last drawn card to one of the stacks
+::
+
+
+ Additional commands:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command:
+:COL:result:
+
+:ROW:pauses 0-7
+:COL:do some pausing after each command and each movement: pauses 0-7 (0 = off, fastest actions) (default=3)
+
+:ROW:mouse (higher | lower) [1-7]", 'this is useful when you position on a pile, but the mouse pointer does not point to the desired card; continue with "to 1-7"'],
+
+:ROW:stack automatically", 'after each move to all possible cards to the stacks ']])]]]
+
+ command(s) to be defined with the commands grammar:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command:
+:COL:result:
+
+:ROW:new game
+:COL:the keystroke {f2}
+::
+
+
+
+The complete grammar (can be changed with the command "edit solitaire"):
+
+:CODE:
+<card> exported = card {cnum};
+<newcard> exported = new card|next|'go on'|continue;
+<to> exported = to ((stack {snum})|{cnum});
+<cardto> exported = card to ((stack {snum})|{cnum});
+<cardnumto> exported = [card] {cnum} to ((stack {snum})|{cnum});
+<lower> exported = mouse (lower|higher) [{cnum}];
+<wait> exported = pauses (0 |{cnum});
+<auto> exported = stack automatically;
+::          
+                
+Programming notes:
+
+-a little bit pausing has to be done after all the dragging commands, so the minimum waiting time is 0.05 sec.
+-this grammar is an exercise in mouse moving and dragging.

@@ -1,0 +1,62 @@
+Make a donation
+
+Natlink has been kept "alive" for about 20 years by now. Several other packages are built on top of Natlink, like Unimacro, Voicecode (now obsolete) and Dragonfly. And on top of Dragonfly, many people use Caster and Mathfly.
+
+With the release of Dragon 15, now already several years ago, a few essential changes had to be made in the C++ interface, natlink.pyd, that connects Dragon with the python programs.
+
+Starting in 2020, the support for python 2 has stopped, and "we" are transforming the code to python 3, which is now well under way.
+
+Also, more collaboration is now taking place within the link(https://github.com/dictation-toolbox, Dictation Toolbox), and  Natlink and Unimacro are now two of the repositories in this Toolbox.
+
+If you want to make a donation work all this work, you can do so via one of the buttons below. I (Quintijn Hoogenboom) will share the gifts with the core developers of Natlink, Unimacro and Vocola.
+
+
+:TABLE align=center, width=50%:
+:HEADER width=50%:Euro's, Dutch interface:
+:COL:Dollars, English interface:
+
+:ROW align=center:<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick" />
+<input type="hidden" name="hosted_button_id" value="K4EWZNFGFWS9U" />
+<input type="image" src="https://www.paypalobjects.com/nl_NL/NL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Doneren met PayPal-knop" />
+<img alt="" border="0" src="https://www.paypal.com/nl_NL/i/scr/pixel.gif" width="1" height="1" />
+</form>
+:COL align=center:<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick" />
+<input type="hidden" name="hosted_button_id" value="QL8EZN7JR5STL" />
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+</form>
+::
+
+ Thank you in advance...
+ 
+ 
+:zz:
+old dollar
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="QL8EZN7JR5STL">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+</form>
+
+onbekende knop:
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick" />
+<input type="hidden" name="hosted_button_id" value="VKPQZTBRKJVJ6" />
+<input type="image" src="https://www.paypalobjects.com/nl_NL/NL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Doneren met PayPal-knop" />
+<img alt="" border="0" src="https://www.paypal.com/nl_NL/i/scr/pixel.gif" width="1" height="1" />
+</form>
+
+
+oude code , Euro's
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="K4EWZNFGFWS9U">
+<input type="image" src="https://www.paypalobjects.com/nl_NL/NL/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal, de veilige en complete manier van online betalen.">
+<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+</form>
+

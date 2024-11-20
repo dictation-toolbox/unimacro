@@ -1,0 +1,18 @@
+unittest Actions
+
+In the file *ActionsTest.py* (of the subfolder *unimacro_test* of the Unimacro folder) are brought together tests that test the actions mechanism of Unimacro.
+
+Tested are:
+-The handling of arguments of actions (conversion from text into numbers)
+-The return values, so sometimes an action breaks off halfway.
+-The timing of the *W* (Wait) action.
+
+
+Running this test (by calling *Unimacro test actions*) can always be performed, as long as DragonPad is not (active and nonempty).
+
+
+
+
+
+
+

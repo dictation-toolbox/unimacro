@@ -1,0 +1,225 @@
+Switching to tasks, windows inside a task, documents, monitors and icons 
+
+A few (a bit old) video's demonstrate task switching and translating this grammar into another language:
+
+-link(http://youtu.be/UShjPsC5VB8,"Nederlands, bekijk de korte *demo video over het schakelen tussen taken* (4.1 minutes)") (merk op het commando "taak positie" is nu" "geef taak positie".)
+-link(http://youtu.be/oX2LISi4FDs,"view the *demo movie task/icons/window switching*  (4.5 minutes)") (Note the Window command is a bit different now, and "Task position" is now "get task position".)
+-link(http://youtu.be/DvYL780_-l4,"view the *demo movie translating the grammar into Dutch* (3.3  minutes)")
+
+ Terminology
+ 
+-With *task* an application on the taskbar is meant.
+-With a *window*, when switching tasks, one of the windows of an application is meant.
+-With a *document*, in multiple documents or tabs applications (like Chrome), a tab of this application is meant.
+-With an *icon* a little image in the system tray is meant (not very much in use, I believe)
+-With a *monitor* one of your displays is meant.
+
+ Switching monitors 
+-Added November 2017
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:*monitor {monitors}*
+:COL:Switch to one of the monitors in the list, click at the top of the screen and goto to (0.3, 0.3) of the monitor.
+::
+
+When you have for example two monitors, you can configure them with something like: 
+
+:CODE:
+
+[monitors]
+one = 1
+left = 1
+right = 0
+two = 0
+::
+
+With trial and error you should find out which one is left and which one is right. In this example the right monitor appears to be 0.
+
+This feature uses functions from the module *monitorfunctions.py*.
+
+
+ Taskbar switching by position 
+
+When the tasks positions on the taskbar are known (see below), so the grammar knows about the task positions, then the application numbers of fixed programs are always the same, and they can be called by number and sometimes by name.
+
+ Task switching by name
+-You can also define application names, to call with the *task* command, if they are always on the same position on the taskbar see below and link(configuration).
+-Within a session you can give a window (possibly one of many inside a stacked application) a name, and return to this window by saying *task &ltname>*.
+
+ Task switching by number
+This can be implemented in two ways:
+-By giving the positions of the first task on the taskbar and one of the others. These positions are remembered until you change the placing of your taskbar. See link(get the taskbar positions).
+-By connecting to link(/grammars/global/shownumbersplus, Show Numbers Plus!), which always displays the taskbar numbers. See there for more details, in the rest of this page the first method is assumed.
+
+
+ Switching tasks and doing task actions
+ 
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:*task {number}*
+:COL:switch to the numbered task on the task bar
+
+:ROW:*task {application}*
+:COL:switch to a named application, through the 
+link("/features/actions/shorthandcommands.html", "BRINGUP") action.
+
+:ROW:*task back*
+:COL:switch to the previous task (just { alt+tab })
+
+:ROW:*task give name &lt;dgndictation>*
+:COL:give the application in front the name you dictate. This can also be done in combination with all the other task specifications, like *task 3 first window give name abacadabra*.
+
+:ROW:*task {dictated name}*
+:COL:The name you defined can be used the same way as all the other task commands, except for stacked windows 
+
+:ROW:*window &lt;1-20>* | *&lt;firstlast> window*
+:COL:-if in a stacked taskbar window, select the desired window (see below for more examples)
+-if in an application, select the sub-window, if implemented.
+
+:ROW:*task &lt;specification> {taskaction}*
+:COL:go to the task, and perform an additional action, like *close* | *maximise* | *minimise* | *other display* | *tile*
+
+:ROW:*task {taskaction}*
+:COL:perform the task action on the active window.  So *task close* is identical to the built-in command *close window*.
+
+-special actions for stacked windows: *close all | close multiple*, can also be turned around (in other languages this may be easier to speak): *all close | multiple close*. With *multiple*, you can also define as *others*, all windows except the first in a stack are closed.
+
+-For task positioning and resizing, see below
+::
+
+ Task positioning commands (not checked recently)
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:*task  (move|stretch|shrink|position) ({direction}|{angle}) &#091;further specification]*
+:COL:Move or resize the window in one of the directions or a specified angle. How much is given (optional) in &#091;further specification].
+::
+
+ Stacked tasks
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:*task one window {number}*
+:COL:switch to sub window of task one
+:ROW:*task one {firstlast} window*
+:COL:alternative rule, firstlast below
+:ROW:*task one first window {taskaction}*
+:COL:all these task commands can be followed with an action, for example *close*
+:ROW:*task one close all*
+:COL:As special action you can include *close all*, with a nearly hard coded action (relying on the mouse pointer still being on the task icon of the taskbar)
+
+::
+
+ Switching documents (tabs) inside a task (application)
+ 
+Note: see get document position for applications that are relevant.
+Note: you can define synonyms for document, eg. doc. Speaks faster.
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:*document {number}*
+:COL:switch to numbered document of the foreground application
+
+:ROW:*document [{number}] {documentaction}*
+:COL:go to the document and do an addional action eg. close, kill, refresh
+
+:ROW:*(next | previous) document [{documentaction}]*
+:COL:the same, but now for a document relative to the current tab.
+
+:ROW:*(next | previous) {2-20} documents {documentaction}*
+:COL:for example close multiple tabs in chrome.
+::
+
+
+
+
+ Notes on {application}:
+More details on 
+link("/features/actions/bringupdetails.html", "BRINGUP details") page.
+
+ Notes on {taskaction}:
+
+-show or edit with *show tasks* and *edit tasks*.
+-*task other display* now uses the Unimacro Shorthand Command *TASKOD*. See also link(/features/monitorfunctions/index.html, page on monitorfunctions), and link(/installation/inifilestrategy.html, inifile strategy).
+-*task tile* (or *task n tile*) operates the taskbar shortcut menu. The actions are a bit complicated: *RW* remembers the active window, *TOCLOCK right* opens the shortcut menu on the windows clock, *h* chooses horizontal tiling, and *RTW* activates the window it came from.
+
+ Notes on {firstlast}
+This list can have entries like (show or edit with *show tasks* and *edit tasks*):
+-first=1
+-second=2
+-last=-1
+-before last=-2
+
+ Notes on {direction} and {angle} (not checked recently)
+-show or edit with *show tasks* and *edit tasks*.
+-default directions: *left|up|right|down| leftbottom|lefttop|rightbottom|rightdown| righttop|leftdown|leftbottom*
+-possible angles: (*0|10| ... |360*) *degrees*
+
+ Notes on (optional) &#091;further specification] (not checked recently):
+-show or edit with *show tasks* and *edit tasks*.
+-pixels: (*1, ... , 200*) &#091;*pixels*] (word *pixels* is optional again)
+-relative: (*10|20| ... |100*) *percent*
+-centimeters, millimeters, inches: (*1, 2, ... , 20*) (*centimeters|millimeters|inches*)
+-pixels per inch given in *.ini* file (*_tasks.ini*), in section &#091;general], key *screen dots per inch* (default *90*)
+
+
+ Positioning the mouse after a task action
+
+With the variable *center mouse* (in section *general* of the tasks inifile, say *edit tasks* to control this variable) you can enable or disable this feature.  It is demonstrated in the demo movie.
+
+-With *centre mouse = T*   (or 1) the mouse is positioned 30% from the top left position of the active window.
+-With *centre mouse = F*  (or 0) this positioning  is not done.
+
+ Reaching icons (a bit obsolete)
+
+
+Note: the clock position has to be recorded first, see link(/grammars/globalgrammars/tasks/gettaskanddocpositions.html, get the positions page).
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:*icon {number}*
+:COL:switch to the icon by number
+
+:ROW:*icon (left|right|up|down) &#091;n&#93*;
+:COL:move relative inside the system tray (left and up are identical, and right and down are identical)
+
+Sometimes this commands seems not to work, although the focus is on an icon.
+
+:ROW:*(icon|icon n|icon direction| icon direction n) {iconaction}*
+:COL:perform an action on the current icon, or the icon you switch to.
+
+See the icon actions with *show tasks* or edit them by saying *edit tasks*.
+::
+
+ Managing the Start  (obsolete)
+ 
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING width=40%:command
+:COL:comment
+
+:ROW:*start menu*
+:COL:just open the Windows start menu
+:ROW:*start menu {startmenucommands}*
+:COL:use additional commands, which you can specify in your _tasks.ini configuration file (nearly obsolete in Windows 8)
+::
+
+
+
+
+

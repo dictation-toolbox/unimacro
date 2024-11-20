@@ -1,0 +1,74 @@
+Making latex markup
+
+Also see the demo video made by Frank Olaf Sem-Jacobsen, who also wrote this grammar:
+
+<iframe title="YouTube video player" width="640" height="390" src="https://www.youtube.com/embed/xwQlY2XNCLU" frameborder="0" allowfullscreen></iframe>
+
+
+ The grammar:
+ 
+ 
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW: begin {floating} [dictation]
+:COL: Insert a \begin and \end environment of type floating, with the optional dictation formatted as a label.
+:ROW: reference ({floating} | {label}) dictation
+:COL: Insert a reference of type floating or label (defined in the ini file) with free dictation as label name.
+:ROW: label ({floating} | {label}) dictation
+:COL: Create a label of type floating or label with free dictation as label name.
+:ROW: {commands} [with] [ (arguments [{arguments}]) | (that | ([this] line)) ] [(and | with) label]
+:COL: Insert a latex command with optional arguments from the ini file, from the last utterance (select that), or the current line, and add an optional label.
+:ROW: add option [{options}]
+:COL: Add an option ([]) before the braces of a command (typical use is to add options to \documentclass{}). In the case of multiple options, each option will be separated by a comma.
+:ROW: replace {placeholders} [with dictation] 
+:COL: Select a placeholder and replace it with optional dictation.
+::
+
+The latex commands can be defined as comprehensive templates together with placeholders. For simple commands with arguments, the curly braces are optional.
+
+:CODE:
+[commands]
+E. P. S. Figure = \epsfig{file=@contents}
+author = \author
+horizontal space = \hspace{}
+include graphics = \includegraphics[width=@size\textwidth]{@contents}
+::
+
+The placeholders are prefixed with an @ to avoid confusion with existing text, and defined in a separate section in the ini file.
+
+:CODE:
+[placeholders]
+caption = @caption
+contents = @contents
+label = @label
+size = @size
+::
+
+The command to create latex commands can operate in three modes. If the keyword arguments is given, add arguments from the "arguments" section in the ini file is inserted between the curly braces following the command. If the keyword "that" is given, the command will select the last utterance using "select that" and use this as an argument to the command. A typical use is "emphasise that". Finally, if the keyword "line" is given, the command will use the contents of the line as an argument to the command. A typical use of this functionality is "section line" which makes the current line into a section heading.
+
+The "label" keyword to this command will cause an appropriate label to be added on the next line after the command itself. This is only applicable for the commands that also are listed in the "label" section of the ini file, in all other cases the "label" keyword will be ignored.
+
+:CODE:
+[label]
+chapter = chapter
+paragraph = paragraph
+section = section
+subfigure = subfigure
+subsection = subsection
+subsubsection = subsubsection
+::
+
+The floating environments used by the "begin" command can be anything that is used in a "begin" -- "end" context. The alternatives are defined in the appropriate "floating" section in the ini file.
+
+:CODE:
+[floating]
+algorithm = algorithm
+align = align
+bottom stuff = bottomstuff
+corollary = corollary
+definition = definition
+document = document
+enumerate = enumerate
+::

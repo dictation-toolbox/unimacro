@@ -1,0 +1,14 @@
+The tracing mechanism
+
+Tracing can be exploited for debugging things.  Presently I use it most if actions are not working well.
+
+Use the command:
+
+        Trace Actions (On | Off | 1 to 9)
+        
+Each number gives more information and longer pauses between each action/part of the action (including keystrokes).
+
+If things continue to go too slow, do not forget to switch off the trace again.
+
+
+       

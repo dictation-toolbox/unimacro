@@ -1,0 +1,76 @@
+Chrome browsing, Click by Voice
+
+This grammar makes it possible to browse (follow links) by number in Google Chrome.
+
+ Click by Voice
+This grammar uses the Chrome extension *Click by Voice* (*CbV*) written by Mark Lillibridge.
+
+If you do not have "Click by Voice" yet, please follow the instructions for 
+link("installingclickbyvoice.html", "*installing Click by Voice and activating the grammar*").
+
+After you have done this, you should be able to use the grammar. There is also a link(https://youtu.be/8-qgdcJfTY0, demo video) about starting up things and how to use Click by Voice with this Unimacro grammar *Chrome browsing*.
+
+ The most important commands:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:show numbers | numbers on
+:COL:switch on the numbers
+
+:ROW:hide numbers | numbers off
+:COL:switch off the numbers
+
+:ROW:pick {number};
+:COL:Take the numbered link
+
+::
+
+For more commands see link("allcommandsenglish.html", "*all commands of Chrome Browsing*").
+
+Deze grammatica is ook vertaald in het Nederlands. Zie link("commandosnederlands.html", "*commando's Nederlands*"). 
+
+ The lists
+ 
+-*additionalonoroff*, *navigateoptions* and *pagecommands* can be configured from the configuration file: call *edit Chrome Browsing*.
+
+-The *number* list comes from a very complicated set of rules.  When you call *show Chrome Browsing* you get a complete list of the grammar rules, including the rules that catch the numbers. The numbers up to 999 are the easiest to call. For numbers above 1000 you should call the digits:
+
+:CODE:
+one
+twenty three
+hundred
+three hundred nineteen
+three nineteen
+one zero two
+three oh five seven
+::
+
+ General options
+In the section [general] of the configuration file you can set the default *show numbers* options.
+
+Always combine with *:+* . A combination of options is possible.
+
+Current default is hybrid, *:+h*
+
+
+Other possibilities are (combinations of):
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:option
+:COL:letter
+
+:ROW:hybrid
+:COL::+h
+
+:ROW:contrast
+:COL::+c
+
+:ROW:overlay
+:COL::+o
+
+:ROW:hybrid contrast
+:COL::+hc
+
+::

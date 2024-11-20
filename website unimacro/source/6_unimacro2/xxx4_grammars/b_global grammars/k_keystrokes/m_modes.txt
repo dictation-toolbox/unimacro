@@ -1,0 +1,104 @@
+Modes
+
+Each time when a new window is entered or when the window title changes, a check is performed about the *"mode"* the keystrokes grammar is in, and whether the grammar rules should be active or inactive.
+
+ Active or not?
+ 
+In the ini file *_keystrokes.ini* look at the following section:
+
+:CODE:
+[general]
+active = all
+ignore = natspeak: mouse grid; emacs
+exclusive modes = minesweeper
+::
+
+It means that in principle all windows should use this grammar. But there are a few windows ignored ( the rules are deactivated when such a window is in the foreground). In this example NatSpeak itself if the mouse grid is on, and Emacs.
+
+For the special mode "minesweeper" the grammar is put in exclusive mode, see below.
+
+ Special modes
+
+For certain applications a special mode, with extra keys is defined. Example:
+
+:CODE:
+[modes]
+python = pythonwin
+vba = winword, excel: visual basic
+::
+
+This section tells the grammar that if *pythonwin* is found as program name, we should look into the mode *python*. If either Word or Excel is found as program, and *visual basic* is found in the window title, then look into the mode *vba*. (Window titles are all converted to lowercase.)
+
+ Defining general keys: 
+
+In the sections is *&#091;repkey&#093;* and *&#091;norepkey&#093;* keys can be defined to be active in all applications. A few examples:
+
+:CODE:
+[repkey]
+Backspace = {backspace}
+Cancel = {esc}
+Delete = {extdel}
+
+[norepkey]
+Context Menu = {shift+f10}
+End Document = {ctrl+extend}
+End of Document = {ctrl+extend}
+::
+
+ Defining special keys for modes:
+
+As first example take the mode *vba*:
+
+:CODE:
+[repkey vba]
+Step = {f8}
+Step Over = {shift+f8}
+
+[norepkey vba]
+Complete = {ctrl+j}
+Complete OK = {ctrl+j}{tab}
+Equal Sign = " = "
+Minus Sign = " - "
+::
+
+For mode *python* you could define (only norepkeys here):
+
+:CODE:
+
+[norepkey python]
+Assign = " = "
+COLON = :
+COMMA = ,
+Complete = {alt+/}
+Equal Equal = " == "
+::
+
+ Games
+
+Also for several games this "modes" method has proven to be useful in making the game work with speech recognition. 
+
+I include here the example of *minesweeper*, with also adding exclusive mode, so only the keystrokes defined in this grammar are recognised.
+
+
+:CODE:
+[modes]
+minesweeper = minesweeper
+::
+
+and:
+
+:CODE:
+[norepkey minesweeper]
+top left = {extup 9}{extleft 9}
+bottom left = {extdown 9}{extleft 9}
+center = {extdown 9}{extup 4}{extleft 9}{extright 4}
+top right = {extright 9}{extup 9}
+bottom right = {extright 9}{extdown 9}
+new game = {f2}
+::
+
+ Exclusive mode for minesweeper
+
+With the *exclusive mode* set for minesweeper (see section &#091;general], above), we can ensure that only the words currently defined in this grammar are recognised. (work in progress for next beta release)
+
+

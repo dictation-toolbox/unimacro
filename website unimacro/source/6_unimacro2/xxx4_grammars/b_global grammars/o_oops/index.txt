@@ -1,0 +1,61 @@
+_oops grammar
+
+With this grammar you can correct your last utterance (like "correct that"), but
+-you cannot change the alternatives
+-you can correct from dictate to command and vice versa.
+
+This grammar can also be instructed to log all your utterances, see below
+
+The grammar is very simple:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: command
+:ROW:oops
+
+::
+
+The message is window is brought to the top, and the alternatives are shown.  You are now in an exclusive grammar, and you can say only one of the following commands:
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING: command
+:COL: explanation
+
+:ROW: (choose | format | delete | properties) 1..9
+:COL: 
+-choose the alternative (like in Spell window)
+-format the word properties (not used very much, should be tested more)
+-delete the word (only if one word was dictated, could be extended)
+-get the properties of a word 
+
+
+
+:ROW:cancel
+:COL: cancel the oops command, and return to the previous window
+
+:ROW: choose 1..9 (medium | strong)
+:COL: trained a chosen utterance with different intensity (the effect of this should be tested more thoroughly and discussed)
+::
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING colspan=2: after *format 1..9*
+:ROW:choose format 1..4
+::
+
+ log all utterances
+
+This parameter can be set, or cleared in the inifile of this grammar.  (say *edit oops*). 
+-1 or T (TRUE, True, true, t etc): switch this option on
+-0 or empty or F: switch this option off
+
+All utterances are logged to a folder (inside the Unimacro folder) xxx_log/user (xxx the language, user the name of the user speech profile).  For longer sessions this file is refreshed each hour.  It may be best to put this grammar *initial on = 0*, so it doesn't work all the time.
+
+
+ Note
+
+This is a tricky grammar file, because the allResults-flag is
+turned on.  Moreover the oops grammar uses exclusive mode when inside.  This exclusive mode can always be skipped if "cancel" is said, or if the microphone is turned off.
+
+This grammar could be improved a lot, for example by recording deleted and formatted words in files, which can be read in a new speech profile.  Also formatting or deleting words in a phrase could possibly be chosen.  Work to do if this grammar proves useful.
+
+

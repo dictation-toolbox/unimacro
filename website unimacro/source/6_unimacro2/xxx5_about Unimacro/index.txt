@@ -1,0 +1,85 @@
+About Natlink, Unimacro and Vocola
+
+   Natlink
+
+Natlink has been kept "alive" for more 20 years by now. Several other packages are built on top of Natlink, like Unimacro, Voicecode (now obsolete), Vocola and Dragonfly. And on top of Dragonfly, many people use Caster and Mathfly.
+
+With the release of Dragon 15, now already several years ago, a few essential changes had to be made in the C++ interface, natlink.pyd, that connects Dragon with the python programs.
+
+Starting in 2020, the support for python 2 has stopped, and "we" are transforming the code to python 3, which is now well under way.
+
+Also, more collaboration is now taking place within the link(https://github.com/dictation-toolbox, Dictation Toolbox), and  Natlink and Unimacro are now two of the repositories in this Toolbox. Moreover, for Dragon/Natlink independent "actions" the github repository link(https://github.com/dictation-toolbox/dtactions, "dtactions") is started in the dictation-toolbox. The link(https://qh.antenna.nl/unimacro/features/actions/index.html, "Unimacro actions") are transferred to this repository.
+
+   Unimacro
+
+Unimacro was developed by Quintijn Hoogenboom and Bart Jan van Os in the early 2000's. The target was mostly global grammars, with specific "actions" in specific programs. Also introspections, translations into other languages, mainly Dutch, and a trace facility are built in.
+
+   Vocola
+   
+Vocola, a Voice Command Language, was developed by Rick Mohr around 2009, and Mark Lillibridge from then on supports the Dragon version on Windows. (Vocola also works with Windows Speech Recognition.) Vocola is an easy tool to make your own voice commands. Support for all languages that are known by Dragon. More elaborate extensions are possible. See link(http://vocola.net/v2/default.asp, vocola.net).
+ 
+   Developers:
+
+Many people work on this software, most on Dragonfly/Caster, but also on developments that do not need Dragon and Natlink (any more). See the chat channels on  link(https://gitter.im/dictation-toolbox/home, gitter), and the repositories on link(https://github.com/dictation-toolbox, github).
+
+-Natlink are in link(https://github.com/dictation-toolbox/natlink) and link(https://github.com/dictation-toolbox/natlinkcore).
+-Unimacro is at link(https://github.com/dictation-toolbox/unimacro)
+-Vocola is at link(https://github.com/dictation-toolbox/vocola2), and also consult: 
+-dtactions is at link(https://github.com/dictation-toolbox/dtactions)
+
+ Readthedocs:
+ 
+ Also more information in the so called ReadtheDocs websites:
+ -link(https://natlink.readthedocs.io/en/latest/, natlink), installing and configuring Natlink
+ -link(https://natlinkcore.readthedocs.io/en/latest/, natlinkcore), mainly for developers, the python stuff of Natlink
+ 
+ -link(https://dragonfly.readthedocs.io/en/latest/, dragonfly), dragonfly
+ -link(https://dtactions.readthedocs.io/en/latest/, dtactions), dtactions
+ 
+
+
+
+ Some of the names:
+
+-mailto("q.hoogenboom@antenna.nl", "Quintijn Hoogenboom") (Natlink, Unimacro)
+
+-Mark Lillibridge, Vocola 2
+
+-Doug Ransom, Natlink, Unimacro
+
+-Aaron Walker, Natlink, Caster
+
+-Dane Finlay, Dragonfly
+
+-kb100 and fusentasticus (only their nick names here) for making the C++ code of natlink.pyd (the dll file that is the glue between Dragon and the python grammar files) and the inno setup installer.
+
+ 
+ Contributors wanted
+More help with the development of Unimacro, in the form of feedback, testing things or improving documentation is welcome. Please mail to Quintijn if you want to contibute!
+
+ Donations
+
+If you like this software and want to support the development of this (and value a bit of the efforts put in it sofar), please consider making a link(donation, *Donation*).
+
+
+ Copyright
+
+Note the following copyright license, with SourceForge as host for the python2 implementation and github for the python3 implementation:
+
+    "Unimacro" is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License, see:
+    http://www.gnu.org/licenses/gpl.txt
+
+    "Unimacro" is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; See the GNU General Public License details.
+
+    "Unimacro" makes use of another SourceForge/github project "Natlink",
+    which has the following copyright notice:
+
+         Python Macro Language for Dragon NaturallySpeaking
+         (c) Copyright 1999 by Joel Gould
+         Portions (c) Copyright 1999 by Dragon Systems, Inc.
+         
+    The "sendkeys" function, written by Mark Lillibridge, and used
+    in the dtactions repository, is distributed under the MIT license.
+

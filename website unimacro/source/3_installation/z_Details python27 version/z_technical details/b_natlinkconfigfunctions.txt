@@ -1,0 +1,125 @@
+NatLink Configuration Functions
+
+This module *natlinkconfigfunctions.py* is in the same directory as the configure GUI.  It contains the necessary functions for the configuration procedure. If run direct, use 
+-IDLE (right click on the file, Edit with IDLE and press F5.  (at exit (q) some strange message may show up, just ignore)
+-python (right click on the file, Open with, python)
+-PythonWin (right click on the file, Edit with PythonWin; Press F5)
+
+When the CLI starts, and also the config GUI, some checks are performed as to the current installation:
+-It must find the coreDirectory to be in the same directory tree as the calling module. If this fails, something strange is happening.
+-The path of the coreDirectory is compared with settings in registry of the PythonPath section. If something differs, you started the CLI or config GUI from another location as before. You are asked to either:
+--(re)register NatLink.dll, and setting the correct paths in the registry. Quit the program and restart NatSpeak. Note you loose previous settings of eg VocolaUserDirectory.
+--quit this program and rerun from the location you used before for configuring NatLink.
+
+
+ The current commands of the CLI are:
+
+:CODE:
+i       - info, print information about the NatLink status
+I       - settings, print information about the natlinkstatus.ini settings
+j       - print PythonPath variable
+
+[NatLink]
+
+e/E     - enable/disable NatLink
+
+y/Y     - enable/disable debug callback output of natlinkmain 
+x/X     - enable/disable debug load output     of natlinkmain
+
+d/D     - set/clear DNSInstallDir, the directory where NatSpeak/Dragon is installed
+c/C     - set/clear DNSINIDir, where NatSpeak/Dragon INI files are located
+
+[Vocola]
+
+v/V     - enable/disable Vocola by setting/clearing VocolaUserDirectory, the user
+          directory for Vocola Command Files (.vcl) (~ or %HOME% allowed, see below).
+
+b/B     - enable/disable distinction between languages for Vocola user files
+a/A     - enable/disable the possibility to use Unimacro actions in Vocola
+
+[Unimacro]
+
+o/O     - enable/disable Unimacro, by setting/clearing the UnimacroUserDirectory, where
+          the Unimacro User (Ini) Files are located, and several other directories (~ or %HOME% allowed, see below)
+f/F     - force Unimacro directory to be in the python path, even if
+          Unimacro is disabled (-F: do not force this)
+p/P     - set/clear path for program that opens Unimacro User (Ini) Files (if cleared, notepad is used)
+l       - copy header file Unimacro.vch into Vocola User Directory
+m/M     - insert/remove an include line for Unimacro.vch in all Vocola
+          command files
+
+[UserDirectory]
+n/N     - enable/disable UserDirectory, the directory where
+          User NatLink grammar files are located (e.g., ...\Documents\NatLinkUserDirectory)
+          (see Note below on the change in October 2015) 
+
+[Repair]
+r/R     - register/unregister NatLink, the natlink.pyd (natlink.pyd) file
+          (should not be needed)
+z/Z     - silently enables NatLink and registers natlink.pyd / disables NatLink
+          and unregisters natlink.pyd.
+[AutoHotkey]
+h/H     - set/clear the AutoHotkey exe directory.
+k/K     - set/clear the User Directory for AutoHotkey scripts.
+[Other]
+
+u/usage - give this list
+q       - quit
+
+help <command>: give more explanation on <command>
+::
+
+ Using ~ or %USERNAME%, %PROGRAMFILES% etc.
+Using these variables (*~* is equal to *%HOME%*), variable paths can be set for the various directories. This can only be done by using the CLI, or using the natlinkconfigfunctions in batch mode. *This trick cannot be used in the config GUI*. See the link(/installation/settinghome/index.html, Setting HOME Variable) page for more explanation.
+
+ enable/disable NatLink
+The commands *e* to enable and *E* to disable should be enough.
+
+ enable/disable Vocola
+Assume *_vocola_main.py* is in the baseDirectory of NatLink, eg C:\NatLink\NatLink\MacroSystem. You should not worry about this directory.
+
+Vocola will be enabled when a valid VocolaUserDirectory is set with the *v* option.  The path can be something like ~\VocolaUser. Your Vocola Command Files will be located in this directory.
+
+When this directory is cleared (*V*) Vocola is disabled and will not load when NatLink starts at Dragon startup.
+
+ enable/disable Unimacro
+This is done by setting a UnimacroUserDirectory (option *o*), the path can be for example: ~/UnimacroUser). User Ini Files will be located in this directory. The grammar files of Unimacro are in the NatLink tree, eg C:\NatLink\Unimacro.
+
+Disable by clearing this directory (option *U*).
+
+ Special Vocola option: use different languages
+If enabled (*b*), Vocola will look and put its Command Files into a subdirectory "xxx" of
+VocolaUserDirectory IF the language code of 
+the user speech profiles is different from "enx".
+
+So for English users this option will have no effect, the  Command Files are in ~\VocolaUser, but...
+
+-Dutch will go in *~\VocolaUser\nld*, 
+-French in *~\VocolaUser\fra*
+-German  in *~\VocolaUser\deu*
+-Italian in *~\VocolaUser\ita*
+-Spanish in *~\VocolaUser\esp*
+
+But as soon as you switch off this option (*B*) Vocola will get and put all Command Files from/in the VocolaUserDirectory (in our example: ~\VocolaUser).
+
+
+ Python versions
+-Natlink.pyd is still compiled for python 2.5, but only for Dragon up to version 11.5.
+
+-For both Dragon <= 11.5 and for Dragon 12 and above there are now natlink.pyd versions for python 2.6 and python 2.7.
+
+
+ Older versions of Dragon NaturallySpeaking
+Older versions of Dragon should be working with Python 2.5, 2.6 and 2.7.
+
+If you have an older version of Dragon NaturallySpeaking, try to configure the
+-DNSInstallDir (option *d*) and 
+-DNSIniDir (option *c*). 
+
+ PythonPath strategy
+ 
+How Dragon finds natlink:
+ 
+-The coreDirectory is inserted in the python path by defining them in the registry(eg for python 2.7)  HKLM\SOFTWARE\Python\PythonCore\2.7\PythonPath\NatLink (HKLM stands for HKEY_LOCAL_MACHINE). This is the way Dragon can find natlink.pyd.
+-The BaseDirectory, UnimacroDirectory and the UserDirectory, whenever active, are set by natlinkmain.py into the PythonPath variable, when Dragon starts.
+

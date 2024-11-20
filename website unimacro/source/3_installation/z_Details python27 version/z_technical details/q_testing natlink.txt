@@ -1,0 +1,20 @@
+Testing natlink
+
+The testing of the proper functioning of NatLink (the basics) is not quite easy.
+
+The original script was *testnatlink.py*.
+
+Newer tests are in *unittest* procedures, of which *unittestNatlink.py* is the central one.
+
+-It should operate on a (preferably clean) US User speech profile.
+-It should be run from a command prompt or in IDLE.
+
+For *nsformat* there is a new unit test program, which tests different in different versions of Dragon/NatSpeak.
+
+Presently often the starting and killing of DragonPad windows presents problems. It is tried (new, March 2011) to additional bring the Dragon Bar in focus, relying on the hotkey _{NumKey*}_.
+
+It is best to restart the computer after doing the tests.
+
+See the instructions at the top of the python file for more instructions. Also for details of failing tests in different (newer) versions.
+
+Unimacro has its own link(/grammars/unimacrotest/index.html, tests).

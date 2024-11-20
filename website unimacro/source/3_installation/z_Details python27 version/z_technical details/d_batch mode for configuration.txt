@@ -1,0 +1,23 @@
+Batch mode for configuration
+
+Batch mode can be used in order to automate the configuration. The examples below show this, with absolute paths for my (Quintijn) configuration of python and NatLink. 
+
+Save the code into a *.bat* file, and run in elevated mode (Windows Vista and Windows 7).
+
+ Disable:
+:CODE:
+rem -E disable natlink
+C:\python25\python.exe D:\natlink\natlink\confignatlinkvocolaunimacro\natlinkconfigfunctions.py -E
+::
+
+
+ Enable in a standard way:
+:CODE:
+rem -e enable natlink
+rem -n set userdirectory to path
+rem -o set unimacro user directory (for user ini files)
+rem -v enable vocola with user files in path
+rem note: ~ is identical to %HOME%
+C:\python25\python.exe D:\natlink\natlink\confignatlinkvocolaunimacro\natlinkconfigfunctions.py -e -n D:\natlink\unimacro -v %HOME%/vocolaqh -o ~\unimacroqh
+::
+

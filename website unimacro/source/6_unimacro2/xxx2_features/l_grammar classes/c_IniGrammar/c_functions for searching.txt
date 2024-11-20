@@ -1,0 +1,35 @@
+The functions that are used for the searching mechanism
+
+ _searchForText(direction, text (optional))_: 
+
+-direction can be 'up' or 'down'
+-text is optional, for a repeated searches the previous search text is taken, or just the appropriate action, depending on the action _&lt;&lt;search always continue&gt;&gt;_, which can be _T_. Default F.
+
+A chain of actions is performed, and through all these actions the progInfo is passed on so the originating window remains valid even if the search is (temporarily) inside in dialogue window.
+
+Also some excel functions are done directly, without keystrokes, but inside the programming interface.
+
+The big distinction is searches with text and searches without text (continuations)
+
+ _setLastSearchDirection_ and _getLastSearchDirection_:
+
+These are two helper functions, which can get and set the search direction. They are used from both calling grammars, when you want to back search, but the program does not support this. An action _&lt;&lt;documenthome&gt;&gt;_ is done and the search is continued down.
+
+ _stopSearch_:
+This function is performed when you stop searching. It moves the cursor left in order to unselect the found text.
+
+ _searchFailed_:
+This function can, for some windows, see if the search was failing. For example in DragonPad, notepad and Internet Explorer it checks if the search ends up in a dialogue window (a Child window). It returns -2 in that case.
+
+The action _&lt;&lt;search failed&gt;&gt;_ is performed and the continuity mode is switched off. This section by default rings ALERT, but can also do the escape key for example.
+
+ _searchGoBack_:
+Going back to where the search started. Currently working only for excel. Is performed when you give the command _search go back_, or a when you cancel a continuous search.
+
+ Some variables are kept in this file as global variables (in the file _natlinkutilsbj.py_)
+
+-lastSearchText
+-lastSearchDirection
+-app (word and excel can be opened)
+-appProgram = winword or excel (or '')
+-comingFrom = the cel in excel where you started (for returning with _search go back_)

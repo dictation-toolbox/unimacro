@@ -1,0 +1,15 @@
+testing clipboard functions
+
+This test only needs an empty DragonPad window.
+
+Also testing some of the *meta actions* like 
+-*&lt;&lt;select all&gt;&gt;*,
+-*&lt;&lt;copy&gt;&gt;* and
+-*&lt;&lt;paste&gt;&gt;*.
+
+Especially the USCs
+-*CLIPSAVE* and
+-*CLIPRESTORE* are tested here, with the intermediate
+-*CLIPISNOTEMPTY*, which returns false if the clipboard is empty.
+
+Call with *Unimacro test clipboard*.

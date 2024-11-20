@@ -1,0 +1,9 @@
+Conclusion
+
+Finally: as long as you can manage with this, please go ahead.
+
+If not, you might take the jump to the Python3 implementation.
+
+It has been 4 years of development before "we" released a Python3 version, and we hope, it takes you less time to make the change. Please let us know, for example via mailto(q.hoogenboom@antenna.nl, Quintijn Hoogenboom).
+
+With many thanks to especially Aaron Walker, Dane Finlay, Doug Ransom and Quintijn Hoogenboom.

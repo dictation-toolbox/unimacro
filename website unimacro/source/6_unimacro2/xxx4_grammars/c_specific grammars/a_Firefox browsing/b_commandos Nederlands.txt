@@ -1,0 +1,75 @@
+Firefox browsen, commando's Nederlands
+
+De gehele grammatica kan worden bekeken met het commando *toon Firefox Browsen* (of met *toon alle grammaticaas*). Om redenen van herkenning wordt *Firefox browsen* intern geschreven als *Faajer foks brouwsen*.
+
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:commando
+:COL: commentaar
+
+:ROW: toon nummers | tokkel nummers | verberg nummers
+
+nummers aan | nummers uit
+:COL: Om de nummers/getallen weer te geven of te verbergen. (*Tokkel* is het fonetische equivalent van het Engelse *toggle*.)
+
+
+MLB kent alleen een *tokkel/toggle* toets om de nummers aan en uit te zetten. Dus alle alternatieven hierboven doen hetzelfde. 
+
+
+:ROW:volg {nummer}
+
+volg {nummer} (niew tabblad | context menu| snelmenu)
+
+focus {nummer}
+
+nieuw {nummer}
+:COL:
+
+Volg de genummerde link,
+
+open de genummerde link in a nieuw tabblad, of geef het snelmenu (context menu), of
+
+Zet de toetsenbord focus op de genummerde link.
+
+Volg de genummerde link in een nieuw tabblad
+
+:ROW: volgend tabblad | vorig tabblad
+
+tabblad {1-20} | tabblad min {1-20}
+
+{tabcommands} tabblad | tabblad {tabcommands}
+
+(volgende|vorig) tabblad {tabcommands} | 
+
+tabblad [min] {1-20} {tabcommands}
+
+:COL: navigeer tussen de tabbladen. Met *Min* tel je vanaf de rechterkant van het scherm.
+
+*tabcommands* bevat momenteel  *vernieuw* / *vernieuwen* and *sluit* / *sluiten*.
+
+Let op de verschillen met de Engelse woorden als een genummerd tabblad wordt gevraagd: hier is het *tabblad*,  in het Engels is *tab number* nodig.
+
+:ROW: volgende pagina | vorige pagina
+
+{pagecommands} pagina
+
+pagina {pagecommands}
+
+pagina (terug|verder|vooruit)&#091;{1-20}&#93;
+
+:COL: navigeer door de pagina's binnen hun tabblad
+
+*pagecommands* bevat op dit moment alleen *vernieuw* / *vernieuwen*.
+
+:ROW: {2-20} tabbladen sluiten
+:COL: sluit een aantal tabbladen (beetje gevaarlijk)
+
+
+::
+
+ De lijsten
+ 
+-*tabcommands* en *pagecommands* kunnen worden aangepast in de inifile van deze grammatica. Roep *bewerk Firefox Browsen* hiertoe.
+
+-De *nummer* lijst is een gecompliceerde verzameling grammatica regels. Als je roept: *toon Firefox Browsen*  krijg je de complete lijst grammaticaregels, inclusief de regels die de getallen herkennen. Enkele kleine getallen worden niet steeds herkend. Als je bijvoorbeeld _volg 12_ wilt hebben, kun je dit doen met _volg twaalf_ of _volg een twee_. Om _kies 123_ te krijgen kun je zeggen _kies honderd 23_ of _kies een 23_ of _kies een twee drie_.
+

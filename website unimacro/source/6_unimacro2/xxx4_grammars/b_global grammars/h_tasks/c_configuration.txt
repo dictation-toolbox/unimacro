@@ -1,0 +1,95 @@
+Configuration of tasks grammar
+
+-Say _edit tasks_ to edit the properties of this grammar. 
+
+ General options
+ 
+In the section &#091;general] you can set a number of options:
+
+:TABLE firstcoldifferent=0:
+:ROW:center mouse = T
+:COL:Means after a task switch the mouse is positioned about 30% from the left top. (If set to *F* or *0* the mouse is not positioned at all.)
+
+:ROW:initial on = 1
+:COL: meaning this grammar is switched on when NatSpeak (and NatLink including Unimacro) starts.
+
+:ROW:max icon number = 15
+:COL: the number of icons you can call in the system tray. Set to *0* if you cannot want to call icons at all.
+
+:ROW:max task number = 30
+:COL: the number of tasks you want to call with the *task #* command. Set to *0* if you do not want to call tasks by numbers at all.
+
+:ROW:max window number = 9
+:COL: the number of windows inside an application you want to address. Set to *0* if you do not want to call windows inside an application with this command.
+
+:ROW:switchapps = voice coder; pythonwin; emacs; dragonpad; edit; idle
+:COL:
+
+:ROW:enable search commands = T
+:COL:special, search selection or word under the cursor in the wanted application eg *search two* or *search chrome*.
+:ROW:split left right = 0.65<br>
+split top down = 0.6
+:COL:specify the proportion of the *task position* commands, eg *task two position right* takes less than half a screen and *task chrome position topleft* takes more than half a screen in both directions.
+::
+
+
+ Task starting/switching by name
+
+You can set the list of applications you want to call with *task application* in the section 
+&#091;application].
+
+Examples:
+
+:CODE:
+[application]
+calc = calc
+calculator = calc
+command = cmd
+dragonpad = dragonpad
+edit = edit
+emacs = emacs
+email = outlook
+excel = excel
+firefox = firefox; 2
+idle = idle
+internet = iexplore
+komodo = komodo; 3
+messages = messages
+notepad = notepad
+pythonwin = pythonwin
+voice code = voicecode
+voice coder = voicecode
+winpad = win32pad
+word = winword; 4
+powerpoint = powerpoint
+::
+
+-Applications are further specified in the link(/features/actions/bringupdetails.html, *actions.ini*) configuration file, OR referenced to by a number, the task number on the taskbar.
+- This number trick is only valid for fixed positions of tasks/applications on the taskbar. Separate the number and the application name by a *;*. Het
+
+-The words on the right-hand side are builtin programs for Windows (like *outlook*), or are resolved in the link(/features/actions/actionsconfigurationfile.html, *actions.ini configuration file*). Each application that needs more tuning has there its own &#091;bringup app] section.
+- In the case where the numbers trick is used, the name MUST match the application name.
+
+-For example when *edit* is set to komodo, you can call *task edit* to bring komodo in front. *task komodo* works also in this example. For this *edit* example you cannot use the number trick.
+
+:CODE:
+[bringup edit]
+name = komodo
+
+[bringup komodo]
+name = komodo
+::
+
+
+ Positioning the mouse after a task action
+
+With the variable *center mouse* (in section *general* of the tasks inifile, say *edit tasks* to control this variable) you can enable or disable this feature.  It is demonstrated in the demo movie.
+
+-With *centre mouse = T*   (or 1) the mouse is positioned 30% from the top left position of the active window.
+-With *centre mouse = F*  (or 0) this positioning  is not done.
+
+
+
+
+
+

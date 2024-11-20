@@ -1,0 +1,40 @@
+Programming logic in callback functions
+
+When some grammar rule has been found, sometimes the words in the rule must be checked for several cases.  For example the following utterances from the grammar *solitaire* (*pasjans* in Dutch), corresponding with the module *sol.py*:
+
+    english: card 6 to stack 1
+    dutch:   kaart 6 naar stapel 1
+
+Both utterances come back into a callback function (*gotResults_cardnumto*) with inside lines like:
+
+    if self.hasCommon(words, 'card'):
+        ....
+
+because 'card' is the original word in the grammar file.  With other language versions these words can be changed, but they are still recognised by above function
+
+The method *hasCommon* checks for a word or a list of words, against a word or a list of words.  
+
+The first variable can often be simply *words*, being the list of words that are returned in the callback function.
+
+If you want only checked the first word you could also do:
+
+    if self.hasCommon(words[0], 'card'):
+        ....
+
+
+The second variable can also be a string (word) or a list of strings (words), so above examples can also be written as:
+
+    if self.hasCommon(words, ['card']):
+        ....
+
+or 
+
+    if self.hasCommon(words[0], ['card', 'something else']):
+        ....
+
+
+
+The word or words are not only checked literally against the second input variable(s) (*card*), but also against possible translations or synonyms, because this function also searches in variable *self.gramWords*, which contains all translation words or synonyms.  So with above programming logic translations or synonyms are caught automatically. The keys in the inifile and so in the variable *self.gramWords* all converted to lower case internally.
+
+
+

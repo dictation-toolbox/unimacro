@@ -1,0 +1,43 @@
+AutoHotkey
+
+The program link(www.autohotkey.com, AutoHotkey) can perform many actions on your computer, in some cases smarter and more reliable than can be done with (the current knowledge) of Unimacro.
+
+AutoHotkey actions can be called from Unimacro grammars, but also with the
+link(/features/actions/shorthandcommands.html,  Unimacro Shorthand Command) *AHK*, which can also be called from Vocola.
+
+ Installation and configuration
+-Install link(www.autohotkey.com, AutoHotkey).
+-(Re)start Dragon, with NatLink, Vocola and Unimacro or the option "Vocola takes Unimacro actions" enabled, in the NatLink config program.
+-Try the Vocola examples below
+
+At first call of any of the Unimacro AutoHotkey functions, Unimacro tries to locate the *autohotkey.exe* and the directory of script files (with extension *.ahk*):
+
+- Unimacro expects *autohotkey.exe* in the "old style" program files directory, most often *C:\Program files*, and then in subdirectory *autohotkey*. Read the link(configuration) if you want them somewhere else.
+- Unimacro expects or creates a user ahk scripts folder *AutoHotkey* in the users documents directory. Read the link(details) if you want them somewhere else.
+- Some sample scripts are copied from the *sample_ahk* directory of Unimacro into this user ahk scripts directory, whenever these are newer. So when you mess up a script which is in the sample_ahk directory, delete it and restart Dragon.
+
+ Script file or string
+   
+As script, you can either enter a filename (a AutoHotkey script, ending with *.ahk*), or the contents of the script. This is especially handy for one-liners.
+
+-If a script or the text in the one-liner has that literary text *%hndle%*, the handle of the foreground window will be inserted in this place. This handle can be changed if the script is called from Unimacro, not via the *AHK* Unimacro Shorthand Command, see link(details). If this substitution happens in a script file, the script text is used and script file is not changed, because:
+
+-If a script text is used, it is first written to *tempscript.ahk*, and then this script is executed with AutoHotkey. All script files are in the AutoHotkey directory of your user documents folder.
+
+ Examples from Vocola
+ 
+:CODE:
+## Global vocola commands using AHK:
+test paste = AHK("send ^v");
+wheel (up=up|down=down) = AHK("send {wheel$1}");
+wheel (up=up|down=down) 2..10  = AHK("send {wheel$1 $2}");
+show messages = AHK(showmessageswindow.ahk);
+testswitchback = RW() VW() AHK(showmessageswindow.ahk) VW() RTW();
+::
+
+-The first three send Keystrokes (including mouse actions), like the Dragon/VB SendKey command or the natlink.playString function. AutoHotkey has even more support for this, for example for handling the mouse wheel.
+-Switching to another window with the python/win32gui function *SetForegroundWindow* is often unrelible. Luckily the AutoHotkey programmers do know how to do this task very reliable.
+-The example *testswitchback* uses AutoHotkey functions also from within Unimacro. See link(details.html, details).
+
+   Comments
+This is (December 2013) a new feature in Unimacro. Please comment on things and contribute scripts you use.

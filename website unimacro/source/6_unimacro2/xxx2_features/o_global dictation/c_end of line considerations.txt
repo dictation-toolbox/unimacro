@@ -1,0 +1,32 @@
+End of line linefeed (\n) and or carriage return (\r)
+
+The carriage return (*\r*, ascii value *13*) and  linefeed (*\n*, ascii value *10*) characters must be carefully treated. How a window responds can be checked the test module *unittestMessagefunctions.py*, which is in the *unimacro_test* subdirectory of Unimacro.
+
+Basically from a window with the *getEditText* function a list of lines is retrieved, reflecting all the line breaks. At the end of a paragraph most often a *\r* character is shown. Also an empty file often shows one *\r* or one *\r\n* character. For this reason in the module *windowsparameters.py* the variables *linesep* and *aftertext* are set to reflect the different possibilities.
+
+:TABLE firstcoldifferent=0:
+:HEADING:Variable
+:COL:Values
+
+:ROW:linesep
+:COL:*\r* for RichEdit controls (sofar)
+
+:ROW:aftertext
+:COL:*\r\n* for aligen
+
+*\r* for wordpad...
+::
+
+ Getting the buffer in dictObj
+In the VoiceDictation class the list of lines are simply joined together in a long string.
+
+ Internal regular expressions
+When doing operations with regular expressions in Python the line separators should always be *\n*. So the buffer that is read from the window or from the dictation object should be changed before doing a search operation.
+
+ Writing back to the window
+It seems that *\r* characters should be used to separate the lines, for the different, sofar examined, RichEdit controls.
+
+The function *insertText* (of VoiceDictation) therefore simply deletes all *\n* characters. So when text is inserted from a commands grammar, use *\r* for newlines.
+
+
+

@@ -1,0 +1,66 @@
+Actions.ini, the actions configuration file
+
+This file holds configurable parameters that can be used in different other grammars. They are speech profile (user language) independent, that the parameters can vary with different Windows systems, especially with other language systems (like Dutch).
+
+ Meta actions
+Most sections of the *actions.ini* file are devoted to the so-called meta actions. 
+
+For all sorts of meta actions there is a default section (*&#091;default]*), but each meta action can be overruled for a program by making specific secions like *&#091;excel]* or *&#91;firefox]*.
+
+See also: link(/features/unimacroandvocola/metaactions.html, examples of meta actions).
+
+If the action is empty, it will be skipped. For example a fairly obscure meta action *afterlines* is normally empty: 
+
+:CODE:
+[default]
+afterlines = 
+::
+
+For emacs there is a very special treatment (which does something with toggling line numbers):
+
+:CODE:
+[emacs]
+afterlines = {alt+x}setnu-mode{enter}; {alt+x}setnu-mode{enter}
+::
+
+The other way round (set in the *&#091;default]* section, but empty in some program section) is also possible.
+
+ 
+ 
+ Changing child and top behaviour
+ 
+For some grammars and commands you need to know if a window is a top window (normally has a button on the taskbar) or a child window (like a open or file save as dialog window).
+
+In some cases the standard return of the function *isTopWindow* doesn't match what you want:
+
+-The Dragon bar itself should be treated as top window, but is reported as *child* window, this can be confusing especially in the link(/grammars/globalgrammars/folders/index.html, *_folders grammar*);
+-In Komodo popup windows like *Find* and Yes/No windows (with title *Komodo*) are reported as *top* windows, but should behave as a child window. This should be configured for the *killWindow* function or the 
+(link(/features/actions/shorthandcommands.html, *KW* Unimacro shorthand command)).
+
+
+In the section *&#091;general]* of the *actions.ini* file these two types of behavior can be specified, see example:
+
+:CODE:
+[general]
+child behaves like top = natspeak: dragon-balk, dragonbar
+top behaves like child = komodo: find, komodo
+::
+
+Note that unlike other window title comparisons, here the whole title must match one of the words specified by a comma (and all titles are converted to lowercase).
+
+(For NatSpeak, the Dragon bar, we have a language dependency, because the window title changes with another language speech profile.)
+
+ Bringup sections
+For the different bringup commands, mainly used in the grammar *_taks*, several sections are used for specifying how a program should be called. Please see 
+link(/features/actions/bringupdetails.html, the separate section) on this.
+
+ Example Messages from NatLink window
+In order to close the messages window, you can simply say now *task messages close* (ie the messages window is brought in front and closed)
+
+In order to refresh the messages window you can insert in the file *actions.ini* the following section:
+
+:CODE:
+[natspeak messages]
+taskrefresh = <<windowclose>>; PRINT new messages window
+::
+

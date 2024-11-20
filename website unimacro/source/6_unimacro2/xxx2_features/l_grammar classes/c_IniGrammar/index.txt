@@ -1,0 +1,22 @@
+For user interaction: the IniGrammar class
+
+This is Quintijn Hoogenboom's extension to provide easy interaction between a user inifile and the grammar.
+
+Controlled through commands in the grammar __control_, the contents of a ini file can be inspected and edited.  
+
+-Inspecting is done through a temporary _.txt_  file that is displayed in Notepad, or another program that is attached with files of this extension,
+-Changing is done by calling the appropriate _.ini_ file.  After editing and saving the file, the changes are updated in the appropriate grammar instance.
+-If the *grammar name* or the *grammar words* are changed, the corresponding grammar is reloaded, one utterance later.
+
+Other features of the IniGrammar class:
+
+-grammar parts for getting a number. Exploited in __number_, __lines_ and in the browsing grammars (_firefox_browsing_).
+-functions for searching, which can be called from discrete and continuous grammars (__general_  and __repeat_)
+-(new in 2010) numbers lists are converted in spoken forms lists, see link(/features/numbers/index.html, numbers page).
+
+ To update or not
+
+A special variable 'self.checkForChanges' controls whether the changes to link("/features/inifiles.html", "inifiles") should be checked for or not.  It is switched on when calling such an inifile by one of the *edit* commands of the link("/grammars/control/index.html", "grammar _control").  This prevents unnecessary checking for changed ini files.  On the other hand, opening a ini file manually (instead of with one of those special commands)  means there will be no tracking of changes.
+
+The _actions.ini_ file is also updated after a call to *edit actions*. Howeveer the _numbers.ini_ file is *NOT* updated in the grammars automatically, you need a restart of NatSpeak.
+

@@ -1,0 +1,18 @@
+Global dictation
+
+As a result of a job for the Kaiser Permanente Hospital in Honolulu, the far edges of NatLink were explored. This was done by Quintijn Hoogenboom with close cooperation of Jason Koller from this hospital.
+
+The purpose is to make it possible to dictate text also when the target program/window not in focus. In principle this is done in hidden mode in the medical edition as well, but more functionality and feedback was wanted here.
+
+One of the deepest things of NatLink is capturing the dictObj, the dictation object that is used by NatSpeak. We managed to do this in most Windows, but when either: 
+
+-a Select-and-Say window, like Outlook is in focus or
+-some other text editor like UltraEdit, PythonWin or Komodo (although not being Select-and-Say) is in focus
+
+the dictation object cannot be captured by NatLink.
+
+The other part of the trick is getting control of the text and the target window. For this so-called message functions of window were explored. These message functions are among the deepest functions that are available in Windows. This is eg the *SendMessage* function in the *win32gui* module. With these functions the text of the dictation object can be kept synchronized with the text of the target window.
+
+One of the side effects is that also macros can be built which operates directly on the text in the text buffer. So finding and possibly deleting or changing text and the text buffer and setting the selection can be done from normal NatLink grammars. Even when the dictation object is not active, it can be updated, changed and synchronized with the target window buffer.
+
+The work is still under construction, and the essential things will be made available in the next Unimacro release.

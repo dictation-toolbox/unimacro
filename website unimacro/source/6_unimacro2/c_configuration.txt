@@ -1,0 +1,67 @@
+Configuration
+
+   Administrator rights/elevated mode
+You need Administator rights for the some (of the most important) configuration actions. Therefore the  *Configure program* (*Configure NatLink via GUI*), or via the command line interface, will be started with Administrator rights, "elevated mode". When you use the links from the Start menu, right click on the program you want to start and ask for "Run as administrator".
+
+
+The steps are:
+= start a Command Prompt in admin mode (Run as administrator)
+= go to the confignatlinkvocolaunimacro directory of your natlink folder (eg. C:\natlink\natlink\confignatlinkvocolaunimacro)
+= start with *"py -2.7"*  *configurenatlink.pyw*
+= if that fails, try running the natlinkconfigfunctions.py from the command line.
+
+:CODE:
+so type:
+
+py -2.7 configurenatlink.pyw
+
+or:
+
+py -2.7 natlinkconfigfunctions.py
+::
+
+witregel(2)
+
+   Export speech profiles
+-You may want to backup your speech profiles before enabling NatLink for the first time. Use the "Advance, Export" function of the "Profile, Manage Users" dialog of Dragon.
+-However, we believe NatLink is so stable in combination with Dragon, that the chance of Natlink corrupting your speech profile is very small.
+   
+   Configure NatLink/Vocola 2/Unimacro
+
+-From the start menu, run *Configure NatLink via GUI*
+-This program prompts you for accepting elevated mode.
+-When this is the first time your run this program, several things are done silent, you can inspect the "log" panel of the GUI to see what happened.
+
+
+   NatLink
+-In the "NatLink" section, click the "Enable" button. If NatLink is not enabled, Vocola 2 and Unimacro do NOT work.
+
+   Vocola 2
+
+-Enable *Vocola 2* by the "Enable" button in the "Vocola" section and
+-Choose a directory to store your Vocola command files; we recommend *...\Documents\NatLink\Vocola*. (This is the "VocolaUserDirectory".)
+
+   Unimacro
+
+-Enable *Unimacro* by the "Enable" button in the "Unimacro" section and 
+-Choose the UnimacroUserDirectory, the directory where your configuration files (ini files) are (going to be) stored. We recommend *...\Documents\NatLink\Unimacro*. 
+
+   UserDirectory
+-For other grammar files, also Dragonfly grammar files, you can use the *UserDirectory*, the directory where your grammar files are located.
+-Choose your own directory, for example C:\NatlinkUserDirectory. 
+
+   Dragonfly
+The package Dragonfly is not included in the combined Natlink/Vocola/Unimacro installer, so should be installed separately. The package is installed in the python site-packages directory, and should be out of sight for the users.
+
+-When you want to use your own Dragonfly grammars, first check that Natlink is running properly. -
+-Then choose a UserDirectory (see above) and place your python files in that directory. 
+
+
+   Restart Dragon
+ 
+-Each time when you finish configuring things, close the configure program and *Restart Dragon*!
+-At least the *Messages from Python Macros* window should appear when you (re)start Dragon, whenever NatLink is enabled.
+-If this does not happen, please consult link(problems with Natlink).
+
+   Proceed with link(howtostart.html, How to Start).
+

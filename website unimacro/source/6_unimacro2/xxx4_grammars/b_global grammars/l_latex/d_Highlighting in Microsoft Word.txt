@@ -1,0 +1,88 @@
+How to configure Word for latex highlighting
+
+For completeness, below is the necessary Visual Basic functions for rudimentary latex highlighting in Microsoft Word. By adding these three functions to the Word macro system, all files with the extension .tex will be automatically highlighted everytime they are opened (In Word 2010 click "review"-> "macros"->"create". Bind the AutoOpen function to a keyboard shortcut to reformat the documents during editing (file->options->customise ribbon, keyboard shortcuts: customise...). This came to great effect be combined with the "edit all latex" and "edit ready" commands from the link("/grammars/globalgrammars/edit/index.html", "*_edit* grammar").
+
+:CODE:
+Sub AssociateStyle(pattern As String, style As String, colour As Long)
+'Associate Styles with headings and quotations
+'Ensure Tools/References/Microsoft VBscript Regular Expression 5.5 is on
+  
+Dim regEx, Match
+'Dim Matches As MatchCollection
+Dim str As String
+Dim region As Range
+
+Set regEx = CreateObject("VBScript.RegExp")
+regEx.pattern = pattern           ' Set pattern.
+regEx.Global = True
+regEx.MultiLine = True
+
+'obtain matched RegExp.
+Set Matches = regEx.Execute(ActiveDocument.Range.Text)
+'MsgBox (Len(ActiveDocument.Range.Text))
+'MsgBox (Matches.Count)
+'loop through and replace style
+For Each Match In Matches
+    Set region = ActiveDocument.Range(Match.FirstIndex, Match.FirstIndex + Len(Match.Value))
+    If colour > -1 Then
+   '     MsgBox (Match.Value)
+    '    MsgBox (Match.FirstIndex)
+     '   MsgBox (Len(Match.Value))
+        region.Font.ColorIndex = colour
+    Else
+        region.style = _
+        ActiveDocument.Styles(style)
+    End If
+Next
+ 
+End Sub
+
+Sub ReplaceMarkup(pattern As String, markup As String)
+    
+    Selection.Find.ClearFormatting
+    Selection.Find.Replacement.ClearFormatting
+    With Selection.Find
+        .Text = pattern
+        .Replacement.Text = markup
+        .Forward = True
+        .Wrap = wdFindNo
+        .Format = False
+        .MatchCase = False
+        .MatchWholeWord = False
+        .MatchAllWordForms = False
+        .MatchSoundsLike = False
+        .MatchWildcards = True
+    End With
+    Selection.Find.Execute Replace:=wdReplaceAll
+End Sub
+
+ 
+Sub AutoOpen()
+'
+' AutoOpen Macro
+' Macro recorded 5/6/2009 by reagle
+'
+FileName = ActiveDocument.FullName
+Extension = Right(FileName, 3)
+If Extension = "tex" Then
+        Selection.WholeStory
+        Selection.Font.Name = "Georgia"
+        Selection.Font.Size = 12
+        Selection.ParagraphFormat.LineSpacing = 16
+        Selection.style = "Body Text"
+        'Call ReplaceMarkup("\\emph\{(*)\}", "<<\1>>")
+        Call AssociateStyle("[{}]", "Quote", wdGreen)
+        Call AssociateStyle("\\.*?}", "Quote", wdDarkBlue)
+        Call AssociateStyle("^\\title{", "Heading 1", -1)
+        Call AssociateStyle("^\\chapter{", "Heading 1", -1)
+        Call AssociateStyle("^\\section{", "Heading 1", -1)
+        Call AssociateStyle("^\\subsection{", "Heading 2", -1)
+        Call AssociateStyle("^\\subsubsection{", "Heading 3", -1)
+        Call AssociateStyle("^\\begin{quotation}", "Quote", -1)
+        Call AssociateStyle("\$.*?\$", "Quote", wdRed)
+        Call AssociateStyle("[^\\]%.*?$", "Quote", wdGray25)
+        
+End If
+
+End Sub
+::

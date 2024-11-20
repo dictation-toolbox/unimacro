@@ -1,0 +1,88 @@
+Edit text in DragonPad or even (for programmers) in emacs
+
+*NOTE:* This grammar is a bit obsolete, because NaturallySpeaking introduced the dictation box several versions ago. Maybe the idea of the dictation box is even taken from this grammar!
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:edit that
+:COL:copy the selection to DragonPad, for full Select-and-Say control
+
+:ROW:edit all
+:COL: copy the whole document to DragonPad, for full Select-and-Say control
+
+:ROW:edit ready
+:COL: in DragonPad: copy all text and paste back into the place it came from
+::
+
+
+The effects of these commands are the same as the dictation box in recent NatSpeak versions.  They work very well, and can have some side-effects:
+
+-pasted text is automatically saved into text files (give the command *edit edit*, and edit the variables *automatic log to file*).  These files can be used for later analysis by the NatSpeak vocabulary builder. (The ini file variable *base log folder* is obsolete.)
+
+ Logging and saving the messages window
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:action
+
+:ROW:log (that|all)
+:COL: the selection or the whole file is *logged* to a file (see below for the precise location)
+
+:ROW:log messages
+:COL: the messages window is copied into the special folder *log messages* in the Unimacro folder.  As a side effect the messages window is closed, so emptied.
+
+::
+
+ Files and folders the log files go to
+
+-all log files go to subfolders of the Unimacro folder
+-the files with the *log that* or *log all* command or the *automatic log to file* option on, go into the subfolder *log xxx/user* (xxx being the language code of your speech profile), and have names starting with *texts yyyy mm*, so each month the log file is refreshed.  For the *automatic log to file* behaviour of filenames start with *texts auto yyyy mm*.
+
+(Note that the folder  *xxx_log* contains logs of all your utterances, if this option in the grammar *oops* is switched on)  
+
+ Editing Latex code
+ 
+Addition by Frank Olaf:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:edit (that|all) latex
+:COL:sends the text to Microsoft Word with latex syntax highlighting
+::
+
+
+
+ Interaction with voicecoder
+
+For programming purposes I experimented with different other commands.  The most important now is 
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:edit (that|all) (python|CC|...)  code
+:COL:sends the text to a file, and open this file in emacs
+::
+
+
+The grammar *_lines* makes use of this, by the command word *emacs* as *simpleaction*.  
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command (*_lines grammar*)
+:COL:comment
+
+:ROW:20 lines emacs_
+:COL: 20 lines are selected and brought to emacs, in correct emacs mode.
+
+:ROW:lines 10 plus 20 emacs_
+:COL:variants, see link(/grammars/globalgrammars/lines/index.html, *lines grammar*") and
+link(/features/cooperationwithvoicecoder/index.html, *cooperation with voicecoder*)
+::
+
+
+
+

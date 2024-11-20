@@ -1,0 +1,33 @@
+Installing *MLB* (Mouseless browsing extension of Firefox)
+
+This extension can be installed most easily by following the steps below.  
+
+:TABLE firstcoldifferent=1, border=1:
+
+:ROW:Choose *Tools -> Add-ons* in Firefox.
+:COL:image("tools-addons.png",width=400,alt="Firefox get tools menu")
+
+:ROW:Click on "Get extensions" (top left)
+:COL:image("get-extensions.png",alt="Get extensions pages of Firefox")
+
+:ROW: Search for *mouseless browsing*
+:COL:image("search-for-MLB.png",width=400,alt="search for the correct keyword")
+
+:ROW: Locate the MLB search result, possibly search ones more for the same text.
+:COL:image("mouseless-browsing.png",width=400,alt="the extension you must have!")
+
+:ROW: At the bottom of the page choose *Install Now*
+:COL:image("install-now.png")
+
+:ROW: In the Firefox dialog box (after a short time) again choose *Install Now*
+:COL:image("installation-install-now.png",width=400,alt="confirm the installation")
+
+:ROW: Finally restart Firefox
+:COL:image("restart-Firefox.png",width=400)
+
+:: 
+
+Now you can by hand toggle the numbers by pressing the "." (Del) key of the numeric keypad, with *Num lock* on.
+
+The speech commands should now also work.  If not try to restart NatSpeak.
+

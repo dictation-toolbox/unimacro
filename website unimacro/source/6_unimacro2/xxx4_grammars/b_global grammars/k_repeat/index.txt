@@ -1,0 +1,115 @@
+repeat, moving the cursor, mouse and search and repeating the last command
+
+With this Grammar automatic movements can be made.
+
+ This grammar is in revision, contact Quintijn if you want the files/cooperate!
+
+-moving the cursor, in all directions, a number of steps or at a variable speed.
+-moving the mouse, ditto
+-repeating the last search
+-repeating the last command (a bit more vulnerable than the other commands)
+
+This grammar is based on Joel Gould's _mouse.py and Jonathan Epstein's
+version of _generic_movement.py.
+
+ Moving the cursor
+
+Start moving with: 
+:CODE:
+Start (Moving|Selecting|Scrolling) (<speed>|<direction>|<count>)+
+::
+with:
+
+:CODE:
+speed = steady | slow | fast | very slow | very fast
+direction = up | down | left | right 
+            but also: (page | paragraph | line) (up | down) or 
+            word left | word right
+count = 1 to 20, 25, 30, 35, 40
+::
+more directives can be spoken in one command (the + sign after the parens).
+
+When moving you are in the so-called exclusive mode: only commands described below our recognised.  An icon is shown in the system tray, and moving can be stopped by
+
+    stop | OK
+    
+Moreover the movement can be controlled by commands like:
+
+    another speed
+    acceleration: faster | slower | much faster | much slower
+    another direction
+    another count
+    reverse direction with: reverse | reverse direction | back | go back
+    
+and the movement can be hold and resumed by:
+
+    hold on | hold it | wait
+    go on | continue
+    another speed
+    another direction
+    another count
+    
+When moving, you can enter
+into selection mode by calling the word "select".
+
+Please try what happens if you start with "scrolling" (eg with _Start Scrolling down_)
+
+When moving you can also call:
+    
+     begin [of] line | end [of] line | begin [of] document | end [of] document
+     
+ Mousing:
+ 
+These commands work with the same mechanism as moving the cursor.  They should be worked out with more commands for practical purposes.  Start with:
+
+:CODE:
+MOUSE (MOVE | DRAG | Start Moving | Start Dragging) [<speed> | <direction> | <count>]+
+::
+with
+
+:CODE:
+speed = same options as above
+direction = up | down | left | right (should be extended with north, north west etc)
+count = same list as above
+::
+When mousing you are again in a so-called exclusive mode.  An icon is shown in the system tray, and mousing can be stopped by
+
+    stop | OK
+    click 
+    double click
+    
+Moreover the movement of the mouse can be controlled by commands similar as with moving.
+
+ Searching:
+ 
+These commands only work after an initial search was done.  This search command is described in the grammar _general.
+
+You can start a continuing search with:     
+:CODE:
+Search continue [<direction>|<count>|<speed>]+
+::
+with:
+:CODE:
+direction = forward | back
+speed and count like the moving commands
+::
+
+ Repeating the last command:
+
+These commands do NOT work in exclusive mode.  That is because they work with the HeardWord (RecognitionMimic) mechanism in which the speech engine is used recursively.
+
+Stopping the mechanism is therefore by a general command, like Cancel or OK.
+
+:CODE:
+Repeat That <speed>
+::
+with
+:CODE:
+speed like the other commands
+::
+
+    
+ 
+ 
+            
+

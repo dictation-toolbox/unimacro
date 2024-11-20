@@ -1,0 +1,25 @@
+   Details, multiple languages
+
+
+ Previous versions
+
+-If you had NatLink before, there can be a warning screen, notifying you that you have to reregister NatLink. Do this, with a button at the lower left corner of the window. Restart NatSpeak (Dragon NaturallySpeaking).
+-If this does not work right away, delete the file *natlink.pyd* in the Core directory (*.../MacroSystem/Core*) and run the configure program again. Then things should go automatically.
+
+
+ Config program not found or not working
+
+-In case the configure program (GUI) does not work, you can fall back the the command line interface (*CLI*). 
+
+The CLI is the file "natlinkconfigfunctions.py" in the same folder als the configure program.
+
+
+ Vocola 2
+
+-If you want to use different languages, you need your Vocola 2 commands in different directories. See link(http://vocola.net/v2/NonEnglish.asp, Vocola 2 Non-English Languages).
+
+-Vocola 2 now automatically supports Unimacro action strings. See the section link(/features/unimacroandvocola/index.html, Unimacro and Vocola 2).
+
+ Unimacro
+
+-Note: only a selection of the grammars is in the NatLink user directory after installation. In this directory you will find a subdirectory *DisabledGrammars* with more grammar files. Notably the grammar *_keystrokes* has been put in this directory, because it can hit too often when you do not expect it. If you want grammars from this directory, simply copy them into the directory above, toggle the microphone and it should be on.

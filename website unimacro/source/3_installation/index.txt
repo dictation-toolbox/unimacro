@@ -1,0 +1,17 @@
+Installing and Configuring Natlink, including Unimacro and Vocola
+
+Please read the pages in this section of the website and follow the install and configure instructions.
+
+You have two choices:
+
+-The link(/installation/installationstableversionpython2.html, stable release with python2.7)
+
+-The link(/installation/installationexperimentalversionpython3.html, experimental release with python 3.7 or 3.8)
+
+ And then:
+
+After you installed the version you want, proceed with the link(Configuration).
+
+If problems arise, please read through the other pages in the left menu.
+
+If problems persist, ask mailto(q.hoogenboom@antenna.nl, Quintijn Hoogenboom).

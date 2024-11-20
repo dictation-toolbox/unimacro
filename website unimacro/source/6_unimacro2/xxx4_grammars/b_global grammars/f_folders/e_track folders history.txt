@@ -1,0 +1,34 @@
+Track folders history
+
+With a special option *track folders history*, set to a number, this last number of visited folders will be remembered.
+
+At each folder command, but also every second, the active folder, either in an Explorer window ("This computer window") or in a file dialog (like File open or File Save As) will be caugth and put in a list.
+
+At the command *recent folders* the list is displayed and with *choose #* you can make your choice.
+
+ Wishes:
+Future wish would be to have a background window that can display the recent folders list all the time. The I could implement the command *recent folders #*. Anybody who can make such a window, either in pywin32 of in wxPython? Or maybe in another way?
+
+ Implementation
+ 
+-In the configuration file _folders.ini, you can set the variable *track folders history* to the number of items you want to have in your list:
+
+:CODE:
+[general]
+(...)
+track folders history = 20
+::
+
+Set to 0 or delete the option if you want to switch it off.
+From then the folders you call or visit manually are tracked.
+ 
+-The grammar folder uses the setTimerCallback function of NatLink, to visit the function manageRecentFoldersList each second. This time can be adjusted of course.
+
+-With the command *recent folders* a messagebox is shown with the list of recent folders. A special grammar *natspeak_dialog.py* handles this window. With *choose #* you can choose your option, or you can Cancel the window with *OK* or *Cancel*.
+
+-The *natspeak dialog* grammar (recent folders dialog) extracts information from the _folders grammar, so it knows how many numbers it should put in the {number} list.
+-This *natspeak_dialog* grammar is a Unimacro IniGrammar, and can be configured and for example translated. This has been done into Dutch. Simply say *edit natspeak dialog* (only after the dialog window has been displayed, otherwise the grammar is not loaded) to change things or say *show natspeak dialog* to show the options. (In Dutch *bewerk natspeak dialoog* of *toon natspeak dialoog*)
+
+<iframe width="420" height="315" src="https://www.youtube.com/embed/B47oZ-_puhc" frameborder="0" allowfullscreen></iframe>
+
+

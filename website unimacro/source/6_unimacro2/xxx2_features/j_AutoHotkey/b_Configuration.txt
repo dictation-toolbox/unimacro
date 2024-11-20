@@ -1,0 +1,12 @@
+ Different paths
+
+-By default the executable *AutoHotkey.exe* will be located in the 32-bit *Program Files* directory.
+-By default the user *ahk* script files will be located in the *AutoHotkey* subfolder of your *Documents* (PERSONAL) folder.
+
+When these paths are not correct, you can overrule them via the
+link(/installation/technicaldetails/natlinkconfigfunctions.html, *natlinkconfigfunctions*), to be started with the Start menu item *Configure NatLink via command line interface*.
+-The option *h &lt;ahk-exe-dir>* is used for defining the directory where AutoHotkey.exe is located;
+-The option *k &lt;ahk-user-dir>* is used for defining the directory where your User ahk-scripts are located.
+-When you want to return to the default settings, these entries are cleared with *H* and *K*
+
+

@@ -1,0 +1,21 @@
+Voicecoder
+
+I'm trying to do some interaction with voicecoder.
+
+-See link(http://youtu.be/AIdwPayCiy0, "demo movie on this interaction Unimacro with voicecoder")
+
+
+-calling emacs from the native IDE of for example python (eg Pythonwin) for some lines of code.  Edit with voicecoder and return, pasting back the results.
+-doing some actions inside emacs with Unimacro commands, which are easier than some voicecoder commands.  Leaving voicecoder for the real dictation part.
+
+On the activation process of voicecoder, and the interaction of Pythonwin with emacs, I made a little *demo movie*, see link above. Regrettably the part inside voicecoder is a very bad, because the recording program (Camtasia) does not work well when voicecoder is on.
+
+ Configuring the link("/grammars/globalgrammars/lines/index.html", "_lines") grammar
+
+When using the *simpleaction* command *emacs*, this one should call back to a HeardWord command from the grammar *edit*.
+ 
+The command triggers the meta action *&lt;&lt;heardwordemacs&gt;&gt;*.  This one has to be adapted in your file *actions.ini* (by calling *edit actions*).  The action should be *HW edit that python code*  (implemented for pythonwin, pythonw (IDLE, PythonCard)), or similar for other programming languages.
+
+
+
+

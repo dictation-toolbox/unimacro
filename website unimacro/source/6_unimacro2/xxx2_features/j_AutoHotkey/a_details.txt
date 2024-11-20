@@ -1,0 +1,82 @@
+Programming details
+
+ Example: use in _tasks grammar
+An example of the script showmessageswindow.ahk is used in the tasks grammar of Unimacro. With the command *task messages* inside this grammar the *Messages from NatLink* is switched to.
+
+Note: you need to have messages in your application section of the _tasks.ini file, see link(/features/actions/bringupdetails.html, Bringup details):
+
+:CODE:
+[application]
+messages=messages 
+::
+
+witregel()
+
+In the *actions.py* module you find the code:
+
+:CODE:
+import autohotkeyactions as ahka
+def messagesBringUp():
+    """switch to the messages from python macros window"""
+    if ahka.ahk_is_active():
+        do_AHK("showmessageswindow.ahk")
+        return 1
+    # do it "the old way":
+    (...)
+::
+
+Which means that if AutoHotkey is active, the same script as in the preceding Vocola examples is called. If AutoHotkey is not active, the previous way to perform this task is tried, with win32gui functions.
+
+ Remember window and Return to window
+The following example first remembers the current window handle (*RW()*). It then switches with a ahk script to the Messages from NatLink window. After a visible wait *VW()*, the return to window *RTW()* is done. 
+
+:CODE:
+testswitchback = RW() AHK(showmessageswindow.ahk) VW() RTW();
+::
+
+With RW() the handle of the foreground window is stored. The RTW() call uses this handle. Internally the following function is called (in natlinkutilsqh.py):
+
+:CODE:
+import autohotkeyactions as ahka
+::
+:CODE:
+def SetForegroundWindow(h):
+    """gets the window in front, given by window handle h
+    try AutoHotkey, if it is not on your computer, otherwise try it with win32gui functions
+    """
+    if ahka.ahk_is_active():
+        result = ahka.do_ahk_script("WinActivate, ahk_id  %s"% h)
+        #result = ahka.do_ahk_script("getintoforeground.ahk", hndle=h)
+        #result = ahka.do_ahk_script("WinActivate, ahk_id  %hndle%", hndle=h)
+        if result == 1:
+            return 1
+        if result:
+            print 'SetForegroundWindow %s with AutoHotkey failed:\n====%s===='% (h, result)
+            print result
+            
+    # if here, autohotkey is not found, and the SetForegroundWindow is done the "old" way,
+    # which often/sometimes fails
+    (...)
+::
+
+ getintoforeground.ahk looks like:
+:CODE:
+;for Unimacro, changes %hndle% into the current foreground hndle.
+WinActivate, ahk_id  %hndle%
+::
+
+-In the first *result = * line, a one liner is created, with the window handle filled in in the ahk script line.
+-In the second and third (here commented) lines the above script is called, with the *hndle* as named parameter. Before Unimacro calls autohotkey.exe, the script text is changed: *%hndle%* into the actual value (contained in *h*). The changed script, put into the temp file *tempscript.ahk* is executed by autohotkey.exe.
+-In all three examples exactly the same actions are done eventually.
+-The return parameters: this has to be sorted out further. For the moment a return value of 1 (OK) is taken all the time.
+ 
+-*GetAhkExe()* and *GetAhkScriptFolder()*: helper functions to find the autohotkey.exe and the user script folder, and store them for future use in the moule global variables *ahkexe* and *ahkscriptfolder*.
+
+-*ahk_is_active()*: return the executable (so True) or "" (so False) if autohotkey.exe cannot be found. This function should be called before other attempts to execute a ahk script are made.
+- bold(do_ahk_script)(script, hndle=None): This function does the actual calling of autohotkey. If ahkexe is not found, it raises a ValueError. In the Unimacro Shorthand Command *AHK* this function is called, so do not use this from Vocola if AutoHotkey is not installed on your computer.
+--the *script* can either be a autohotkey script file (with extension .ahk) or a script line. In the latter case the script line is written to tempscript.ahk before calling autohotkey.exe
+--the optional parameter *hndle* is substited into *%hndle%* in the script or script file, if this string is present. By default, for example when a script is called via the Unimacro Shorthand Command *AHK*, the handle of the active window is used. 
+
+-*copySampleAhkScripts()*: at first call of GetAhkScriptFolder, for example in the first call of do_ahk_script, the .ahk scripts of the sample_ahk directory of Unimacro are copied into the user ahk scripts folder, whenever they are newer. If a different version of the script is found the user ahk scripts folder, the old version is copied into scriptname.ahkold (unless that file already exists)
+
+-See link(configuration) when you want non-standard paths for *ahkexe* and *ahkscriptfolder*.
