@@ -16,7 +16,7 @@ readme = "README.md"
 #note you have to put in .dev1 to take the earliest dev release.
 
 
-dependencies = ["dtactions ~= 1.6.4.dev1",
+dependencies = ["dtactions ~= 1.6.4.dev3",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
 		"natlinkcore >= 5.4.1",
