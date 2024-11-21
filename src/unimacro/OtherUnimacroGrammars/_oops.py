@@ -61,7 +61,7 @@ from pathlib import Path
 import natlink
 from natlinkcore import natlinkstatus
 from natlinkcore import loader
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 logHour = -1

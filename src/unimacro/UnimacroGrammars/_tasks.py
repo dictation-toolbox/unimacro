@@ -31,13 +31,13 @@ import natlink
 from natlinkcore import nsformat
 from natlinkcore import natlinkstatus
 from unimacro import natlinkutilsbj as natbj
-from dtactions.unimacro import unimacroutils 
+from dtactions import unimacroutils 
 from dtactions import monitorfunctions
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import setPosition
-from dtactions.unimacro.unimacroactions import getPosition
-from dtactions.unimacro import unimacroactions as actions
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacroactions import setPosition
+from dtactions.unimacroactions import getPosition
+from dtactions import unimacroactions as actions
 import win32con
 import win32api
 

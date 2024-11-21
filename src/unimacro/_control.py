@@ -27,8 +27,8 @@ import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
 
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroutils
+from dtactions import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
 from unimacro import spokenforms 

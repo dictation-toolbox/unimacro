@@ -17,8 +17,8 @@ import os
 import os.path
 import natlink
 import math
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro import unimacroutils as natqh
+from dtactions.unimacroactions import doAction as action
+from dtactions import unimacroutils as natqh
 print('file: %s'% __file__)
 #need this here (hard coded, sorry) for it can be run without NatSpeak being on
 extraPaths = r"C:\natlink\unimacro", r"D:\natlink\unimacro"
@@ -26,7 +26,7 @@ for extraPath in extraPaths:
     if os.path.isdir(extraPath):
         if extraPath not in sys.path:
             sys.path.append(extraPath)
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import sys
 import unittest
 import unittest

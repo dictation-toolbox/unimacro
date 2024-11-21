@@ -41,8 +41,8 @@ import time
 import os
 import os.path
 from dtactions.sendkeys import sendkeys
-from dtactions.unimacro import unimacroutils
-# from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions import unimacroutils
+# from dtactions.unimacroactions import doAction as action
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
 from natlinkcore import natlinktimer

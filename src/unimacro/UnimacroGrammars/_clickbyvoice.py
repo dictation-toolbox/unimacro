@@ -29,9 +29,9 @@ in the foreground
 """
 import natlink
 from unimacro import natlinkutilsbj as natbj
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke  as keystroke
+from dtactions import unimacroutils
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke  as keystroke
 
 # use extension Click by Voice
 visiblePause = 0.4
