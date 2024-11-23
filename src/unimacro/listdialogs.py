@@ -9,7 +9,7 @@ import win32ui
 import win32con
 import commctrl
 import win32api
-from dtactions.unimacro.unimacroutils import AppBringUp
+from dtactions.unimacroutils import AppBringUp
 
 from natlinkutilsbj import *
 status = natlinkstatus.NatlinkStatus()

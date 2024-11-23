@@ -34,10 +34,10 @@ import pickle
 
 import natlink
 from natlinkcore.natlinkutils import *
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import D_
 
 # extra commands for controlling actions module:

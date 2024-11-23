@@ -15,9 +15,9 @@ august 2003/March 2022 (python3)/August 2024
 #pylint:disable=C0116, W0603, W0613, W0201, R0912
 import natlink
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import doAction as action
+from dtactions import unimacroutils
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacroactions import doAction as action
 # from dtactions.natlinkclipboard import Clipboard
 # natlinkclipboard is not safe at the moment. 
 

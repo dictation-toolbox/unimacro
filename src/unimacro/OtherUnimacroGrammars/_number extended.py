@@ -47,10 +47,10 @@ other grammars can invoke the number grammar more easily.
 """
 #pylint:disable=C0209, R0904, R0912, R0915
 import natlink
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import getMetaAction
-from dtactions.unimacro import unimacroutils
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacroactions import getMetaAction
+from dtactions import unimacroutils
 
 import unimacro.natlinkutilsbj as natbj
 

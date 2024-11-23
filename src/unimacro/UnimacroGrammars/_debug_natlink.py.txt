@@ -11,8 +11,8 @@ from natlinkcore import nsformat
 
 # import unimacro.natlinkutilsbj as natbj
 
-# from dtactions.unimacro import unimacroutils
-# from dtactions.unimacro.unimacroactions import doAction as action
+# from dtactions import unimacroutils
+# from dtactions.unimacroactions import doAction as action
 
 # ancestor = natbj.IniGrammar  #QH1
 class DebugGrammar(natlinkutils.GrammarBase):

@@ -11,13 +11,13 @@ from pathlib import Path
 from pprint import pprint
 import sys
 
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 import unittest
 import TestCaseWithHelpers
 import re
 import types
 import natlink
-from dtactions.unimacro import unimacroutils   
+from dtactions import unimacroutils   
 from natlinkcore import natlinkutils
 
 from natlinkcore import natlinkutils

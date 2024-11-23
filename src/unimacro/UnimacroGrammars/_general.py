@@ -32,10 +32,10 @@ from natlinkcore import natlinktimer
 from unimacro import natlinkutilsbj as natbj
 from unimacro import namelist # for name phrases
 
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro import unimacroactions as actions
-from dtactions.unimacro import unimacroutils
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions import unimacroactions as actions
+from dtactions import unimacroutils
 
 # taskswitching moved to _tasks.py (july 2006)
 

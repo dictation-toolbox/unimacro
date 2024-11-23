@@ -9,7 +9,7 @@
 # interaction with grammar _folders.
 #
 #pylint:disable=
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 

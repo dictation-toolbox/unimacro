@@ -61,17 +61,17 @@ import natlink
 from natlinkcore import readwritefile
 from natlinkcore import natlinktimer
 from natlinkcore import natlinkstatus
-from dtactions.unimacro import extenvvars
+from dtactions import extenvvars
 from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-# from dtactions.unimacro.unimacroactions import do_YESNO as YesNo
-from dtactions.unimacro.unimacroactions import UnimacroBringUp
-from dtactions.unimacro.unimacroactions import Message
-from dtactions.unimacro import unimacroutils
-# from dtactions.unimacro.unimacroactions import Message
-# from dtactions.unimacro import unimacroactions as actions
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+# from dtactions.unimacroactions import do_YESNO as YesNo
+from dtactions.unimacroactions import UnimacroBringUp
+from dtactions.unimacroactions import Message
+from dtactions import unimacroutils
+# from dtactions.unimacroactions import Message
+# from dtactions import unimacroactions as actions
 from unimacro import natlinkutilsbj as natbj
 # from unimacro.unimacro_wxpythondialogs import InputBox
 # import natlinkcore.natlinkutils as natut

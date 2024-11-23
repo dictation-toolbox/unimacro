@@ -35,7 +35,7 @@ Extensive use is made of mouse (dragging) routines.
 
 import win32gui
 from natlinkcore import natlinktimer
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import unimacro.natlinkutilsbj as natbj
 
 #aantal carden en aantal stapelplaatsen:

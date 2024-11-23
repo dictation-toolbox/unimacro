@@ -14,7 +14,7 @@ import unittest
 import os
 import os.path
 import natlink
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 import TestCaseWithHelpers
 
 def getBaseFolder(globalsDict=None):

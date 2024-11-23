@@ -10,7 +10,7 @@
 # Author: Bart Jan van Os, Version: 1.0, nov 1999
 # starting new version Quintijn Hoogenboom, August 2003, for python3 2023
 #pylint:disable=C0115, C0116, W0702, R0904, R0911, R0912, R0914, R0915, W0201, W0613, W0107, C0209, E0601, W0602, C0112
-#pylint:disable=R1735, W0703
+#pylint:disable=R1735, W0703, W1203
 #pylint:disable=E1101
 
 import os
@@ -27,12 +27,12 @@ import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
 
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroutils
+from dtactions import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
 from unimacro import spokenforms 
-
+from unimacro import __version__ as unimacro_version
 #from unimacro.logger import ulogger
 
 
@@ -51,8 +51,7 @@ ulogger.debug("natlink.unimacro logger available")
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 ##control_logger=l.getLogger(unimacro_l.control_logger_name())
-
-
+thisDir = str(Path(__file__).parent)
 
 
 
@@ -79,8 +78,6 @@ def natlink_loggers() ->dict:
         The entry point must be a function that returns a logger name.  Is the Python 'logging' module.
 
     """
-
-
     discovered_eps=meta.entry_points(group='dt.loggers')
     ulogger.debug('Entry Points for natlink.loggers: %s', discovered_eps)
     loggers = dict()
@@ -753,6 +750,7 @@ if __name__ == "__main__":
         utilGrammar.gotResults_edit(Words, FR)
 elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
+    print(f'Unimacro {unimacro_version} in directory: {thisDir}')
     utilGrammar = UtilGrammar()
     utilGrammar.initialize()
     # set special function as a callback...
