@@ -2057,9 +2057,10 @@ noot mies
         
         commandDir = os.path.join(userDir,
                                         self.language +"_inifiles")
-        inifile = os.path.join(commandDir, inifile_stem + '.ini')
+        inifile_name = inifile_stem + '.ini'
+        inifile = os.path.join(commandDir, inifile_name)
         if not os.path.isfile(inifile):
-            print(f'\tCannot find inifile: {inifile}')
+            print(f'\n\tCannot find inifile: {inifile_name}')
             self.lookForExampleInifile(commandDir, inifile_stem + '.ini')
             if not os.path.isfile(inifile):
                 print(f'\tcannot find an example inifile for {inifile_stem}')
@@ -2076,7 +2077,7 @@ noot mies
             except KeyError:
                 commandWord = "edit"
             name = self.getName()
-            self.message(f'===Created new inifile for grammar "{inifile_stem}"\n===Please edit this file by calling the command "{commandWord} {name}"')
+            self.message(f'\tCreated new inifile: "{inifile}"\n\tYou can inspect and edit this file by calling the command "{commandWord} {name}"\n')
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
@@ -2160,10 +2161,10 @@ noot mies
         if not os.path.isfile(inifile):
             if inifileSamples:
                 sample = inifileSamples[0]
-                print('\ttake sample inifile: %s'% sample)
+                print('\tTake sample inifile: %s'% sample)
                 shutil.copyfile(sample, inifile)
             else:
-                print('could not find a valid sample inifile "%s" in directories: %s'%\
+                print('Could not find a valid sample inifile "%s" in directories: %s'%\
                         (fileName, sampleDirs))
 
     def TryToMakeDefaultInifile(self, commandDir, inifileName, language):
