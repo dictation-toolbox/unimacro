@@ -56,14 +56,14 @@ from natlinkcore import readwritefile
 
 # for IniGrammar:
 # was natlinkutilsqh:
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import unimacroactions as actions
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import UnimacroBringUp
-from dtactions.unimacro import utilsqh
-from dtactions.unimacro.utilsqh import formatListColumns
-from dtactions.unimacro import inivars
+from dtactions import unimacroutils
+from dtactions import unimacroactions as actions
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacroactions import UnimacroBringUp
+from dtactions import utilsqh
+from dtactions.utilsqh import formatListColumns
+from dtactions import inivars
 from dtactions.sendkeys import sendsystemkeys
 
 from unimacro import BrowseGrammar
@@ -2057,9 +2057,10 @@ noot mies
         
         commandDir = os.path.join(userDir,
                                         self.language +"_inifiles")
-        inifile = os.path.join(commandDir, inifile_stem + '.ini')
+        inifile_name = inifile_stem + '.ini'
+        inifile = os.path.join(commandDir, inifile_name)
         if not os.path.isfile(inifile):
-            print(f'\tCannot find inifile: {inifile}')
+            print(f'\n\tCannot find inifile: {inifile_name}')
             self.lookForExampleInifile(commandDir, inifile_stem + '.ini')
             if not os.path.isfile(inifile):
                 print(f'\tcannot find an example inifile for {inifile_stem}')
@@ -2076,7 +2077,7 @@ noot mies
             except KeyError:
                 commandWord = "edit"
             name = self.getName()
-            self.message(f'===Created new inifile for grammar "{inifile_stem}"\n===Please edit this file by calling the command "{commandWord} {name}"')
+            self.message(f'\tCreated new inifile: "{inifile}"\n\tYou can inspect and edit this file by calling the command "{commandWord} {name}"\n')
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
@@ -2160,10 +2161,10 @@ noot mies
         if not os.path.isfile(inifile):
             if inifileSamples:
                 sample = inifileSamples[0]
-                print('\ttake sample inifile: %s'% sample)
+                print('\tTake sample inifile: %s'% sample)
                 shutil.copyfile(sample, inifile)
             else:
-                print('could not find a valid sample inifile "%s" in directories: %s'%\
+                print('Could not find a valid sample inifile "%s" in directories: %s'%\
                         (fileName, sampleDirs))
 
     def TryToMakeDefaultInifile(self, commandDir, inifileName, language):

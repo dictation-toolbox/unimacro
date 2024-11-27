@@ -5,18 +5,24 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "unimacro"
 authors = [{name = "Quintijn Hoogenboom (maintainer)", email = "q.hoogenboom@antenna.nl"}]
-dynamic = ["version", "description"]
+dynamic = ["description"]
+version = "4.1.7.dev2"
 requires-python = ">=3.10"
 readme = "README.md"
 
+#"dtactions = ^1.6.4" means anything >= 1.6.4.dev1 and less than 1.7.  A breaking change in dtactions 
+#will mean an update the version specifier below.
+#https://packaging.python.org/en/latest/specifications/version-specifiers/#id5
+#note you have to put in .dev1 to take the earliest dev release.
 
-dependencies = ["dtactions >= 1.6.2",
+
+dependencies = ["dtactions ~= 1.6.4.dev3",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
-		"natlinkcore >= 5.4.1",
+		"natlinkcore ~= 5.4.2.dev1",
         "FreeSimpleGUI>=5.1.0"]
 		  		
-classifiers=[	"Development Status :: 4 - Beta",
+classifiers=[	"Development Status :: 2 - Pre-Alpha",
 				"Topic :: Multimedia :: Sound/Audio :: Speech",
 				"Topic :: Scientific/Engineering :: Human Machine Interfaces",
 				"Environment :: Win32 (MS Windows)",

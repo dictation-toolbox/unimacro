@@ -9,9 +9,9 @@
 #   NaturallySpeaking should be running with nothing in the DragonPad window
 #   (that you want to preserve) before these tests are run.
 #
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 action = actions.doAction
 
 import unittest

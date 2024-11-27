@@ -21,8 +21,8 @@ from functools import reduce
 
 from natlinkcore import natlinkstatus
 
-from dtactions.unimacro import inivars
-from dtactions.unimacro import utilsqh
+from dtactions import inivars
+from dtactions import utilsqh
 
 class NumbersError(Exception):
     pass

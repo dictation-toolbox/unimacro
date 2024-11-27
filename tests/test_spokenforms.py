@@ -9,7 +9,7 @@
 import pytest
 
 from unimacro import spokenforms
-from dtactions.unimacro import inivars
+from dtactions import inivars
 
 expected_n2s =    {0: ['oh', 'zero'],
  1: ['on\xe9'],

@@ -20,10 +20,10 @@ others continuously.
 
 import sys
 import copy
-from dtactions.unimacro import inivars
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro import unimacroutils
+from dtactions import inivars
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.unimacroactions import doAction as action
+from dtactions import unimacroutils
 from unimacro import natlinkutilsbj as natbj
 from natlinkcore import nsformat 
 from natlinkcore import loader

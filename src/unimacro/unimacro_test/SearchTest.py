@@ -3,9 +3,9 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 actions.debugActions(1)
 
 import unittest

@@ -34,7 +34,7 @@ import time
 import win32gui
 from dtactions.messagefunctions import *
 import dtactions.messagefunctions as mess
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from unimacro import windowparameters
 import TestCaseWithHelpers
 

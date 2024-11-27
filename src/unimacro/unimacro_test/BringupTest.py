@@ -6,9 +6,9 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-from dtactions.unimacro import unimacroutils
+from dtactions import unimacroutils
 from natlinkcore import natlinkutils
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroactions as actions
 import natlink
 import unittest
 import time

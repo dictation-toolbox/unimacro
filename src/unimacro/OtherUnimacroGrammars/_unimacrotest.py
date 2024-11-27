@@ -20,9 +20,9 @@ import glob
 import natlink
 from natlinkcore import natlinkstatus
 import unimacro.natlinkutilsbj as natbj
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro import utilsqh
-from dtactions.unimacro import unimacroactions as actions
+from dtactions import unimacroutils
+from dtactions import utilsqh
+from dtactions import unimacroactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 

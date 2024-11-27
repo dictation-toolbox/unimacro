@@ -18,9 +18,9 @@ import time
 from pathlib import Path
 import natlink
 from natlinkcore import natlinkstatus
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacro import unimacroactions as actions
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions import unimacroactions as actions
 import TestCaseWithHelpers
 
 status = natlinkstatus.NatlinkStatus()

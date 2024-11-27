@@ -32,9 +32,9 @@ the unimacroutils module of unimacro.
 """
 #pylint:disable=C0115, C0116, W0201, W0613
 from natlinkcore import nsformat
-from dtactions.unimacro import unimacroutils
-from dtactions.unimacro.unimacroactions import doAction as action
-from dtactions.unimacro.unimacroactions import doKeystroke as keystroke
+from dtactions import unimacroutils
+from dtactions.unimacroactions import doAction as action
+from dtactions.unimacroactions import doKeystroke as keystroke
 # from dtactions.natlinkclipboard import Clipboard
 import unimacro.natlinkutilsbj as natbj
 import natlink
