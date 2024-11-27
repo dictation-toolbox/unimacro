@@ -1,0 +1,50 @@
+Vocola 2 and Unimacro
+
+The position of these two "packages" inside NatLink may be confusing in the beginning. Please first read about the
+link(elevator view.html, *Elevator view*) in order to understand more about these two.
+
+Next, it is good to distinguish between *Global grammars* and *Local grammars*.
+
+
+:TABLE firstcoldifferent=0:
+:HEADING:Unimacro
+:COL:Vocola 2
+ 
+:ROW width=50%:
+Unimacro focuses on global grammars, commands being on all the time or most of the time.  
+Through the link(metaactions.html, *&lt;&lt;meta-actions&gt;&gt; mechanism*) the actions that commands have to perform can be made specific for different Windows/applications.
+
+:COL:
+Vocola 2 focuses on local command files, commands being specific for some application. With the command *Edit commands* you can view/edit these local commands.
+
+:ROW:
+There are exceptions of course.  The grammar _Firefox browsing_ for example is application-specific, but part of Unimacro.
+
+:COL:
+But it is also possible to have global commands in Vocola 2: you view/edit them by the command *Edit global commands*.
+:ROW:
+Unimacro has quite a few specific functions (link(Unimacro shorthand commands.html, *Unimacro Shorthand Commands*)), which can now also be used in Vocola User Files.
+
+:COL:
+Vocola 2 has the possibility to define functions in its  Vocola User Files, for more specific functionality. These functions cannot be used in Unimacro grammars.
+
+:ROW:
+The link(metaactions.html, *&lt;&lt;meta-actions&gt;&gt; mechanism*) can be used in Vocola User Files.
+
+
+:COL:
+This can be most useful in Vocola 2 global commands!
+::
+
+
+ Unimacro
+So Unimacro can be used for a lot of *Global command grammars*, like 
+link(/grammars/globalgrammars/keystrokes/index.html,doing  continuous keystrokes), 
+link(/grammars/globalgrammars/tasks/index.html,switching to tasks), 
+link(/grammars/globalgrammars/folders/index.html, switching to folders, open files and websites),
+link(/grammars/globalgrammars/repeat/index.html,repeating previous utterances (continuously)). The grammars are ready for use, and can be configured through ini files (configuration files) in any normal text editor. Some grammars need maintenance though. This is an open source project...
+
+ Vocola 2
+ 
+Vocola 2 can be used for all application-specific (local) commands that you find convenient to define. Moreover you can also define global commands that you didn't find (or didn't want to find) in one of the Unimacro grammars. 
+

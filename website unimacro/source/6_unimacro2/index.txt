@@ -1,24 +1,27 @@
 Natlink, including Unimacro and Vocola2
 
-This version of Natlink is obsolete, but installation instructions are still presented here. But if possible, switch within some time to the Python 3 release!
+This version of Natlink is more or less obsolete, but installation instructions are still presented here. But if possible, switch within some time to the Python 3 release (click on *Installation* above)
 
 :TABLE firstcoldifferent=1, border=1:
 :ROW:
-NatLink is an OpenSource extension module for the speech recognition program Dragon.
+Natlink is an OpenSource extension module for the speech recognition program Dragon.
 
-In each Natlink with python2.7 release also Vocola and Unimacro are included.
+In each Natlink with python2.7 release, also Vocola and Unimacro are included.
 
 Other packages, like Dragonfly, need Natlink in order to work with Dragon, but should be separately installed.
 
-On this website are the instructions for *downloading and configuring Natlink*, including Vocola and Unimacro, and a more detailed description of *Unimacro*. For more about Vocola see the link(http://vocola.net/default.asp, *Vocola 2 website*).
+In this section of this website are the instructions for *Installation for python 2.7 version* and *Configuration* of Natlink, including Vocola and Unimacro.
+
+The more detailed description of *Unimacro* and all sort of other *Features* and the Unimacro *Grammars* are found in the main menu above. This information will be transferred to the Python3 release of Natlink/Unimacro.
+
+For more about Vocola see the link(http://vocola.net/default.asp, *Vocola 2 website*).
 
 :ROW:
-*A stable release was released several years ago: link(/installation.html, release 4.2)*
+*The stable release was released several years ago: link(/installation.html, release 4.2)*
 
 This will also be the final release for Python 2.7.
 
-Now (Augus 2024) also a fairly stable Python 3 release has been released. Please read on at link("/", "the home page of this site").
+Now (November 2024) there is also a fairly stable Python 3 release. Please read on at link("/", "the home page of this site").
 
 ::
 
-See link(installation.html, *installation pages*)

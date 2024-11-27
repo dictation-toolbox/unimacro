@@ -1,0 +1,33 @@
+Firefox browsing
+
+This grammar makes it possible to browse (follow links) by number in Firefox.  
+
+ Mouseless browsing (MLB)
+This grammar uses the Firefox extension *MLB* (Mouseless browsing). 
+
+If you do not have MLB yet, please follow the instructions for 
+link("installingmlb.html", "*installing MLB*").
+
+
+ The most important commands:
+
+:TABLE firstcoldifferent=1, border=1:
+:HEADING:command
+:COL:comment
+
+:ROW:toggle numbers
+:COL:to switch on or off the numbers of MLB
+
+:ROW:follow|new &#091;number&#93;
+:COL:Follow the numbered link (with *new* open link in new tab)
+
+::
+
+For more commands see link("allcommandsenglish.html", "all commands of Firefox Browsing").
+
+Deze grammatica is ook vertaald in het Nederlands. Zie link("commandosnederlands.html", "commando's Nederlands"). 
+
+ Hit a Hint (HaH)
+This is another Firefox extension that can number all links, and follow them subsequently.  The advantage over MLB is, that the page doesn't have to be fully loaded before the numbers are shown. Hit a Hint is considered as obsolete at present (nov 2010)
+
+The grammar Firefox Browsing is designed to work in either MLB or HaH. This is done by setting a variable inside the grammar (Python file). *HaH* is not fully tested anymore, as *MLB* seems to be more convenient.
