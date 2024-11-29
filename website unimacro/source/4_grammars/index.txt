@@ -17,20 +17,20 @@ link(control/index.html, _control)
 :COL:This grammar can control the on or off state of other grammars and gives introspection about Unimacro grammars.
 
 This grammar should not be removed from the Unimacro directory, and cannot be switched off by a voice command.
-:ROW:link(globalgrammars/folders/index.html, _folders)
+:ROW:link(commongrammars/folders/index.html, _folders)
 :COL:With commands from this grammar you can jump to folders, either in a _My Computer_ window or in a dialog window (like _File Open_).
 
 With additional commands you can jump to specific _files_ or specific _websites_.
 
-:ROW:link(globalgrammars/tasks/index.html, _tasks.py)
+:ROW:link(commongrammars/tasks/index.html, _tasks.py)
 :COL:Switch to a _task_, as found (and numbered) on the taskbar or as defined by name.
 
 
-:ROW:link(globalgrammars/lines/index.html, _lines.py)
+:ROW:link(commongrammars/lines/index.html, _lines.py)
 :COL:With this grammar you can jump to a specific _line_ in some editable file (for example for programmers), or in Excel (version to come).
 
 Also cut, copy, delete and insert lines, and move or copy lines from one place to another.
-:ROW:link(globalgrammars/general/index.html, _general.py)
+:ROW:link(commongrammars/general/index.html, _general.py)
 :COL:A lot of general commands, from which _give window info_ is important for introspection.
 ::
 
@@ -41,7 +41,7 @@ There are only a few of them currently, and not displaying by default:
 :TABLE firstcoldifferent=0:
 :HEADING:Grammar
 :COL:Comment
-:ROW:link(specificgrammars/chromebrowsing/index.html, chrome_browsing.py)
+:ROW:link(specialgrammars/chromebrowsing/index.html, chrome_browsing.py)
 :COL:Allows you to browse in Chrome by calling the numbers that are shown by the "Click by Voice" extension written by Mark Lillibridge.
 ::
 
