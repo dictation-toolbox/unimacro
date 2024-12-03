@@ -2372,7 +2372,7 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     Text = rwfile.readAnything(os.path.join(unimacrofolder, templatefile))
     # print(f'OldText: {Text}')
     for orig, toreplace in  [('$prompt$', prompt), ('$default$', default), ('$text$', text),
-         ('$inifile$', inifile) , ('$value$', value), ('$section$', section),
+         ('$inifile$', inifile) , ('$value$', value), ('$section$', section), 
          ('"$pausetime$"', str(pausetime))]:
         Text = Text.replace(orig, toreplace)
     # print(f'newText: {Text}')
@@ -2384,8 +2384,10 @@ def makeFromTemplateAndExecute(unimacrofolder, templatefile, unimacrogrammarsfol
     else:
         outputfile = exefile + 'w'
         pythonexe = Path(sys.prefix)/'pythonw.exe'
+   
+    unimacrodatafolder = Path(status.getUnimacroDataDirectory())
         
-    outputpath = os.path.join(unimacrogrammarsfolder, outputfile)
+    outputpath = unimacrodatafolder/outputfile
     rwfile.writeAnything(outputpath, Text)
     # print('wrote to: %s'% outputfile)
     # print(f'output dialog: {outputpath}, python: {pythonexe}')
