@@ -17,3 +17,4 @@ __pycache__/
 /website unimacro/xxx.txt
 /website unimacro/source/sitemap.html
 /src/unimacro/UnimacroGrammars/rememberdialog.py
+*.orig

@@ -4,7 +4,7 @@ is put in the _folders.ini config file.
 """
 #pylint:disable=W0621
 import time
-import PySimpleGUI as sg      
+import FreeSimpleGUI as sg      
 from dtactions import inivars
 
 prompt = """$prompt$"""  # readable text
@@ -12,15 +12,15 @@ text = """$text$"""          # input text, the key of the
 inifile = "$inifile$"
 section = "$section$"
 value = "$value$"
-title = "test"
 default = "$default$"
 pausetime = "$pausetime$"  # should be replaced by 0 or a positive int value
 
+title = f'Remember in "{section}"'
 
 
 def InputBox(text, prompt, title, default):
     """the dialog, which returns the wanted spoken form"""
-    layout = [[sg.Text(prompt)],      
+    layout = [[sg.Text(text)],      
                      [sg.InputText(default)],      
                      [sg.OK(), sg.Cancel()]]      
     
