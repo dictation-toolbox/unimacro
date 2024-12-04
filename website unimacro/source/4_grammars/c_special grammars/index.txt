@@ -1,18 +1,9 @@
-Program specific grammars
+More special grammars
 
-The grammars described in this section are specific to one program.  
+These are located in a sub directory of the Unimacro directory inside the python system ("path/to/python/Lib/site-packages/unimacro/OtherUnimacroGrammars").
 
-The python file starts with the name of the application, like *firefox_browsing.py*.
+When you want to use one or more of these grammars, please configure a UserDirectory via the "Configure Natlink via CLI" command "n". Take for example ~\Documents\UserDirectory.
 
-A lot of program specific things can be done outside these grammars:
+Then copy the wanted grammars from the path above to this UserDirectory. Restart Dragon, and you will (hopefully) be in.
 
--Vocola commands (see documentation of Vocola outside this website)
--adaptations in the grammar link("/grammars/globalgrammars/keystrokes/index.html", "*_keystrokes*"),
--adaptations of link("/features/actions/index.html", "*actions*").
-
-At this moment specific grammars are only presented for
--link("chromebrowsing/index.html", "Chrome Browsing") (with Click by Voice),
--link("firefoxbrowsing/index.html", "Firefox browsing"),
--link("excel/index.html", "Excel") (work in progress).
-
-
+Hint: when you want to locate the "path/to/python/Lib/site-packages/unimacro" directory, type "i" in the "Configure Natlink via CLI", and you will see the path to the UnimacroDirectory. The OtherGrammarsDirectory is a sub directory of this Unimacro directory.
