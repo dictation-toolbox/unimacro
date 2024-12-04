@@ -11,18 +11,11 @@ Other packages, like Dragonfly, need Natlink in order to work with Dragon, but s
 On this website are the instructions for *downloading and configuring Natlink*, including Vocola and Unimacro, and a more detailed description of *Unimacro*. For more about Vocola see the link(http://vocola.net/default.asp, *Vocola 2 website*).
 
 :ROW:
-*A stable release is finally committed: link(/installation/installation.html, release 4.2)*
-
-This will also be the final release for Python 2.7.
-
-Python 3 users can - for the time being - install Python 2.7 alongside, and run Natlink via this version. This does not disturb the working of Python 3.
-
-The implementation of Natlink with python3 is going pretty well, but has taken far too much time. But... at the beginning of November 2022, we hope to release a pretty good pre-release! See link(/installation/installationexperimentalversionpython3.html, experimental install of Natlink with python3). 
+The final release of Natlink with python 2.7 is by now several years old, and python 2.7 is not maintained any more. Nevertheless, you can still find this stable: link(/unimacro2/index.html, release 4.2)*
 
 :ROW:
 
-_bold(Please consider making a link(/aboutunimacro/donation/index.html, donation to this project))_
-
+The implementation of Natlink with python3 is going pretty well, but has taken far too much time. But... near the end of 2024, we have a pretty good pre-release! See link(/installation/index.html, pre release of Natlink with python3). 
 
 ::
 

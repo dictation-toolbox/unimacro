@@ -1,13 +1,24 @@
 Grammars
 
-The different commands of Unimacro are ordered in grammar files, and are located in the *UserDirectory* of NatLink, by default _NatLink\Unimacro_ on the drive you installed NatLink in. Each grammar file contains grammar rules, defining simple and more complex commands, and their corresponding actions whenever a command hits. 
+The different commands of Unimacro are ordered in grammar files, and they are located in different places.
+
+We will make a distinction between link(control/index.html, "*_control*"), link(commongrammars, *Common grammars*) and more link(specialgrammars/index.html, *Special grammars*).
+
+Each grammar file contains grammar rules, defining simple and more complex commands, and their corresponding actions whenever a command hits. Very common to grammar files are list of command words and corresponding actions. These lists can be configured via so called *ini files*. Read on for examples.
 
 
  Global grammars
 
-Grammar files that start with a  *_* (underscore) are global, i.e. accessible all the time. You can use commands from these grammars in any window/application (although the grammar  may activate/deactivate itself or can be activated/deactivated in some cases).
+Most Unimacro grammars are "global", meaning they are in principle active in each foreground application and/or dialog window. The grammar "click by voice" is global, but only "active" in one of the specified internet browsers.
 
-From release 3.9 on only a small set of grammars is published by default, currently:
+Grammar files that start with a  *_* (underscore) are global. You can use commands from these grammars in any window/application (although the grammar may activate/deactivate itself or can be activated/deactivated in some cases).
+
+
+ Specific grammars
+
+Some of the grammars are "program specific" (or "application specific"). They are only active in the specified program or application. The name of the grammar file starts with the application name (the name of the .exe file). The few (partly obsolete) examples are listed in the link(specialgrammars, Special Grammars) page.
+
+ Highlights:
 
 :TABLE firstcoldifferent=0:
 :HEADING:Grammar
@@ -16,23 +27,32 @@ From release 3.9 on only a small set of grammars is published by default, curren
 link(control/index.html, _control)
 :COL:This grammar can control the on or off state of other grammars and gives introspection about Unimacro grammars.
 
-This grammar should not be removed from the Unimacro directory, and cannot be switched off by a voice command.
+This grammar cannot be switched off by a voice command.
+
 :ROW:link(commongrammars/folders/index.html, _folders)
-:COL:With commands from this grammar you can jump to folders, either in a _My Computer_ window or in a dialog window (like _File Open_).
+:COL:With commands from this grammar you can jump to folders, either in a "top" window, opening an explorer window, or in a dialog window (like _File Open_).
 
 With additional commands you can jump to specific _files_ or specific _websites_.
+
+Recent folders you visited, by voice, but also "by hand" can be remembered, and visited again.
 
 :ROW:link(commongrammars/tasks/index.html, _tasks.py)
 :COL:Switch to a _task_, as found (and numbered) on the taskbar or as defined by name.
 
 
 :ROW:link(commongrammars/lines/index.html, _lines.py)
-:COL:With this grammar you can jump to a specific _line_ in some editable file (for example for programmers), or in Excel (version to come).
+:COL:With this grammar you can jump to a specific _line_ in some editable file (for example for programmers), or in Excel.
 
 Also cut, copy, delete and insert lines, and move or copy lines from one place to another.
+
 :ROW:link(commongrammars/general/index.html, _general.py)
 :COL:A lot of general commands, from which _give window info_ is important for introspection.
+
+
+:ROW:link(commongrammars/clickbyvoice/index.html, _clickbyvoice.py)
+:COL:Allows you to browse in Chrome or other browsers by calling the numbers that are shown by the "Click by Voice" extension written by Mark Lillibridge. This extension should be installed in your browser.
 ::
+
 
  Program specific grammars:
 

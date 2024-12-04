@@ -1,0 +1,7 @@
+Common grammars
+
+These grammars are automatically activated when Unimacro starts (when Natlink is started when Dragon is started).
+
+Apart from the link(/grammars/control/index.html, *control grammar*), these grammars are located in the "UnimacroGrammarsDirectory", which is the "UnimacroGrammars" sub directory of the Unimacro directory inside the python system ("path/to/python/Lib/site-packages/unimacro/UnimacroGrammars"). Normally files in this directory are read only. So these grammars are for use only, not for editing.
+
+In the pages in the left menu, the different common grammars are explained.

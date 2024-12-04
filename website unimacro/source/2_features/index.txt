@@ -1,0 +1,9 @@
+Features
+
+In the different pages below, you can see a variety of features that Unimacro grammars provide and make use of.
+
+Note: the Actions (now UnimacroActions), Autohotkey and Monitorfunctions are now in the link(https://dtactions.readthedocs.io/en/latest/, dtactions repository).
+
+
+
+
