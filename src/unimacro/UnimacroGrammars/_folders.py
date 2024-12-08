@@ -106,7 +106,7 @@ ancestor = natbj.IniGrammar
 #note this is basically copy & pasted into ThisGrammar
 #some global scope functions need the same logger.
 def logger_name():
-    "natlink.unimacro.folders"
+    return "natlink.unimacro.folders"
 
 logger = getLogger(logger_name())
 

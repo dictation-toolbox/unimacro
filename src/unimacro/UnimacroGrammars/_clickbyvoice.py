@@ -32,11 +32,27 @@ from unimacro import natlinkutilsbj as natbj
 from dtactions import unimacroutils
 from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doKeystroke  as keystroke
+from logging import getLogger
+from io import StringIO
 
 # use extension Click by Voice
 visiblePause = 0.4
 
 language = unimacroutils.getLanguage()
+def logger_name():
+    return "natlink.unimacro.clickbyvoice"
+
+logger = getLogger(logger_name())
+
+#logger should be used instead of print
+#replace print to avoid unintended use.
+builtin_print=print
+def our_print(*args,**kwargs):
+    f=StringIO()
+    builtin_print(args,kwargs,file=f)
+    value=f.getvalue()
+    logger.debug("print called instead of logging functions: %s", value)
+    logger.error(value)
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -44,7 +60,7 @@ class ThisGrammar(ancestor):
     try:
         numberGram = natbj.numberGrammarTill999[language]
     except KeyError:
-        print('take number grammar from "enx"')
+        logger.error('take number grammar from "enx"')
         numberGram = natbj.numberGrammarTill999['enx']
         
     if language == "nld":
@@ -76,7 +92,13 @@ class ThisGrammar(ancestor):
         self.prevHandle = -1
         self.ActiveHndle = None
         self.load(self.gramSpec)
+    def loggerName(self) ->str:
+        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
+        return "natlink.unimacro.clickbyvoice"
 
+    def loggerShortName(self) ->str:
+        """A key for use as a  spoken form or user interface item.  """
+        return "clickbyvoice"
     def gotBegin(self,moduleInfo):
         if not language:
             return
@@ -85,29 +107,29 @@ class ThisGrammar(ancestor):
 
         winHandle = moduleInfo[2]
         if not winHandle:
-            print(f'no window handle in {self.name}')
+            logger.warning(f'no window handle in {self.name}')
             return
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
         progInfo = unimacroutils.getProgInfo(moduleInfo)
-        # print('progInfo: %s'% repr(progInfo))
+        logger.debug('progInfo: %s',repr(progInfo))
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
         if prog in chromiumBrowsers:
             if progInfo.toporchild == 'child':
-                print(f'in child window, of a clickbyvoice program {prog}')
+                logger.debug(f'in child window, of a clickbyvoice program {prog}')
             if self.checkForChanges:
-                print(f'_clickbyvoice ({self.name}, prog: {prog}, checking the inifile')
+                logger.info(f'_clickbyvoice ({self.name}, prog: {prog}, checking the inifile')
                 self.checkInifile()
             self.switchOnOrOff(window=winHandle)
             if not self.ActiveHndle == winHandle:
-                print(f'activate _clickbyvoice, {prog}, hndle: {winHandle}')
+                logger.info(f'activate _clickbyvoice, {prog}, hndle: {winHandle}')
                 self.activateAll(window=winHandle)
                 self.ActiveHndle = winHandle
         else:
             if self.isActive():
-                print("deactivate _clickbyvoice")
+                logger.info("deactivate _clickbyvoice")
                 self.deactivateAll()
                 self.ActiveHndle = False
                 
@@ -131,7 +153,7 @@ class ThisGrammar(ancestor):
         """show the numbers, with additional options
 
         """
-        # print 'showhidenumbers, words: %s'% words
+        logger.debug( 'showhidenumbers, words: %s', words)
         showNumbers = ":+"  # fresh start, just in case
         additionalOptions = False
         while 1:
@@ -139,27 +161,26 @@ class ThisGrammar(ancestor):
             if additional is None:
                 break
             if additional == '-':
-                print(f'{self.name}: hide the numbers')
+                logger.info(f'{self.name}: hide the numbers')
                 self.gotResults_hidenumbers(words, fullResults)
                 return
             words.pop() # remove last word of list.
-            if additional in showNumbers:
-                pass
-            else:
-                showNumbers += additional 
-                additionalOptions = True
+            #allow duplicates (new behavior in 2024-12-08)
+            #doesn't seem to harm anything and allows for appending a +
+            showNumbers += additional 
+            additionalOptions = True
                 
         if additionalOptions:
-            print(f'{self.name}: showNumbers command: {showNumbers}, set as new default for the current session.')
+            logger.info(f'{self.name}: showNumbers command: {showNumbers}, set as new default for the current session.')
             # set new chosen string:
             # self.setInInifile("general", "show numbers", showNumbers)
 
         self.showNumbers = showNumbers
         self.getInputcontrol()
         self.doOption(showNumbers)
-        print('clickbyvoice, before finishInputControl')
+        logger.debug('clickbyvoice, before finishInputControl')
         self.finishInputControl()
-        print('clickbyvoice, after finishInputControl')
+        logger.debug('clickbyvoice, after finishInputControl')
 
 
     def gotResults_hidenumbers(self, words, fullResults):
@@ -172,7 +193,7 @@ class ThisGrammar(ancestor):
 
     def gotResults_tabactions(self,words,fullResults):
         """do an actions to the current tab (doc)"""
-        # print(f'tabactions words: {words}')
+        logger.debug(f'tabactions words: {words}')
         command = self.getFromInifile(words, 'tabcommands')
             
         if command:
@@ -180,12 +201,12 @@ class ThisGrammar(ancestor):
 
     def gotResults_numberedtabs(self,words,fullResults):
         """go to a numbered tab (doc) and do an optional action"""
-        print(f'numberedtabs: {words}')
+        logger.info(f'numberedtabs: {words}')
         command = self.getFromInifile(words, 'tabcommands')
 
         counts = self.getNumbersFromSpoken(words)
         if not counts:
-            print(f'_clickbyvoice, numberedtabs, no valid tab number found: {words}')
+            logger.info(f'_clickbyvoice, numberedtabs, no valid tab number found: {words}')
             return
             
         if command:
@@ -193,7 +214,7 @@ class ThisGrammar(ancestor):
 
     def gotResults_navigatetabs(self,words,fullResults):
         """go to next or previous tab(s) (documents) and refresh possibly"""
-        print(f'navigate tabs: {words}')
+        logger.info(f'navigate tabs: {words}')
         direction = None
         command = self.getFromInifile(words, 'tabcommands',noWarning=1)
         
@@ -202,7 +223,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
             direction = 'shift+tab'
         else:
-            print(f'no direction found in command: {words}')
+            logger.info(f'no direction found in command: {words}')
         
         counts = self.getNumbersFromSpoken(words)
         if counts:
@@ -233,7 +254,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, ['previous', 'terug', 'vorige', 'back']):
             direction= 'left'
         else:
-            print(f'no direction found in command: {words}')
+            logger.warning(f'no direction found in command: {words}')
         
         counts = self.getNumbersFromSpoken(words)
         if counts:
@@ -260,7 +281,7 @@ class ThisGrammar(ancestor):
             return
         self.collectNumber()
         if not self.number:
-            print('collected no number')
+            logger.debug('collected no number')
             return
         self.getInputcontrol()
         command = self.number
@@ -270,10 +291,10 @@ class ThisGrammar(ancestor):
                 command += ":"
             command += self.navOption
         if command.find(';') >= 0:
-            print(f'command: {command}')
+            logger.debug(f'command: {command}')
             commandparts = command.split(';')
             command = commandparts.pop(0)
-            print(f'command: {command}, commandparts: {commandparts}')
+            logger.debug(f'command: {command}, commandparts: {commandparts}')
         self.doOption(command)
         for additional in commandparts:
             unimacroutils.Wait(visiblePause)
@@ -290,12 +311,11 @@ class ThisGrammar(ancestor):
             progInfo = unimacroutils.getProgInfo()
             if progInfo.toporchild == 'child':
                 if i:
-                    print(f'found input window after {i} steps')
+                    logger.info(f'found input window after {i} steps')
                 break
             unimacroutils.Wait()
         else:
-            print("_clickbyvoice failed to reach input window")
-        # print("found input window of clickbyvoice")
+             logger.warning("_clickbyvoice failed to reach input window")
         unimacroutils.visibleWait()
         
         
@@ -319,10 +339,10 @@ class ThisGrammar(ancestor):
             if self.showNumbers.find(":") == -1:
                 self.showNumbers = ":" + self.showNumbers
             else:
-                print(f'{self.name}, "+" sign missing in inifile, "general", "show numbers": "{self.showNumbers}", replace by default: ":+"')
+                logger.warning(f'{self.name}, "+" sign missing in inifile, "general", "show numbers": "{self.showNumbers}", replace by default: ":+"')
                 self.showNumbers = ":+"
         if self.showNumbers.find("+") != 1:
-            print('{self.name}, "+" sign missing or in wrong position in inifile, "general", "show numbers": "{self.showNumbers}", replace by default: ":+"')
+            logger.warning('{self.name}, "+" sign missing or in wrong position in inifile, "general", "show numbers": "{self.showNumbers}", replace by default: ":+"')
             self.showNumbers = ":+"
         # not in inifile:
         self.hideNumbers = ":-"
@@ -337,9 +357,9 @@ if __name__ == "__main__":
             thisGrammar = ThisGrammar(inifile_stem="_clickbyvoice")
             # thisGrammar.startInifile()
             thisGrammar.initialize()
-            print('clickbyvoice, before finishInputControl')
+            logger.debug('clickbyvoice, before finishInputControl')
             thisGrammar.finishInputControl()
-            print('clickbyvoice, after finishInputControl')
+            logger.debug('clickbyvoice, after finishInputControl')
 
 
 
