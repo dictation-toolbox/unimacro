@@ -21,3 +21,5 @@ def logname() -> str:
     """ Returns the name of the unimacro logger."""
     return "natlink.unimacro"
 
+def clickbyvoice_logger_name() -> str:
+    return "natlink.unimacro.folders"
