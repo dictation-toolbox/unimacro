@@ -18,7 +18,7 @@
 #
 # the lists {pagecommands} and {tabcommands} in the inifile (edit chrome hah)
 #
-#pylint:disable=C0209
+#pylint:disable=C0209, W1203
 
 """
 This commands grammar allows clicking by voice
@@ -27,13 +27,14 @@ It is a global grammar, that is activated as soon as one of the chromium browser
 in the foreground 
 
 """
+from logging import getLogger
+from io import StringIO
+
 import natlink
 from unimacro import natlinkutilsbj as natbj
 from dtactions import unimacroutils
 from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doKeystroke  as keystroke
-from logging import getLogger
-from io import StringIO
 
 # use extension Click by Voice
 visiblePause = 0.4
@@ -69,7 +70,7 @@ class ThisGrammar(ancestor):
         name = 'Click by voice'
 
     gramSpec = """
-<shownumbers> exported = ((show) (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
+<shownumbers> exported = ((show) [more] (numbers) [{additionalonoroff}]+) | ((numbers) {additionalonoroff}+) ;
 <hidenumbers> exported = (hide) (numbers);
 <picknumber> exported = (pick) <integer> [{navigateoptions}];
 
@@ -153,8 +154,11 @@ class ThisGrammar(ancestor):
         """show the numbers, with additional options
 
         """
-        logger.debug( 'showhidenumbers, words: %s', words)
+        logger.debug( 'shownumbers, words: %s', words)
         showNumbers = ":+"  # fresh start, just in case
+        if self.hasCommon(words, 'more'):
+            showNumbers += "+"
+            
         additionalOptions = False
         while 1:
             additional = self.getFromInifile(words[-1], 'additionalonoroff', noWarning=1)
@@ -315,7 +319,7 @@ class ThisGrammar(ancestor):
                 break
             unimacroutils.Wait()
         else:
-             logger.warning("_clickbyvoice failed to reach input window")
+            logger.warning("_clickbyvoice failed to reach input window")
         unimacroutils.visibleWait()
         
         
