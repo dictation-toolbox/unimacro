@@ -6,7 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "unimacro"
 authors = [{name = "Quintijn Hoogenboom (maintainer)", email = "q.hoogenboom@antenna.nl"}]
 dynamic = ["description"]
-version = "4.1.7.dev5"
+version = "4.1.7"
 requires-python = ">=3.10"
 readme = "README.md"
 
@@ -19,7 +19,7 @@ readme = "README.md"
 dependencies = ["dtactions ~= 1.6.4.dev3",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
-		"natlinkcore ~= 5.4.2.dev1",
+		"natlinkcore >= 5.4.2",
         "FreeSimpleGUI>=5.1.0",
 		"icecream >= 2.1.3"]
 		  		
