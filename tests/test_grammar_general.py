@@ -16,6 +16,7 @@ def test_getTopOrChild(unimacro_setup,monkeypatch):
      
 
     thisGrammar = ThisGrammar()
+    thisGrammar.info("test")
     monkeypatch.setattr(thisGrammar, 'switchOnOrOff', do_nothing)
     thisGrammar.startInifile() #modName = '_general')
     thisGrammar.initialize()

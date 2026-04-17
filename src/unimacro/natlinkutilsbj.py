@@ -71,6 +71,9 @@ from unimacro import D_
 
 from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
 from unimacro import logname
+import types
+from functools import wraps
+
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
 
@@ -245,7 +248,33 @@ def SetMic(state):
         natlink.setMicState(state)
     except :
         pass
-# GrammarX
+
+ 
+
+
+
+class StaticProperty:
+    """A custom descriptor that allows  access as a static property."""
+    def __init__(self, func):
+        self.func = func
+
+    def __get__(self, instance, owner):
+        return self.func()
+
+
+
+#avoid copy and pasting methods that delegate to the logger.  
+def _delegate_to_logger(method_name):
+    """Delegates to {method} of a Logger object from self.logger_name()"""
+    def fn(self,*args,**kwargs):
+        logger=logging.getLogger(self.logger_name())
+        method = getattr(logger,method_name)
+        try:
+            return method(*args,**kwargs)
+        except Exception as e:
+            return False
+    return fn
+
 
 GrammarXAncestor=natlinkutils.GrammarBase
 class GrammarX(GrammarXAncestor):
@@ -270,7 +299,29 @@ class GrammarX(GrammarXAncestor):
     LoadedControlGrammars = set()
 
 
+    def __new__(cls):
+        
+        #delegate some of the logging functions.
+    
+        #copy and paste do we get hints
+        #There may be a better way using decorators.
+
+        obj = super().__new__(cls)
+
+
+        obj.info=types.MethodType(_delegate_to_logger("info"),obj)  
+        obj.setLevel=types.MethodType(_delegate_to_logger("setLevel"),obj)
+        obj.debug=types.MethodType(_delegate_to_logger("debug"),obj)
+        obj.warning=types.MethodType(_delegate_to_logger("warning"),obj)
+        obj.error=types.MethodType(_delegate_to_logger("error"),obj)
+        obj.exception=types.MethodType(_delegate_to_logger("exception"),obj)
+        obj.critical=types.MethodType(_delegate_to_logger("critical"),obj)
+        obj.log=types.MethodType(_delegate_to_logger("log"),obj)
+        return obj
+    
     def __init__(self):
+        
+
         self.__inherited.__init__(self)
         # set in list of allUnimacroGrammars, also when not loaded into
         self.RegisterGrammarObject()
@@ -284,52 +335,7 @@ class GrammarX(GrammarXAncestor):
         self.want_on_or_off = None   # True: on False: off None: no decision
         self.hypothesis = 0
         self.allResults = 0
-
-
-    def loggerName(self) ->str:
-        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
-        return logname()
-
-    def loggerShortName(self) ->str:
-        """A key for use as a  spoken form or user interface item."""
-        return "unimacro"
-
-    def getLogger(self) -> logging.Logger: 
-        return logging.getLogger(self.loggerName())
-
-
-
-    # TODO Doug, I can understand this a bit, but is it ok? It seems to stop Dragon... QH
-    #avoid copy and pasting methods that delegate to getLoger()
-    def wrapped_log(method):
-        """Delegates to {method} of a Logger object from self.getLogger()"""
-        def fn(self,*args,**kwargs):
-            logger=self.getLogger()
-            try:
-                return method(logger,*args,**kwargs)
-            except Exception as e:
-                print("Failure attempting to call {method} on {logger}, \nargs {args} \nkwargs {kwargs}\nException:\n{e}")
-                return False
-
-        return fn
-     
-    #add methods to delegate calls to logger, so we wave info, warn, etc. 
-    #this would be the better way to do it, but we haven't found a way to get code completion
-    #wrapped_logger=[Logger.info,Logger.setLevel,Logger.debug,Logger.warning,Logger.error,Logger.exception,Logger.critical,Logger.log]
-    #for n in wrapped_logger:     
-    #    locals()[n.__name__]=wrapped_log(n)
-    #instead, copy and paste. 
-    
-
-    info=wrapped_log(Logger.info)
-    setLevel=wrapped_log(Logger.setLevel)
-    debug=wrapped_log(Logger.debug)
-    warning=wrapped_log(Logger.warning)
-    error=wrapped_log(Logger.error)
-    exception=wrapped_log(Logger.exception)
-    critical=wrapped_log(Logger.critical)
-    log=wrapped_log(Logger.log)
-    
+   
     def getExclusiveGrammars(self):
         """return the dict of (name, grammarobject) of GrammarX objects that are exclusive
         """
@@ -446,11 +452,6 @@ class GrammarX(GrammarXAncestor):
         return self.__class__.__bases__[0] 
 
 
-
-
-
-
-
     def load(self,gramSpec,allResults=0,hypothesis=0, grammarName=None):
         
         if gramSpec:
@@ -494,8 +495,20 @@ class GrammarX(GrammarXAncestor):
     # This is a utility function.  It calls a member function if and only
     # if that member function is defined.
 
+
+
     def getName(self):
+        """ 
+        A unimacroGrammar should have a name, returned by getName.  Default is to use a name property.  
+        """
         return self.name
+    
+    def logger_name(self):
+        """
+            A unimacro grammar should provide a logger name.  The default is the module
+            name, override logger_name for other behavior (like a special string or a __class__ etc.)
+        """
+        return self.__module__  #this will pick up the module the subclass instance was created.
 
     GetName = getName   # consistency with Bart Jan
 
@@ -1035,7 +1048,9 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
 ##
 IniGrammarAncestor=BrowsableGrammar    
 class IniGrammar(IniGrammarAncestor):
-    """grammar base which has methods for inifile stuff
+    """grammar base which has methods for inifile stuff.
+    Grammars that derive from this have name set automatically to the module name removing any 
+    leading '_' characters.
 
     """
     #pylint:disable=R0902, R0904

@@ -52,7 +52,6 @@ import ctypes    # get window text
 from pathlib import Path
 # from pprint import pprint
 from io import StringIO
-from logging import getLogger
 import win32gui
 from win32com.client import Dispatch
 import win32clipboard
@@ -73,8 +72,10 @@ from dtactions import unimacroutils
 # from dtactions.unimacroactions import Message
 # from dtactions import unimacroactions as actions
 from unimacro import natlinkutilsbj as natbj
+
 # from unimacro.unimacro_wxpythondialogs import InputBox
 # import natlinkcore.natlinkutils as natut
+from unimacro import logger  #default for when we don't have an instance.
 
 # manipulating file names with env variables etc...
 envvars = extenvvars.ExtEnvVars()
@@ -103,22 +104,7 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 
 ancestor = natbj.IniGrammar
 
-#note this is basically copy & pasted into ThisGrammar
-#some global scope functions need the same logger.
-def logger_name():
-    return "natlink.unimacro.folders"
 
-logger = getLogger(logger_name())
-
-#logger should be used instead of print
-#replace print to avoid unintended use.
-builtin_print=print
-def our_print(*args,**kwargs):
-    f=StringIO()
-    builtin_print(args,kwargs,file=f)
-    value=f.getvalue()
-    logger.debug("print called instead of logging functions: %s", value)
-    logger.error(value)
 
 
 class ThisGrammar(ancestor):
@@ -182,13 +168,6 @@ class ThisGrammar(ancestor):
         self.load(self.gramSpec)
         self.switchOnOrOff() # initialises lists from inifile, and switches on
         
-    def loggerName(self) ->str:
-        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
-        return "natlink.unimacro.folders"
-
-    def loggerShortName(self) ->str:
-        """A key for use as a  spoken form or user interface item.  """
-        return "folders"
     
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
@@ -1934,7 +1913,7 @@ class ThisGrammar(ancestor):
         try:
             classname = win32gui.GetClassName(hndle)
         except:
-            logger.debug('Invalid hndle for GetClassName: {hndle}')
+            self.warning(f'Invalid hndle for GetClassName: {hndle}')
             classname = ''
         IamChild32770 = (not istop) and classname == '#32770'
 
@@ -2211,6 +2190,16 @@ class ThisGrammar(ancestor):
 
         """       
 
+
+#replace print to avoid unintended use.
+builtin_print=print
+def our_print(*args,**kwargs):
+    f=StringIO()
+    builtin_print(args,kwargs,file=f)
+    value=f.getvalue()
+    builtin_print("unimacro print: %s", value)
+    ThisGrammar.error(value)
+print=our_print
 
 def getLongestCommon(tupleList, f):
     """first part of tupleList must match most of f"""

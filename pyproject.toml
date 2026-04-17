@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 [build-system]
 requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
@@ -15,7 +6,7 @@ build-backend = "flit_core.buildapi"
 name = "unimacro"
 authors = [{name = "Quintijn Hoogenboom (maintainer)", email = "q.hoogenboom@antenna.nl"}]
 dynamic = ["description"]
-version = "4.1.7.dev4"
+version = "4.1.7"
 requires-python = ">=3.10"
 readme = "README.md"
 
@@ -28,8 +19,9 @@ readme = "README.md"
 dependencies = ["dtactions ~= 1.6.4.dev3",
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
-		"natlinkcore ~= 5.4.2.dev1",
-        "FreeSimpleGUI>=5.1.0"]
+		"natlinkcore >= 5.4.2",
+        "FreeSimpleGUI>=5.1.0",
+		"icecream >= 2.1.3"]
 		  		
 classifiers=[	"Development Status :: 2 - Pre-Alpha",
 				"Topic :: Multimedia :: Sound/Audio :: Speech",
@@ -56,10 +48,7 @@ dev = [
 unimacro_builtins = "unimacro.UnimacroGrammars:locateme"
 
 [project.entry-points."dt.loggers"]
-	unimacro ="unimacro:logname"
-	control="unimacro:control_logger_name"
-	folders="unimacro:folders_logger_name"
-	clickbyvoice="unimacro:clickbyvoice_logger_name"
+
 
 [tool.pytest.ini_options]
 minversion = "7.1.2"
