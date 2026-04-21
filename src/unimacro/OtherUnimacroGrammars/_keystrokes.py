@@ -21,8 +21,8 @@ others continuously.
 import sys
 import copy
 from dtactions import inivars
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import doAction as action
 from dtactions import uniutils
 from unimacro import natlinkutilsbj as natbj
 from natlinkcore import nsformat 

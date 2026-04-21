@@ -32,8 +32,8 @@ from natlinkcore import natlinktimer
 from unimacro import natlinkutilsbj as natbj
 from unimacro import namelist # for name phrases
 
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
 from dtactions.uniactions import uactions as actions
 from dtactions import uniutils
 

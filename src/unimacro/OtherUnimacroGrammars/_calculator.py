@@ -35,7 +35,7 @@ Also see the page "number grammar" on the Unimacro site and
 the grammars _number simple and _number extended.
 """
 import copy
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
 
 from natlinkcore import natlinkutils as natut
 from dtactions import uniutils

@@ -48,7 +48,7 @@ from natlinkcore import natlinkutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions import inivars
 from dtactions import uniutils
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
 from dtactions.uniactions import uactions as actions
 

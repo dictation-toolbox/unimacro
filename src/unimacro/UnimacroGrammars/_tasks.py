@@ -33,10 +33,10 @@ from natlinkcore import natlinkstatus
 from unimacro import natlinkutilsbj as natbj
 from dtactions import uniutils 
 from dtactions import monitorfunctions
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import setPosition
-from dtactions.unimacroactions import getPosition
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import setPosition
+from dtactions.uniactions.uactions import getPosition
 from dtactions.uniactions import uactions as actions
 import win32con
 import win32api

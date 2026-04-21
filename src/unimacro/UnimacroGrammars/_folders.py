@@ -63,13 +63,13 @@ from natlinkcore import natlinkstatus
 from dtactions import extenvvars
 from dtactions import messagefunctions as mess
 from dtactions import natlinkclipboard
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-# from dtactions.unimacroactions import do_YESNO as YesNo
-from dtactions.unimacroactions import UnimacroBringUp
-from dtactions.unimacroactions import Message
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+# from dtactions.uniactions.uactions import do_YESNO as YesNo
+from dtactions.uniactions.uactions import UnimacroBringUp
+from dtactions.uniactions.uactions import Message
 from dtactions import uniutils
-# from dtactions.unimacroactions import Message
+# from dtactions.uniactions.uactions import Message
 # from dtactions.uniactions import uactions as actions
 from unimacro import natlinkutilsbj as natbj
 

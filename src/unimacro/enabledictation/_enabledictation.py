@@ -59,8 +59,8 @@ import windowparameters
 defaultWaitTime = 0.2  # change to slow down or speed up actions.
 
 import natlink
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
 
 from natlinkcore import natlinkutils
 from dtactions import uniutils

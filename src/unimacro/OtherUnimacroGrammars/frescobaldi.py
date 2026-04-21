@@ -53,8 +53,8 @@ from natlinkcore import natlinkutils
 from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 import natlink
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
 from itertools import cycle
 from dtactions.uniactions import uactions as actions
 import re

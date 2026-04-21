@@ -18,8 +18,8 @@ import time
 from pathlib import Path
 import natlink
 from natlinkcore import natlinkstatus
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
 from dtactions.uniactions import uactions as actions
 import TestCaseWithHelpers
 

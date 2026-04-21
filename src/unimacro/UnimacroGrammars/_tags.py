@@ -16,8 +16,8 @@ august 2003/March 2022 (python3)/August 2024
 import natlink
 import unimacro.natlinkutilsbj as natbj
 from dtactions import uniutils
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import doAction as action
 # from dtactions.natlinkclipboard import Clipboard
 # natlinkclipboard is not safe at the moment. 
 

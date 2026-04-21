@@ -42,7 +42,7 @@ import os
 import os.path
 from dtactions.sendkeys import sendkeys
 from dtactions import uniutils
-# from dtactions.unimacroactions import doAction as action
+# from dtactions.uniactions.uactions import doAction as action
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
 from natlinkcore import natlinktimer

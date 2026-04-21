@@ -47,9 +47,9 @@ other grammars can invoke the number grammar more easily.
 """
 #pylint:disable=C0209, R0904, R0912, R0915
 import natlink
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import getMetaAction
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import getMetaAction
 from dtactions import uniutils
 
 import unimacro.natlinkutilsbj as natbj

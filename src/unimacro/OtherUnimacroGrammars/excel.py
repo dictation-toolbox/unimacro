@@ -16,8 +16,8 @@ from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 import pprint
 import types
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
 from dtactions.uniactions import uactions as actions
 import win32com
 
