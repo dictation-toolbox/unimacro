@@ -26,24 +26,24 @@ Notes:
 dictate again and then correct then if needed.
 
 Note: the natlinkclipboard module from dtactions is not ready for use. Use
-the unimacroutils module of unimacro.
+the uniutils module of unimacro.
 
 
 """
 #pylint:disable=C0115, C0116, W0201, W0613
 from natlinkcore import nsformat
-from dtactions import unimacroutils
+from dtactions import uniutils
 from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doKeystroke as keystroke
 # from dtactions.natlinkclipboard import Clipboard
 import unimacro.natlinkutilsbj as natbj
 import natlink
 
-language = unimacroutils.getLanguage()
+language = uniutils.getLanguage()
 
 ancestor = natbj.DocstringGrammar
 class BracketsGrammar(ancestor):
-    language = unimacroutils.getLanguage()
+    language = uniutils.getLanguage()
     name = "brackets"
 
     def initialize(self):
@@ -114,8 +114,8 @@ class BracketsGrammar(ancestor):
 
         if self.here:
             print('do a left buttonClick')
-            unimacroutils.buttonClick('left', 1)
-            unimacroutils.visibleWait()
+            uniutils.buttonClick('left', 1)
+            uniutils.visibleWait()
 
 
         if self.empty:
@@ -127,12 +127,12 @@ class BracketsGrammar(ancestor):
         # only if no dictated text, try to cut the selection (if there, add one char for safety with
         # the clipboard actions, only fails when at end of file)
         if not self.dictated:
-            unimacroutils.saveClipboard()
+            uniutils.saveClipboard()
             keystroke('{shift+right}')   # take one extra char for the clipboard to hit
             action('<<cut>>')
             action('W')
-            cb_text = unimacroutils.getClipboard()
-            unimacroutils.restoreClipboard()
+            cb_text = uniutils.getClipboard()
+            uniutils.restoreClipboard()
             if cb_text:
                 text, lastchar = cb_text[:-1], cb_text[-1]
             else:
@@ -152,10 +152,10 @@ class BracketsGrammar(ancestor):
         """
         keystroke(l_spacing)
         keystroke(self.pleft)
-        unimacroutils.visibleWait()
+        uniutils.visibleWait()
         if text:
             keystroke(text)
-            unimacroutils.visibleWait()
+            uniutils.visibleWait()
         keystroke(self.pright)
         keystroke(r_spacing)
         if lastchar:

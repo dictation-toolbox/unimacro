@@ -28,8 +28,8 @@ from natlinkcore.gramparser import GrammarError, GrammarSyntaxError
 status = natlinkstatus.NatlinkStatus()
 
 from natlinkcore import natlinkutils
-from dtactions import unimacroutils
-from dtactions import unimacroutils
+from dtactions import uniutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doAction as action

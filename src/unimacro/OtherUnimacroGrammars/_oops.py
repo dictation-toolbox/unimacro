@@ -61,7 +61,7 @@ from pathlib import Path
 import natlink
 from natlinkcore import natlinkstatus
 from natlinkcore import loader
-from dtactions import unimacroutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 
 logHour = -1
@@ -95,7 +95,7 @@ def getLogFileName():
 ChooseList = ['1','2','3','4','5','6','7','8','9','10']
 
 # get language for different language versions:
-language = unimacroutils.getLanguage()
+language = uniutils.getLanguage()
 
 #  Number of times the correction is executed when choosing weak
 #    (default), middle or strong
@@ -109,23 +109,23 @@ choiceStrong = 15
 #  FORMATS and FormatComments MUST MATCH!
 FORMATS = {
     # for letters in advance of a variable:
-    1: ( unimacroutils.wf_TurnCapitalizationModeOn |
-           unimacroutils.wf_TurnOffSpacingBetweenWords |
-           unimacroutils.wf_DoNotApplyFormattingToThisWord
+    1: ( uniutils.wf_TurnCapitalizationModeOn |
+           uniutils.wf_TurnOffSpacingBetweenWords |
+           uniutils.wf_DoNotApplyFormattingToThisWord
           ),
     # for continuing after a variable:
-    2: ( unimacroutils.wf_RestoreNormalCapitalization |
-            unimacroutils.wf_RestoreNormalSpacing
+    2: ( uniutils.wf_RestoreNormalCapitalization |
+            uniutils.wf_RestoreNormalSpacing
           ),
     # for continuing after a variable + extra space:
-    3:  ( unimacroutils.wf_RestoreNormalCapitalization |
-            unimacroutils.wf_RestoreNormalSpacing |
-            unimacroutils.wf_AddAnExtraSpaceFollowingThisWord
+    3:  ( uniutils.wf_RestoreNormalCapitalization |
+            uniutils.wf_RestoreNormalSpacing |
+            uniutils.wf_AddAnExtraSpaceFollowingThisWord
           ), 
     # for continuing after a variable, no space before:
-    4: ( unimacroutils.wf_RestoreNormalCapitalization |
-            unimacroutils.wf_RestoreNormalSpacing |
-            unimacroutils.wf_NoSpacePreceedingThisWord
+    4: ( uniutils.wf_RestoreNormalCapitalization |
+            uniutils.wf_RestoreNormalSpacing |
+            uniutils.wf_NoSpacePreceedingThisWord
           )
     }
 
@@ -210,7 +210,7 @@ class ThisGrammar(ancestor):
             if logHour != lTime[3]:
                 #print 'get new logfilename'
                 getLogFileName()
-            self.progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
+            self.progInfo = uniutils.getProgInfo(modInfo=moduleInfo)
             prog = self.progInfo.prog
             hndle = self.progInfo.hndle
             title = self.progInfo.title
@@ -292,16 +292,16 @@ class ThisGrammar(ancestor):
 ##        t0 = time.time()
 ##        try:fellow,hellohellohellohello hellohello,fellow hello hello hello
 ##        try:
-##            unimacroutils.SetForegroundWindow(self.messageHndle)
+##            uniutils.SetForegroundWindow(self.messageHndle)
 ##        except:
-        unimacroutils.switchToWindowWithTitle("Messages from Python Macros")
+        uniutils.switchToWindowWithTitle("Messages from Python Macros")
 ##            self.messageHndle = natlink.getCurrentModule()[2]
 ##            print 'new handle for message window: %s'% self.messageHndle
 ##        print 'time to switch:', time.time() - t0
         if not self.lastResObj:
             print('no object to Oops')
-            unimacroutils.Wait(0.1)
-            unimacroutils.returnFromMessagesWindow()
+            uniutils.Wait(0.1)
+            uniutils.returnFromMessagesWindow()
             return
         #  Go through the alternatives in the results object
         SingleWord = 0  # so formatting can be done
@@ -344,23 +344,23 @@ class ThisGrammar(ancestor):
         self.oopsFlag = 3
         self.activateSet(['inoops'],exclusive=1)
         self.setList('chooselist', ChooseList[:i])
-        unimacroutils.switchToWindowWithTitle("Messages from Python Macros")
+        uniutils.switchToWindowWithTitle("Messages from Python Macros")
 
     def gotResults_inoops(self,words,fullResults):
         # nCorr = choiceWeak
         # choice = 0
         if not self.lastResObj:
             self.cancelMode()
-            unimacroutils.returnFromMessagesWindow()
+            uniutils.returnFromMessagesWindow()
             
         if self.hasCommon(words, 'Cancel'):
             texts = dict(nld='oeps geannuleerd')
             t = texts.get(self.language, 'oops canceled')
             self.DisplayMessage(t)
             print('cancelling exclusive oops mode')
-            unimacroutils.Wait()
+            uniutils.Wait()
             self.cancelMode()
-            unimacroutils.returnFromMessagesWindow()
+            uniutils.returnFromMessagesWindow()
             return
         choice = 0
         if self.hasCommon(words, 'OK'):
@@ -386,9 +386,9 @@ class ThisGrammar(ancestor):
             choice = int(words[-1])
         if not choice:
             print('no valid choice given')
-            unimacroutils.Wait(0.2)
+            uniutils.Wait(0.2)
             self.cancelMode()
-            unimacroutils.returnFromMessagesWindow()
+            uniutils.returnFromMessagesWindow()
             return
         try:
             newWords = self.lastResObj.getWords(choice-1)
@@ -461,7 +461,7 @@ class ThisGrammar(ancestor):
                 self.newWord = newWords[0]
                 props = natlink.getWordInfo(self.newWord)
                 print(f'properties of {self.newWord}: {props}')
-                p = unimacroutils.ListOfProperties(props)
+                p = uniutils.ListOfProperties(props)
                 if p:
                     for pp in p:
                         print(pp)
@@ -481,7 +481,7 @@ class ThisGrammar(ancestor):
             time.sleep(2.0)
         time.sleep(1.0)
         self.cancelMode()
-        unimacroutils.returnFromMessagesWindow()
+        uniutils.returnFromMessagesWindow()
         #  Like in DragonDictate, when the word was not a command but a
         #    dictate word, the last phrase is scratched and replaced by the new
         #    text or the new command.
@@ -493,9 +493,9 @@ class ThisGrammar(ancestor):
         if self.lastResObj:
             fstring = ''
             if self.hasCommon(words, 'Cancel'):
-                unimacroutils.Wait()
+                uniutils.Wait()
                 self.cancelMode()
-                unimacroutils.returnFromMessagesWindow()
+                uniutils.returnFromMessagesWindow()
                 return
             try:
                 fNum = int(words[-1])
@@ -515,7 +515,7 @@ class ThisGrammar(ancestor):
             self.newWord = ""
         time.sleep(1.0)
         self.cancelMode()
-        unimacroutils.returnFromMessagesWindow()
+        uniutils.returnFromMessagesWindow()
 
     def cancelMode(self):
         #print "end of oops exclusive mode", also called when microphone is toggled.

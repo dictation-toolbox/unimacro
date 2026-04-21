@@ -68,7 +68,7 @@ from dtactions.unimacroactions import doKeystroke as keystroke
 # from dtactions.unimacroactions import do_YESNO as YesNo
 from dtactions.unimacroactions import UnimacroBringUp
 from dtactions.unimacroactions import Message
-from dtactions import unimacroutils
+from dtactions import uniutils
 # from dtactions.unimacroactions import Message
 # from dtactions import unimacroactions as actions
 from unimacro import natlinkutilsbj as natbj
@@ -111,7 +111,7 @@ class ThisGrammar(ancestor):
     """grammar for quickly going to folders, files and websites
     """
     #pylint:disable=R0902, R0904, C0116, W0201
-    language = unimacroutils.getLanguage()
+    language = uniutils.getLanguage()
     name = "folders"
     iniIgnoreGrammarLists = ['subfolders', 'subfiles']
         # 'recentfolders' is filled via self.in inicngingData
@@ -180,7 +180,7 @@ class ThisGrammar(ancestor):
             self.info("exclusive (_folders), do switchOnOrOff")
             self.switchOnOrOff()
 
-        self.progInfo = unimacroutils.getProgInfo()
+        self.progInfo = uniutils.getProgInfo()
 
         hndle = self.progInfo.hndle
         classname = self.progInfo.classname
@@ -211,7 +211,7 @@ class ThisGrammar(ancestor):
         self.FileOptions = []
         self.WebsiteOptions = []
         # redo getProgInfo, in case the focus did change:
-        self.progInfo = unimacroutils.getProgInfo()
+        self.progInfo = uniutils.getProgInfo()
 
 
 
@@ -902,14 +902,14 @@ class ThisGrammar(ancestor):
         """get current website and open with websitecommands rule
         
         """
-        unimacroutils.saveClipboard()
+        uniutils.saveClipboard()
         action('SSK {alt+d}{extend}{shift+exthome}{ctrl+c}')
         action("VW")
-        self.wantedWebsite = unimacroutils.getClipboard()
+        self.wantedWebsite = uniutils.getClipboard()
         self.wantedWebsite = self.wantedWebsite.rstrip("/")
         self.catchRemember = "website"
         self.info('this website: %s', self.wantedWebsite)
-        unimacroutils.restoreClipboard()
+        uniutils.restoreClipboard()
         if self.hasCommon(words, "remember"):
             ## dgndictation is not used at the moment!!
             if self.nextRule == "dgndictation":
@@ -1191,7 +1191,7 @@ class ThisGrammar(ancestor):
         else:
             result = ''
         self.info('namepathcopy, result: %s (type: %s)', result, type(result))
-        unimacroutils.setClipboard(result, 13)   # 13 unicode!!
+        uniutils.setClipboard(result, 13)   # 13 unicode!!
 
     def gotResults_remember(self, words, fullResults):
         """treat the remember function, filling items in ini files
@@ -1303,8 +1303,8 @@ class ThisGrammar(ancestor):
             if not self.doWaitForMouseToStop():
                 self.info('_folders, thisfile, mouse did not stop, cannot click')
                 return
-            unimacroutils.buttonClick(button, nClick)
-            unimacroutils.visibleWait()
+            uniutils.buttonClick(button, nClick)
+            uniutils.visibleWait()
 
         # self.info 'filenames: %s'% self.get_selected_filenames()
         self.wantedFile = None
@@ -1318,12 +1318,12 @@ class ThisGrammar(ancestor):
         #         self.info "warning, thisfile: no valid file found"
         #             
         # else:
-        unimacroutils.saveClipboard()
-        unimacroutils.Wait()
+        uniutils.saveClipboard()
+        uniutils.Wait()
         keystroke("{ctrl+c}")
-        unimacroutils.Wait()
+        uniutils.Wait()
         paths1 = natlinkclipboard.Clipboard.get_system_folderinfo()
-        unimacroutils.restoreClipboard() 
+        uniutils.restoreClipboard() 
 
         if paths1:
             paths1 = [p for p in paths1 if os.path.isfile(p)]
@@ -1458,21 +1458,21 @@ class ThisGrammar(ancestor):
             if not self.doWaitForMouseToStop():
                 self.info("_folders, command thisfolder: doWaitForMouseToStop fails")
                 return
-            unimacroutils.buttonClick(button, nClick)
-            unimacroutils.visibleWait()
+            uniutils.buttonClick(button, nClick)
+            uniutils.visibleWait()
 
         # now got attention, go ahead:
         self.wantedFolder = None        
-        unimacroutils.saveClipboard()
-        unimacroutils.Wait()
+        uniutils.saveClipboard()
+        uniutils.Wait()
         keystroke("{ctrl+c}")
-        unimacroutils.Wait()
+        uniutils.Wait()
         paths1 = natlinkclipboard.Clipboard.Get_folderinfo()
-        unimacroutils.restoreClipboard()
+        uniutils.restoreClipboard()
         if paths1:
             paths1 = [p for p in paths1 if os.path.isdir(p)]
         paths2 = get_selected_files(folders=True)
-        unimacroutils.Wait()
+        uniutils.Wait()
         if paths1 and paths2:
             if paths1 == paths2:
                 paths = paths1
@@ -1536,9 +1536,9 @@ class ThisGrammar(ancestor):
             action("<<filenameenter>>; {shift+tab}")
             action("{backspace %s}"% upn)
         elif browser:
-            unimacroutils.saveClipboard()
+            uniutils.saveClipboard()
             keystroke('{alt+d}{extend}{shift+exthome}{ctrl+c}')
-            t = unimacroutils.getClipboard()
+            t = uniutils.getClipboard()
             prefix, path = t.split('://')
             T = path.split('/')
             if len(T) > upn:
@@ -1548,7 +1548,7 @@ class ThisGrammar(ancestor):
             
             keystroke(prefix + '://' + '/'.join(T))
             keystroke('{enter}')
-            unimacroutils.restoreClipboard()
+            uniutils.restoreClipboard()
         elif IamExplorer:
             if not self.activeFolder:
                 self.activeFolder = mess.getFolderFromCabinetWClass(hndle)
@@ -1741,7 +1741,7 @@ class ThisGrammar(ancestor):
             mode = 'open'
 
         if self.CopyNamePath:
-            unimacroutils.setClipboard(f)
+            uniutils.setClipboard(f)
             return
         if self.Paste:
             action("SCLIP %s"%f)
@@ -1753,12 +1753,12 @@ class ThisGrammar(ancestor):
             self.info("Open file from child window: %s", f)
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
-            unimacroutils.saveClipboard()
+            uniutils.saveClipboard()
             keystroke('{Ctrl+x}')
             keystroke(f)
             action('<<filenameexit>>')
             keystroke('{Ctrl+v}')
-            unimacroutils.restoreClipboard()
+            uniutils.restoreClipboard()
             keystroke('{Shift+Tab}')
         else:
             # top or top behaviourthis
@@ -1895,7 +1895,7 @@ class ThisGrammar(ancestor):
             return  # 
         if self.CopyNamePath:
             self.info('put path on clipboard: "%s"', f)
-            unimacroutils.setClipboard(f)
+            uniutils.setClipboard(f)
             return
 
         istop = self.getTopOrChild(self.progInfo, childClass="#32770")
@@ -1937,12 +1937,12 @@ class ThisGrammar(ancestor):
             self.info("_folders, child window, comes ever here???")
             action("RMP 1, 0.02, 0.05, 0")
             action('<<filenameenter>>')
-            unimacroutils.saveClipboard()
+            uniutils.saveClipboard()
             keystroke('{Ctrl+x}')
             keystroke(f)
             action('<<filenameexit>>')
             keystroke('{Ctrl+v}')
-            unimacroutils.restoreClipboard()
+            uniutils.restoreClipboard()
             keystroke('{Shift+Tab}')
             return
 
@@ -1990,7 +1990,7 @@ class ThisGrammar(ancestor):
             if len(exactList) > 1:
                 self.info('warning, 2 matching windows: %s', exactList)
             t, h = exactList[0]
-            unimacroutils.SetForegroundWindow(h)
+            uniutils.SetForegroundWindow(h)
         elif overList:
 ##            self.info 'over List %s' % (overList)
             # eg f = d:\\a\\b
@@ -1999,7 +1999,7 @@ class ThisGrammar(ancestor):
             # later make choice list of where to go
             if len(overList) == 1:
                 t, h = overList[0]
-                unimacroutils.SetForegroundWindow(h)
+                uniutils.SetForegroundWindow(h)
             lenMin = 999
             for t, h in overList:
 ##                    print 'nearList: %s'% nearList
@@ -2015,7 +2015,7 @@ class ThisGrammar(ancestor):
             if thisHandle == toHandle:
                 self.gotoInThisComputer(f)
             else:
-                unimacroutils.SetForegroundWindow(take)
+                uniutils.SetForegroundWindow(take)
         elif underList:
             # eg f = d:\\a\\b\\c
             # elementes of underList are d:\\a d:\\a\\b etc.
@@ -2028,7 +2028,7 @@ class ThisGrammar(ancestor):
                 if len(t) > lenMax:
                     take = h
                     lenMax = len(t)
-            if unimacroutils.SetForegroundWindow(take):
+            if uniutils.SetForegroundWindow(take):
                 self.gotoInThisComputer(f)
 
         elif restList:
@@ -2039,7 +2039,7 @@ class ThisGrammar(ancestor):
 ##            print 'take: ', `take`
             if take:
                 t, h = take
-                if unimacroutils.SetForegroundWindow(h):
+                if uniutils.SetForegroundWindow(h):
                     self.gotoInThisComputer(f)
                 else:
                     self.info('could not set foregroundwindow: %s', h)
@@ -2171,12 +2171,12 @@ class ThisGrammar(ancestor):
 
         
     def doStartWindowsExplorer(self):
-        unimacroutils.rememberWindow()
+        uniutils.rememberWindow()
         startExplorer = self.ini.get('general', 'start windows explorer')
         action(startExplorer)
         try:
-            unimacroutils.waitForNewWindow(50, 0.05)  # 2,5 seconds max
-        except unimacroutils.NatlinkCommandTimeOut:
+            uniutils.waitForNewWindow(50, 0.05)  # 2,5 seconds max
+        except uniutils.NatlinkCommandTimeOut:
             self.info('Error with action "start windows explorer" (%s) from command in grammar + "_folders".' , \
                   startExplorer)
             self.info('Correct in ini file by using the command: ' + {'enx': "Edit Folders",

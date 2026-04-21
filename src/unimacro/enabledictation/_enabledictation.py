@@ -63,8 +63,8 @@ from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doAction as action
 
 from natlinkcore import natlinkutils
-from dtactions import unimacroutils
-from dtactions import unimacroutils
+from dtactions import uniutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 
 from time import sleep  
@@ -109,7 +109,7 @@ class VoiceDictation:
                 dct = self.dictObj
                 dct.deactivate()
                 self.dctactive = 0
-                progInfo = unimacroutils.getProgInfo(moduleInfo)
+                progInfo = uniutils.getProgInfo(moduleInfo)
 
             _progpath, prog, title, _toporchild, _classname, _hndle = progInfo
             print('changing app to: "%s", %s'% (prog, hndle))
@@ -275,7 +275,7 @@ class VoiceDictation:
         D("setting selection to pos %s, %s"% (selStart, selEnd))
         self.setSelection(selStart,selEnd)
         #if getFocus:
-        #    unimacroutils.SetForegroundWindow(self.app)
+        #    uniutils.SetForegroundWindow(self.app)
         if not self.scratchThatCommand:
             self.scratchinfo.append( [(selStart, selEnd), newText,
                                   (delStart, delEnd), self.lastSelText])

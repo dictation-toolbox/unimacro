@@ -29,6 +29,7 @@
 #   revised many times by Quintijn Hoogenboom
 #pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602, W0212
 #pylint:disable=E1101
+#pylint:disable=R0903
 
 """subclasses classes for natlink grammar files and utility functions
 
@@ -44,8 +45,12 @@ import shutil
 import copy
 import string
 from pathlib import Path
+import types
+# from functools import wraps
+
 import logging
 from logging import Logger
+
 import win32com
 import natlink
 from natlinkcore import loader
@@ -56,11 +61,11 @@ from natlinkcore import readwritefile
 
 # for IniGrammar:
 # was natlinkutilsqh:
-from dtactions import unimacroutils
-from dtactions import unimacroactions as actions
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import UnimacroBringUp
+from dtactions import uniutils
+from dtactions.uniactions import uactions as actions
+from dtactions.uniactions.uactions  import doAction as action
+from dtactions.uniactions.uactions  import doKeystroke as keystroke
+from dtactions.uniactions.uactions  import UnimacroBringUp
 from dtactions import utilsqh
 from dtactions.utilsqh import formatListColumns
 from dtactions import inivars
@@ -70,9 +75,7 @@ from unimacro import BrowseGrammar
 from unimacro import D_
 
 from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
-from unimacro import logname
-import types
-from functools import wraps
+# from unimacro import logname
 
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
@@ -271,7 +274,7 @@ def _delegate_to_logger(method_name):
         method = getattr(logger,method_name)
         try:
             return method(*args,**kwargs)
-        except Exception as e:
+        except:
             return False
     return fn
 
@@ -1009,7 +1012,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
             sys.path.insert(0, pypath) 
         pypath = ';'.join(sys.path)
         os.environ['PYTHONPATH'] = pypath
-        unimacroutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
+        uniutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
 ###
 ##GlobalGrammarBaseAncestor=BrowsableGrammar    
 ##class GlobalGrammarBase(GlobalGrammarBaseAncestor):
@@ -1840,7 +1843,7 @@ noot mies
         if inifile is not given, the standard name is expected
         """
         inifile = self.inifile
-        self.iniFileDate = unimacroutils.getFileDate(inifile)
+        self.iniFileDate = uniutils.getFileDate(inifile)
         self.checkForChanges = 1
         self.openFileDefault(inifile, mode="edit")
 
@@ -1917,7 +1920,7 @@ noot mies
                 self.message('fillGrammarLists in grammar "%s"\n\nNot all lists filled: %s\n\nPlease fill in in inifile by calling the command "%s %s"'%
                                     (self.name, fromGrammar, commandWord, self.name))
                 self.checkForChanges = 1
-                self.iniFileDate = unimacroutils.getFileDate(self.inifile)
+                self.iniFileDate = uniutils.getFileDate(self.inifile)
                 
                 #self.openFileDefault(self.inifile)
 
@@ -2096,7 +2099,7 @@ noot mies
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
-        self.iniFileDate = unimacroutils.getFileDate(self.inifile)
+        self.iniFileDate = uniutils.getFileDate(self.inifile)
         try:
             # return all Unicode...
             # self.ini = inivars.IniVars(self.inifile, returnStrings=1, repairErrors=1)
@@ -2205,7 +2208,7 @@ noot mies
         Initialisation is supposed to have been done in the routine
         startInifile.
         """
-        newDate = unimacroutils.getFileDate(self.inifile)
+        newDate = uniutils.getFileDate(self.inifile)
 
         if newDate == 0:
             return None # error, no inifile active
@@ -2241,7 +2244,7 @@ noot mies
                     print(f'going to reload grammar {self.name})')
                     # os.utime(fullPath, None)
                     self.DisplayMessage('grammar %s will be reloaded at next utterance'% self.name)
-                self.iniFileDate = unimacroutils.getFileDate(self.inifile)  # just in case it has been changed during translate
+                self.iniFileDate = uniutils.getFileDate(self.inifile)  # just in case it has been changed during translate
                 #elif translated:
                 #    print 'translation identical, no reload necessary for %s'% self.name
 
@@ -2277,7 +2280,7 @@ noot mies
         #natlink.execScript('AppBringup "%s"'% foldername)
         ##win32api.ShellExecute(0, mode, foldername, '', '', windowStyle or win32con.SW_SHOWNORMAL)
         ##int = ShellExecute(hwnd, op , file , params , dir , bShow )
-        ##unimacroutils.AppBringUp('folder', foldername, windowStyle=windowStyle)
+        ##uniutils.AppBringUp('folder', foldername, windowStyle=windowStyle)
 
 
 
@@ -2673,7 +2676,7 @@ noot mies
     def stopSearch(self, progInfo=None):
         """action after the search"""
         if not progInfo:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         if beforeOrAfter == 'before':
             if lastSearchDirection == 'up':
                 s = '<<leftafterbacksearch %s>>'% len(lastSearchText)
@@ -2713,7 +2716,7 @@ noot mies
         global lastSearchText, lastSearchDirection, beforeOrAfter
         # pass progInfo to the actions, to keep them from changing inside the stuff:
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo(modInfo)
+            progInfo = uniutils.getProgInfo(modInfo)
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
@@ -2816,7 +2819,7 @@ noot mies
             return None # no information
         # old info:
         _progpath, prog, title, toporchild, _classname, _hndle = progInfo
-        nprogInfo = unimacroutils.getProgInfo() # for checking if window or title changed
+        nprogInfo = uniutils.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
            (prog == 'iexplore'):
@@ -2834,7 +2837,7 @@ noot mies
         #pylint:disable=W0603
         global comingFrom
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
@@ -2849,7 +2852,7 @@ noot mies
     def searchGoBack(self, progInfo=None):
         """go back to previous place, excel or word"""
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
@@ -2880,7 +2883,7 @@ noot mies
         
         """
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         
         assert len(progInfo) == 6
         

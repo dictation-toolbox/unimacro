@@ -28,7 +28,7 @@ import natlink
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
 
-from dtactions import unimacroutils
+from dtactions import uniutils
 from dtactions import unimacroactions as actions
 
 from unimacro import natlinkutilsbj as natbj
@@ -141,7 +141,7 @@ class UtilGrammar(ancestor):
         self.activateAll()
         self.setMode(Normal)
         self.startExclusive = self.exclusive # exclusive state at start of recognition!
-##        if unimacroutils.getUser() == 'martijn':
+##        if uniutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
         self.info('---now starting other Unimacro grammars:')
@@ -280,7 +280,7 @@ class UtilGrammar(ancestor):
                 gram.checkInifile()
                 gram.ini.set('general', 'initial on', 1)
                 gram.ini.write()
-                unimacroutils.Wait(0.1)
+                uniutils.Wait(0.1)
             else:
                 self.error(f'--- ini file of grammar {gname} is invalid, please try "edit {gname}"...')
             gramName = gram.getName()

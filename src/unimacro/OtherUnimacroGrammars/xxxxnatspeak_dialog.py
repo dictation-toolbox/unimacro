@@ -9,7 +9,7 @@
 # interaction with grammar _folders.
 #
 #pylint:disable=
-from dtactions import unimacroutils
+from dtactions import uniutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 
@@ -21,7 +21,7 @@ class ThisGrammar(ancestor):
     
     only to be switched on if dialog is there, if dialog is gone, the grammar rules set is deactivated
     """    
-    language = unimacroutils.getLanguage()
+    language = uniutils.getLanguage()
     name = "natspeak dialog"
     
     setRecentFolderDialog = ["chooserfd", "okcancelrfd"]
@@ -47,7 +47,7 @@ class ThisGrammar(ancestor):
         if hndle == self.prevHndle:
             return
         self.prevHndle = hndle
-        if unimacroutils.matchModule('natspeak'):
+        if uniutils.matchModule('natspeak'):
             # try to reach data from _folders grammar: 
             self.foldersGram = self.GetGrammarObject('folders')
             #print 'self.foldersGram: %s'% self.foldersGram
@@ -55,7 +55,7 @@ class ThisGrammar(ancestor):
                 return
             dTitle = self.foldersGram.dialogWindowTitle
             dRange = self.foldersGram.dialogNumberRange
-            if dTitle and unimacroutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
+            if dTitle and uniutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
                 self.activateSet(self.setRecentFolderDialog)
                 self.setNumbersList('number', dRange)
                 return
@@ -83,10 +83,10 @@ class ThisGrammar(ancestor):
     def exitDialog(self):
         """finish the open dialog, normally by pressing enter"""
         dTitle = self.foldersGram.dialogWindowTitle
-        if dTitle and unimacroutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
-            unimacroutils.rememberWindow()
+        if dTitle and uniutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
+            uniutils.rememberWindow()
             keystroke("{enter}") # exit dialog.
-        unimacroutils.waitForNewWindow()
+        uniutils.waitForNewWindow()
         
         
 # standard stuff:

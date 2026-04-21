@@ -47,10 +47,10 @@ If just input notes are given, the strategy of insert/update of notes is
   
 """
 
-from dtactions import unimacroutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
-from dtactions import unimacroutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 import natlink
 from dtactions.unimacroactions import doAction as action
@@ -83,9 +83,9 @@ class ThisGrammar(ancestor):
         winHandle = moduleInfo[2]
         if self.prevHandle == winHandle: return
         self.prevHandle = winHandle
-        if moduleInfo[0].lower().find('frescobaldi.exe') > 0 and unimacroutils.isTopWindow(moduleInfo[2]):
+        if moduleInfo[0].lower().find('frescobaldi.exe') > 0 and uniutils.isTopWindow(moduleInfo[2]):
             if self.frescobaldi is None:
-                progInfo = unimacroutils.getProgInfo(moduleInfo)
+                progInfo = uniutils.getProgInfo(moduleInfo)
                 self.frescobaldi = actions.get_instance_from_progInfo(progInfo)
                 if not self.frescobaldi:
                     raise Exception("frescobaldi, cannot get frescobaldi actions module")
@@ -122,7 +122,7 @@ class ThisGrammar(ancestor):
         self.justLeft = self.justRight = None # to be filled with getPrevNext()
         self.inMiddleOfWord = None
         if self.hasSelection:
-            print 'hasSelection, selected text: %s'% unimacroutils.getClipboard()
+            print 'hasSelection, selected text: %s'% uniutils.getClipboard()
         self.hasAllInfoNext = False ## set to true if nextlines end with double \n
         self.hasAllInfoPrev = False ## set to true if prevlines contains a double \n so starts with ir
         
@@ -260,8 +260,8 @@ class ThisGrammar(ancestor):
         """here figure {figures}+"""
         # start with the pointer in the music pane
         # always click
-        unimacroutils.buttonClick()
-        unimacroutils.visibleWait()
+        uniutils.buttonClick()
+        uniutils.visibleWait()
         self.hadFigure = 1
 
         selection = self.getFigurePart()
@@ -368,7 +368,7 @@ class ThisGrammar(ancestor):
         ###
         ### position at correct position, possibly put a space.
         if self.hasCommon(words, 'here'):
-            unimacroutils.buttonClick()
+            uniutils.buttonClick()
         self.getPrevNext()
         # position at left of word
         while self.inMiddleOfWord:
@@ -390,7 +390,7 @@ class ThisGrammar(ancestor):
         # leave next|previous for the moment, assume always count from the beginning      
         DIR = 'right'
         if self.hasCommon(words, 'here'):
-            unimacroutils.buttonClick()
+            uniutils.buttonClick()
         try:
             nStr = self.getNumbersFromSpoken(words)[0] # returns a string or None
             n = int(nStr)
@@ -654,7 +654,7 @@ class ThisGrammar(ancestor):
        
     def getFigurePart(self):
         # go left then right for selecting the note at the cursor position
-        unimacroutils.saveClipboard()
+        uniutils.saveClipboard()
         self.getPrevNext()
         if self.justRight != "<":
             # go left until < has been reached:
@@ -674,10 +674,10 @@ class ThisGrammar(ancestor):
                 break
         else:
             print 'getFigurePart, did not find ">"'
-            unimacroutils.restoreClipboard()
+            uniutils.restoreClipboard()
             return
         result = t
-        unimacroutils.restoreClipboard()
+        uniutils.restoreClipboard()
         return result
         
         

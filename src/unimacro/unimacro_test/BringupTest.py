@@ -6,7 +6,7 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
     
       
 """
-from dtactions import unimacroutils
+from dtactions import uniutils
 from natlinkcore import natlinkutils
 from dtactions import unimacroactions as actions
 import natlink

@@ -3,7 +3,7 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-from dtactions import unimacroutils
+from dtactions import uniutils
 from natlinkcore import natlinkutils
 from dtactions import unimacroactions as actions
 actions.debugActions(1)
@@ -31,7 +31,7 @@ class SearchTest(UnimacroTestHelpers.UnimacroTestHelpers):
         action = actions.doAction
         action('CLIPSAVE')
         action("<<selectall>><<copy>>")
-        contents = unimacroutils.getClipboard()
+        contents = uniutils.getClipboard()
         action('CLIPRESTORE')
         return contents
 
@@ -40,7 +40,7 @@ class SearchTest(UnimacroTestHelpers.UnimacroTestHelpers):
         if testName:
             text += ': ' + testName
         action = actions.doAction
-        contents = unimacroutils.getClipboard()
+        contents = uniutils.getClipboard()
         self.assert_equal(expected, contents, text)
 
 
@@ -67,20 +67,20 @@ class SearchTest(UnimacroTestHelpers.UnimacroTestHelpers):
         action = actions.doAction
         action('CLIPSAVE')
         action("<<copy>>")
-        clip = unimacroutils.getClipboard()
+        clip = uniutils.getClipboard()
         lenClip = len(clip)
         # get to the left of the selection:
         action('<<leftafterforwardsearch %s>>{shift+ctrl+home}<<copy>>{ctrl+home}'% lenClip)
-        begin = unimacroutils.getClipboard()
+        begin = uniutils.getClipboard()
         lenBegin = len(begin)
         lengths = lenBegin + lenClip
         action('{right %s}'% lengths)
         action('{shift+ctrl+end}<<copy>>')
-        end = unimacroutils.getClipboard()
+        end = uniutils.getClipboard()
         end = end.rstrip()
         lenEnd = len(end)
         action('<<selectall>><<copy>>')
-        all = unimacroutils.getClipboard()
+        all = uniutils.getClipboard()
         all = all.rstrip()
         lenAll = len(all)
         action('CLIPRESTORE')

@@ -41,7 +41,7 @@ import time
 import os
 import os.path
 from dtactions.sendkeys import sendkeys
-from dtactions import unimacroutils
+from dtactions import uniutils
 # from dtactions.unimacroactions import doAction as action
 import unimacro.natlinkutilsbj as natbj
 from natlinkcore import natlinkutils
@@ -103,7 +103,7 @@ Counts = ['1','2','3','4','5','6','7','8','9','10','11','12','13',
 # in "hold on"
 showAll = 1
 
-language = unimacroutils.getLanguage()        
+language = uniutils.getLanguage()        
 normalSet = ['startMoving', 'startMousing', 'startRepeating', 'startSearching']
 ############################################################################
 #
@@ -406,7 +406,7 @@ class ThisGrammar(ancestor):
                 if res == -2:
                     # missing search, did cancel mode
                     return None
-            unimacroutils.visibleWait()
+            uniutils.visibleWait()
             self.insideCommand = 0
         elif self.state == 'mousing':
             self.setTrayIcon(1)

@@ -38,14 +38,14 @@ import copy
 from dtactions.unimacroactions import doAction as action
 
 from natlinkcore import natlinkutils as natut
-from dtactions import unimacroutils
-from dtactions import unimacroutils
+from dtactions import uniutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = unimacroutils.getLanguage()
+    language = uniutils.getLanguage()
     normalRules = ['calcnormal', 'cancel']
     calcRules = ['calccalc', 'cancel'] # exclusive
     continueRules = ['calccontinue', 'cancel'] # exclusive
@@ -87,7 +87,7 @@ class ThisGrammar(ancestor):
         if self.checkForChanges:
             self.checkInifile()
         if self.prevModInfo != moduleInfo:
-            progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
+            progInfo = uniutils.getProgInfo(modInfo=moduleInfo)
             self.prevModInfo = moduleInfo
             self.cancelMode()
             self.prog = progInfo.prog

@@ -23,13 +23,13 @@ import copy
 from dtactions import inivars
 from dtactions.unimacroactions import doKeystroke as keystroke
 from dtactions.unimacroactions import doAction as action
-from dtactions import unimacroutils
+from dtactions import uniutils
 from unimacro import natlinkutilsbj as natbj
 from natlinkcore import nsformat 
 from natlinkcore import loader
 import natlink
 natlinkmain = loader.NatlinkMain()
-language = unimacroutils.getLanguage()        
+language = uniutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
@@ -58,7 +58,7 @@ class ThisGrammar(ancestor):
     gramSpec = "# placeholder of gramSpec"
 
     # def __init__(self, inifile_stem=None):
-    #     self.language = unimacroutils.getLanguage()
+    #     self.language = uniutils.getLanguage()
     #     # here the grammar is not loaded yet, but the ini file is present
     #     self.inifile_stem = inifile_stem
     #     self.startInifile()
@@ -124,11 +124,11 @@ class ThisGrammar(ancestor):
         if self.prevModule == moduleInfo:
             return
 
-        progInfo = unimacroutils.getProgInfo(moduleInfo)       
+        progInfo = uniutils.getProgInfo(moduleInfo)       
 
         self.isIgnored = 0
 
-        if self.ignore and unimacroutils.matchWindow(self.ignore, progInfo=progInfo):
+        if self.ignore and uniutils.matchWindow(self.ignore, progInfo=progInfo):
             self.isIgnored = 1
             return
 
@@ -205,8 +205,8 @@ class ThisGrammar(ancestor):
         #print '_keystrokes, do a "%s" mouse click'% button
         if not self.doWaitForMouseToStop():
             raise Exception("_keystrokes, mouse did not stop")
-        unimacroutils.buttonClick(button, nClick)
-        unimacroutils.visibleWait()
+        uniutils.buttonClick(button, nClick)
+        uniutils.visibleWait()
         self.hadClick = button             
 
     def subrule_contextmenu(self, words):
@@ -346,7 +346,7 @@ class ThisGrammar(ancestor):
             if not self.doMouseMoveStopClick():
                 print("you should move the mouse a bit at least!")
                 return
-        possibleButtons = unimacroutils.joelsButtons
+        possibleButtons = uniutils.joelsButtons
         possibleClicks = ['1', '2', '3']
         clickrules = self.getFromInifile(words[0], 'click')
         #print 'clickrules: %s'% clickrules
@@ -373,8 +373,8 @@ class ThisGrammar(ancestor):
     
         if self.nextRule == 'contextmenu' and nClick == 1:
             button = 'right'
-        unimacroutils.buttonClick(button, nClick, modifiers=self.mod)
-        unimacroutils.visibleWait()
+        uniutils.buttonClick(button, nClick, modifiers=self.mod)
+        uniutils.visibleWait()
         self.hadClick = button
 
 
@@ -414,7 +414,7 @@ class ThisGrammar(ancestor):
     def gotResults_lastkey(self, words,fullResults):
         self.flush()
         self.flushAll()  
-        unimacroutils.visibleWait()
+        uniutils.visibleWait()
 
     def gotResults(self, words,fullResults):
         self.flush()
@@ -429,12 +429,12 @@ class ThisGrammar(ancestor):
         self.hadClick = 0
 
         if self.cap:
-            self.key = unimacroutils.doCaps(self.key)
+            self.key = uniutils.doCaps(self.key)
 
         if self.mod:
-            self.key = unimacroutils.doModifier(self.key, self.mod)
+            self.key = uniutils.doModifier(self.key, self.mod)
         if self.count != 1:
-            self.key = unimacroutils.doCount(self.key, self.count)
+            self.key = uniutils.doCount(self.key, self.count)
        
         if isinstance(self.key, list):
             print(f'_keystrokes, flush: warning, self.key is list: {self.key}')
@@ -486,20 +486,20 @@ class ThisGrammar(ancestor):
             self.cap = 3
             
     def windowPolicy(self, modInfo=None, progInfo=None): 
-        progInfo = progInfo or unimacroutils.getProgInfo(modInfo)
+        progInfo = progInfo or uniutils.getProgInfo(modInfo)
         #print 'window policy------progInfo: %s'% repr(progInfo)
         #print 'deactivaterules: %s'% self.deactivateRules
         #print 'activaterules: %s'% self.activateRules
         modeSet = []
         for mode in self.modes:
-            if unimacroutils.matchWindow(self.modes[mode], progInfo=progInfo):
+            if uniutils.matchWindow(self.modes[mode], progInfo=progInfo):
                 modeSet.append(mode)
         self.modeSet = set(modeSet)
         if modeSet:
             return tuple(modeSet)
 
-        if unimacroutils.matchWindow(self.activateRules, progInfo=progInfo):
-            if unimacroutils.matchWindow(self.deactivateRules, progInfo=progInfo):
+        if uniutils.matchWindow(self.activateRules, progInfo=progInfo):
+            if uniutils.matchWindow(self.deactivateRules, progInfo=progInfo):
                 return 'inactive'
             return 'active'
         return 'inactive'
