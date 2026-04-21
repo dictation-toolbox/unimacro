@@ -1880,10 +1880,10 @@ noot mies
         if listOfLists:
             for l in listOfLists:
                 if l not in fromGrammar:
-                    self.error('fillGrammarLists, list name not in grammar: %s'% l)
+                    self.errorf('fillGrammarLists, list name not in grammar: %s'% l)
                     continue
                 if l not in allListsFromIni:
-                    self.error('fillGrammarLists, list name not in ini file: %s'% l)
+                    self.errorf('fillGrammarLists, list name not in ini file: %s'% l)
                     continue
                 if self.fillList(l):
                     fromGrammar.remove(l)
@@ -2337,7 +2337,7 @@ noot mies
         """
         #pylint:disable=
         if self.ini is None:
-            self.error('no valid inifile')
+            self.errorf('no valid inifile')
         if isinstance(words, str):
             v = self.ini.get(section, words, None)
             if v is None and not noWarning:
@@ -2362,7 +2362,7 @@ noot mies
         """set new value in inifile
         """
         if self.ini is None:
-            self.error('no valid inifile')
+            self.errorf('no valid inifile')
         self.ini.set(section, key, value)
         self.ini.writeIfChanged()
         
@@ -2461,7 +2461,7 @@ noot mies
                     ini.set(l)
         ini.write()
                 
-    def error(self, message):
+    def errorf(self, message):
         """gives an error message, and leaves variable Error
 
         currently prints a message, and switches off the grammar
@@ -2470,7 +2470,6 @@ noot mies
         raise UnimacroError('error %s in module %s: %s'% \
                             (sys.exc_info()[0], self.GetName(), message))
                             
-
         
     def removeFromList(self, L, toRemove):
         """removes in place items from list, calls error routine if missing things
@@ -2480,7 +2479,7 @@ noot mies
         returns nothing!, list L list changed in place
              """
         if not isinstance(L, list):
-            self.error(f'not a list in "removeFromList": "{L}", type: {type(L)}')
+            self.errorf(f'not a list in "removeFromList": "{L}", type: {type(L)}')
             return
 
         if not L:
@@ -2495,7 +2494,7 @@ noot mies
                 L.remove(toRemove)
             except:
                 pass
-                # self.error('removeFromList, item to remove is not in list: %s'% toRemove)
+                # self.errorf('removeFromList, item to remove is not in list: %s'% toRemove)
                 # return
         elif isinstance(toRemove, (list, tuple)):
             for r in toRemove:
@@ -2503,10 +2502,10 @@ noot mies
                     L.remove(r)
                 except:
                     pass
-                    # self.error('removeFromList, item to remove is not in list: %s'% r)
+                    # self.errorf('removeFromList, item to remove is not in list: %s'% r)
                     # return
         else:
-            self.error('removeFromList, invalid type for variable "toRemove": %s'% toRemove)
+            self.errorf('removeFromList, invalid type for variable "toRemove": %s'% toRemove)
             return
         
 
@@ -2893,14 +2892,14 @@ noot mies
                 istop = False
             elif childClass and progInfo.classname == childClass:
                 if actions.childWindowBehavesLikeTop( progInfo ):
-                    self.debug('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
+                    self.errorf('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
                 else:                
-                    self.debug('getTopOrChild: child mode, because of className "%s"'% childClass)
+                    self.errorf('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
         else:
             if actions.childWindowBehavesLikeTop( progInfo ):
-                self.debug('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
+                self.errorf('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True
         return istop
 

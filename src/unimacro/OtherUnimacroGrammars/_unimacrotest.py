@@ -22,7 +22,7 @@ from natlinkcore import natlinkstatus
 import unimacro.natlinkutilsbj as natbj
 from dtactions import uniutils
 from dtactions import utilsqh
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 

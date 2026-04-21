@@ -21,20 +21,20 @@ from pathlib import Path
 #a global logger for unimacro.  perfectly reasonable to access by name instead.
 import logging as l
 from logging import Logger
-import importlib.metadata as meta
-import sys
+# import importlib.metadata as meta
+# from icecream import ic
 
 import natlink
+
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
 
 from dtactions import uniutils
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 
 from unimacro import natlinkutilsbj as natbj
 from unimacro import spokenforms 
 from unimacro import __version__ as unimacro_version
-from icecream import ic
 
 logger = Logger("_control")
 #from unimacro import logger
@@ -704,7 +704,8 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
 if __name__ == "__main__":
     ## interactive use, for debugging:
     with natlink.natConnect():
-        utilGrammar = UtilGrammar(inifile_stem='_control')
+        # utilGrammar = UtilGrammar(inifile_stem='_control')
+        utilGrammar = UtilGrammar()
         utilGrammar.startInifile()
         utilGrammar.initialize()
         Words = ['edit', 'grammar', 'control']

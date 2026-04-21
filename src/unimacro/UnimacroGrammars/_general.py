@@ -34,7 +34,7 @@ from unimacro import namelist # for name phrases
 
 from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 from dtactions import uniutils
 
 # taskswitching moved to _tasks.py (july 2006)

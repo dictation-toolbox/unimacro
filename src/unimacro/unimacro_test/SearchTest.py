@@ -5,7 +5,7 @@
 #
 from dtactions import uniutils
 from natlinkcore import natlinkutils
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 actions.debugActions(1)
 
 import unittest

@@ -37,7 +37,7 @@ from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doKeystroke as keystroke
 from dtactions.unimacroactions import setPosition
 from dtactions.unimacroactions import getPosition
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 import win32con
 import win32api
 

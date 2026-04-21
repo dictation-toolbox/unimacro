@@ -8,7 +8,7 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
 """
 from dtactions import uniutils
 from natlinkcore import natlinkutils
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 import natlink
 import unittest
 import time

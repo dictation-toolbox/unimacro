@@ -13,7 +13,7 @@ if unimacrodir not in sys.path:
 from dtactions import uniutils
 from natlinkcore import natlinkutils
 import natlink
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 # reload(actions)
 action = actions.doAction
 

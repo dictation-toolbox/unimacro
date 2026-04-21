@@ -10,7 +10,7 @@
 # from pathlib import Path
 import unittest
 from dtactions import uniutils
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 from natlinkcore import natlinkutils
 import TestCaseWithHelpers
 

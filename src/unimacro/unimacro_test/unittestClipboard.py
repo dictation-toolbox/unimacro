@@ -24,7 +24,7 @@ thisDir = Path('.')
 import TestCaseWithHelpers
 import natlink
 from dtactions import natlinkclipboard
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 from dtactions.unimacroactions import doAction as action
 from dtactions import uniutils
 from natlinkcore import natlinkutils

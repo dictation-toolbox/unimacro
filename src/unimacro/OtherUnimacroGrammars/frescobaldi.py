@@ -56,7 +56,7 @@ import natlink
 from dtactions.unimacroactions import doAction as action
 from dtactions.unimacroactions import doAction as action
 from itertools import cycle
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 import re
 import copy
 import time

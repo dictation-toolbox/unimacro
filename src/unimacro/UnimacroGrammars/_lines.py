@@ -50,7 +50,7 @@ from dtactions import inivars
 from dtactions import uniutils
 from dtactions.unimacroactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 
 from icecream import ic 
 from logging import debug
