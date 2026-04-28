@@ -1,6 +1,8 @@
 """Extracts the threadinfo of the current thread. Can see if a menu
 or popup is active
 
+Pretty obsolete!!!
+
 hasMenuOpen() gives true if menu (File, Edit, ...) is open or a right click
 context menu is open.
 hasPopupOpen() give true if a right click (context) menu is open.
@@ -11,32 +13,32 @@ getWindowFlags gives (as a tuple) the flags that are set in the guithreadinfo.fl
 Used for grammar kaiser_dictation.py in conjunction with unimacro grammars
 (qh.antenna.nl/unimacro). Quintijn Hoogenboom, december 2009
 """
-
+#pylint: disable=C0325, R0903, C0321, C0123, C0209
 from ctypes import *
-import types
+import time
 user32 = windll.user32
 kernel32 = windll.kernel32
-import time
+
 class RECT(Structure):
- _fields_ = [
-     ("left", c_ulong),
-     ("top", c_ulong),
-     ("right", c_ulong),
-     ("bottom", c_ulong)
+    _fields_ = [
+      ("left", c_ulong),
+      ("top", c_ulong),
+      ("right", c_ulong),
+      ("bottom", c_ulong)
  ]
 
 class GUITHREADINFO(Structure):
- _fields_ = [
-     ("cbSize", c_ulong),
-     ("flags", c_ulong),
-     ("hwndActive", c_ulong),
-     ("hwndFocus", c_ulong),
-     ("hwndCapture", c_ulong),
-     ("hwndMenuOwner", c_ulong),
-     ("hwndMoveSize", c_ulong),
-     ("hwndCaret", c_ulong),
-     ("rcCaret", RECT)
- ]
+    _fields_ = [
+      ("cbSize", c_ulong),
+      ("flags", c_ulong),
+      ("hwndActive", c_ulong),
+      ("hwndFocus", c_ulong),
+      ("hwndCapture", c_ulong),
+      ("hwndMenuOwner", c_ulong),
+      ("hwndMoveSize", c_ulong),
+      ("hwndCaret", c_ulong),
+      ("rcCaret", RECT)
+        ]
 
 def moveCursorInCurrentWindow(x, y):
  # Find the focussed window.
@@ -73,9 +75,9 @@ def getWindowFlags():
 def flagsToTuple(flags):
     """convert a flags int into a set of flags
     """
-    if flags == None:
+    if flags is None:
         return ()
-    elif flags == 0:
+    if flags == 0:
         return ()
     Flags = []
     if type(flags) in (int, int):
@@ -87,8 +89,6 @@ def flagsToTuple(flags):
             for i in range(n):
                 if flags & (1<<i):
                     Flags.append(i)
-            else:
-                pass # flags == 0
     elif type(flags) in (tuple, list):
         Flags = flags
     else:
@@ -111,3 +111,4 @@ if __name__ == '__main__':
     print('hasMenuOpen: %s'% hasMenuOpen())
     print('hasPopupOpen: %s'% hasPopupOpen())
     print('flags: %s'% repr(getWindowFlags()))
+    
