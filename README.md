@@ -45,7 +45,7 @@ The Grammars listed above are installed with Unimacro in:
 the Lib\site-packages\unimacro\UnimacroGrammars sub-directory of your 
 Python installation.  
 
-More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgrammars/folders/index.html)
+More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/index.html)
 
 # Developer instructions.
 
