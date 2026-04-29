@@ -1,6 +1,6 @@
 # Unimacro
 The Unimacro project aims to provide a rich set of command grammars, that can be configured by the users without programming knowledge. 
-Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/unimacro/index.html)
+Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/unimacro/grammars/index.html)
 
 # Installing
 
