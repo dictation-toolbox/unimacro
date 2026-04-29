@@ -33,9 +33,9 @@ from io import StringIO
 import natlink
 from unimacro import natlinkutilsbj as natbj
 
-from dtactions import unimacroutils
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke  as keystroke
+from dtactions import uniutils
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke  as keystroke
 import unimacro
 
 from io import StringIO
@@ -45,7 +45,7 @@ visiblePause = 0.4
 
 
 
-language = unimacroutils.getLanguage()
+language = uniutils.getLanguage()
 
 
 
@@ -109,7 +109,7 @@ class ThisGrammar(ancestor):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        progInfo = unimacroutils.getProgInfo(moduleInfo)
+        progInfo = uniutils.getProgInfo(moduleInfo)
         self.debug('progInfo: %s',repr(progInfo))
         prog = progInfo.prog
         chromiumBrowsers = {'chromium', 'chrome', 'msedge', 'safari', 'brave'}
@@ -238,7 +238,7 @@ class ThisGrammar(ancestor):
                 count -= 1
                 keys = '{ctrl+' + direction + '}'
                 keystroke(keys)
-                unimacroutils.Wait(0.5) #0.3 seem too short for going back tabs in chrome
+                uniutils.Wait(0.5) #0.3 seem too short for going back tabs in chrome
             
         if command:
             action(command)
@@ -268,7 +268,7 @@ class ThisGrammar(ancestor):
             while count > 0:
                 count= count -1
                 keystroke('{alt+%s}'%(direction))
-                unimacroutils.Wait(0.5) #0.3 seem too short for going back pages in chrome
+                uniutils.Wait(0.5) #0.3 seem too short for going back pages in chrome
             
         if command:
             action(command)
@@ -298,7 +298,7 @@ class ThisGrammar(ancestor):
             self.debug(f'command: {command}, commandparts: {commandparts}')
         self.doOption(command)
         for additional in commandparts:
-            unimacroutils.Wait(visiblePause)
+            uniutils.Wait(visiblePause)
             keystroke(additional)
         self.finishInputControl()
         
@@ -307,18 +307,18 @@ class ThisGrammar(ancestor):
     def getInputcontrol(self):
         """get the Click by Voice input control"""
         keystroke("{shift+ctrl+space}")
-        unimacroutils.Wait()   ## longer: unimacroutils.Wait(visiblePause)
+        uniutils.Wait()   ## longer: uniutils.Wait(visiblePause)
         for i in range(10):
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
             if progInfo.toporchild == 'child':
                 if i:
                     self.info(f'found input window after {i} steps')
                 break
-            unimacroutils.Wait()
+            uniutils.Wait()
         else:
 
              self.warning("_clickbyvoice failed to reach input window")
-        unimacroutils.visibleWait()
+        uniutils.visibleWait()
         
         
     def doOption(self, option):
@@ -328,8 +328,8 @@ class ThisGrammar(ancestor):
     def finishInputControl(self):
         """press enter, after a little bit of waiting
         """
-        unimacroutils.visibleWait()
-        unimacroutils.visibleWait()
+        uniutils.visibleWait()
+        uniutils.visibleWait()
         keystroke("{enter}")
         
     def fillInstanceVariables(self):

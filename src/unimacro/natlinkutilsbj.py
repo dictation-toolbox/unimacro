@@ -3,18 +3,10 @@
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
 #                    Bart Jan van Os (bjvo@users.sourceforge.net)
 #
-# This file is part of a SourceForge project called "unimacro" see
+# in github/dictation-toolbox now for several years (20260)
+#
+# This file was part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net).
-#
-# "unimacro" is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, see:
-# http://www.gnu.org/licenses/gpl.txt
-#
-# "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
-# "unimacro" makes use of another SourceForge project "natlink",
-# which has the following copyright notice:
 #
 # Python Macro Language for Dragon NaturallySpeaking
 #   (c) Copyright 1999 by Joel Gould
@@ -24,11 +16,10 @@
 #   This file contains utility classes and functions for grammar files.
 #   Author: Bart Jan van Os; november 1999, adapted for
 #   unimacro-project.
-#   See the class BrowsableGrammar for documentation on the use of
-#   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
 #pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602, W0212
 #pylint:disable=E1101
+#pylint:disable=R0903
 
 """subclasses classes for natlink grammar files and utility functions
 
@@ -44,8 +35,12 @@ import shutil
 import copy
 import string
 from pathlib import Path
+import types
+# from functools import wraps
+
 import logging
 from logging import Logger
+
 import win32com
 import natlink
 from natlinkcore import loader
@@ -56,23 +51,21 @@ from natlinkcore import readwritefile
 
 # for IniGrammar:
 # was natlinkutilsqh:
-from dtactions import unimacroutils
-from dtactions import unimacroactions as actions
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import UnimacroBringUp
+from dtactions import uniutils
+from dtactions.uniactions import uactions as actions
+from dtactions.uniactions.uactions  import doAction as action
+from dtactions.uniactions.uactions  import doKeystroke as keystroke
+from dtactions.uniactions.uactions  import UnimacroBringUp
 from dtactions import utilsqh
 from dtactions.utilsqh import formatListColumns
 from dtactions import inivars
 from dtactions.sendkeys import sendsystemkeys
 
 from unimacro import BrowseGrammar
+from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
+# from unimacro import logname
 from unimacro import D_
 
-from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
-from unimacro import logname
-import types
-from functools import wraps
 
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
@@ -271,7 +264,7 @@ def _delegate_to_logger(method_name):
         method = getattr(logger,method_name)
         try:
             return method(*args,**kwargs)
-        except Exception as e:
+        except:
             return False
     return fn
 
@@ -309,7 +302,9 @@ class GrammarX(GrammarXAncestor):
         obj = super().__new__(cls)
 
 
-        obj.info=types.MethodType(_delegate_to_logger("info"),obj)  
+        obj.info=types.MethodType(_delegate_to_logger("info"),obj)
+        # in use by thos c;ass amd subclasses (QH, 2026):
+        obj.infof=types.MethodType(_delegate_to_logger("info"),obj)  
         obj.setLevel=types.MethodType(_delegate_to_logger("setLevel"),obj)
         obj.debug=types.MethodType(_delegate_to_logger("debug"),obj)
         obj.warning=types.MethodType(_delegate_to_logger("warning"),obj)
@@ -1009,7 +1004,7 @@ class BrowsableGrammar(BrowsableGrammarAncestor):
             sys.path.insert(0, pypath) 
         pypath = ';'.join(sys.path)
         os.environ['PYTHONPATH'] = pypath
-        unimacroutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
+        uniutils.AppBringUp('Browser',Exec=PythonwinExe,Args='/app BrowseGrammarApp.py')
 ###
 ##GlobalGrammarBaseAncestor=BrowsableGrammar    
 ##class GlobalGrammarBase(GlobalGrammarBaseAncestor):
@@ -1840,7 +1835,7 @@ noot mies
         if inifile is not given, the standard name is expected
         """
         inifile = self.inifile
-        self.iniFileDate = unimacroutils.getFileDate(inifile)
+        self.iniFileDate = uniutils.getFileDate(inifile)
         self.checkForChanges = 1
         self.openFileDefault(inifile, mode="edit")
 
@@ -1877,10 +1872,10 @@ noot mies
         if listOfLists:
             for l in listOfLists:
                 if l not in fromGrammar:
-                    self.error('fillGrammarLists, list name not in grammar: %s'% l)
+                    self.errorf('fillGrammarLists, list name not in grammar: %s'% l)
                     continue
                 if l not in allListsFromIni:
-                    self.error('fillGrammarLists, list name not in ini file: %s'% l)
+                    self.errorf('fillGrammarLists, list name not in ini file: %s'% l)
                     continue
                 if self.fillList(l):
                     fromGrammar.remove(l)
@@ -1917,7 +1912,7 @@ noot mies
                 self.message('fillGrammarLists in grammar "%s"\n\nNot all lists filled: %s\n\nPlease fill in in inifile by calling the command "%s %s"'%
                                     (self.name, fromGrammar, commandWord, self.name))
                 self.checkForChanges = 1
-                self.iniFileDate = unimacroutils.getFileDate(self.inifile)
+                self.iniFileDate = uniutils.getFileDate(self.inifile)
                 
                 #self.openFileDefault(self.inifile)
 
@@ -2096,7 +2091,7 @@ noot mies
         self.inifile = inifile
         #self.ini = inivars.IniVars(self.inifile, repairErrors=1)
 
-        self.iniFileDate = unimacroutils.getFileDate(self.inifile)
+        self.iniFileDate = uniutils.getFileDate(self.inifile)
         try:
             # return all Unicode...
             # self.ini = inivars.IniVars(self.inifile, returnStrings=1, repairErrors=1)
@@ -2205,7 +2200,7 @@ noot mies
         Initialisation is supposed to have been done in the routine
         startInifile.
         """
-        newDate = unimacroutils.getFileDate(self.inifile)
+        newDate = uniutils.getFileDate(self.inifile)
 
         if newDate == 0:
             return None # error, no inifile active
@@ -2241,7 +2236,7 @@ noot mies
                     print(f'going to reload grammar {self.name})')
                     # os.utime(fullPath, None)
                     self.DisplayMessage('grammar %s will be reloaded at next utterance'% self.name)
-                self.iniFileDate = unimacroutils.getFileDate(self.inifile)  # just in case it has been changed during translate
+                self.iniFileDate = uniutils.getFileDate(self.inifile)  # just in case it has been changed during translate
                 #elif translated:
                 #    print 'translation identical, no reload necessary for %s'% self.name
 
@@ -2277,7 +2272,7 @@ noot mies
         #natlink.execScript('AppBringup "%s"'% foldername)
         ##win32api.ShellExecute(0, mode, foldername, '', '', windowStyle or win32con.SW_SHOWNORMAL)
         ##int = ShellExecute(hwnd, op , file , params , dir , bShow )
-        ##unimacroutils.AppBringUp('folder', foldername, windowStyle=windowStyle)
+        ##uniutils.AppBringUp('folder', foldername, windowStyle=windowStyle)
 
 
 
@@ -2334,7 +2329,7 @@ noot mies
         """
         #pylint:disable=
         if self.ini is None:
-            self.error('no valid inifile')
+            self.errorf('no valid inifile')
         if isinstance(words, str):
             v = self.ini.get(section, words, None)
             if v is None and not noWarning:
@@ -2359,7 +2354,7 @@ noot mies
         """set new value in inifile
         """
         if self.ini is None:
-            self.error('no valid inifile')
+            self.errorf('no valid inifile')
         self.ini.set(section, key, value)
         self.ini.writeIfChanged()
         
@@ -2458,16 +2453,16 @@ noot mies
                     ini.set(l)
         ini.write()
                 
-    def error(self, message):
+    def errorf(self, message):
         """gives an error message, and leaves variable Error
-
+    
         currently prints a message, and switches off the grammar
+        TODO Doug: move this to the logging!
         """
         print('---- error in module %s: %s'% (self, message))
-        raise UnimacroError('error %s in module %s: %s'% \
-                            (sys.exc_info()[0], self.GetName(), message))
+        # raise UnimacroError('error %s in module %s: %s'% \
+        #                     (sys.exc_info()[0], self.GetName(), message))
                             
-
         
     def removeFromList(self, L, toRemove):
         """removes in place items from list, calls error routine if missing things
@@ -2477,7 +2472,7 @@ noot mies
         returns nothing!, list L list changed in place
              """
         if not isinstance(L, list):
-            self.error(f'not a list in "removeFromList": "{L}", type: {type(L)}')
+            self.errorf(f'not a list in "removeFromList": "{L}", type: {type(L)}')
             return
 
         if not L:
@@ -2492,7 +2487,7 @@ noot mies
                 L.remove(toRemove)
             except:
                 pass
-                # self.error('removeFromList, item to remove is not in list: %s'% toRemove)
+                # self.errorf('removeFromList, item to remove is not in list: %s'% toRemove)
                 # return
         elif isinstance(toRemove, (list, tuple)):
             for r in toRemove:
@@ -2500,10 +2495,10 @@ noot mies
                     L.remove(r)
                 except:
                     pass
-                    # self.error('removeFromList, item to remove is not in list: %s'% r)
+                    # self.errorf('removeFromList, item to remove is not in list: %s'% r)
                     # return
         else:
-            self.error('removeFromList, invalid type for variable "toRemove": %s'% toRemove)
+            self.errorf('removeFromList, invalid type for variable "toRemove": %s'% toRemove)
             return
         
 
@@ -2673,7 +2668,7 @@ noot mies
     def stopSearch(self, progInfo=None):
         """action after the search"""
         if not progInfo:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         if beforeOrAfter == 'before':
             if lastSearchDirection == 'up':
                 s = '<<leftafterbacksearch %s>>'% len(lastSearchText)
@@ -2713,7 +2708,7 @@ noot mies
         global lastSearchText, lastSearchDirection, beforeOrAfter
         # pass progInfo to the actions, to keep them from changing inside the stuff:
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo(modInfo)
+            progInfo = uniutils.getProgInfo(modInfo)
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
@@ -2816,7 +2811,7 @@ noot mies
             return None # no information
         # old info:
         _progpath, prog, title, toporchild, _classname, _hndle = progInfo
-        nprogInfo = unimacroutils.getProgInfo() # for checking if window or title changed
+        nprogInfo = uniutils.getProgInfo() # for checking if window or title changed
         if (prog == 'natspeak' and title.find('dragonpad') >= 0) or \
            (prog == 'notepad' and title.find('notepad') >= 0) or \
            (prog == 'iexplore'):
@@ -2834,7 +2829,7 @@ noot mies
         #pylint:disable=W0603
         global comingFrom
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
@@ -2849,7 +2844,7 @@ noot mies
     def searchGoBack(self, progInfo=None):
         """go back to previous place, excel or word"""
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         _progpath, prog, _title, _topchild, _classname, _hndle = progInfo
         if prog == 'excel':
             connectExcel(progInfo)
@@ -2880,7 +2875,7 @@ noot mies
         
         """
         if progInfo is None:
-            progInfo = unimacroutils.getProgInfo()
+            progInfo = uniutils.getProgInfo()
         
         assert len(progInfo) == 6
         
@@ -2890,14 +2885,14 @@ noot mies
                 istop = False
             elif childClass and progInfo.classname == childClass:
                 if actions.childWindowBehavesLikeTop( progInfo ):
-                    self.debug('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
+                    self.errorf('getTopOrChild: top mode, altough of class "%s", but because of "child behaves like top" in "actions.ini"'% childClass)
                     istop = True
                 else:                
-                    self.debug('getTopOrChild: child mode, because of className "%s"'% childClass)
+                    self.errorf('getTopOrChild: child mode, because of className "%s"'% childClass)
                     istop = False
         else:
             if actions.childWindowBehavesLikeTop( progInfo ):
-                self.debug('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
+                self.errorf('getTopOrChild: top mode, because but because of "child behaves like top" in "actions.ini"')
                 istop = True
         return istop
 

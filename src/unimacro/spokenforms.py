@@ -185,8 +185,7 @@ def openInifile(inifilepath):
         print('please edit %s (open by hand)'% inifilepath)
         return None
         #win32api.ShellExecute(0, "open", inifile, None , "", 1)
-    else:
-        return ini
+    return ini
 
 def editSpokenForms(comingFrom=None, name=None, language=None):
     """show the spokenforms.ini file in a editor

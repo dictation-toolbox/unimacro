@@ -20,14 +20,14 @@ import glob
 import natlink
 from natlinkcore import natlinkstatus
 import unimacro.natlinkutilsbj as natbj
-from dtactions import unimacroutils
+from dtactions import uniutils
 from dtactions import utilsqh
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 
 class UnittestGrammar(natbj.IniGrammar):
-    language = unimacroutils.getLanguage()        
+    language = uniutils.getLanguage()        
     name = 'unimacro test'
     iniIgnoreGrammarLists = ['tests'] # are set in this module
     gramSpec = """

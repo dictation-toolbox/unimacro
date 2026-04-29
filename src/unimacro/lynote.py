@@ -1,6 +1,6 @@
-
+# making lilypond notes (lilypond grammar!!!)
+#pylint: disable = C0209
 import re
-import sys
 import copy
 from dtactions import utilsqh
 
@@ -66,7 +66,7 @@ class LyNote:
 
 
     def isNote(self):
-        return ( self.note != "" )
+        return self.note != ""
     
     def __str__(self):
         if self.backslashed:
@@ -104,7 +104,7 @@ class LyNote:
             return "'"*elevation
         if elevation < 0:
             return ","*-elevation
-        
+        return ""
         
     
     def orderRest(self, rest):
@@ -162,8 +162,6 @@ def analyseString(S):
     wordsList = [_f for _f in reSplitInWords.split(S) if _f]
     outputWords = []
     notesIndexes = []
-    lyn = None
-    inComment = 0
     peekwords = utilsqh.peekable(wordsList)
     index = 0
 
@@ -304,15 +302,15 @@ if __name__ == '__main__':
     #    lyn.updateNote(r"c8.\(")
     #    print 'note updated to c 8. and \\(: %s'% lyn
     print('melisma: =============================================')
-    for s in ["r2", r"g,8.\melisma", r"a\melisma"]:
-        lyn = LyNote(s)
+    for _s in ["r2", r"g,8.\melisma", r"a\melisma"]:
+        lyn = LyNote(_s)
         print('note: "%s", elevation: "%s", duration: "%s", additions: "%s"'% (lyn.note, lyn.elevation, lyn.duration, lyn.additions))
         print('input: "%s", str: "%s", repr: "%s"'% (s, lyn, repr(lyn)))
         lyn.updateNote("a")
         print('note updated to a: %s'% lyn)
         lyn.updateNote(r"c8.\(")
         print('note updated to c 8. and \\(: %s'% lyn)
-        lyn = LyNote(s)
+        lyn = LyNote(_s)
         
         # join tests:
         print(join('abc'))

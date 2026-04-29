@@ -47,10 +47,10 @@ other grammars can invoke the number grammar more easily.
 """
 #pylint:disable=C0209, R0904, R0912, R0915
 import natlink
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import getMetaAction
-from dtactions import unimacroutils
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import getMetaAction
+from dtactions import uniutils
 
 import unimacro.natlinkutilsbj as natbj
 
@@ -65,7 +65,7 @@ class NumberException(Exception):
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = unimacroutils.getLanguage()
+    language = uniutils.getLanguage()
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
     try:
@@ -249,7 +249,7 @@ class ThisGrammar(ancestor):
     def gotBegin(self,moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
-        self.progInfo = unimacroutils.getProgInfo(moduleInfo)
+        self.progInfo = uniutils.getProgInfo(moduleInfo)
   
     def initialize(self):
         if not self.language:
@@ -530,7 +530,7 @@ class ThisGrammar(ancestor):
             number = str(number)
 
         keystroke(number)
-        prog = unimacroutils.getProgName()
+        prog = uniutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:

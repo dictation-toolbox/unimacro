@@ -11,13 +11,13 @@ from pathlib import Path
 from pprint import pprint
 import sys
 
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 import unittest
 import TestCaseWithHelpers
 import re
 import types
 import natlink
-from dtactions import unimacroutils   
+from dtactions import uniutils   
 from natlinkcore import natlinkutils
 
 from natlinkcore import natlinkutils
@@ -95,7 +95,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
         action = actions.doAction
         action('CLIPSAVE')
         action("<<selectall>><<copy>>")
-        contents = unimacroutils.getClipboard()
+        contents = uniutils.getClipboard()
         action('CLIPRESTORE')
         return contents
     
@@ -181,7 +181,7 @@ class UnimacroTestHelpers(TestCaseWithHelpers.TestCaseWithHelpers):
         actions.do_Wait(t)
 
     def killNatspeakOrDragonPad(self):
-        unimacroutils.SetForegroundWindow(self.DragonPadHndle)
+        uniutils.SetForegroundWindow(self.DragonPadHndle)
         mod, title, hndle = natlink.getCurrentModule()
         self.assert_(mod == self.DragonPadMod and hndle == self.DragonPadHndle, "could not get back to Natspeak/DragonPad window")
         actions.killWindow()

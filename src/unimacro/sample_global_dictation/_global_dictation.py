@@ -83,12 +83,12 @@ testMode = 1
 defaultWaitTime = 0.2  # change to slow down or speed up actions.
 
 import natlink
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
 
 from natlinkcore import natlinkutils
-from dtactions import unimacroutils
-from dtactions import unimacroutils
+from dtactions import uniutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 
 from time import sleep  
@@ -170,7 +170,7 @@ class VoiceDictation:
         if meHndle:
             # try to get focus back to originating window
             try:
-                unimacroutils.SetForegroundWindow(meHndle)
+                uniutils.SetForegroundWindow(meHndle)
             except: pass
             appHndle = appWindows[0]
         self.__class__.app = appHndle
@@ -237,7 +237,7 @@ class VoiceDictation:
         if hndle == self.app:
             return
         self.saveFocus()  # for next occurrence, mostly already done from gotBegin
-        unimacroutils.SetForegroundWindow(self.app)
+        uniutils.SetForegroundWindow(self.app)
         for i in range(10):
             controlHndle = win32gui.GetForegroundWindow()
             if controlHndle == self.app: return hndle
@@ -273,7 +273,7 @@ class VoiceDictation:
             hndle = self.nonFocusHndles.pop()
             try:
                 print('loosing focus, to:%s (rest: %s)'% (hndle, self.nonFocusHndles))          
-                unimacroutils.SetForegroundWindow(hndle)
+                uniutils.SetForegroundWindow(hndle)
                 self.wait()
                 self.nonFocusHndles.append(hndle)
                 return
@@ -403,7 +403,7 @@ class VoiceDictation:
         dct.setLock(0)
         self.inOnTextChange = 0
         if getFocus:
-            unimacroutils.SetForegroundWindow(self.app)
+            uniutils.SetForegroundWindow(self.app)
         
 
     def insertText(self, delStart, delEnd, newText):
@@ -425,7 +425,7 @@ class VoiceDictation:
         D("setting selection to pos %s, %s"% (selStart, selEnd))
         self.setSelection(selStart,selEnd)
         #if getFocus:
-        #    unimacroutils.SetForegroundWindow(self.app)
+        #    uniutils.SetForegroundWindow(self.app)
         if not self.scratchThatCommand:
             self.scratchinfo.append( [(selStart, selEnd), newText,
                                   (delStart, delEnd), self.lastSelText])

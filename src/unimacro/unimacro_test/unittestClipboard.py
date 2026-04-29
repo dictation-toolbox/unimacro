@@ -24,9 +24,9 @@ thisDir = Path('.')
 import TestCaseWithHelpers
 import natlink
 from dtactions import natlinkclipboard
-from dtactions import unimacroactions as actions
-from dtactions.unimacroactions import doAction as action
-from dtactions import unimacroutils
+from dtactions.uniactions import uactions as actions
+from dtactions.uniactions.uactions import doAction as action
+from dtactions import uniutils
 from natlinkcore import natlinkutils
 
 class TestError(Exception):
@@ -79,8 +79,8 @@ class UnittestClipboard(TestCaseWithHelpers.TestCaseWithHelpers):
                 # print('window hndle %s may not match "thisHndle": %s'% (hndle, self.thisHndle))
                 continue
             # print('close window with hndle: %s'% hndle)
-            unimacroutils.SetForegroundWindow(hndle)
-            curHndle = unimacroutils.GetForegroundWindow()
+            uniutils.SetForegroundWindow(hndle)
+            curHndle = uniutils.GetForegroundWindow()
 
             if hndle == curHndle:
                 if hndle in self.killActions:

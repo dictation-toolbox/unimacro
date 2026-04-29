@@ -47,10 +47,10 @@ import natlink
 from natlinkcore import natlinkutils
 import unimacro.natlinkutilsbj as natbj
 from dtactions import inivars
-from dtactions import unimacroutils
-from dtactions.unimacroactions import doAction as action
+from dtactions import uniutils
+from dtactions.uniactions.uactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 
 from icecream import ic 
 from logging import debug
@@ -64,7 +64,7 @@ counts = list(range(1,20)) + list(range(20,50,5)) + list(range(50,100,10)) + lis
 
 ancestor = natbj.DocstringGrammar
 class ThisGrammar(ancestor):
-    language = unimacroutils.getLanguage()        
+    language = uniutils.getLanguage()        
     iniIgnoreGrammarLists = ['count', 'taskcount', 'taskapplication'] # are set in this module
                                                 # taskcount and taskapplication only in very special
                                                 # case, see Arnoud...
@@ -122,8 +122,8 @@ class ThisGrammar(ancestor):
         self.maxBase = 0
         self.base = 0
 
-        self.progInfo = unimacroutils.getProgInfo(modInfo=moduleInfo)
-        if unimacroutils.matchWindow(self.ignore, progInfo=self.progInfo):
+        self.progInfo = uniutils.getProgInfo(modInfo=moduleInfo)
+        if uniutils.matchWindow(self.ignore, progInfo=self.progInfo):
 ##            print 'progInfo in ignore, skipping: %s'% self.ignore
             return
         if self.windowPolicy(moduleInfo, self.progInfo):
@@ -725,11 +725,11 @@ class ThisGrammar(ancestor):
 
             
     def windowPolicy(self, modInfo, progInfo=None): 
-        progInfo = progInfo or unimacroutils.getProgInfo(modInfo)
+        progInfo = progInfo or uniutils.getProgInfo(modInfo)
 ##        print 'window policy------progInfo: ', `progInfo`
-        if unimacroutils.matchWindow(self.activateRules, progInfo=progInfo):
+        if uniutils.matchWindow(self.activateRules, progInfo=progInfo):
 ##            print 'matching activate: %s'% self.activateRules
-            if not unimacroutils.matchWindow(self.deactivateRules, progInfo=progInfo):
+            if not uniutils.matchWindow(self.deactivateRules, progInfo=progInfo):
                 return 1
         return None
 ##        else:
@@ -787,7 +787,7 @@ if __name__ == "__main__":
         thisGrammar = ThisGrammar(inifile_stem='_lines')
         thisGrammar.startInifile()
         thisGrammar.initialize()
-        thisGrammar.progInfo = unimacroutils.getProgInfo()
+        thisGrammar.progInfo = uniutils.getProgInfo()
         seqsAndRules = [(['line'], 'linenum'), (['seven', 'two', 'three'], '__0to9')]
         # ruleName: linenum, words: ['line'], FR: [('line', 'linenum'), ('seven', '__0to9'), ('two', '__0to9'), ('three', '__0to9')]
         # ruleName: __0to9, words: ['seven', 'two', 'three'], FR: [('line', 'linenum'), ('seven', '__0to9'), ('two', '__0to9'), ('three', '__0to9')]

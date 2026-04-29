@@ -10,19 +10,19 @@ __version__ = "$Rev: 429 $ on $Date: 2011-05-31 16:21:03 +0200 (di, 31 mei 2011)
 
 
 import natlink
-from dtactions import unimacroutils
+from dtactions import uniutils
 from natlinkcore import natlinkutils
-from dtactions import unimacroutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 import pprint
 import types
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doAction as action
-from dtactions import unimacroactions as actions
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions import uactions as actions
 import win32com
 
 # 
-language = unimacroutils.getLanguage()
+language = uniutils.getLanguage()
 ancestor = natbj.DocstringGrammar
 class ThisGrammar(ancestor):
 
@@ -63,7 +63,7 @@ class ThisGrammar(ancestor):
                 return
         else:
             self.prevHandle = winHandle
-            if unimacroutils.matchModule('excel', modInfo=moduleInfo):
+            if uniutils.matchModule('excel', modInfo=moduleInfo):
                 #print 'activate firefox %s mode'% mode
                 if self.checkForChanges:
                     print('excel (%s), checking the inifile'% self.name)
@@ -78,7 +78,7 @@ class ThisGrammar(ancestor):
                 return
         if self.isActive():
             # refreshes current position now as well:
-            progInfo = unimacroutils.getProgInfo(moduleInfo)
+            progInfo = uniutils.getProgInfo(moduleInfo)
             if self.excel is None:
                 self.excel = actions.get_instance_from_progInfo(progInfo)
                 if self.excel.app:
@@ -201,7 +201,7 @@ class ThisGrammar(ancestor):
             if not self.doWaitForMouseToStop():
                 print('excel, mouse does not stop, cancel command')
                 return
-            unimacroutils.buttonClick()
+            uniutils.buttonClick()
 
     def gotResults_date(self,words,fullResults):
         day = self.getNumberFromSpoken(words[1])

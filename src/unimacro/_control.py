@@ -21,20 +21,20 @@ from pathlib import Path
 #a global logger for unimacro.  perfectly reasonable to access by name instead.
 import logging as l
 from logging import Logger
-import importlib.metadata as meta
-import sys
+# import importlib.metadata as meta
+# from icecream import ic
 
 import natlink
+
 from natlinkcore import loader
 from natlinkcore import natlinkstatus
 
-from dtactions import unimacroutils
-from dtactions import unimacroactions as actions
+from dtactions import uniutils
+from dtactions.uniactions import uactions as actions
 
 from unimacro import natlinkutilsbj as natbj
 from unimacro import spokenforms 
 from unimacro import __version__ as unimacro_version
-from icecream import ic
 
 logger = Logger("_control")
 #from unimacro import logger
@@ -141,7 +141,7 @@ class UtilGrammar(ancestor):
         self.activateAll()
         self.setMode(Normal)
         self.startExclusive = self.exclusive # exclusive state at start of recognition!
-##        if unimacroutils.getUser() == 'martijn':
+##        if uniutils.getUser() == 'martijn':
 ##            print 'martijn, set exclusive %s'% self.name
 ##            self.setExclusive(1)
         self.info('---now starting other Unimacro grammars:')
@@ -280,7 +280,7 @@ class UtilGrammar(ancestor):
                 gram.checkInifile()
                 gram.ini.set('general', 'initial on', 1)
                 gram.ini.write()
-                unimacroutils.Wait(0.1)
+                uniutils.Wait(0.1)
             else:
                 self.error(f'--- ini file of grammar {gname} is invalid, please try "edit {gname}"...')
             gramName = gram.getName()
@@ -704,7 +704,8 @@ def checkOriginalFileWithActualTxtPy(name, org_path, txt_path, py_path):
 if __name__ == "__main__":
     ## interactive use, for debugging:
     with natlink.natConnect():
-        utilGrammar = UtilGrammar(inifile_stem='_control')
+        # utilGrammar = UtilGrammar(inifile_stem='_control')
+        utilGrammar = UtilGrammar()
         utilGrammar.startInifile()
         utilGrammar.initialize()
         Words = ['edit', 'grammar', 'control']
