@@ -3,18 +3,10 @@
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
 #                    Bart Jan van Os (bjvo@users.sourceforge.net)
 #
-# This file is part of a SourceForge project called "unimacro" see
+# in github/dictation-toolbox now for several years (20260)
+#
+# This file was part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net).
-#
-# "unimacro" is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, see:
-# http://www.gnu.org/licenses/gpl.txt
-#
-# "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
-# "unimacro" makes use of another SourceForge project "natlink",
-# which has the following copyright notice:
 #
 # Python Macro Language for Dragon NaturallySpeaking
 #   (c) Copyright 1999 by Joel Gould
@@ -24,8 +16,6 @@
 #   This file contains utility classes and functions for grammar files.
 #   Author: Bart Jan van Os; november 1999, adapted for
 #   unimacro-project.
-#   See the class BrowsableGrammar for documentation on the use of
-#   the Grammar browser.
 #   revised many times by Quintijn Hoogenboom
 #pylint:disable=C0302, C0116, W0702, W0201, W0703, R0915, R0913, W0613, R0912, R0914, R0902, C0209, W0602, W0212
 #pylint:disable=E1101
@@ -72,10 +62,10 @@ from dtactions import inivars
 from dtactions.sendkeys import sendsystemkeys
 
 from unimacro import BrowseGrammar
-from unimacro import D_
-
 from unimacro import spokenforms # for numbers spoken forms, IniGrammar (and also then DocstringGrammar)
 # from unimacro import logname
+from unimacro import D_
+
 
 status = natlinkstatus.NatlinkStatus()
 natlinkmain = loader.NatlinkMain()
@@ -312,7 +302,9 @@ class GrammarX(GrammarXAncestor):
         obj = super().__new__(cls)
 
 
-        obj.info=types.MethodType(_delegate_to_logger("info"),obj)  
+        obj.info=types.MethodType(_delegate_to_logger("info"),obj)
+        # in use by thos c;ass amd subclasses (QH, 2026):
+        obj.infof=types.MethodType(_delegate_to_logger("info"),obj)  
         obj.setLevel=types.MethodType(_delegate_to_logger("setLevel"),obj)
         obj.debug=types.MethodType(_delegate_to_logger("debug"),obj)
         obj.warning=types.MethodType(_delegate_to_logger("warning"),obj)
@@ -2463,12 +2455,13 @@ noot mies
                 
     def errorf(self, message):
         """gives an error message, and leaves variable Error
-
+    
         currently prints a message, and switches off the grammar
+        TODO Doug: move this to the logging!
         """
         print('---- error in module %s: %s'% (self, message))
-        raise UnimacroError('error %s in module %s: %s'% \
-                            (sys.exc_info()[0], self.GetName(), message))
+        # raise UnimacroError('error %s in module %s: %s'% \
+        #                     (sys.exc_info()[0], self.GetName(), message))
                             
         
     def removeFromList(self, L, toRemove):
