@@ -98,7 +98,7 @@ normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase',
              'comment', 'documentation', 'modes', 'variable', 'search',
              'highlight',         # for Shane, enable, because Vocola did not fix _anything yet
              'browsewith', 'hyphenatephrase', 'pastepart',
-             'password', 'choose']
+             'password', 'pick']
 #normalSet = ['hyphenatephrase']  # skip 'openuser'
 
 commandSet = normalSet[:] + ['dictate']
@@ -125,7 +125,7 @@ class ThisGrammar(ancestor):
 # <dgnwords> imported;
 <documentation> exported = Make documentation;
 <test> exported = test micstate;
-<choose> exported = choose {n1-10};
+<pick> exported = pick {n1-10};
 <reload> exported = reload Natlink;
 <info> exported = give (user|prog|window|unimacro|path|timer) (info|information) ;
 <undo> exported = Undo [That] [{count} [times]];
@@ -581,15 +581,14 @@ class ThisGrammar(ancestor):
             action(f'MSG {elapsed:.2f} seconds')
             self.startTime = t
 
-    def gotResults_choose(self,words,fullResults):
-        """choose alternative, via actions
+    def gotResults_pick(self,words,fullResults):
+        """pick alternative, via actions
                 
         """
         n = self.getNumberFromSpoken(words)   # return int
-        print(f'got choose: {words} -> {n}')
-        action(f'<<choose {n}>>')
-        
-        
+        print(f'got pick: {words} -> {n}')
+        action(f'<<pick {n}>>')
+
     def gotResults_test(self,words,fullResults):
 
         # micstate = natlink.getMicState()
