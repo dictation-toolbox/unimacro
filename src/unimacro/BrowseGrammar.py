@@ -2,29 +2,12 @@
 # (c) copyright 2003 Quintijn Hoogenboom (quintijn@users.sourceforge.net)
 #                    Ben Staniford (ben_staniford@users.sourceforge.net)
 #                    Bart Jan van Os (bjvo@users.sourceforge.net)
-#
-# This file is part of a SourceForge project called "unimacro" see
-# http://unimacro.SourceForge.net).
-#
-# "unimacro" is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License, see:
-# http://www.gnu.org/licenses/gpl.txt
-#
-# "unimacro" is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; See the GNU General Public License details.
-#
-# "unimacro" makes use of another SourceForge project "natlink",
-# which has the following copyright notice:
+# In github/dictation-toolbox by now (2026)
 #
 # Python Macro Language for Dragon NaturallySpeaking
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
-# 
-# Python Macro Language for Dragon NaturallySpeaking
-#   (c) Copyright 1999 by Joel Gould
-#   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-
 # This file implements a base classes for a dialog/window to browse NatLink grammars
 # The browser is based upon a tree dialog, adapted from the hiertest demo
 # Author: Bart Jan van Os, Version: 1.0
@@ -41,12 +24,8 @@ NatLink grammars
 
 The browser is based upon a tree dialog, adapted from the hiertest demo
 """
-
-import os
+#pylint: disable = R0904, W0702, R0912, R0913, R0914
 import copy
-import re
-import types
-from natlinkcore import natlinkutils
 from natlinkcore import gramparser  # for splitApartLines
 
 ListCode = 0    # List
@@ -65,7 +44,7 @@ def IsText(value):
     return isinstance(value, str)
 
 def GrammarElementKey(item):
-    if type(item) == str:
+    if isinstance(item, str):
         return item.lower()
     return item.GetName().lower()
     
@@ -87,15 +66,13 @@ class GrammarElement:
     def Append(self,NewElement):
         self.Included.append(NewElement)
         self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
-        pass        
 
     def Insert(self,NewElement):
         self.Included.insert(0,NewElement)
         self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
-        pass
+
     def Sort(self):
         self.Included.sort(key=GrammarElementKey)
-        pass
     
     def SetToAllText(self,Text):
         AllText = [str(t) for t in Text]
@@ -105,7 +82,8 @@ class GrammarElement:
     def SetIsAllText(self):
         if self.ObjIncluded:
             for x in self.Included:
-                if not IsText(x): return
+                if not IsText(x):
+                    return
         self.ObjIncluded=0
 
     def GetName(self):
@@ -113,29 +91,28 @@ class GrammarElement:
             if self.GramType==RuleCode:
                 if self.IsRuleContainer():
                     return self.Name
-                else:
-                    return '<'+self.Name+'>'
-            elif self.GramType==ListCode:
+                return '<'+self.Name+'>'
+            if self.GramType==ListCode:
                 return '{'+self.Name+'}'                
-            else:
-                return self.Name
-        else:
-            return ''
+            return self.Name
+        return ''
 
 
     def AreAllWordsOrLists(self,contents=''):
         if contents=='':
             contents=self.GetAllIncluded(1,Unfold=0)
-        return (not '<' in contents)
+        return not '<' in contents
 
     def AreAllWords(self,contents=''): #might be combination of seq and alt
-        if not self.ObjIncluded: return 1
+        if not self.ObjIncluded:
+            return 1
         if contents=='':
             contents=self.GetAllIncluded(1,Unfold=0)
         return (not '<' in contents) and (not '{' in contents)
 
     def IsAllText(self):
-        if self.ObjIncluded: return False
+        if self.ObjIncluded:
+            return False
         if len(self.Included)>0:
             # print 'IsAllText: %s'% self.Included
             return True
@@ -146,7 +123,8 @@ class GrammarElement:
 
     def IsRuleContainer(self):
         for x in self.Included:
-            if (IsText(x)) or x.GramType!=RuleCode: return 0
+            if (IsText(x)) or x.GramType!=RuleCode:
+                return 0
         return 1
 
     def IsAltOrList(self):
@@ -154,11 +132,11 @@ class GrammarElement:
 
 
     def AreAlternatives(self):
-        return (self.GramType==AltCode) or (self.GramType==ListCode)
+        return self.GramType in (AltCode, ListCode)
 
     def SetIsLongAlternative(self):
         if self.GramType==AltCode:
-            self.IsLA=self.IsAllText() and (len(u' | '.join(self.Included))>MaxUnfoldLen)
+            self.IsLA=self.IsAllText() and (len(' | '.join(self.Included)) > MaxUnfoldLen)
             if not self.IsLA and (self.AlternativesDict!={}):
                 count=0
                 for x in self.Included:
@@ -219,8 +197,8 @@ class GrammarElement:
         RuleNames=[]
         for x in AllRules:
             if not (x in Rules or x.GetName() in RuleNames):
-                    Rules.append(x)
-                    RuleNames.append(x.GetName())
+                Rules.append(x)
+                RuleNames.append(x.GetName())
         return Rules
 
     def GetInnerRules(self,maxLevel):
@@ -235,8 +213,7 @@ class GrammarElement:
             x=self.Included[i]
             if IsText(x):
                 return x
-            else:
-                return x.GetContents(maxLevel-(x.GramType==RuleCode),Unfold)
+            return x.GetContents(maxLevel-(x.GramType==RuleCode),Unfold)
         except:
             return ''
 
@@ -248,7 +225,7 @@ class GrammarElement:
 
     def GetAllIncluded(self,maxLevel,Unfold):
         if len(self.Included)==0:
-            if (self.GramType==ListCode):
+            if self.GramType==ListCode:
                 contents='???'
             else:
                 contents=''
@@ -257,10 +234,10 @@ class GrammarElement:
             if (not Unfold) and self.IsLongAlternative():
                 contents=self.Name
             else:
-                if (self.GramType==AltCode) or (self.GramType==ListCode):
-                    contents=u' | '.join(self.Included)
+                if self.GramType in (AltCode, ListCode):
+                    contents=' | '.join(self.Included)
                 else:
-                    contents=u' '.join(self.Included)
+                    contents=' '.join(self.Included)
                 contents=self.ReduceLongAlternatives(contents)
         else:
             contents=self.GetIncluded(0,maxLevel,Unfold)
@@ -289,12 +266,13 @@ class GrammarElement:
                 if len(c)>3: # try to remove redundant parens
                     Remove=c[1]=='{' and (c[-2]=='}') and (not '{' in c[2:-2])
                     Remove=Remove or (c[1]=='[' and (c[-2]==']') and (not ']' in c[2:-2]))
-                    if Remove: contents=contents[1:-1]
+                    if Remove:
+                        contents=contents[1:-1]
                 contents=contents+'+'
         else:
             contents= '<'+self.Name
-            if (maxLevel<=0):
-                if (Unfold): #Try to go deeper one level at a time, until too long
+            if maxLevel<=0:
+                if Unfold: #Try to go deeper one level at a time, until too long
                     l=maxLevel
                     NiC=self.GetAllIncluded(l,0)
                     includedContents=''
@@ -344,13 +322,12 @@ class GrammarElement:
                     del newRules[Rules.index(r.Name)]
                     if len(newRules)==0:
                         return newPath,newobjPath
-                    else:
-                        n,o=r.FindLargestRulePath(newRules)
-                        newPath.extend(n)
-                        newobjPath.extend(o)
-                        if len(newPath)>len(largestPath):
-                            largestPath=newPath
-                            objPath=newobjPath
+                    n,o=r.FindLargestRulePath(newRules)
+                    newPath.extend(n)
+                    newobjPath.extend(o)
+                    if len(newPath)>len(largestPath):
+                        largestPath=newPath
+                        objPath=newobjPath
                 else:
                     newPath,o=r.FindLargestRulePath(Rules)
                     newobjPath.extend(o)
@@ -378,13 +355,14 @@ class GrammarElement:
 def RemoveDuplicatesOfSortedList(List):
     for i in range(len(List)-1,-1,-1):
         if i>0:
-            if List[i]==List[i-1]: del List[i]    
+            if List[i]==List[i-1]:
+                del List[i]    
 
 def InverseDict(SomeDict):
-    InverseDict={}
+    ID = {}
     for key in SomeDict.keys():
-        InverseDict[SomeDict[key]]=key
-    return InverseDict
+        ID[SomeDict[key]]=key
+    return ID
 
 def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
     KnownWords,KnownRules,KnownLists,ImportRules=ParserInfo
@@ -419,7 +397,7 @@ def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
         elif element[0]=='end':
             #Pack simple text sequences into parent list as multi word item in Included
             if CurElement.IsAllText() and (CurElement.GramType==SeqCode):
-                    stack[1].Included[-1]=u' '.join(CurElement.Included)
+                stack[1].Included[-1] = ' '.join(CurElement.Included)
             else: #make shure object is not turned into AllText
                 CurElement.SetIsAllText()
             del stack[0]
@@ -440,7 +418,8 @@ def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
 
 def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exclusive=0,
                             exclusiveState=0):
-    if type(gramSpec)!=type([]): gramSpec=[gramSpec]    
+    if not isinstance(gramSpec, list):
+        gramSpec=[gramSpec]    
     gramparser.splitApartLines(gramSpec)
 ##    Parser = natlinkutils.GramParser(gramSpec)
 ##    Parser.doParse()
@@ -453,7 +432,7 @@ def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exc
     ParserInfo=(InverseDict(Parser.knownWords),InverseDict(Parser.knownRules),
         InverseDict(Parser.knownLists),Parser.importRules)
     stack=[]        
-    for name in Parser.ruleDefines.keys():
+    for name in Parser.ruleDefines:
         ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts)
     DefRules={}                
     for x in stack:
@@ -466,7 +445,7 @@ def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exc
     Grammar.Init(RuleCode,gramName)
     if Exclusive:
         if not exclusiveState:
-            return
+            return None
         # if asking for exclusive, only show the activerules
         All = 0
             
@@ -478,11 +457,14 @@ def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exc
                 Grammar.Insert(rule)
             elif not rule.Name in UsedRules:
                 Obsolete.Insert(rule)
-        if len(Obsolete.Included)!=0: Grammar.Append(Obsolete)
+        if len(Obsolete.Included)!=0:
+            Grammar.Append(Obsolete)
     elif activeRules:
         for rule in stack:
-            if (rule.Name in activeRules):
+            if rule.Name in activeRules:
                 Grammar.Insert(rule)
     else:
-        return   # nothing if no active rules QH
+        return None  # nothing if no active rules QH
     return Grammar
+
+

@@ -35,7 +35,7 @@ Extensive use is made of mouse (dragging) routines.
 
 import win32gui
 from natlinkcore import natlinktimer
-from dtactions import unimacroutils
+from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 
 #aantal carden en aantal stapelplaatsen:
@@ -100,7 +100,7 @@ class ThisGrammar(ancestor):
         if self.prevHandle == winHandle:
             return
         self.prevHandle = winHandle
-        if moduleInfo[0].lower().find('solitaire.exe') > 0 and unimacroutils.isTopWindow(moduleInfo[2]):
+        if moduleInfo[0].lower().find('solitaire.exe') > 0 and uniutils.isTopWindow(moduleInfo[2]):
             if self.checkForChanges:
                 print('grammar solitaire (%s) checking the inifile'% self.name)
                 self.checkInifile()
@@ -149,13 +149,13 @@ class ThisGrammar(ancestor):
         "card {cnum}"
         k = self.getNumberFromSpoken(words[-1])
         self.moveTo(cardpos(k))
-        unimacroutils.buttonClick()
+        uniutils.buttonClick()
 
     #  Draw a new card and position on the last opened card
     def rule_newcard(self, words):
         "'new card'|next|continue"
         self.moveTo(firstrowpos(1))
-        unimacroutils.buttonClick()
+        uniutils.buttonClick()
         self.moveTo(firstrowpos(2))
         if self.hasCommon(words, 'continue'):
             timeEachMilliseconds = max(1, self.pauseTime)*500
@@ -173,7 +173,7 @@ class ThisGrammar(ancestor):
             pass
         elif self.hasCommon(words, 'higher'):
             d = -d
-        unimacroutils.doMouse(0,2,0,d,0)
+        uniutils.doMouse(0,2,0,d,0)
 
     #  Deze grammatica regel stelt de waittijd na elk (deel) van een
     #    commando in. Zie "pauzes" bovenin dit standpunt
@@ -188,28 +188,28 @@ class ThisGrammar(ancestor):
         "to ((stack {snum})|{cnum})"
         
         to = self.getNumberFromSpoken(words[-1])
-        unimacroutils.rememberMouse()
+        uniutils.rememberMouse()
 
         if self.hasCommon(words, 'stack'):
             to = firstrowpos(to+3)
         else:
             to = cardpos(to)
         self.dragTo(to)
-        unimacroutils.cancelMouse()
-        unimacroutils.buttonClick()
+        uniutils.cancelMouse()
+        uniutils.buttonClick()
 
     def rule_testposition(self, words):
         "test position ((stack {snum})|{cnum})"
         #test the stack and piles positions
         #lefttop = (0,0)
-        #unimacroutils.doMouse(0, 5, 0,0, 'move')
-        #x, y = unimacroutils.getMousePosition(1)
+        #uniutils.doMouse(0, 5, 0,0, 'move')
+        #x, y = uniutils.getMousePosition(1)
         #print 'screen x,y: %s, %s'% (x,y)
-        #x, y = unimacroutils.getMousePosition(5)
+        #x, y = uniutils.getMousePosition(5)
         #print 'client: x,y: %s, %s'% (x,y)
         #time.sleep(2)
         to = self.getNumberFromSpoken(words[-1])
-        unimacroutils.rememberMouse()
+        uniutils.rememberMouse()
 
         if self.hasCommon(words, 'stack'):
             to = firstrowpos(to+3)
@@ -225,7 +225,7 @@ class ThisGrammar(ancestor):
         #the first word is optional,and is recognised with the function
         #self.hasCommon, which can handle translations or synonyms
         print('cardnumto: %s'% words)
-        unimacroutils.rememberMouse()
+        uniutils.rememberMouse()
         # if self.hasCommon(words[0],['card']):
         #     ww = words[1:]
         # else:
@@ -235,7 +235,7 @@ class ThisGrammar(ancestor):
         From = self.getNumberFromSpoken(words[0])
         self.moveTo(cardpos(From))        
 
-        unimacroutils.rememberMouse()
+        uniutils.rememberMouse()
         to = self.getNumberFromSpoken(words[-1])
 
         # check if you go to a stack or another card column:        
@@ -244,15 +244,15 @@ class ThisGrammar(ancestor):
         else:
             to = cardpos(to)
         self.dragTo(to)
-        unimacroutils.cancelMouse()
-        unimacroutils.buttonClick()
+        uniutils.cancelMouse()
+        uniutils.buttonClick()
     
     def rule_cardto(self, words):
         "card to ((stack {snum})|{cnum})"
         #drag the last drawn card to a stack or to a pile
         print('cardto: %s'% words)
 
-        unimacroutils.rememberMouse()
+        uniutils.rememberMouse()
         self.moveTo(firstrowpos(2))        
         to = self.getNumberFromSpoken(words[-1])
         
@@ -261,8 +261,8 @@ class ThisGrammar(ancestor):
         else:
             to = cardpos(to)
         self.dragTo(to)
-        unimacroutils.cancelMouse()
-        unimacroutils.buttonClick()
+        uniutils.cancelMouse()
+        uniutils.buttonClick()
     
     def gotResults(self,words,fullResults):
         """if stack auto, do after each move a {ctrl+a}"""
@@ -276,21 +276,21 @@ class ThisGrammar(ancestor):
     #   At the top of this file the increment of the pausing is given.
     def Wait(self, t=None):
         if not t:
-            unimacroutils.Wait(self.pause*pauzesDelta+minPause)
+            uniutils.Wait(self.pause*pauzesDelta+minPause)
         else:
-            unimacroutils.Wait(t)
+            uniutils.Wait(t)
 
     # move to the given position and have a short wait:
     def moveTo(self, pos):
-        unimacroutils.doMouse(0,5, pos[0], pos[1], 'move')
+        uniutils.doMouse(0,5, pos[0], pos[1], 'move')
         self.Wait()
 
     # drag from current position to the new position
     # Pause a few times, dependent on the pause state.
     def dragTo(self, pos):
-        xold,yold = unimacroutils.getMousePosition(5)
+        xold,yold = uniutils.getMousePosition(5)
         print('hold down: %s, %s'% (xold, yold))
-        unimacroutils.doMouse(0,5,xold, yold, 'down')
+        uniutils.doMouse(0,5,xold, yold, 'down')
         xyincr = 50
         nstepsx = int(abs(pos[0]-xold)/xyincr)
         nstepsy = int(abs(pos[1]-yold)/xyincr)
@@ -302,15 +302,15 @@ class ThisGrammar(ancestor):
         for _ in range(nsteps):
             x += xsteps
             y += ysteps
-            unimacroutils.doMouse(0,5, x, y, 'move')
+            uniutils.doMouse(0,5, x, y, 'move')
             self.Wait(0.01)
         if x != pos[0] or y != pos[1]:
             print('final move: %s, %s, %s, %s'% (x, pos[0], y, pos[1]))
-            unimacroutils.doMouse(0,5, pos[0], pos[1], 'move')
+            uniutils.doMouse(0,5, pos[0], pos[1], 'move')
             self.Wait(0.01)            
-        unimacroutils.doMouse(0,5, pos[0], pos[1], 'move')
+        uniutils.doMouse(0,5, pos[0], pos[1], 'move')
         self.Wait(0.01)
-        unimacroutils.releaseMouse()
+        uniutils.releaseMouse()
         self.Wait()
 
             

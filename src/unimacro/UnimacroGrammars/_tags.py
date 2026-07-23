@@ -15,20 +15,20 @@ august 2003/March 2022 (python3)/August 2024
 #pylint:disable=C0116, W0603, W0613, W0201, R0912
 import natlink
 import unimacro.natlinkutilsbj as natbj
-from dtactions import unimacroutils
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import doAction as action
+from dtactions import uniutils
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import doAction as action
 # from dtactions.natlinkclipboard import Clipboard
 # natlinkclipboard is not safe at the moment. 
 
-language = unimacroutils.getLanguage()        
+language = uniutils.getLanguage()        
 
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
     """grammar that makes html tags, as defined in an inifile
     """
 
-    language = unimacroutils.getLanguage()        
+    language = uniutils.getLanguage()        
     iniIgnoreGrammarLists = ['character']
 
     name = "tags"
@@ -97,12 +97,12 @@ class ThisGrammar(ancestor):
 
         # see of something selected, leave clipboard intact 
         # cb =  Clipboard(save_clear=True)
-        unimacroutils.saveClipboard()
+        uniutils.saveClipboard()
         keystroke('{shift+right}')   # take one extra char for the clipboard to hit
         action('<<cut>>')
         action('W')
-        cb_text = unimacroutils.getClipboard()
-        unimacroutils.restoreClipboard()
+        cb_text = uniutils.getClipboard()
+        uniutils.restoreClipboard()
         if cb_text:
             contents, lastchar = cb_text[:-1], cb_text[-1]
         else:

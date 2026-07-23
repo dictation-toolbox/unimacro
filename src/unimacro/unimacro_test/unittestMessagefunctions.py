@@ -34,7 +34,7 @@ import time
 import win32gui
 from dtactions.messagefunctions import *
 import dtactions.messagefunctions as mess
-from dtactions import unimacroutils
+from dtactions import uniutils
 from unimacro import windowparameters
 import TestCaseWithHelpers
 
@@ -92,12 +92,12 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     #    """tests the contents of the clipboard"""
     #    text = text or "clipboard contents not as expected"
     #    meHndle = win32gui.GetForegroundWindow()
-    #    unimacroutils.SetForegroundWindow(self.app)
+    #    uniutils.SetForegroundWindow(self.app)
     #    time.sleep(0.05)
     #    activateMenuItem(self.app, W["commandcut"])
     #    time.sleep(0.05)
     #    t = getClipboard()
-    #    unimacroutils.SetForegroundWindow(meHndle)
+    #    uniutils.SetForegroundWindow(meHndle)
     #    
     #    text = text + '\nExpected: %s\nGot: %s\n'% (expected, t)
     #    self.assert_(t == expected, text)
@@ -134,7 +134,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
     #
     #        if meHndle:
     #            try:
-    #                unimacroutils.SetForegroundWindow(meHndle)
+    #                uniutils.SetForegroundWindow(meHndle)
     #            except:
     #                pass
     #        self.__class__.app = appWindows[0]
@@ -165,7 +165,7 @@ class UnittestMessagefunctions(TestCaseWithHelpers.TestCaseWithHelpers):
 
         if meHndle:
             try:
-                unimacroutils.SetForegroundWindow(meHndle)
+                uniutils.SetForegroundWindow(meHndle)
             except:
                 pass
         self.__class__.app = appWindow

@@ -8,7 +8,7 @@ see http://qh.antenna.nl/unimacro/aboutunimacro.html for copyright note
 """
 #pylint:disable=C0209
 import unittest
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 import natlink
 import UnimacroTestHelpers
 

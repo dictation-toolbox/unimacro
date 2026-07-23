@@ -9,9 +9,9 @@
 #   NaturallySpeaking should be running with nothing in the DragonPad window
 #   (that you want to preserve) before these tests are run.
 #
-from dtactions import unimacroutils
+from dtactions import uniutils
 from natlinkcore import natlinkutils
-from dtactions import unimacroactions as actions
+from dtactions.uniactions import uactions as actions
 action = actions.doAction
 
 import unittest
@@ -19,7 +19,7 @@ import types
 import TestCaseWithHelpers
 
 
-##class UnimacroUtilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
+##class uniutilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
 class UtilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
 
     # run from dragonpad      
@@ -37,7 +37,7 @@ class UtilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
     def test_Something_in_unimacro(self):
         self.log('testing something')
         actions.doAction("W")
-        lang = unimacroutils.getLanguage()
+        lang = uniutils.getLanguage()
         self.assert_equal("enx", lang, "testing should be done from an English speech profile, not: %s"% lang)
 
     def test_matchModule(self):
@@ -47,14 +47,14 @@ class UtilsTest(TestCaseWithHelpers.TestCaseWithHelpers):
 
          behaviour changed in python version 2.3.4!!
         """        
-        progInfo = unimacroutils.getProgInfo()
+        progInfo = uniutils.getProgInfo()
         self.log("progInfo: %s"% repr(progInfo))
         actions.doAction("LW")
         ## changed in 2013 from 3 to 4 items:
         self.assert_equal(4, len(progInfo), "progInfo should be tuple of 4")
         self.assert_equal(u'top', progInfo[2], "DragonPad should be a top window")
         actions.doAction("<<fileopen>>")
-        progInfo = unimacroutils.getProgInfo()
+        progInfo = uniutils.getProgInfo()
         actions.doAction("{esc}")
         self.assert_equal(4, len(progInfo), "progInfo should be tuple of 4")
         self.assert_equal(u'child', progInfo[2], "DragonPad open dialog should be a child window")

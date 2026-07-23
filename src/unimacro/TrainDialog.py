@@ -23,6 +23,8 @@
 # Author: Bart Jan van Os, Version: 0.1
 """This file implements a crude Training dialog to Train phrases
 
+Is out of order and probably not relevant any more (for a long time)
+This was bj (Bart Jan van Os) work.
 """
 
 import string,sys,pickle

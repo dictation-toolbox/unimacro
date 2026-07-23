@@ -9,8 +9,8 @@
 #   performed.
 # from pathlib import Path
 import unittest
-from dtactions import unimacroutils
-from dtactions import unimacroactions as actions
+from dtactions import uniutils
+from dtactions.uniactions import uactions as actions
 from natlinkcore import natlinkutils
 import TestCaseWithHelpers
 
@@ -31,7 +31,7 @@ class BasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
 
     def test_Something_in_unimacro(self):
         print('testing something')
-        lang = unimacroutils.getLanguage()
+        lang = uniutils.getLanguage()
         self.assert_equal("enx", lang, "testing should be done from an English speech profile, not: %s"% lang)
 
 # no main statement, run from command in _unimacrotest.py.

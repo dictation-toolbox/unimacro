@@ -15,8 +15,8 @@
 import natlink
 from natlinkcore import nsformat 
 from natlinkcore import natlinkstatus
-from dtactions import unimacroutils
-from dtactions.unimacroactions import doAction as action
+from dtactions import uniutils
+from dtactions.uniactions.uactions import doAction as action
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 
@@ -200,7 +200,7 @@ class ThisGrammar(ancestor):
 
 
     def get_selection_that(self, line = 0):
-        unimacroutils.saveClipboard()
+        uniutils.saveClipboard()
 
         if line:
             action('<<selectline>><<cut>>')
@@ -219,11 +219,11 @@ class ThisGrammar(ancestor):
             if len(contents) == 0:
                 print('_latex, empty contents, no last dictate utterance available')
                 
-        unimacroutils.restoreClipboard()
+        uniutils.restoreClipboard()
         return contents
 
     def view_selection_current_line(self):
-        unimacroutils.saveClipboard()
+        uniutils.saveClipboard()
         keystroke('{ctrl+c}')
         action('W')
         contents = natlink.getClipboard()
@@ -233,7 +233,7 @@ class ThisGrammar(ancestor):
             keystroke('{ctrl+c}')
             action('W')
             contents = natlink.getClipboard()
-        unimacroutils.restoreClipboard()
+        uniutils.restoreClipboard()
         return contents
 
 

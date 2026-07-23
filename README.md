@@ -1,6 +1,6 @@
 # Unimacro
 The Unimacro project aims to provide a rich set of command grammars, that can be configured by the users without programming knowledge. 
-Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/unimacro/index.html)
+Read more at [Natlink, including Unimacro and Vocolaa](https://qh.antenna.nl/unimacro/grammars/index.html)
 
 # Installing
 
@@ -9,15 +9,17 @@ areas - probably nothing you can't live without.
 
 A limited number of grammars are by default available when you install unimacro:
 
-  _control.py
-  _general.py 
-  _folders.py
-  _lines.py
-  _brackets.py
-  _tags.py
-  _tasks.py
-  _clickbyvoice.py
-  _number simple.py
+  - _control.py
+  - _general.py
+  - _folders.py
+  - _lines.py
+  - _brackets.py
+  - _tags.py
+  - _tasks.py
+  - _clickbyvoice.py
+  - _number simple.py
+
+In the sub folder OtherUnimacroGrammars more grammars are available. See above link to the Unimacro  website above!
 
 ## Install unimacro
 
@@ -43,7 +45,7 @@ The Grammars listed above are installed with Unimacro in:
 the Lib\site-packages\unimacro\UnimacroGrammars sub-directory of your 
 Python installation.  
 
-More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/grammars/globalgrammars/folders/index.html)
+More about [Unimacro Grammars](https://qh.antenna.nl/unimacro/index.html)
 
 # Developer instructions.
 
