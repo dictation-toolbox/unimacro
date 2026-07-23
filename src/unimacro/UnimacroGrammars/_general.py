@@ -2,15 +2,15 @@
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
+# or the file COPYRIGHT.txt in the natlink\natlink directory
 #
 #  _general.py
 #
 # written by Quintijn Hoogenboom (QH softwaretraining & advies),
 #
 #
-#pylint:disable=C0302, R0904, C0209, C0321, R0912, R0914, R0915, R0911
-#pylint:disable=E1101 
+# pylint:disable=C0302, R0904, C0209, C0321, R0912, R0914, R0915, R0911
+# pylint:disable=E1101
 
 """do a set of general commands
 
@@ -26,11 +26,11 @@ import win32gui
 
 import natlink
 from natlinkcore import natlinkstatus
-from natlinkcore import nsformat 
+from natlinkcore import nsformat
 from natlinkcore import natlinkutils as natut
 from natlinkcore import natlinktimer
 from unimacro import natlinkutilsbj as natbj
-from unimacro import namelist # for name phrases
+from unimacro import namelist  # for name phrases
 
 from dtactions.uniactions.uactions import doAction as action
 from dtactions.uniactions.uactions import doKeystroke as keystroke
@@ -39,11 +39,11 @@ from dtactions import uniutils
 
 # taskswitching moved to _tasks.py (july 2006)
 
-Counts = list(range(1,20)) + list(range(20,51,5))
+Counts = list(range(1, 20)) + list(range(20, 51, 5))
 
 # for taskswitch:
 Handles = {}
-#systray:
+# systray:
 systrayHndle = 0
 
 status = natlinkstatus.NatlinkStatus()
@@ -71,49 +71,49 @@ wordsFolder = f'{unimacro_user_dir}\\{language}_words'
 if not Path(wordsFolder).is_dir():
     Path(wordsFolder).mkdir()
 files = [os.path.splitext(f)[0] for f in os.listdir(wordsFolder)]
-## print '_general, files in wordsFolder %s: %s'% (wordsFolder, files)
+# print '_general, files in wordsFolder %s: %s' % (wordsFolder, files)
 
 if language == 'enx':
     nameList = {'Q. H.': 'QH',
-                 'R. A.': 'RA',
+                'R. A.': 'RA',
                 'underscore': '',
-                 }
+                }
 elif language == 'nld':
     nameList = {'QH': 'QH',
-                 'er aa': 'RA',
+                'er aa': 'RA',
                 'underscore': '',
-                 }
+                }
 else:
     nameList = {}
-        
 
 switchDirection = {
-      "{Up}":      "{Down}",
-      "{Down}":    "{Up}",
-      "{Left}":    "{Right}",
-      "{Right}":   "{Left}"}
+    "{Up}": "{Down}",
+    "{Down}": "{Up}",
+    "{Left}": "{Right}",
+    "{Right}": "{Left}"}
 
 modes = ['spell', 'command', 'numbers', 'normal', 'dictation', 'dictate']
-normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase', 
+normalSet = ['test', 'reload', 'info', 'undo', 'redo', 'namephrase',
              'comment', 'documentation', 'modes', 'variable', 'search',
              'highlight',         # for Shane, enable, because Vocola did not fix _anything yet
              'browsewith', 'hyphenatephrase', 'pastepart',
-             'password', 'choose']
-#normalSet = ['hyphenatephrase']  # skip 'openuser'
+             'password', 'pick']
+# normalSet = ['hyphenatephrase']  # skip 'openuser'
 
 commandSet = normalSet[:] + ['dictate']
 thisGrammar = None
+ancestor = natbj.IniGrammar
 
-ancestor=natbj.IniGrammar
+
 class ThisGrammar(ancestor):
     # pylint: disable=C0116, W0613, W0201
 
-    iniIgnoreGrammarLists = ['modes','count', 'namelist', 'character', 'punctuation']
+    iniIgnoreGrammarLists = ['modes', 'count', 'namelist', 'character', 'punctuation']
 
     language = uniutils.getLanguage()        
 
     try:
-        number_rules = natbj.numberGrammar[language] #  including millions
+        number_rules = natbj.numberGrammar[language]  # including millions
     except KeyError:
         number_rules = natbj.numberGrammar['enx']
 
@@ -125,7 +125,7 @@ class ThisGrammar(ancestor):
 # <dgnwords> imported;
 <documentation> exported = Make documentation;
 <test> exported = test micstate;
-<choose> exported = choose {n1-10};
+<pick> exported = pick {n1-10};
 <reload> exported = reload Natlink;
 <info> exported = give (user|prog|window|unimacro|path|timer) (info|information) ;
 <undo> exported = Undo [That] [{count} [times]];
@@ -149,41 +149,45 @@ class ThisGrammar(ancestor):
 
     """]
 # A\determinerNormalTestThisNowI\pronounTest.\period\full stop
-#NormalTestNormalI\pronounTestNormallyTestNormalAttestNormal.\period\periodSigns
-#HelloTesting
-    
+# NormalTestNormalI\pronounTestNormallyTestNormalAttestNormal.\period\periodSigns
+# HelloTesting
+
     def initialize(self):
         if self.language:
             self.load(self.gramSpec)
-            self.switchOnOrOff(activateSet=normalSet) # initialises lists from inifile, and switches on
-                             # if all goes well (and variable onOrOff == 1)
+            # initialises lists from inifile, and switches on if all goes well (and variable onOrOff == 1)
+            self.switchOnOrOff(activateSet=normalSet)
             # search commands:
             self.setCharactersList('character')
             self.setPunctuationList('punctuation')
-            self.specialSearchWords = self.Lists['searchwords'] or [] # like function, class of (inifile) section
-            # print('specialSearchWords: %s'% self.specialSearchWords)
+            self.specialSearchWords = self.Lists['searchwords'] or []  # like function, class of (inifile) section
+            # print('specialSearchWords: %s' % self.specialSearchWords)
             self.setNumbersList('count', Counts)
             self.setList('modes', modes)
             self.gotPassword = 0
             self.passwordEnding = None
             self.gotPresscode = 0
-            # print "%s, activateSet: %s"% (self.name, normalSet)
+            # print("%s, activateSet: %s" % (self.name, normalSet))
             # self.deactivateAll()  # why is this necessary? The activateAll in switchOn is definitly now Ok...
-            self.title = 'Unimacro grammar "'+__name__+'" (language: '+self.language+')'
+            self.title = 'Unimacro grammar "' + __name__ + '" (language: ' + self.language + ')'
         else:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
+            print("no valid language in grammar " + __name__ + " grammar not initialized")
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         if self.checkForChanges:
-            self.checkInifile() # refills grammar lists and instance variables
-                                # if something changed.
+            # refills grammar lists and instance variables if something changed
+            self.checkInifile()
         self.gotPassword = 0
         self.progInfo = uniutils.getProgInfo(moduleInfo)
         
     def gotResults_wrongrule(self,words,fullResults):
         natut.playString("%s\n"% fullResults)
 
-    def gotResultsInit(self,words,fullResults):
+    def gotResults_wrongrule(self, words, fullResults):
+        natut.playString("%s\n" % fullResults)
+
+    def gotResultsInit(self, words, fullResults):
+        # print("gotResultsInit, words: %s, fullResults: %s" % (words, fullResults))
         self.fullText = ' '.join(words)
         self.progName = uniutils.getProgName()
 
@@ -193,7 +197,7 @@ class ThisGrammar(ancestor):
         # for Shane
         self.search = self.dictate = self.highlight = 0
         self.text = ''
-        self.minimalapp=None
+        self.minimalapp = None
         # self.specialSearchWords = None
 
         if words[0] in ['Hier', 'Here']:
@@ -203,13 +207,13 @@ class ThisGrammar(ancestor):
         self.progInfo = uniutils.getProgInfo()
     def gotResults_password(self,words,fullResults):
         """interpret password as dictate
+
         Cap dictation words
-        if number precedes @ 
-        
+        if number precedes @
         """
         self.gotPassword = 1
 
-    def gotResults_pastepart(self,words,fullResults):
+    def gotResults_pastepart(self, words, fullResults):
         """paste part of clipboard, parts are separated by ";"
         """
         n = self.getNumberFromSpoken(words[-1])
@@ -217,21 +221,21 @@ class ThisGrammar(ancestor):
         print('(%s) %s'% (type(t), t))
         T = self.partsSplitSpecial(t)
         if n <= len(T):
-            keystroke(T[n-1])
-            # action("SCLIP %s"% T[n-1])
+            keystroke(T[n - 1])
+            # action("SCLIP %s" % T[n-1])
         else:
-            print('_general, pastepart: length of list only: %s (t: %s)'% (len(T), t))
+            print('_general, pastepart: length of list only: %s (t: %s)' % (len(T), t))
 
-    def gotResults_pasteallparts(self,words,fullResults):
+    def gotResults_pasteallparts(self, words, fullResults):
         """paste parts, separated by ";" with a hard set keystroke in between
-        
+
         Used for pasting multiple addresses in Thunderbird address book
         """
         # n = self.getNumberFromSpoken(words[-1])
         t = uniutils.getClipboard()
         print('(%s) %s'% (type(t), t))
         T = self.partsSplitSpecial(t)
-        print('put item by item %s words'% len(T))
+        print('put item by item %s words' % len(T))
         for t in T:
             keystroke(t)
             keystroke("{enter}")
@@ -246,28 +250,29 @@ class ThisGrammar(ancestor):
         m = reCoords.match(t)
         if m:
             parts = m.groups()
-            print('coordinates: %s, length: %s'% (repr(parts), len(parts)))
+            print('coordinates: %s, length: %s' % (repr(parts), len(parts)))
         elif t.find(";") >= 0:
             parts = [t.strip() for t in t.split(";")]
-            print('splitted string: %s, length: %s'% (repr(parts), len(parts)))
+            print('splitted string: %s, length: %s' % (repr(parts), len(parts)))
         else:
             parts = [t]
-            print('cannot split text: %s\nreturn list of length 1: %s'% (t, parts))
+            print('cannot split text: %s\nreturn list of length 1: %s' % (t, parts))
         return parts
-        
-    def gotResults_before(self,words,fullResults):
+
+    def gotResults_before(self, words, fullResults):
         if self.hasCommon(words, 'here'):
             natut.buttonClick('left', 1)
 
-    def gotResults_highlight(self,words,fullResults):
+    def gotResults_highlight(self, words, fullResults):
+        print("gotResults_highlight, words: %s" % words)
         # for Shane
         self.highlight = 1
 
-    def gotResults_search(self,words,fullResults):
+    def gotResults_search(self, words, fullResults):
         self.search = 1
         if words[0] in self.specialSearchWords:
             self.specialSearchWord = self.getFromInifile(words[0], 'searchwords')
-            print('do search with special search word: %s (%s)'% (self.specialSearchWord, words[0]))
+            print('do search with special search word: %s (%s)' % (self.specialSearchWord, words[0]))
             words.pop(0)
 
         counts = self.getNumbersFromSpoken(words, Counts)
@@ -296,11 +301,11 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, ['extend', 'uitbreiden']):
             self.search = 'extend'
 
-        # provisions for extra special keywords (in front of spelled characters)            
+        # provisions for extra special keywords (in front of spelled characters)
         self.specialSearchWord = self.hasCommon(words, self.specialSearchWords)
 
-
-    def gotResults_dictate(self,words,fullResults):
+    def gotResults_dictate(self, words, fullResults):
+        # print("gotResults_dictate, words: %s, fullResults: %s" % (words, fullResults))
         self.dictate = 1
 
     def gotResults_dgnletters(self,words,fullResults):
@@ -310,24 +315,23 @@ class ThisGrammar(ancestor):
             if self.text == '4':
                 print(f'caught dgnletters {self.text}, switch to forward search')
                 self.text = ''
-                self.search = 2 # forward search
+                self.search = 2  # forward search
             elif self.text in ['43', '403']:
                 print(f'caught dgnletters {self.text}, switch to forward search 3')
                 self.text = ''
                 self.count = 3
-                self.search = 2 # forward search
+                self.search = 2  # forward search
             return
         if self.gotPresscode:
             print(f'gotPresscode: {words} -> {self.text}')
             self.do_pressfirst(self.text)
             return
-        
-        
-    def gotResults_characterpunctuation(self,words,fullResults):
+
+    def gotResults_characterpunctuation(self, words, fullResults):
         capNext = 0
         for w in words:
             if self.hasCommon(w, "capital"):
-                print('got word (synonym of) "capital": %s'% w)
+                print('got word (synonym of) "capital": %s' % w)
                 capNext = 1
                 continue
             if self.hasCommon(w, "space"):
@@ -358,21 +362,21 @@ class ThisGrammar(ancestor):
         #self.text = ' '.join(map(uniutils.stripSpokenForm, words))
         # try with the improved nsformat function 
         if self.gotPassword:
-            print('gotPassword, analyse password: %s'% words)
+            print('gotPassword, analyse password: %s' % words)
             text = nsformat.formatPassword(words)
             keystroke(text)
             self.gotPassword = 0
             return
         if self.gotVariable:
-            print('do variable trick %s on %s'% (self.gotVariable, words))
+            print('do variable trick %s on %s' % (self.gotVariable, words))
             vartrick = self.gotVariable
-            funcName = 'format_%s'% vartrick
-            # print 'funcName: %s'% funcName
+            funcName = 'format_%s' % vartrick
+            # print 'funcName: %s' % funcName
             try:
                 func = getattr(self, funcName)
-                # print 'func: %s'% func
+                # print 'func: %s' % func
             except AttributeError:
-                print('no formatfunction for variable trick: %s'% vartrick)
+                print('no formatfunction for variable trick: %s' % vartrick)
                 return
 
             result = func(words)
@@ -384,20 +388,21 @@ class ThisGrammar(ancestor):
             print(f'got dgndictation: {words} -> {self.text}')
             self.do_pressfirst(self.text)
             return
-        #very well for like this
-        if self.search and self.text in ['on', 'verder']: # 
+        # very well for like this
+        if self.search and self.text in ['on', 'verder']:
             self.search = 2
         elif self.search and self.text in ['new', 'nieuw']:
             self.search = 3
         elif self.search and self.text in ['terug', 'back']:
             self.search = 4
-        print('dgndictation: %s'% self.text)
+        print(f'dgndictation: {self.text}')
 
     def format_camel(self, words):
         """format camel case, rule variable
         var like this -> varLikeThis
         """
-        if not words: return ""   #
+        if not words:
+            return ""
         newWords = [w.capitalize() for w in words]
         newWords[0] = newWords[0].lower()
         return ''.join(newWords)
@@ -406,7 +411,8 @@ class ThisGrammar(ancestor):
         """format studly case, rule variable
         var like this -> VarLikeThis
         """
-        if not words: return ""   #
+        if not words:
+            return ""
         newWords = [w.capitalize() for w in words]
         return ''.join(newWords)
 
@@ -414,35 +420,38 @@ class ThisGrammar(ancestor):
         """format dotword, rule variable
         var like this -> var.like.this
         """
-        if not words: return ""   #
+        if not words:
+            return ""
         return '.'.join(words)
 
     def format_jive(self, words):
         """format jive case, rule variable
         var like this -> var-like-this
         """
-        if not words: return ""   #
+        if not words:
+            return ""
         return '-'.join(words)
 
     def format_score(self, words):
         """format score, with underscores, rule variable
         var like this -> var_like_this
         """
-        if not words: return ""   #
+        if not words:
+            return ""
         return '_'.join(words)
 
 # try for like this
 
 #
-    def gotResults_browsewith(self,words,fullResults):
+    def gotResults_browsewith(self, words, fullResults):
         """show page in another browser"""
         progInfo = uniutils.getProgInfo()
         prog = progInfo.prog
         # Iam2x = prog == '2xexplorer'
         # IamExplorer = prog == 'explorer'
-        browser = prog in ['iexplore', 'firefox','opera', 'netscp', 'chrome']
+        browser = prog in ['iexplore', 'firefox', 'opera', 'netscp', 'chrome']
         if not browser:
-            self.DisplayMessage ('command only for browsers')
+            self.DisplayMessage('command only for browsers')
             return
         print('words:', words)
         uniutils.saveClipboard()
@@ -451,127 +460,18 @@ class ThisGrammar(ancestor):
         if askedBrowser == prog:
             self.DisplayMessage('command only for another browser')
             return
-        print('try to bring up browser: |%s|'% askedBrowser)
+        print('try to bring up browser: |%s|' % askedBrowser)
         action('RW')
-        action('AppBringUp "%s"'% askedBrowser)
+        action('AppBringUp " %s"' % askedBrowser)
         action('WTC')
         action('<<addressfield>>; {ctrl+v}{enter}')
-        
-        uniutils.restoreClipboard()
- 
-    def gotResults_documentation(self,words,fullResults):
-        print("obsolete")
-#         oldPath = os.getcwd()
-#         uniGrammars = self.ini.getList('documentation', 'unimacro grammars')
-#         uniModules = self.ini.getList('documentation', 'unimacro modules')
-#         otherGrammars = self.ini.getList('documentation', 'other grammars')
-#         otherModules = self.ini.getList('documentation', 'other modules')
-#         base = uniutils.getUnimacroUserDirectory()
-#         docPath = os.path.join(base, 'doc')
-#         pickleFile = os.path.join(docPath, '@unimacro.pickle')
-#         try:
-#             psock = open(pickleFile, 'r')
-#             memory = pickle.load(psock)
-#             psock.close()
-#             print('--------------------memory from pickle: %s'% pickleFile)
-#         except:
-#             memory = {}
-#             print('--------------------no or invalid pickle file: %s'% pickleFile)
-#             
-#         utilsqh.createFolderIfNotExistent(docPath)
-#         os.chdir(docPath)
-#         self.DisplayMessage('writing documentation to: %s'% docPath)
-#         pydoc.writedocs(base)
-#         self.DisplayMessage('checking unimacro grammars, modules and other grammars, modules')
-#         allUnimacroGrammars = list(natlinkmain.loadedFiles.keys())
-#         if 'unimacro grammars' not in memory:
-#             memory['unimacro grammars'] = {}
-#         mem = memory['unimacro grammars']
-#         for m in uniGrammars:
-#             if m in allUnimacroGrammars:
-#                 mem[m] = sys.modules[m].__doc__
-#             else:
-#                 if not m in mem:
-#                     mem[m] = ''
-# 
-#         if 'unimacro modules' not in memory:
-#             memory['unimacro modules'] = {}
-#         mem = memory['unimacro modules']
-#         for m in uniModules:
-#             if m in sys.modules:
-#                 mem[m] = sys.modules[m].__doc__
-#             else:
-#                 try:
-#                     M = __import__(m)
-#                 except ImportError:
-#                     print('cannot import module: %s'% m)
-#                     continue
-#                 mem[m] = M.__doc__
-#                 mem[m] = M.__doc__
-#                 del M
-# 
-#         print('writing to pickle file: %s'% pickleFile)
-#         psock = open(pickleFile, 'w')
-#         pickle.dump(memory, psock)
-#         psock.close()
-#         L = []
-#         htmlFiles = list(filter(isHtmlFile, os.listdir(docPath)))
-#         
-#         
-#         categories = self.ini.get('documentation')
-#         if not categories:
-#             self.DisplayMessage('please fill in documentation categories')
-# 
-#         for c in categories:
-#             if not c in memory:
-#                 continue
-#             L.append("<H1>%s</H1>"% c)
-#             mem = memory[c]
-#             for m in mem:
-#                 file = m+'.html'
-#                 if os.path.isfile(os.path.join(docPath, m+'.html')):
-#                     link = "<a href=%s.html>%s</a>"% (m, m)
-#                     htmlFiles.remove(file)
-#                 else:
-#                     link = "???%s"% m
-#                 if mem[m] == None:
-#                     text = 'no doc string for this module'
-#                 elif mem[m] == '':
-#                     text = 'module could not be loaded, possibly start program and do "Make documentation" again'
-#                 else:
-#                     text = mem[m]
-# 
-#                 if text.find('\n\n'):
-#                     T = text.split('\n\n')
-#                     text = T[0]
-#                 L.append("<p>%s: %s</p>"% (link, text))
-#         if htmlFiles:
-#             M = []
-#             L.append("<H1>%s</H1>"% "other files")
-#             for f in htmlFiles:
-#                 if f == 'index.html':
-#                     continue
-#                 name = f.split('.')[0]
-#                 link = "<a href=%s>%s</a>"% (f, name)
-#                 M.append(link)
-#             L.append("<p>%s</p>"% ', '.join(M))
-#         HTMLpage = '''<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-# <html><head><title>Natlink grammars and modules documentations</title>
-# <style type="text/css"><!--
-# TT { font-family: lucidatypewriter, lucida console, courier }
-# --></style></head><body bgcolor="#f0f0f8">
-# %s
-# </body></html>''' % '\n'.join(L)
-#         fsock = open(os.path.join(docPath, 'index.html'), 'w')
-#         fsock.write(HTMLpage)
-#         fsock.close()
-#                     
-#         os.chdir(oldPath)
-#         
-#         self.DisplayMessage('okay')
-        
 
-    def gotResults_stopwatch(self,words,fullResults):
+        uniutils.restoreClipboard()
+
+    def gotResults_documentation(self, words, fullResults):
+        print("obsolete")
+
+    def gotResults_stopwatch(self, words, fullResults):
         """ stopwatch"""
         if self.hasCommon(words, 'start'):
             self.startTime = time.time()
@@ -581,20 +481,18 @@ class ThisGrammar(ancestor):
             action(f'MSG {elapsed:.2f} seconds')
             self.startTime = t
 
-    def gotResults_choose(self,words,fullResults):
-        """choose alternative, via actions
-                
+    def gotResults_pick(self, words, fullResults):
+        """pick alternative, via actions
         """
         n = self.getNumberFromSpoken(words)   # return int
-        print(f'got choose: {words} -> {n}')
-        action(f'<<choose {n}>>')
-        
-        
-    def gotResults_test(self,words,fullResults):
+        print(f'got pick: {words} -> {n}')
+        action(f'<<pick {n}>>')
+
+    def gotResults_test(self, words, fullResults):
 
         # micstate = natlink.getMicState()
         for ms in ('off', 'on'):
-            print("switching %s mic"% ms)
+            print("switching %s mic" % ms)
             natlink.setMicState(ms)
             time.sleep(1)
             newMs = natlink.getMicState()
@@ -602,13 +500,13 @@ class ThisGrammar(ancestor):
             if ms == newMs:
                 time.sleep(0.5)
                 continue
-            print("conflicting mic states, now: %s, expected: %s"% (newMs, ms))
+            print("conflicting mic states, now: %s, expected: %s" % (newMs, ms))
 
     def getPrevNext(self, n=1):
         """return character to the left and to the right of the cursor
         assume no selection active.
         normally return cursor in same position
-        
+
         This one gives timing problems in Frescobaldi (lilypond edit program), the ctrl+c takes about one second.
         now try in other applications
         """
@@ -617,18 +515,18 @@ class ThisGrammar(ancestor):
         t0 = time.time()
         uniutils.clearClipboard()
         t1 = time.time()
-        playString("{left %s}"% n)
+        playString("{left %s}" % n)
         t2 = time.time()
-        playString("{shift+right %s}"% (n*2,))
+        playString("{shift+right %s}" % (n * 2,))
         t3 = time.time()
         playString("{ctrl+c}")
         t4 = time.time()
-        playString("{left %s}"% n)
+        playString("{left %s}" % n)
         t5 = time.time()
         result = uniutils.getClipboard()
         t6 = time.time()
-        print('timing getPrevNext program: %s\nclear clipboard: %.4f, left: %.4f, shiftright2: %.4f, copy: %.4f, left: %.4f, getcl: %.4f'% (
-            prog, t1-t0, t2-t1, t3-t2, t4-t3, t5-t4, t6-t5))
+        print('timing getPrevNext program: %s\nclear clipboard: %.4f, left: %.4f, shiftright2: %.4f, copy: %.4f, left: %.4f, getcl: %.4f' % (
+            prog, t1 - t0, t2 - t1, t3 - t2, t4 - t3, t5 - t4, t6 - t5))
         if len(result) == 2:
             return result[0], result[1]
         if result == '\n':
@@ -636,23 +534,20 @@ class ThisGrammar(ancestor):
             # assume at end of file, could also be begin of file, but too rare too handle
             playString("{right}")
             return result, result
-        print('getPrevNext, len not 2: %s, (%s)'% (len(result), repr(result)))
+        print('getPrevNext, len not 2: %s, (%s)' % (len(result), repr(result)))
         return "", result
 
-##        
-    def gotResults_reload(self,words,fullResults):
+    def gotResults_reload(self, words, fullResults):
         print("reloading natlink....")
         uniutils.switchToWindowWithTitle("Messages from Python Macros")
         uniutils.Wait()
         natlink.setMicState("off")
         uniutils.Wait()
         print("do it yourself...")
-    
-   # deze regel print de naam van de huidige module in het debug-venster
-    def gotResults_info(self,words,fullResults):
+
+    # deze regel print de naam van de huidige module in het debug-venster
+    def gotResults_info(self, words, fullResults):
         """display in a message box information about the window, user or unimacro
-
-
         """
         T = []
         extra = []
@@ -672,7 +567,7 @@ class ThisGrammar(ancestor):
             # # for special behaviour:
             # childClass = "#32770"
             # overruleIsTop = self.getTopOrChild(self.progInfo, childClass=childClass)
-            # 
+            #
             # if p.toporchild != overruleIsTop:
             #     T.append('')
             #     if overruleIsTop:
@@ -680,24 +575,23 @@ class ThisGrammar(ancestor):
             #     else:
             #         T.append(f'**** treat as CHILD window although it is a top window (classname: {classname})')
 
-
-        elif self.hasCommon(words,'user'):
+        elif self.hasCommon(words, 'user'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
-            T.append('user:\t\t%s'% status.user)
-            T.append('userLanguage:\t%s'% status.language)
+            T.append('user:\t\t%s' % status.user)
+            T.append('userLanguage:\t%s' % status.language)
             # T.append('see messages window for trainuser info')
             extra = []
-            
-        elif self.hasCommon(words,'unimacro'):
+
+        elif self.hasCommon(words, 'unimacro'):
             # status (natlinkstatus.NatlinkStatus()) is global variable
             version = status.getDNSVersion()
-            T.append('DNSVersion:\t\t%s'% version)
+            T.append('DNSVersion:\t\t%s' % version)
             wVersion = status.getWindowsVersion()
-            T.append('WindowsVersion:\t\t%s'% wVersion)
-            T.append('UnimacroDirectory:\t%s'% status.getUnimacroDirectory())
-            T.append('UnimacroUserDirectory:\t%s'% status.getUnimacroUserDirectory())
-            T.append('UnimacroGrammarsDirectory:\t%s'% status.getUnimacroGrammarsDirectory())
-        elif self.hasCommon(words,'path'):
+            T.append('WindowsVersion:\t\t%s' % wVersion)
+            T.append('UnimacroDirectory:\t%s' % status.getUnimacroDirectory())
+            T.append('UnimacroUserDirectory:\t%s' % status.getUnimacroUserDirectory())
+            T.append('UnimacroGrammarsDirectory:\t%s' % status.getUnimacroGrammarsDirectory())
+        elif self.hasCommon(words, 'path'):
             T.append('the python path:')
             T.append(pprint.pformat(sys.path))
         elif self.hasCommon(words, "timer"):
@@ -714,25 +608,25 @@ class ThisGrammar(ancestor):
             T.append('no valid keyword found')
 
         s = '\n'.join(T)
-            
+
         actions.Message(s)
         print(s)
         print()
         for e in extra:
             print(e)
 
-    def gotResults_variable(self,words,fullResults):
+    def gotResults_variable(self, words, fullResults):
         vartrick = self.getFromInifile(words[0], 'formatvariable', '')
-        print('vartrick: %s'% vartrick)
+        print('vartrick: %s' % vartrick)
         if vartrick:
             self.gotVariable = vartrick
         else:
             print('no vartrick found, return')
-        # 
+        #
         c = self.getNumberFromSpoken(words[-1])
-        
+
         if not c:
-            print('vartrick %s wait for dgndictation'% vartrick)
+            print('vartrick %s wait for dgndictation' % vartrick)
             return
         keystroke('{Shift+Ctrl+Left %s}' % c)
         keystroke('{ctrl+x}')
@@ -746,16 +640,15 @@ class ThisGrammar(ancestor):
         # print 'funcName: %s'% funcNameyour 
         try:
             func = getattr(self, funcName)
-            # print 'func: %s'% func
+            # print 'func: %s' % func
         except AttributeError:
-            print('no formatfunction for variable trick: %s'% vartrick)
+            print('no formatfunction for variable trick: %s' % vartrick)
             return
 
         result = func(tList)
 #
         keystroke(result)
         return
-
 
     def capit(self, s):
         """ capitalise, but leave upper case characters as they are
@@ -765,27 +658,27 @@ class ThisGrammar(ancestor):
         """
         return s[0].upper() + s[1:]
 
-    def gotResults_undo(self,words,fullResults):
+    def gotResults_undo(self, words, fullResults):
         counts = self.getNumbersFromSpoken(words)
         if counts:
             count = counts[0]
         else:
             count = 1
-        #print 'count: %s'% count
+        # print 'count: %s' % count
         for _ in range(count):
             action('<<undo>>')
 
-    def gotResults_redo(self,words,fullResults):
+    def gotResults_redo(self, words, fullResults):
         counts = self.getNumbersFromSpoken(words)
         if counts:
             count = counts[0]
         else:
             count = 1
-        #print 'count: %s'% count
+        # print 'count: %s' % count
         for _ in range(count):
             action('<<redo>>')
 
-    def gotResults_comment(self,words,fullResults):
+    def gotResults_comment(self, words, fullResults):
         name = nameList[words[-1]]
         if name:
             ts = time.strftime("%d%m%Y", time.localtime(time.time()))
@@ -803,9 +696,9 @@ class ThisGrammar(ancestor):
             com = "#" + name + ts
         else:
             com = name + ts
-        keystroke(com+"\n")
-            
-    def gotResults_modes(self,words,fullResults):
+        keystroke(com + "\n")
+
+    def gotResults_modes(self, words, fullResults):
         """enable different modes
 
         When going to spell mode or command mode the special
@@ -815,7 +708,7 @@ class ThisGrammar(ancestor):
         """
         mode = self.hasCommon(words, modes)
         if not mode:
-            print('modes, invalid mode: %s'% words)
+            print('modes, invalid mode: %s' % words)
             return
         if mode in ['normal', 'normale']:
             M = 0
@@ -828,7 +721,7 @@ class ThisGrammar(ancestor):
         elif mode in ['spell', 'spel']:
             M = 4
         else:
-            print('no valid mode: %s'% mode)
+            print('no valid mode: %s' % mode)
             return
 
         self.setMode(M)
@@ -839,12 +732,10 @@ class ThisGrammar(ancestor):
         else:
             self.DisplayMessage('<_general: setting normal set>')
             self.activateSet(normalSet)
-            
-        
 
-    def gotResults_namephrase(self,words,fullResults):
+    def gotResults_namephrase(self, words, fullResults):
         # list of words that can be combined in a double christian name
-        #  eg Jan Jaap or Jan-Marie 
+        #  eg Jan Jaap or Jan-Marie
         # voornamenList = ['Jan', 'Jaap', 'Peter', 'Louise', 'Anne']
         modInfo = natlink.getCurrentModule()
         action("CLIPSAVE")
@@ -871,14 +762,14 @@ class ThisGrammar(ancestor):
                 keystroke("{Ctrl+c}")
                 time.sleep(0.1)
                 t = natlink.getClipboard().strip()
-                if not t:                    
+                if not t:
                     self.DisplayMessage("select a text first")
                     action("CLIPRESTORE")
                     return
         if self.hasCommon(words, ['naam', 'Name']):
             result = namelist.namelistUnimacro(t, ini=self.ini)
-            print('result of namelistUnimacro function: %s'% result)
-            r = '' # in case result is empty
+            print('result of namelistUnimacro function: %s' % result)
+            r = ''  # in case result is empty
             for r in result:
                 print(f'adding part: {r}')
                 uniutils.addWordIfNecessary(t)
@@ -889,12 +780,11 @@ class ThisGrammar(ancestor):
             keystroke(t)
         action("CLIPRESTORE")
 
-            
-    def gotResults_hyphenatephrase(self,words,fullResults):
+    def gotResults_hyphenatephrase(self, words, fullResults):
         # selection or last utterance is spelled out with all caps and hyphens
         # Quintijn, August 15, 2009
 
-        # save clipboard, release after the action:                                 
+        # save clipboard, release after the action:
         action("CLIPSAVE")
         # hasCommon function for possibility of translations/synonyms without altering the code:
         if self.hasCommon(words[-1], "phrase"):
@@ -910,7 +800,7 @@ class ThisGrammar(ancestor):
                 uniutils.Wait(0.5)
                 keystroke("{Ctrl+c}")
                 t = natlink.getClipboard().strip()
-            if not t:                    
+            if not t:
                 self.DisplayMessage("select a text first")
                 action("CLIPRESTORE")
                 return
@@ -920,18 +810,17 @@ class ThisGrammar(ancestor):
                 count = counts[0]
             else:
                 count = 1
-            keystroke("{shift+ctrl+left %s}"% count)
+            keystroke("{shift+ctrl+left %s}" % count)
             keystroke("{Ctrl+c}")
             t = natlink.getClipboard().strip()
-            if not t:                    
+            if not t:
                 self.DisplayMessage("could not select a valid text")
                 action("CLIPRESTORE")
                 return
         else:
-            self.DisplayMessage("unexpected last word in command phrase: %s"% words[-1])
+            self.DisplayMessage("unexpected last word in command phrase: %s" % words[-1])
             action("CLIPRESTORE")
             return
-            
 
         # first paste back the selected text, and add a space if needed:
         L = []
@@ -942,38 +831,41 @@ class ThisGrammar(ancestor):
             L.append(' ')
         keystroke(''.join(L))
         action("CLIPRESTORE")
-        # 
-    def gotResults_openuser(self,words,fullResults):
+        #
+
+    def gotResults_openuser(self, words, fullResults):
         User = self.getFromInifile(words[-1], 'users')
-        print('user: %s'% User)
+        print('user: %s' % User)
         try:
             natlink.openUser(User)
         except natlink.UnknownName:
             print(f'cannot open user "{User}", unknown name')
-            
-    def gotResults(self,words,fullResults):
+
+    def gotResults(self, words, fullResults):
+        # print("gotResults, words: %s, highlight: %s, text: %s" % (words, self.highlight, self.text))
         if self.highlight:
             # for Shane
             asterisksSpacing = 1   # to be perfected later as option of this grammar
             if asterisksSpacing:
                 if self.text.find('*'):
+                    # print("gotResults, words: %s, text contains asterisks" % words)
                     self.text = self.text.replace('*', ' * ')
             if self.text:
                 action("<<startsearch>>")
                 keystroke(self.text)
-                action("<<searchgo>>")    
+                action("<<searchgo>>")
             else:
                 print('no text to highlight')
             return
-            #keystroke("{ctrl+f}")
-            #t = self.text
-            #t = t.replace(' . ', '.')
-            #t = t.replace('( ', '(')
-            #t = t.replace(' )', ')')
-            ##print 'execute highlight with "%s"'% highlightText
-            #keystroke(t)
-            #keystroke("{enter}")
-            #return
+            # keystroke("{ctrl+f}")
+            # t = self.text
+            # t = t.replace(' . ', '.')
+            # t = t.replace('( ', '(')
+            # t = t.replace(' )', ')')
+            # print('execute highlight with " %s"' % highlightText)
+            # keystroke(t)
+            # keystroke("{enter}")
+            # return
 
         if self.search:
             progInfo = uniutils.getProgInfo()
@@ -1000,15 +892,15 @@ class ThisGrammar(ancestor):
                 self.direc = 'up'
                 self.searchOn(count, progInfo=progInfo)
                 return
-            if self.search ==  'go back':
-            # go back, return to origin
+            if self.search == 'go back':
+                # go back, return to origin
                 print("search go back")
                 self.searchGoBack(progInfo=progInfo)
                 return
-            if self.search in ('for', 'before','after'):
+            if self.search in ('for', 'before', 'after'):
                 # new search with text
                 self.direc = 'down'
-                print('new leap to text: %s'% self.text)
+                print('new leap to text: %s' % self.text)
                 self.searchMarkSpot(progInfo=progInfo)
                 res = self.searchForText(self.direc, self.text, progInfo=progInfo, beforeafter=self.search)
             elif self.search == 'extend':
@@ -1016,8 +908,8 @@ class ThisGrammar(ancestor):
             elif self.search == 'insert':
                 res = self.searchForText(self.direc, self.text, progInfo=progInfo, insert=1)
             else:
-                print('invalid search code: %s'% self.search)
-                self.DisplayMessage('search, invalid search code: %s'% self.search)
+                print('invalid search code: %s' % self.search)
+                self.DisplayMessage('search, invalid search code: %s' % self.search)
                 return
             if res == -2:
             # search failed, did cancel mode
@@ -1025,7 +917,6 @@ class ThisGrammar(ancestor):
             uniutils.visibleWait()
             print('calling stop search')
             self.stopSearch(progInfo=progInfo)
-            
 
     def searchOn(self, count, progInfo=None):
         """search up or down possibly more times"""
@@ -1036,13 +927,13 @@ class ThisGrammar(ancestor):
             searchGoOn = actions.getMetaAction('searchgoback', sectionList=sectionList, progInfo=progInfo)
         else:
             searchGoOn = actions.getMetaAction('searchgoforward', sectionList=sectionList, progInfo=progInfo)
-            
+
         for _ in range(count):
             if searchGoOn:
                 res = action(searchGoOn)
             else:
                 res = self.searchForText(self.direc, progInfo=progInfo)
-            self.direc = self.getLastSearchDirection() # in case back search changed it!
+            self.direc = self.getLastSearchDirection()  # in case back search changed it!
             if res == -2:
                 # search failed, did cancel mode
                 return 
@@ -1050,16 +941,14 @@ class ThisGrammar(ancestor):
         if not searchGoOn:
             self.stopSearch(progInfo)
 
-
     def GetGrammarModuleName(self):
-        return __name__    
+        return __name__
 
     def GetDictionaries(self):
-        Dicts={
-        }
+        Dicts = {}
         return Dicts
 
-    def Message(self,t):
+    def Message(self, t):
         tt = t + "  (command: " + self.fullText + ")"
         uniutils.Message(tt,self.title)
         
@@ -1072,14 +961,18 @@ class ThisGrammar(ancestor):
                 action('VW')
                 keystroke(text[1:])
 
+
 def isPythonFile(f):
     return f[-3:] == '.py'
+
 
 def isHtmlFile(f):
     return f[-5:].lower() == '.html'
 
 
 Classes = ('TkTopLevel')
+
+
 def getIdleTitles():
     """get all titles of top windows with class name in tuple below
 
@@ -1088,26 +981,29 @@ def getIdleTitles():
     """
     TitlesHandles = []
 
-    ##print 'Classes:', Classes
-##    Classes = None
+    # print 'Classes:', Classes
+    # Classes = None
     win32gui.EnumWindows(getIdleWindowsWithText, (TitlesHandles, Classes))
     return TitlesHandles
 
+
 def getIdleWindowsWithText(hwnd, th):
     TH, classes = th
-##    if wTitle.find('d:') == 0:
-##        print 'class:', win32gui.GetClassName(hwnd)
+#    if wTitle.find('d:') == 0:
+#        print 'class:', win32gui.GetClassName(hwnd)
     if win32gui.GetClassName(hwnd) in classes:
         wTitle = win32gui.GetWindowText(hwnd).strip().lower()
         TH.append((wTitle, hwnd))
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
-#
+
+
 if __name__ == "__main__":
     # here code to interactive run this module
     thisGrammar = ThisGrammar(inifile_stem='_general')
@@ -1117,5 +1013,3 @@ elif __name__.find('.') == -1:
     # this is caught when this module is imported by the loader (when Dragon/Natlink starts)
     thisGrammar = ThisGrammar()
     thisGrammar.initialize()
-
-
