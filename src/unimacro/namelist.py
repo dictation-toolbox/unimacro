@@ -26,10 +26,10 @@ needsSpokenForm['bv'] = 'beevee'
 needsSpokenForm["'t"] = "ut"
 
 # parts of words that need a spoken form (combine in future with regularFormsDetails:
-##spokenFormDetails = {}
-##spokenFormDetails[chr(246) + "h"] = 'eu' # o umlaut + h
-##spokenFormDetails[chr(246)] = 'u' # o umlaut
-##spokenFormDetails["eij"] = 'ei'
+# spokenFormDetails = {}
+# spokenFormDetails[chr(246) + "h"] = 'eu' # o umlaut + h
+# spokenFormDetails[chr(246)] = 'u' # o umlaut
+# spokenFormDetails["eij"] = 'ei'
 
 # regular expressions that need spoken form:
 regularForm = {}
@@ -39,6 +39,7 @@ regularForm[r'^cha'] = 'sja'
 
 # words that should not be capitalized, unless in the beginning of the name:
 inBetweenWords = ['de', 'van']
+
 
 def namelist(inputfile, outputfile):
     """Check filenames from input string end write good results to output
@@ -70,18 +71,14 @@ def namelist(inputfile, outputfile):
             # len(tt) > 2
             firstName = tt[:2]
             secondName = tt[2:]
-            #print 'voor  first:', firstName
-            #print 'voor second:', secondName
         else:
             firstName = tt[:1]
             secondName = tt[1:]
-            #print 'achter first:', firstName
-            #print 'achtersecond:', secondName
         if firstName:
             firstName = WrittenSpoken(' '.join(firstName))
             firstNames.add(str(firstName))
         if secondName:
-            secondName = WrittenSpoken(' '.join(secondName)) 
+            secondName = WrittenSpoken(' '.join(secondName))
             secondNames.add(str(secondName))
         if firstName and secondName:
             fullName = firstName + secondName
@@ -89,6 +86,7 @@ def namelist(inputfile, outputfile):
     total = [_f for _f in list(fullNames | firstNames | secondNames) if _f]
     total.sort()
     open(outputfile, 'w').write('\n'.join(total))
+
 
 def namelistUnimacro(inputstring, ini=None):
     """Take a string as input, and get the several words lists as language dependent.
@@ -106,15 +104,15 @@ def namelistUnimacro(inputstring, ini=None):
     regularForms = {}
     result = []
     if ini:
-        voornamenList =ini.getList("name phrase", "secondchristiannames") or []
+        voornamenList = ini.getList("name phrase", "secondchristiannames") or []
         inbetweenwords = ini.getList("name phrase", "inbetweenwords") or []
         # spokenFormKeys = ini.get("spoken forms")
         for k in spokenForms:
             spokenForms[k] = ini.get("spoken forms", k)
-##        regularFormKeys = ini.get("regular forms")
-##        for k in regularFormKeys:
-##            regularForms[k] = ini.get("regular forms", k)
-    
+        # regularFormKeys = ini.get("regular forms")
+        # for k in regularFormKeys:
+        #     regularForms[k] = ini.get("regular forms", k)
+
     tt = cleanLine(inputstring)
     if not tt:
         return None
@@ -132,23 +130,19 @@ def namelistUnimacro(inputstring, ini=None):
         # len(tt) > 2
         firstName = tt[:2]
         secondName = tt[2:]
-        #print 'voor  first:', firstName
-        #print 'voor second:', secondName
     else:
         firstName = tt[:1]
         secondName = tt[1:]
-        #print 'achter first:', firstName
-        #print 'achtersecond:', secondName
     if firstName:
         firstName = WrittenSpoken(' '.join(firstName),
                                   spokenForms=spokenForms, regularForms=regularForms,
                                   inbetweenWords=inbetweenwords)
         result.append(str(firstName))
-        
+
     if secondName:
         secondName = WrittenSpoken(' '.join(secondName),
                                    spokenForms=spokenForms, regularForms=regularForms,
-                                   inbetweenWords=inbetweenwords) 
+                                   inbetweenWords=inbetweenwords)
         result.append(str(secondName))
     if firstName and secondName:
         fullName = firstName + secondName
@@ -167,7 +161,7 @@ file (for Dutch) are taken. From unimacro provide two dicts:
 2. regularForms for patterns that are substituted (longest first)
 
 FirstNames:
-    
+
 >>> str(WrittenSpoken("Dick"))
 'Dick'
 >>> str(WrittenSpoken("jan kees"))
@@ -195,24 +189,21 @@ combinations:
 
 >>> str((WrittenSpoken("Kees") + WrittenSpoken("de Leidscher")))
 'Kees de Leidscher'
-
-
-    
     """
 
     def __init__(self, Input, spokenForms=None, regularForms=None, inbetweenWords=None):
         self.needsSpokenForm = spokenForms or needsSpokenForm
         self.regularForm = regularForms or regularForm
         self.inbetweenWords = inbetweenWords or inBetweenWords  # from formal parms or global (Dutch)
-##        print 'inbetweenWords: %s'% self.inbetweenWords
-##        print 'needsSpokenForm: %s'% self.needsSpokenForm
-##        print 'regularForm: %s'% self.regularForm
-        
+        # print 'inbetweenWords: %s'% self.inbetweenWords
+        # print 'needsSpokenForm: %s'% self.needsSpokenForm
+        # print 'regularForm: %s'% self.regularForm
+
         if isinstance(Input, WrittenSpoken):
             Input = str(Input)
         if Input.find('\\') > 0:
-            self.written =  Input.split('\\')[0]
-            self.spoken =  Input.split('\\')[ - 1]
+            self.written = Input.split('\\')[0]
+            self.spoken = Input.split('\\')[- 1]
         elif Input.find('-') > 0:
             parts = Input.split('-')
             results = list(map(WrittenSpoken, parts))
@@ -234,7 +225,7 @@ combinations:
             else:
                 self.written = Input.capitalize()
             self.spoken = self.getSpokenForm(Input)
-            
+
             if Input.lower() in needsSpokenForm:
                 self.spoken = needsSpokenForm[Input.lower()]
 
@@ -245,7 +236,6 @@ combinations:
         new.written += ' ' + other.written
         new.spoken += ' ' + other.spoken
         return new
-    
 
     def __str__(self):
         """note "-" is not regarded as reason for spoken form anymore!
@@ -256,7 +246,7 @@ combinations:
         if writtenClean == spokenClean:
             result = self.written
         else:
-            result = self.written  + '\\' + self.spoken
+            result = self.written + '\\' + self.spoken
         if result[0] in string.ascii_lowercase:
             result = result[0].capitalize() + result[1:]
         return result
@@ -267,16 +257,16 @@ combinations:
         # first the list of needsSpokenForm:
         if word in self.needsSpokenForm:
             return self.needsSpokenForm[word]
-        decorated = [( - len(k), k) for k in self.regularForm]
+        decorated = [(- len(k), k) for k in self.regularForm]
         decorated.sort()
         regularFormKeys = [k for (dummy, k) in decorated]
         for k in regularFormKeys:
             if re.search(k, word):
                 word = re.sub(k, self.regularForm[k], word)
-                
+
         return word
-    
-              
+
+
 def cleanLine(line):
     """Cleanout unwanted things, like " - " (must be "-")
 
@@ -293,11 +283,13 @@ def cleanLine(line):
         return None
     return line
 
+
 def _test():
-    #pylint:disable=C0415
+    # pylint:disable=C0415
     import doctest
     doctest.master = None
-    return  doctest.testmod()
+    return doctest.testmod()
+
 
 def _testrun():
     # need files on computer QH for this, sorry...
@@ -305,6 +297,7 @@ def _testrun():
     infile = _dir/'names input.txt'
     outfile = _dir/'names output.txt'
     namelist(infile, outfile)
+
 
 if __name__ == "__main__":
     _test()

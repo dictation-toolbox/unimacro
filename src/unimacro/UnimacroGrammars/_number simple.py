@@ -23,7 +23,7 @@ QH september 2013: rewriting of the functions, ruling out optional command words
 further comments in _number extended.py. Also see the page "number grammar" on the Unimacro we
 """
 #pylint:disable=C0115, C0116, W0613
-from dtactions import unimacroutils
+from dtactions import uniutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 import natlink
@@ -32,7 +32,7 @@ thisGrammar = None
 ancestor = natbj.IniGrammar
 class ThisGrammar(ancestor):
 
-    language = unimacroutils.getLanguage()
+    language = uniutils.getLanguage()
 
     #Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
@@ -87,7 +87,7 @@ class ThisGrammar(ancestor):
         keystroke(number)
         #Step 5:
         # Here some extra postprocessing for different programs:
-        prog = unimacroutils.getProgName()
+        prog = uniutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
             keystroke('{tab}')
         elif prog in ['natspeak']:  # DragonPad

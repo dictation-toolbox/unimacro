@@ -31,13 +31,13 @@ import natlink
 from natlinkcore import nsformat
 from natlinkcore import natlinkstatus
 from unimacro import natlinkutilsbj as natbj
-from dtactions import unimacroutils 
+from dtactions import uniutils 
 from dtactions import monitorfunctions
-from dtactions.unimacroactions import doAction as action
-from dtactions.unimacroactions import doKeystroke as keystroke
-from dtactions.unimacroactions import setPosition
-from dtactions.unimacroactions import getPosition
-from dtactions import unimacroactions as actions
+from dtactions.uniactions.uactions import doAction as action
+from dtactions.uniactions.uactions import doKeystroke as keystroke
+from dtactions.uniactions.uactions import setPosition
+from dtactions.uniactions.uactions import getPosition
+from dtactions.uniactions import uactions as actions
 import win32con
 import win32api
 
@@ -136,7 +136,7 @@ class ThisGrammar(ancestor):
         if self.checkForChanges:
             self.checkInifile() # refills grammar lists and instance variables
         if self.winkeyDown:
-            className = unimacroutils.getClassName()
+            className = uniutils.getClassName()
             if className != 'TaskListThumbnailWnd':
                 print('tasks, call cancelmode from gotBegin')
                 self.cancelMode()
@@ -189,12 +189,12 @@ class ThisGrammar(ancestor):
         result = self.gotoTask(countOrApp)
         
         if result:
-            prog_info = unimacroutils.getProgInfo()
+            prog_info = uniutils.getProgInfo()
             if prog_info.prog == 'explorer' and not prog_info.title:
                 return # no centermouse!
             if self.centerMouse and not self.nextRule:
-                unimacroutils.Wait()
-                unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+                uniutils.Wait()
+                uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
         else:
             print('_tasks, could not switch to task: %s'% countOrApp)
 
@@ -203,7 +203,7 @@ class ThisGrammar(ancestor):
         """# commands for going to a subtask in a stacked taskbar
         window {n1-10} | {firstlast} window
         """
-        className = unimacroutils.getClassName()
+        className = uniutils.getClassName()
         wNumList = self.getNumbersFromSpoken(words) # returns a string or None
         if wNumList:
             wNum = wNumList[0]
@@ -219,7 +219,7 @@ class ThisGrammar(ancestor):
             self.doAlternativeClick(className, wNum)
 
         if self.centerMouse and not self.nextRule:  # so last rule of the recognition
-            unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
+            uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
 
     def rule_numbereddocument(self, words):
         """# go to a numbered document
@@ -232,10 +232,10 @@ class ThisGrammar(ancestor):
             
             if result:
                 if self.centerMouse:
-                    unimacroutils.Wait()
-                    unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+                    uniutils.Wait()
+                    uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
             else:
-                prog_info = unimacroutils.getProgInfo()
+                prog_info = uniutils.getProgInfo()
                 print('_tasks, could not switch to document: %s (program: %s)'% (count, prog_info.prog))
             
             if words[1] == words[-1]:
@@ -332,10 +332,10 @@ class ThisGrammar(ancestor):
         if prog_info.prog == 'explorer' and not prog_info.title:
             return # no centermouse!
         if self.centerMouse:
-            unimacroutils.Wait()
-            unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+            uniutils.Wait()
+            uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
 
-        unimacroutils.Wait()
+        uniutils.Wait()
         # now do the postprocessing
         prog = prog_info.prog
         print('postprocessing for search: %s in app: %s'% (searchWord, prog))
@@ -365,7 +365,7 @@ class ThisGrammar(ancestor):
         Here
         """
         action("CLICK")
-        unimacroutils.visibleWait()
+        uniutils.visibleWait()
         #action("CLICKIFSTEADY")
 
     def importedrule_dgndictation(self, words):
@@ -396,12 +396,12 @@ class ThisGrammar(ancestor):
         else:
             print('thistask in _general, no valid action', words)
 
-        prog_info = unimacroutils.getProgInfo()
+        prog_info = uniutils.getProgInfo()
         if prog_info.prog == 'explorer' and not prog_info.title:
             return # no centermouse!
         
         if self.centerMouse:
-            unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
+            uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
         
     def subrule_closemultiple(self, words):
         """close (all|other) | (all|other) close
@@ -419,11 +419,11 @@ class ThisGrammar(ancestor):
             
         elif multiple:
             # close as long as special stacked window is found
-            mousePos = unimacroutils.getMousePosition()
+            mousePos = uniutils.getMousePosition()
             if mousePos is None:
                 raise ValueError("could not get mouse position")
             _x, _y = mousePos
-            className = unimacroutils.getClassName()
+            className = uniutils.getClassName()
             wNum = -1 # last window of stacked windows...
             #print 'tasks, subtask: %s'% wNum
             while className == "TaskListThumbnailWnd":
@@ -431,10 +431,10 @@ class ThisGrammar(ancestor):
                 self.doAlternativeClick(className, wNum)
                 action("<<windowclose>>")
                 action("VW; MP 0, %s, %s"% mousePos)
-                className = unimacroutils.getClassName()
+                className = uniutils.getClassName()
             self.gotoTask(self.lastTaskCount)
         if self.centerMouse:
-            unimacroutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
+            uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
             
         
     def gotoTask(self, countOrApp):
@@ -453,7 +453,7 @@ class ThisGrammar(ancestor):
             return 1
         if countOrApp in self.namedtaskDict:
             hndle = self.namedtaskDict[countOrApp]
-            result = unimacroutils.SetForegroundWindow(hndle)
+            result = uniutils.SetForegroundWindow(hndle)
             if not result:
                 print('switch to %s failed, delete name: %s'% (hndle, countOrApp))
                 del self.namedtaskDict[countOrApp]
@@ -466,7 +466,7 @@ class ThisGrammar(ancestor):
                 self.goto_task_winkey(countBack)
             else:
                 action('TASK %s'% countBack)
-            result = unimacroutils.getProgInfo()
+            result = uniutils.getProgInfo()
             #print 'after action task %s, time: %.2f'% (countBack, (time.time()-t))
             return result
         if countOrApp in appList:
@@ -488,20 +488,20 @@ class ThisGrammar(ancestor):
                     action('TASK %s'% countBack)
                 for _ in range(30):
                     # 40 x 0.1: 4 seconds...
-                    prog_info = unimacroutils.getProgInfo()
+                    prog_info = uniutils.getProgInfo()
                     if prog_info.prog == appName:
                         break
-                    prog_info.classname = unimacroutils.getClassName()
+                    prog_info.classname = uniutils.getClassName()
                     if prog_info.classname == "TaskListThumbnailWnd":
                         return 1  # more items already available
-                    unimacroutils.Wait()
+                    uniutils.Wait()
                 else:
                     print('application not detected in foreground: %s'% appName)
                     return None
         else:
             print('_tasks, no valid entry for gotoTask: %s'% countOrApp)
             return None
-        result = unimacroutils.getProgInfo()
+        result = uniutils.getProgInfo()
         return None
 
     def gotoDocument(self, count):
@@ -515,11 +515,11 @@ class ThisGrammar(ancestor):
     def goto_task_winkey(self, number):
         """switch to task with number, via the windows key"""
     ##    print 'action: goto task: %s'% number
-        prog_info = unimacroutils.getProgInfo()
+        prog_info = uniutils.getProgInfo()
         prog, title = prog_info.prog, prog_info.title
         if prog == 'explorer' and not title:
             keystroke('{esc}')
-            unimacroutils.shortWait()
+            uniutils.shortWait()
         try:
             count = int(number)
         except ValueError:
@@ -617,14 +617,14 @@ class ThisGrammar(ancestor):
         if not rect:
             print('rule_monitorfocus, no position rectangle found')
             return
-        mx, my = unimacroutils.relToCoord(0.5, rect[0], rect[2]), unimacroutils.relToCoord(0.01, rect[1], rect[3])
-        unimacroutils.doMouse(0, 0, mx, my, mouse='left')
-        unimacroutils.visibleWait()
+        mx, my = uniutils.relToCoord(0.5, rect[0], rect[2]), uniutils.relToCoord(0.01, rect[1], rect[3])
+        uniutils.doMouse(0, 0, mx, my, mouse='left')
+        uniutils.visibleWait()
         # relative and relative to current monitor work area:
-        unimacroutils.doMouse(1, 4, 0.5, 0.5, mouse="noclick")
-        unimacroutils.visibleWait()
-        # mx, my = unimacroutils.relToCoord(0.5, rect[0], rect[2]), unimacroutils.relToCoord(0.5, rect[1], rect[3])
-        # unimacroutils.doMouse(0, 0, mx, my, mouse='noclick')
+        uniutils.doMouse(1, 4, 0.5, 0.5, mouse="noclick")
+        uniutils.visibleWait()
+        # mx, my = uniutils.relToCoord(0.5, rect[0], rect[2]), uniutils.relToCoord(0.5, rect[1], rect[3])
+        # uniutils.doMouse(0, 0, mx, my, mouse='noclick')
         # actions.doAction("RMP(3, 0.3, 0.3, mouse='noclick')")
 
     #def subrule_pixels(self, words):
@@ -705,7 +705,7 @@ class ThisGrammar(ancestor):
         # getting the task positions (use with 1 and with another number)
         # position mouse on task number or clock and speak the command
         # first time only, or after changes of taskbar position
-        prog_info = unimacroutils.getProgInfo()
+        prog_info = uniutils.getProgInfo()
         prog, title = prog_info.prog, prog_info.title
         if not prog:
             print('%s, no valid program for setting document position: %s (title:%s)'% (self.name, prog, title))
@@ -897,7 +897,7 @@ class ThisGrammar(ancestor):
         try:
             actions.do_SSK(keys)
             actions.do_VW()
-            classInfo = unimacroutils.getClassName()
+            classInfo = uniutils.getClassName()
         finally:
             if classInfo == 'TaskListThumbnailWnd':
                 #print 'keep logo key down'
@@ -1050,7 +1050,7 @@ class ThisGrammar(ancestor):
         if actionWord:
             act = self.ini.get('taskaction', actionWord)
             if act:
-                #unimacroutils.visibleWait()
+                #uniutils.visibleWait()
                 action(act)
             else:
                 print('no action for taskaction: %s'% actionWord)
@@ -1112,11 +1112,11 @@ class ThisGrammar(ancestor):
     def getSelectedText(self):
         """gets a copy of the selection, otherwise ""
         """
-        unimacroutils.saveClipboard()
+        uniutils.saveClipboard()
         action("<<copy>>")
-        unimacroutils.Wait()
-        t = unimacroutils.getClipboard()
-        unimacroutils.restoreClipboard()
+        uniutils.Wait()
+        t = uniutils.getClipboard()
+        uniutils.restoreClipboard()
         return t.strip()
 
     def cancelMode(self):

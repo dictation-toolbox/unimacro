@@ -57,7 +57,7 @@ def unimacro_setup(tmpdir):
         src=Template(f.read())
         config_file_text=src.substitute(sub)
 
-    print(f"natlink_config_dir: {natlink_config_dir}")
+    # print(f"natlink_config_dir: {natlink_config_dir}")
     with open(natlink_config_file,'w', encoding='utf-8') as fw:
         fw.write(config_file_text)
     
@@ -74,4 +74,11 @@ def unimacro_setup(tmpdir):
 
 def test_foo(unimacro_setup):
     pass
+    # print(f'unimacro_setup: {unimacro_setup}')
  
+if __name__ == "__main__":
+    # sysconfig._main()
+    # print("This is your Python system path sys.path:")
+    # print("-----------------------------------------")
+    # print(sys.path)
+    pytest.main([f'conftest.py::test_foo'])

@@ -44,7 +44,7 @@ from functools import reduce
 __all__ = ["create_iban", "check_iban", "IBANError"]
 
 usage = \
-"""Create or check International Bank Account Numbers (IBAN).
+    """Create or check International Bank Account Numbers (IBAN).
 
 Usage: iban <iban>
        iban <country> <bank/branch> <account>
@@ -67,6 +67,7 @@ Information about IBAN are from European Committee for Banking Standards
 (www.ecbs.org/iban.htm). IBAN is an ISO standard (ISO 13616: 1997).
 """
 
+
 class Country:
     """Class for country specific iban data."""
 
@@ -82,7 +83,7 @@ class Country:
         self.name = name
         self.code = code
         self.bank = self._decode_format(bank_form)
-        self.acc  = self._decode_format(acc_form)
+        self.acc = self._decode_format(acc_form)
 
     def bank_lng(self):
         return reduce(lambda sum, part: sum + part[0], self.bank, 0)
@@ -106,12 +107,13 @@ class Country:
                 form_list.append((lng, typ))
         return tuple(form_list)
 
+
 # BBAN data from ISO 13616, Country codes from ISO 3166 (www.iso.org).
 iban_data = (Country("Andorra",        "AD", "0  4n 4n", "0  12   0 "),
              Country("Albania",        "AL", "0  8n 0 ", "0  16   0 "),
              Country("Austria",        "AT", "0  5n 0 ", "0  11n  0 "),
              Country("Bosnia and Herzegovina",
-                                       "BA", "0  3n 3n", "0   8n  2n"),
+                     "BA", "0  3n 3n", "0   8n  2n"),
              Country("Belgium",        "BE", "0  3n 0 ", "0   7n  2n"),
              Country("Bulgaria",       "BG", "0  4a 4n", "2n  8   0 "),
              Country("Switzerland",    "CH", "0  5n 0 ", "0  12   0 "),
@@ -145,7 +147,7 @@ iban_data = (Country("Andorra",        "AD", "0  4n 4n", "0  12   0 "),
              Country("Monaco",         "MC", "0  5n 5n", "0  11   2n"),
              Country("Montenegro",     "ME", "0  3n 0 ", "0  13n  2n"),
              Country("Macedonia, Former Yugoslav Republic of",
-                                       "MK", "0  3n 0 ", "0  10   2n"),
+                     "MK", "0  3n 0 ", "0  10   2n"),
              Country("Mauritania",     "MR", "0  5n 5n", "0  11n  2n"),
              Country("Malta",          "MT", "0  4a 5n", "0  18   0 "),
              Country("Mauritius",      "MU", "0  4a 4n", "0  15n  3a"),
@@ -159,10 +161,11 @@ iban_data = (Country("Andorra",        "AD", "0  4n 4n", "0  12   0 "),
              Country("Sweden",         "SE", "0  3n 0 ", "0  16n  1n"),
              Country("Slovenia",       "SI", "0  5n 0 ", "0   8n  2n"),
              Country("Slovak Republic",
-                                       "SK", "0  4n 0 ", "0  16n  0 "),
+                     "SK", "0  4n 0 ", "0  16n  0 "),
              Country("San Marino",     "SM", "1a 5n 5n", "0  12   0 "),
              Country("Tunisia",        "TN", "0  2n 3n", "0  13n  2n"),
              Country("Turkey",         "TR", "0  5n 0 ", "1  16   0 "))
+
 
 def country_data(code):
     """Search the country code in the iban_data list."""
@@ -170,6 +173,7 @@ def country_data(code):
         if country.code == code:
             return country
     return None
+
 
 def mod97(digit_string):
     """Modulo 97 for huge numbers given as digit strings.
@@ -182,19 +186,22 @@ def mod97(digit_string):
         m = (m * 10 + int(d)) % 97
     return m
 
+
 def fill0(s, l):
     """Fill the string with leading zeros until length is reached."""
     return s.zfill(l)
+
 
 def strcmp(s1, s2):
     """Compare two strings respecting german umlauts."""
     chars = "AaÄäBbCcDdEeFfGgHhIiJjKkLlMmNnOoÖöPpQqRrSsßTtUuÜüVvWwXxYyZz"
     lng = min(len(s1), len(s2))
     for i in range(lng):
-        d = chars.find(s1[i]) - chars.find(s2[i]);
+        d = chars.find(s1[i]) - chars.find(s2[i])
         if d != 0:
             return d
     return len(s1) - len(s2)
+
 
 def country_index_table():
     """Create an index table of the iban_data list sorted by country names."""
@@ -202,14 +209,17 @@ def country_index_table():
     for i in range(len(tab) - 1, 0, -1):
         for j in range(i):
             if strcmp(iban_data[tab[j]].name, iban_data[tab[j+1]].name) > 0:
-                t = tab[j]; tab[j] = tab[j+1]; tab[j+1] = t
+                t = tab[j]
+                tab[j] = tab[j+1]
+                tab[j+1] = t
     return tab
+
 
 def checksum_iban(iban):
     """Calculate 2-digit checksum of an IBAN."""
-    code     = iban[:2]
+    code = iban[:2]
     checksum = iban[2:4]
-    bban     = iban[4:]
+    bban = iban[4:]
 
     # Assemble digit string
     digits = ""
@@ -226,9 +236,11 @@ def checksum_iban(iban):
     checksum = 98 - mod97(digits)
     return fill0(str(checksum), 2)
 
+
 def fill_account(country, account):
     """Fill the account number part of IBAN with leading zeros."""
     return fill0(account, country.acc_lng())
+
 
 def invalid_part(form_list, iban_part):
     """Check if syntax of the part of IBAN is invalid."""
@@ -246,17 +258,20 @@ def invalid_part(form_list, iban_part):
         iban_part = iban_part[lng:]
     return 0
 
+
 def invalid_bank(country, bank):
     """Check if syntax of the bank/branch code part of IBAN is invalid."""
     return len(bank) != country.bank_lng() or \
-           invalid_part(country.bank, bank)
+        invalid_part(country.bank, bank)
+
 
 def invalid_account(country, account):
     """Check if syntax of the account number part of IBAN is invalid."""
     return len(account) > country.acc_lng() or \
-           invalid_part(country.acc, fill_account(country, account))
+        invalid_part(country.acc, fill_account(country, account))
 
-def calc_iban(country, bank, account, alternative = 0):
+
+def calc_iban(country, bank, account, alternative=0):
     """Calculate the checksum and assemble the IBAN."""
     account = fill_account(country, account)
     checksum = checksum_iban(country.code + "00" + bank + account)
@@ -264,15 +279,18 @@ def calc_iban(country, bank, account, alternative = 0):
         checksum = fill0(str(mod97(checksum)), 2)
     return country.code + checksum + bank + account
 
+
 def iban_okay(iban):
     """Check the checksum of an IBAN."""
     return checksum_iban(iban) == "97"
+
 
 class IBANError(Exception):
     def __init__(self, errmsg):
         Exception.__init__(self, errmsg)
 
-def create_iban(code, bank, account, alternative = 0):
+
+def create_iban(code, bank, account, alternative=0):
     """Check the input, calculate the checksum and assemble the IBAN.
 
     Return the calculated IBAN.
@@ -299,6 +317,7 @@ def create_iban(code, bank, account, alternative = 0):
         raise IBANError(err)
     return calc_iban(country, bank, account, alternative)
 
+
 def check_iban(iban):
     """Check the syntax and the checksum of an IBAN.
 
@@ -307,9 +326,9 @@ def check_iban(iban):
     Raise an IBANError exception if the input is not correct.
     """
     err = None
-    code     = iban[:2]
+    code = iban[:2]
     checksum = iban[2:4]
-    bban     = iban[4:]
+    bban = iban[4:]
     country = country_data(code)
     if not country:
         err = "Unknown Country Code: %s" % code
@@ -318,15 +337,15 @@ def check_iban(iban):
               (len(iban), country.name, country.total_lng())
     else:
         bank_lng = country.bank_lng()
-        bank     = bban[:bank_lng]
-        account  = bban[bank_lng:]
+        bank = bban[:bank_lng]
+        account = bban[bank_lng:]
         if invalid_bank(country, bank):
             err = "Bank/Branch Code %s is not correct for %s" % \
                   (bank, country.name)
         elif invalid_account(country, account):
             err = "Account Number %s is not correct for %s" % \
                   (account, country.name)
-        elif not(checksum.isdigit()):
+        elif not (checksum.isdigit()):
             err = "IBAN Checksum %s is not numeric" % checksum
         elif not iban_okay(iban):
             err = "Incorrect IBAN: %s >> %s %s %s %s" % \
@@ -334,6 +353,7 @@ def check_iban(iban):
     if err:
         raise IBANError(err)
     return code, checksum, bank, account
+
 
 def print_new_iban(code, bank, account):
     """Check the input, calculate the checksum, assemble and print the IBAN."""
@@ -344,6 +364,7 @@ def print_new_iban(code, bank, account):
         return ""
     print("  Correct IBAN: %s << %s ?? %s %s" % (iban, code, bank, account))
     return iban
+
 
 def print_iban_parts(iban):
     """Check the syntax and the checksum of an IBAN and print the parts."""
@@ -356,13 +377,14 @@ def print_iban_parts(iban):
                                                  bank, account))
     return code, checksum, bank, account
 
+
 def print_format():
     """Print a table with the country specific iban format."""
     print("IBAN-Format (a = A-Z, n = 0-9, c = A-Z/a-z/0-9):")
     print("                    | Bank/Branch-Code      | Account Number")
-    print(" Country       Code | check1  bank  branch  |" + \
+    print(" Country       Code | check1  bank  branch  |" +
           " check2 number check3")
-    print("--------------------|-----------------------|" + \
+    print("--------------------|-----------------------|" +
           "---------------------")
     for idx in country_index_table():
         country = iban_data[idx]
@@ -384,19 +406,21 @@ def print_format():
                 print("  -   ", end=' ')
         print()
 
+
 def print_test_data(*data):
     """Print a table with iban test data."""
     for code, bank, account, checksum in data:
         created_iban = print_new_iban(code, bank, account)
         if created_iban:
             iban = code + checksum + bank + \
-                   fill_account(country_data(code), account)
+                fill_account(country_data(code), account)
             print_iban_parts(iban)
             if iban != created_iban:
                 if iban == create_iban(code, bank, account, 1):
                     print("  Alternative IBAN")
                 else:
                     print("  Changed IBAN")
+
 
 def print_examples():
     print("IBAN-Examples:")
@@ -453,6 +477,7 @@ def print_examples():
                     ("SM", "U0322509800", "000000270100",         "86"),
                     ("TN", "10006",       "035183598478831",      "59"),
                     ("TR", "00061",       "00519786457841326",    "33"))
+
 
 def print_test():
     print("IBAN-Test:")
@@ -862,6 +887,7 @@ def print_test():
                     ("DE", "12345678",    "16",                   "00"),
                     ("DE", "12345678",    "95",                   "98"),
                     ("DE", "12345678",    "95",                   "01"))
+
 
 # Main program (executed unless imported as module)
 if __name__ == "__main__":
