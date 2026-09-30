@@ -1,5 +1,5 @@
 # making lilypond notes (lilypond grammar!!!)
-#pylint: disable = C0209
+# pylint: disable = C0209
 import re
 import copy
 from dtactions import utilsqh
@@ -22,19 +22,17 @@ reSplitInWords = re.compile(r'(\s+)')  # split on whitespace
 reIsWhiteSpace = re.compile(r'\s')
 
 
-
 class LyNote:
     def __init__(self, s):
         self.originalInput = s
         self.setVariables(s)
-    
+
     def __len__(self):
         return len(str(self))
-    
-        
+
     def setVariables(self, s, recursive=None):
         """parse s and set self.note etc."""
-        
+
         m = reNote.match(s)
         n = reRest.match(s)
         self.note = self.elevation = self.duration = ""
@@ -53,35 +51,34 @@ class LyNote:
             self.note = n.group(1)
             self.duration = n.group(2)
             self.elevation = self.rest = ""
-            
+
         else:
             # can be incomplete, add fake note in front and do again
             if recursive:
-                print('recursive call of setVariables failed, s: %s'% s)
+                print('recursive call of setVariables failed, s: %s' % s)
                 return
             # print 'try recursive call of incomplete note: %s'% s
             sFake = 'c' + s
             self.setVariables(sFake, recursive=1)
             self.note = ""
 
-
     def isNote(self):
         return self.note != ""
-    
+
     def __str__(self):
         if self.backslashed:
             backslashed = " " + ' '.join(self.backslashed)
         else:
             backslashed = ""
-        return "%s%s%s%s%s"% (self.note, self.elevation, self.duration, self.additions, backslashed)
-    
+        return "%s%s%s%s%s" % (self.note, self.elevation, self.duration, self.additions, backslashed)
+
     def __repr__(self):
         if self.backslashed:
             backslashed = " " + ' '.join(self.backslashed)
         else:
             backslashed = ""
-        return "lynote: %s%s%s%s%s"% (self.note, self.elevation, self.duration, self.additions, backslashed)
-    
+        return "lynote: %s%s%s%s%s" % (self.note, self.elevation, self.duration, self.additions, backslashed)
+
     def getElevation(self):
         """return as int the elevation
         , = -1, ,, = -2, ' = 1, '' = 2 and "" = 0
@@ -92,8 +89,8 @@ class LyNote:
             return -len(self.elevation)
         if self.elevation.find("'") >= 0:
             return len(self.elevation)
-        raise ValueError('getElevation: no valid elevation: "%s" (note: "%s"'% (self.elevation, self))
-    
+        raise ValueError('getElevation: no valid elevation: "%s" (note: "%s"' % (self.elevation, self))
+
     def setElevation(self, elevation):
         """set the elevation string from the numeric elevation value
         0 = "", -1 = ",", 2 = "''" etc
@@ -105,12 +102,11 @@ class LyNote:
         if elevation < 0:
             return ","*-elevation
         return ""
-        
-    
+
     def orderRest(self, rest):
         if rest is None:
             return "", None
-        
+
         if rest.find('\\') >= 0:
             additions = ""
             backslashed = []
@@ -125,13 +121,11 @@ class LyNote:
 
             return additions, backslashed
         return rest, None
-        
-    
-    
+
     def updateNote(self, note):
         if type(note) in (bytes, str):
             note = LyNote(note)
-        
+
         for attr in ['note', 'duration']:
             value = getattr(note, attr)
             if value:
@@ -141,7 +135,7 @@ class LyNote:
             orgElv = self.getElevation()
             newElv = orgElv + nElv
             self.elevation = self.setElevation(newElv)
-            
+
         if note.additions:
             if self.additions:
                 self.additions += note.additions
@@ -153,9 +147,10 @@ class LyNote:
             else:
                 self.backslashed = copy.copy(note.backslashed)
 
+
 def analyseString(S):
     """split string in "words", leave the whitespace and return a second list of the note indexes
-    
+
     return wordsList, notesIndexes, both being a list. the length of notesIndexes gives the number
     of notes found.
     """
@@ -172,24 +167,24 @@ def analyseString(S):
                 comment.append(next(peekwords))
             outputWords.append(''.join(comment))
             index += 1
-        
+
         if w and w[0] in 'abcdefgrR':
             lyn2 = LyNote(w)
             if lyn2.isNote():
                 # print 'valid note: %s'% lyn2
-                
+
                 notesIndexes.append(index)
                 outputWords.append(lyn2)
                 index += 1
             else:
-                print('not a note: %s'% w)
+                print('not a note: %s' % w)
         elif w and w[0].strip():
             outputWords.append(w)
             index += 1
         else:
             # whitespace/text
             intermediate = []
-        
+
             while 1:
                 intermediate.append(w)
                 peekword = peekwords.peek()
@@ -205,12 +200,12 @@ def analyseString(S):
                 #     print 'strange: peekword: %s'% repr(peekword)
                 w = next(peekwords)
 
-                
     return outputWords, notesIndexes
-                    
+
+
 def getNotesFromWordsList(n, wordsList, notesIndexes, reverse=False):
     """get exactly n notes from list, and return the start and end
-    
+
     n = number of notes to be found
     wordsList: list of words, including notes
     notesIndexes: indexes of words that are notes
@@ -222,9 +217,9 @@ def getNotesFromWordsList(n, wordsList, notesIndexes, reverse=False):
     afterNotes: string that follows the last note    // precedes the first note (reverse)
     afterNoteComplete: True if afterNotes extends until the next note  //
                                      // or until the previous note (reverse)
-                                     
+
     if reverse == True, the last three variables should be interpreted in the opposite direction.
-    
+
     """
     wordsList = copy.copy(wordsList)
     notesIndexes = copy.copy(notesIndexes)
@@ -233,7 +228,7 @@ def getNotesFromWordsList(n, wordsList, notesIndexes, reverse=False):
         notesIndexes.reverse()
         wordsList.reverse()
         notesIndexes = [lenw-i-1 for i in notesIndexes]
-    
+
     notesFound = len(notesIndexes)
     takeFromList = notesIndexes[n-1] + 1
     if notesFound == n:
@@ -245,7 +240,7 @@ def getNotesFromWordsList(n, wordsList, notesIndexes, reverse=False):
         takeAfterNotes = notesIndexes[n]
         afterNotesList = wordsList[takeFromList:takeAfterNotes]
         afterNoteComplete = True
-    # print'afterNotes: %s,complete: %s'% (repr(afterNotes), afterNoteComplete) 
+    # print'afterNotes: %s,complete: %s'% (repr(afterNotes), afterNoteComplete)
     wordsList = wordsList[:takeFromList]
     notesIndexes = notesIndexes[:n]
     firstNoteAt = notesIndexes[0]
@@ -268,12 +263,13 @@ def getNotesFromWordsList(n, wordsList, notesIndexes, reverse=False):
         notesIndexes = [lenw-i-1 for i in notesIndexes]
         beforeNotesList.reverse()
         afterNotesList.reverse()
-    
+
     afterNotes = ''.join(afterNotesList)
     beforeNotes = ''.join(beforeNotesList)
 
     return wordsList, notesIndexes, beforeNotes, afterNotes, afterNoteComplete
-          
+
+
 def join(Input, separator=''):
     """join all things (recursively if necessary)
 
@@ -286,15 +282,14 @@ def join(Input, separator=''):
         return separator.join(str(i) for i in Input)
 
 
-
 if __name__ == '__main__':
-    
-    #for s in ["", "(", r"(\break\melisma", r"\break\(-^2"]:
+
+    # for s in ["", "(", r"(\break\melisma", r"\break\(-^2"]:
     #    mrest = reBackslashedWord.split(s)
     #    print 's: %s, mrest: %s'% (s, mrest)
-    
-    #for s in ["g,8.", "a", "cis'("]:
-    #    lyn = LyNote(s)   
+
+    # for s in ["g,8.", "a", "cis'("]:
+    #    lyn = LyNote(s)
     #    print 'note: "%s", elevation: "%s", duration: "%s", additions: "%s"'% (lyn.note, lyn.elevation, lyn.duration, lyn.additions)
     #    print 'input: "%s", str: "%s", repr: "%s"'% (s, lyn, repr(lyn))
     #    lyn.updateNote("a")
@@ -304,14 +299,15 @@ if __name__ == '__main__':
     print('melisma: =============================================')
     for _s in ["r2", r"g,8.\melisma", r"a\melisma"]:
         lyn = LyNote(_s)
-        print('note: "%s", elevation: "%s", duration: "%s", additions: "%s"'% (lyn.note, lyn.elevation, lyn.duration, lyn.additions))
-        print('input: "%s", str: "%s", repr: "%s"'% (s, lyn, repr(lyn)))
+        print('note: "%s", elevation: "%s", duration: "%s", additions: "%s"' %
+              (lyn.note, lyn.elevation, lyn.duration, lyn.additions))
+        print('input: "%s", str: "%s", repr: "%s"' % (s, lyn, repr(lyn)))
         lyn.updateNote("a")
-        print('note updated to a: %s'% lyn)
+        print('note updated to a: %s' % lyn)
         lyn.updateNote(r"c8.\(")
-        print('note updated to c 8. and \\(: %s'% lyn)
+        print('note updated to c 8. and \\(: %s' % lyn)
         lyn = LyNote(_s)
-        
+
         # join tests:
         print(join('abc'))
         print(join(['a', 'a', 'c']))

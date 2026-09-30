@@ -22,7 +22,7 @@ Notes:
 
 2. No capitalisation is done unless you call as directive.
 
-3. Dictation errors cannot be corrected with the spell window. Select, 
+3. Dictation errors cannot be corrected with the spell window. Select,
 dictate again and then correct then if needed.
 
 Note: the natlinkclipboard module from dtactions is not ready for use. Use
@@ -30,7 +30,7 @@ the uniutils module of unimacro.
 
 
 """
-#pylint:disable=C0115, C0116, W0201, W0613
+# pylint:disable=C0115, C0116, W0201, W0613
 from natlinkcore import nsformat
 from dtactions import uniutils
 from dtactions.uniactions.uactions import doAction as action
@@ -40,20 +40,21 @@ import unimacro.natlinkutilsbj as natbj
 import natlink
 
 language = uniutils.getLanguage()
-
 ancestor = natbj.DocstringGrammar
+
+
 class BracketsGrammar(ancestor):
     language = uniutils.getLanguage()
     name = "brackets"
 
     def initialize(self):
         if not self.language:
-            print("no valid language in grammar "+__name__+" grammar not initialized")
+            print("no valid language in grammar " + __name__ + " grammar not initialized")
             return
         self.load(self.gramSpec)
         self.switchOnOrOff()
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
         if self.mayBeSwitchedOn == 'exclusive':
@@ -61,16 +62,16 @@ class BracketsGrammar(ancestor):
 
     def gotResultsInit(self, words, fullResults):
         self.dictated = ''  # analysis of dgndictation or dgnletters
-        self.pleft = self.pright = '' # the left and right parts of the brackets
+        self.pleft = self.pright = ''  # the left and right parts of the brackets
         self.here, self.between, self.empty = False, False, False
         if self.mayBeSwitchedOn == 'exclusive':
             print(f'recog brackets, switch off mic: {words}')
             natbj.SetMic('off')
 
     def importedrule_dgndictation(self, words):
-        #do with nsformat functions:
+        # do with nsformat functions:
         self.dictated, dummy = nsformat.formatWords(words, state=-1)  # no capping, no spacing
-        #print '-result of nsformat: |%s|'% repr(self.dictated)
+        # print('-result of nsformat: |%s|'% repr(self.dictated))
 
     def rule_brackets(self, words):
         "<before> {brackets}+ [<dgndictation>]"
@@ -80,13 +81,13 @@ class BracketsGrammar(ancestor):
             if not p:
                 print(f'no valid brackets found for word: "{w}"')
                 continue
-            #print 'brackets, found: %s, %s'% (w, p)
+            # print('brackets, found: %s, %s'% (w, p))
             if len(p) > 2 and p.find("|") > 0:
                 pList = p.split("|")
                 newpleft = pList[0]
                 newpright = pList[1]
             else:
-                lenph = len(p)//2
+                lenph = len(p) // 2
                 newpleft, newpright = p[:lenph], p[lenph:]
             # make more brackets together, from outer to inner:
             self.pleft = self.pleft + newpleft
@@ -95,7 +96,6 @@ class BracketsGrammar(ancestor):
 
     def subrule_before(self, words):
         "(here|between|empty)+"
-
         for w in words:
             if self.hasCommon(w, 'between'):   # this is the trigger word, ignore
                 self.between = True
@@ -103,10 +103,8 @@ class BracketsGrammar(ancestor):
                 self.here = True
             if self.hasCommon(w, 'empty'):   # this is the trigger word, ignore
                 self.empty = True
-  
 
     def gotResults(self, words, fullResults):
-
         #  see if something selected, leaving the clipboard intact
         #  keystroke('{ctrl+x}')  # try to cut the selection
         # if no text is dictated, self.dictated = ""
@@ -117,13 +115,12 @@ class BracketsGrammar(ancestor):
             uniutils.buttonClick('left', 1)
             uniutils.visibleWait()
 
-
         if self.empty:
             if self.dictated:
                 print(f'_brackets, warning, dictated text "{self.dictated}" is ignored, because of keyword "empty"')
             self.do_keystrokes_brackets()
             return
-        
+
         # only if no dictated text, try to cut the selection (if there, add one char for safety with
         # the clipboard actions, only fails when at end of file)
         if not self.dictated:
@@ -147,7 +144,7 @@ class BracketsGrammar(ancestor):
 #
     def do_keystrokes_brackets(self, text='', lastchar='', l_spacing='', r_spacing=''):
         """do the pleft text pright keystrokes with spacing issues
-        
+
         handle the "between" keyword here!
         """
         keystroke(l_spacing)
@@ -160,14 +157,14 @@ class BracketsGrammar(ancestor):
         keystroke(r_spacing)
         if lastchar:
             keystroke(lastchar)
-            keystroke("{left %s}"% len(lastchar))
+            keystroke("{left %s}" % len(lastchar))
         if self.between:
-            keystroke("{left %s}"% len(self.pright))
-        
+            keystroke("{left %s}" % len(self.pright))
+
 
 def stripFromBothSides(text):
     """strip whitespace from left side and from right side and return
-the three parts
+    the three parts
 
     input: text
     output: stripped, leftSpacing, rightSpacing
@@ -186,9 +183,10 @@ the three parts
     text = text.rstrip()
     return text, leftText, rightText
 
+
 # standard stuff Joel (adapted in course of time, QH)
 def unload():
-    #pylint:disable=W0603, E0601
+    # pylint:disable=W0603, E0601
     global bracketsGrammar
     if bracketsGrammar:
         bracketsGrammar.unload()
@@ -209,4 +207,3 @@ else:
         bracketsGrammar.initialize()
     else:
         bracketsGrammar = None
-        

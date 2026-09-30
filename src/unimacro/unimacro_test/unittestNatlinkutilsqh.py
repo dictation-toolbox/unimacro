@@ -8,7 +8,7 @@
 #   the site mechanism (of Qh private) in which modules of a website generating program
 #   are tested specifically
 #
-#pylint:disable=C0209, E1101
+# pylint:disable=C0209, E1101
 import sys
 import unittest
 import os
@@ -16,6 +16,7 @@ import os.path
 import natlink
 from dtactions import uniutils
 import TestCaseWithHelpers
+
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.
@@ -25,106 +26,114 @@ def getBaseFolder(globalsDict=None):
     """
     globalsDictHere = globalsDict or globals()
     baseFolder = ""
-    if globalsDictHere['__name__']  == "__main__":
+    if globalsDictHere['__name__'] == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print('baseFolder from argv: %s'% baseFolder)
+        print('baseFolder from argv: %s' % baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print('baseFolder from __file__: %s'% baseFolder)
+        print('baseFolder from __file__: %s' % baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print('baseFolder was empty, take wd: %s'% baseFolder)
+        print('baseFolder was empty, take wd: %s' % baseFolder)
     return baseFolder
+
 
 thisDir = getBaseFolder(globals())
 logFileName = os.path.join(thisDir, "testresult.txt")
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
 # no reopen user at each test anymore..
 # no default open window (open window will be the calling program)
 # default .ini files pop up when you first run this test. just ignore them.
+
+
 class UnittestNatlinkutilsqh(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         natlink.natConnect()
-        
+
     def tearDown(self):
         natlink.natDisconnect()
-    
+
     def testMatchTitle(self):
         """test the matchTitle function
-        
+
         """
         modInfo = natlink.getCurrentModule()
         title = modInfo[1]
-        ## construct a testword and a otherCaseTestWord:
+        # construct a testword and a otherCaseTestWord:
         testword = title[2:]
         otherCaseTestWord = testword.lower()
         if otherCaseTestWord == testword:
             otherCaseTestWord = testword.upper()
             if otherCaseTestWord == testword:
-                raise ValueError(" TEST ERROR, test of matchTitle fails because of invalid otherCaseTestWord: %s"% otherCaseTestWord)
+                raise ValueError(" TEST ERROR, test of matchTitle fails because of invalid otherCaseTestWord: %s" %
+                                 otherCaseTestWord)
 
-        ## default case:
+        # default case:
         got = uniutils.matchTitle(testword, modInfo=modInfo)
         exp = uniutils.getProgName(modInfo)
-        self.assert_equal(exp, got, "matchTitle should be OK with testword: %s and window title: %s"% (testword, title))
+        self.assert_equal(exp, got, "matchTitle should be OK with testword: %s and window title: %s" % (testword, title))
         got = uniutils.matchTitle(testword, modInfo=modInfo)
         exp = uniutils.getProgName(modInfo)
-        self.assert_equal(exp, got, "matchTitle should be OK with otherCaseTestWord: %s and window title: %s"% (otherCaseTestWord, title))
+        self.assert_equal(exp, got, "matchTitle should be OK with otherCaseTestWord: %s and window title: %s" %
+                          (otherCaseTestWord, title))
 
-        ## rare different cases, all less important:
+        # rare different cases, all less important:
         got = uniutils.matchTitle(otherCaseTestWord, modInfo=modInfo, caseExact=1)
         exp = False
-        self.assert_equal(exp, got, "matchTitle should fail with caseExact True: testword: %s and window title: %s"% (otherCaseTestWord, title))
+        self.assert_equal(exp, got, "matchTitle should fail with caseExact True: testword: %s and window title: %s" %
+                          (otherCaseTestWord, title))
 
-        ## should match exact title, False!
+        # should match exact title, False!
         got = uniutils.matchTitle(otherCaseTestWord, modInfo=modInfo, titleExact=1)
         exp = False
-        self.assert_equal(exp, got, "matchTitle should fail with titleExact True: testword: %s and window title: %s"% (otherCaseTestWord, title))
+        self.assert_equal(exp, got, "matchTitle should fail with titleExact True: testword: %s and window title: %s" %
+                          (otherCaseTestWord, title))
         got = uniutils.matchTitle(testword, modInfo=modInfo, titleExact=1)
         exp = False
-        self.assert_equal(exp, got, "matchTitle should fail with titleExact True: testword: %s and window title: %s"% (testword, title))
+        self.assert_equal(
+            exp, got, "matchTitle should fail with titleExact True: testword: %s and window title: %s" % (testword, title))
 
-        
-
-        ## now for the whole title:
+        # now for the whole title:
         wholeTitle = title
         exp = uniutils.getProgName(modInfo)
         got = uniutils.matchTitle(wholeTitle, modInfo=modInfo)
-        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
+        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s" % (wholeTitle, title))
         otherWholeTitle = wholeTitle.upper()
         if wholeTitle == otherWholeTitle:
             otherWholeTitle = wholeTitle.lower()
             if wholeTitle == otherWholeTitle:
-                raise ValueError(" TEST ERROR, test of matchTitle wholeTitle fails because of invalid otherWholeTitle: %s"% otherWholeTitle)
+                raise ValueError(
+                    " TEST ERROR, test of matchTitle wholeTitle fails because of invalid otherWholeTitle: %s" % otherWholeTitle)
 
         got = uniutils.matchTitle(wholeTitle, modInfo=modInfo, titleExact=1)
-        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
+        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s" % (wholeTitle, title))
         got = uniutils.matchTitle(wholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
-        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
+        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s" % (wholeTitle, title))
 
         got = uniutils.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1)
-        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
-  
+        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s" % (wholeTitle, title))
+
         got = uniutils.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
         exp = False
-        self.assert_equal(exp, got, "matchTitle should fail with whole title %s\nand window title: %s"% (wholeTitle, title))
+        self.assert_equal(exp, got, "matchTitle should fail with whole title %s\nand window title: %s" % (wholeTitle, title))
         got = uniutils.matchTitle(otherWholeTitle, modInfo=modInfo, titleExact=1, caseExact=1)
-        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s"% (wholeTitle, title))
-                
-        ## now for a list of possible test words:
+        self.assert_equal(exp, got, "matchTitle should be OK with whole title %s\nand window title: %s" % (wholeTitle, title))
+
+        # now for a list of possible test words:
         ListOfTestWords = ["xxxyyy", testword]
         exp = uniutils.getProgName(modInfo)
         got = uniutils.matchTitle(ListOfTestWords, modInfo=modInfo)
 
-
         ListOfTestWords = ["xxxyyy", otherCaseTestWord]
         exp = False
         got = uniutils.matchTitle(ListOfTestWords, modInfo=modInfo, caseExact=1)
-            
+
+
 def log(t):
     print(t)
+
 
 def run():
     log('starting unittestNatlinkutilsqh')
@@ -133,8 +142,10 @@ def run():
     # and change the word 'test' into 'tttest'...
     # do not forget to change back and do all the tests when you are done.
     suite = unittest.makeSuite(UnittestNatlinkutilsqh, 'test')
-##    natconnectOption = 0 # no threading has most chances to pass...
+# natconnectOption = 0 # no threading has most chances to pass...
     result = unittest.TextTestRunner().run(suite)
     print(result)
+
+
 if __name__ == "__main__":
     run()

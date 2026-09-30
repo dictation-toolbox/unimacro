@@ -4,24 +4,25 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
+import time
+import UnimacroTestHelpers
+import unittest
+from dtactions.uniactions import uactions as actions
+import natlink
+from natlinkcore import natlinkutils
+from dtactions import uniutils
 from pathlib import Path
 from pprint import pprint
 import sys
 unimacrodir = Path('./..').normPath()
 if unimacrodir not in sys.path:
     sys.path.append(unimacrodir)
-from dtactions import uniutils
-from natlinkcore import natlinkutils
-import natlink
-from dtactions.uniactions import uactions as actions
 # reload(actions)
 action = actions.doAction
 
-import unittest
-import UnimacroTestHelpers
-import time
 
-##class UnimacroBasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
+# class UnimacroBasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
+
 class ActionsTest(UnimacroTestHelpers.UnimacroTestHelpers):
     """Tests several features of the unimacro actions mechanism.
 
@@ -37,13 +38,12 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
 
 
     """
-      
+
     def setUp(self):
         pass
 
     def tearDown(self):
         pass
-
 
     def doTimingOfAction(self, commandString, timeWanted, epsilon=0.2):
         t0 = time.time()
@@ -63,19 +63,18 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
     def test_Convert_to_python_args_numbers(self):
         """numbers should be returned as numbers except when they have leading zeros
 
-        """        
+        """
         testFuncReturn = self.doTestFuncReturn
         func = actions.convertToPythonArgs
         testFuncReturn(None, 'func("")', localVars=locals())
-        testFuncReturn((0,1,2), 'func("0, 1, 2")', localVars=locals())
+        testFuncReturn((0, 1, 2), 'func("0, 1, 2")', localVars=locals())
         testFuncReturn((0,), 'func("0")', localVars=locals())
         testFuncReturn((23,), 'func("23")', localVars=locals())
-        # leading zeros, return string:.        
+        # leading zeros, return string:.
         testFuncReturn(("0023",), 'func("0023")', localVars=locals())
         testFuncReturn((0.23,), 'func("0.23")', localVars=locals())
         testFuncReturn((0.23, 0, 3.45), 'func("0.23, 0, 3.45")', localVars=locals())
 
-        
     def test_Convert_to_python_args_strings(self):
         """ open and close quotes should be removed from strings
 
@@ -95,13 +94,13 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         """ waiting should last about the specified time and return true
         """
         testTime = self.doTimingOfAction
-        testTime("W", 0.1) # with a tolerance of 0.2 seconds
-## these tests take a bit more time, so uncomment only if you want to specifically test to them:
-##        testTime("W 1", 1)
-##        testTime("W 0.4", 0.4)
-##        testTime("W; W", 0.3)
+        testTime("W", 0.1)  # with a tolerance of 0.2 seconds
+# these tests take a bit more time, so uncomment only if you want to specifically test to them:
+# testTime("W 1", 1)
+# testTime("W 0.4", 0.4)
+# testTime("W; W", 0.3)
         testActionResult = self.doTestActionResult
-        
+
         testActionResult(1, "W")
         testActionResult(1, "W; W; W")
 
@@ -112,11 +111,11 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         action("BRINGUP dragonpad")
         action("testing KW actions")
         action("W 1")
-        action("{ctrl+o}") # open dialog dragonpad
+        action("{ctrl+o}")  # open dialog dragonpad
         action("W 0.5")
         modInfo = natlink.getCurrentModule()
         handle = modInfo[2]
-        self.assert_ (not uniutils.isTopWindow(handle), "dialog should be open now")
+        self.assert_(not uniutils.isTopWindow(handle), "dialog should be open now")
 
         # do Notepad and kill, without text in it, so NO SaveAs dialog:
         action("BRINGUP Notepad")
@@ -136,41 +135,40 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         action("W 0.5")
         self.doTestWindowIsEmpty("line in dialog box should still be empty")
 
-        # close DragonPad dialog, leave DragonPad open (if needed)        
+        # close DragonPad dialog, leave DragonPad open (if needed)
         action("{esc}")
         action("<<selectall>><<delete>>")
         action("W 0.5")
         self.doTestWindowIsEmpty("should leave DragonPad empty after testing Kill Window (KW)")
-        
-        
+
     def test_Miscelaneous_action_results(self):
         """Actions should return true except some
 
         A chain of actions is splitted by ";".        
-        
+
         the USC that returns false should also be the return value of the whole action
         """
         testActionResult = self.doTestActionResult
         testActionResult(1, "BRINGUP dragonpad")
         testActionResult(1, "abc")
-        
+
         testActionResult(1, "ghi; W; déf")
         testActionResult(1, "klm; nop")
-## next two tests need user interaction.  Activate if you specifically want to test them:
-##        testActionResult(1, 'YESNO "please answer yes"')
-##        testActionResult(False, 'YESNO please answer no')
+# next two tests need user interaction.  Activate if you specifically want to test them:
+# testActionResult(1, 'YESNO "please answer yes"')
+# testActionResult(False, 'YESNO please answer no')
         # helper USC commands F and T return False and True:
         testActionResult(False, 'F')
         testActionResult(1, 'T')
         testActionResult(False, 'F; abc')
         testActionResult(1, 'T; def')
-        
+
     def test_Continuation_of_actions(self):
         """If part of the action returns false the action is stopped
 
-        """        
+        """
         testWindowContents = self.doTestWindowContents
-        
+
         testActionResult = self.doTestActionResult
         testActionResult(1, "BRINGUP dragonpad")
         testActionResult(1, "<<selectall>><<delete>>")
@@ -178,25 +176,24 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         testActionResult(False, "F; abc")
         testWindowContents("")
 
-        # T (true), so continue "ghi" is printed:        
+        # T (true), so continue "ghi" is printed:
         testActionResult(1, "T; ghi")
         testWindowContents("ghi")
 
     def test_one_line_yesno_box(self):
         """should display, answer yes
 
-        """        
+        """
         testWindowContents = self.doTestWindowContents
         testActionResult = self.doTestActionResult
-        
+
         testActionResult(True, "YESNO actions test: please answer yes")
         testActionResult(False, "YESNO now please answer No")
 
-         
     def test_Return_to_window(self):
         """bringup calc and wait for calc to be there. 
 
-        """        
+        """
         testActionResult = self.doTestActionResult
         testActionResult(1, "RW")
         testActionResult(1, "BRINGUP calc")
@@ -208,7 +205,7 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
     def test_DATE(self):
         """trying different DATE calls
 
-        """        
+        """
         testActionResult = self.doTestActionResult
         testActionResult(1, "BRINGUP dragonpad")
         testActionResult(1, "DATE; ' '")
@@ -219,11 +216,11 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         testActionResult(1, "DATE %d/%m/%Y, speak")
         testActionResult(1, "YESNO Did you hear a short and a full date?")
         action("KW")
-        
+
     def test_TIME(self):
         """trying different TIME calls
 
-        """        
+        """
         testActionResult = self.doTestActionResult
         testActionResult(1, "BRINGUP dragonpad")
         testActionResult(1, "TIME; ' '")
@@ -233,12 +230,11 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         testActionResult(1, "TIME %M %H, speak")
         testActionResult(1, "YESNO Did you hear a normal and a reversed time?")
         action("KW")
-        
 
     def test_HW(self):
         """trying different HW situations
 
-        """        
+        """
         testWindowContents = self.doTestWindowContents
         testActionResult = self.doTestActionResult
         testActionResult(1, "BRINGUP dragonpad")
@@ -249,7 +245,7 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
 
         testActionResult(1, "{ctrl+a}{del}")
 
-        # test a compound word (U.S. Customs) with a few other words, commas needed:        
+        # test a compound word (U.S. Customs) with a few other words, commas needed:
         testActionResult(1, "HW U.S. Customs, is, one, word")
         testWindowContents("U.S. Customs is one word")
         testActionResult(1, "{ctrl+a}{del}")
@@ -258,7 +254,7 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         testActionResult(1, "HW U.S. Customs")
         testWindowContents("U.S. Customs")
 
-        # trie the command scratch that:        
+        # trie the command scratch that:
         testActionResult(1, "{ctrl+a}{del}")
         testActionResult(1, "hello there.")
         testActionResult(1, "HW testing scratch that")
@@ -270,28 +266,19 @@ test_Convert_to_python_args_strings,  which are used in converting and actions s
         # trie unrecognised words:
         testActionResult(0, "HW akskskskskskskskksskkssk")
 
-                
     def FAILS_test_multiline_yesno_box(self):
         """should display, answer yes
 
         messages with multiple lines can only be called from python, not from
         an actions line, please consult also the MessageTest.py
-                
 
-        """        
+
+        """
         testWindowContents = self.doTestWindowContents
         testActionResult = self.doTestActionResult
-        mes = ["This is window", "that consists of multiple lines","please answer YES again"]
-        ### fails::::.
-        testActionResult(1, "YESNO %s"% '\n'.join(mes))
-
-         
-
-    
-
-        
-
+        mes = ["This is window", "that consists of multiple lines", "please answer YES again"]
+        # fails::::.
+        testActionResult(1, "YESNO %s" % '\n'.join(mes))
 
 
 # no main statement, run from command in _unimacrotest.py.
-

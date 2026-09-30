@@ -14,15 +14,13 @@ def test_sample_grammar_ini_fixture1(grammar_ini_fixture):
     assert True
 
 def test_sample_grammar_ini_fixture2(grammar_ini_fixture,unimacro_setup):
-    print(f"Unimacro setup sample: {unimacro_setup} grammar_ini_fixutre {grammar_ini_fixture} (should be the same)")
-    assert True
+    # print(f"Unimacro setup sample: {unimacro_setup} grammar_ini_fixutre {grammar_ini_fixture} (should be the same)")
+    assert unimacro_setup == grammar_ini_fixture
 
 
-import sysconfig,sys
 if __name__ == "__main__":
-    sysconfig._main()
-    print("This is your Python system path sys.path:")
-    print("-----------------------------------------")
-    print(sys.path)
-
+    # sysconfig._main()
+    # print("This is your Python system path sys.path:")
+    # print("-----------------------------------------")
+    # print(sys.path)
     pytest.main([f'test_brackets.py'])

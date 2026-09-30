@@ -10,8 +10,12 @@
 #   being the chain of grammars leading up to GrammarBase
 #
 # run from a (preferably clean) US user profile, easiest from IDLE.
-# do not run from pythonwin. 
+# do not run from pythonwin.
 #
+from dtactions.uniactions.uactions import doAction as action
+import unimacro.natlinkutilsbj as natbj
+from dtactions import uniutils
+from natlinkcore import natlinkutils
 import sys
 import unittest
 import types
@@ -27,16 +31,13 @@ from natlinkcore.gramparser import GrammarError, GrammarSyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 
-from natlinkcore import natlinkutils
-from dtactions import uniutils
-from dtactions import uniutils
-import unimacro.natlinkutilsbj as natbj
-from dtactions.uniactions.uactions import doAction as action
-from dtactions.uniactions.uactions import doAction as action
 
 class TestError(Exception):
     pass
+
+
 ExitQuietly = 'ExitQuietly'
+
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.
@@ -46,28 +47,31 @@ def getBaseFolder(globalsDict=None):
     """
     globalsDictHere = globalsDict or globals()
     baseFolder = ""
-    if globalsDictHere['__name__']  == "__main__":
+    if globalsDictHere['__name__'] == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print('baseFolder from argv: %s'% baseFolder)
+        print('baseFolder from argv: %s' % baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print('baseFolder from __file__: %s'% baseFolder)
+        print('baseFolder from __file__: %s' % baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print('baseFolder was empty, take wd: %s'% baseFolder)
+        print('baseFolder was empty, take wd: %s' % baseFolder)
     return baseFolder
+
 
 thisDir = getBaseFolder(globals())
 
-natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
-                     # with spurious error (if set to 1), missing gotBegin and all that...
+natconnectOption = 0  # or 1 for threading, 0 for not. Seems to make difference
+# with spurious error (if set to 1), missing gotBegin and all that...
 logFileName = os.path.join(thisDir, "testresult.txt")
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
 # no reopen user at each test anymore..
 # no default open window (open window will be the calling program)
 # default .ini files pop up when you first run this test. just ignore them.
+
+
 class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         if not natlink.isNatSpeakRunning():
@@ -85,14 +89,13 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         finally:
             self.disconnect()
 
-        
     def connect(self):
         # start with 1 for thread safety when run from pythonwin:
         natlink.natConnect(natconnectOption)
 
     def disconnect(self):
         natlink.natDisconnect()
-        
+
     def log(self, t):
         # only log to file:
         log(t)
@@ -103,29 +106,28 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         return
         # try to remove __main__.ini, but gives unexpected windows popping up
-        #userdir = status.getUnimacroUserDirectory()
-        #language = status.getLanguage()
-        #print 'userdir: %s, language: %s'% (userdir, language)
-        #userinidir = os.path.join(userdir, '%s_inifiles'%language)
-        #if os.path.isdir(userinidir):
+        # userdir = status.getUnimacroUserDirectory()
+        # language = status.getLanguage()
+        # print 'userdir: %s, language: %s'% (userdir, language)
+        # userinidir = os.path.join(userdir, '%s_inifiles'%language)
+        # if os.path.isdir(userinidir):
         #    mainfile = os.path.join(userinidir, '__main__.ini')
         #    if os.path.isfile(mainfile):
         #        os.remove(mainfile)
-        #else:
+        # else:
         #    raise OSError("clearTestFiles, should be a valid directory: %s"% userinidir)
 
     def wait(self, t=1):
         time.sleep(t)
 
-
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     # This utility subroutine executes a Python command and makes sure that
     # an exception (of the expected type) is raised.  Otherwise a TestError
     # exception is raised
 
-    def doTestForException(self, exceptionType,command,localVars={}):
+    def doTestForException(self, exceptionType, command, localVars={}):
         try:
-            exec(command,globals(),localVars)
+            exec(command, globals(), localVars)
         except exceptionType:
             return
         raise TestError('Expecting an exception to be raised calling '+command)
@@ -137,10 +139,10 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         got = gram.activeRules
         got.sort()
         self.assertEqual(expected, got,
-                         'Active rules not as expected:\nexpected: %s, got: %s'%
+                         'Active rules not as expected:\nexpected: %s, got: %s' %
                          (expected, got))
 
-    def doTestFuncReturn(self, expected,command,localVars=None):
+    def doTestFuncReturn(self, expected, command, localVars=None):
         # account for different values in case of [None, 0] (wordFuncs)
         if localVars == None:
             actual = eval(command)
@@ -149,18 +151,18 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         if actual != expected:
             time.sleep(1)
-        self.assertEqual(expected, actual, 'Function call "%s" returned unexpected result\nExpected: %s, got: %s'%
-                          (command, expected, actual))
-    
+        self.assertEqual(expected, actual, 'Function call "%s" returned unexpected result\nExpected: %s, got: %s' %
+                         (command, expected, actual))
+
     def testGrammarActivateRules(self):
         """test a simple grammar with three exported rules.
-        
+
         test the activation/deactivation of these rules, like in unittestNatlink
         (the testGrammar function)
         """
         class TestGrammar(natbj.DocstringGrammar):
             gramSpec = '<four> exported = rule four;'
-            
+
             def __init__(self):
                 natbj.DocstringGrammar.__init__(self)
                 self.resetExperiment()
@@ -172,57 +174,64 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
                 self.fullResults = []
                 self.error = None
 
-            def gotBegin(self,moduleInfo):
+            def gotBegin(self, moduleInfo):
                 if self.sawBegin > nTries:
                     self.error = 'Command grammar called gotBegin twice'
                 self.sawBegin += 1
                 if moduleInfo != natlink.getCurrentModule():
                     self.error = 'Invalid value for moduleInfo in GrammarBase.gotBegin'
 
-            def gotResultsObject(self,recogType,resObj):
+            def gotResultsObject(self, recogType, resObj):
                 if self.recogType:
                     self.error = 'Command grammar called gotResultsObject twice'
                 self.recogType = recogType
+
             def rule_one(self, words):
                 'rule one <two>'
                 pass
+
             def subrule_two(self, words):
                 'subrule two'
                 pass
+
             def rule_three(self, words):
                 'rule three'
                 pass
 
-            def gotResults(self,words,fullResults):
+            def gotResults(self, words, fullResults):
                 if self.words:
                     self.error = 'Command grammar called gotResults twice'
                 self.words = words
                 self.fullResults = fullResults
 
-            def checkExperiment(self,sawBegin,recogType,words,fullResults):
+            def checkExperiment(self, sawBegin, recogType, words, fullResults):
                 if self.error:
                     raise TestError(self.error)
                 if self.sawBegin != sawBegin:
-                    raise TestError('Unexpected result for GrammarBase.sawBegin\n  Expected %d\n  Saw %d'%(sawBegin,self.sawBegin))
+                    raise TestError('Unexpected result for GrammarBase.sawBegin\n  Expected %d\n  Saw %d' %
+                                    (sawBegin, self.sawBegin))
                 if self.recogType != recogType:
-                    raise TestError('Unexpected result for GrammarBase.recogType\n  Expected %s\n  Saw %s'%(recogType,self.recogType))
+                    raise TestError('Unexpected result for GrammarBase.recogType\n  Expected %s\n  Saw %s' %
+                                    (recogType, self.recogType))
                 if self.words != words:
-                    raise TestError('Unexpected result for GrammarBase.words\n  Expected %s\n  Saw %s'%(repr(words),repr(self.words)))
+                    raise TestError('Unexpected result for GrammarBase.words\n  Expected %s\n  Saw %s' %
+                                    (repr(words), repr(self.words)))
                 if self.fullResults != fullResults:
-                    raise TestError('Unexpected result for GrammarBase.fullResults\n  Expected %s\n  Saw %s'%(repr(fullResults),repr(self.fullResults)))
+                    raise TestError('Unexpected result for GrammarBase.fullResults\n  Expected %s\n  Saw %s' %
+                                    (repr(fullResults), repr(self.fullResults)))
                 self.resetExperiment()
-       
+
         testActiveRules = self.doTestActiveRules
         testForException = self.doTestForException
         testGram = TestGrammar()
-        
+
         expGramSpec =  \
-'''<one> exported = rule one <two>;
+            '''<one> exported = rule one <two>;
     <two> = subrule two;
 <three> exported = rule three;
 <four> exported = rule four;'''
-        self.assert_equal(expGramSpec, testGram.gramSpec,"gramspec not as expected")
-        
+        self.assert_equal(expGramSpec, testGram.gramSpec, "gramspec not as expected")
+
         testGram.load(testGram.gramSpec)
         testGram.activateAll()
         testActiveRules(testGram, ['one', 'three', 'four'])
@@ -240,7 +249,7 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
             testActiveRules(testGram, expList)
             # activate after all active:
             testGram.activateAll()
-            testForException(GrammarError, "testGram.activate('%s')"% rule, locals())
+            testForException(GrammarError, "testGram.activate('%s')" % rule, locals())
             # activate after all unactive:
             testGram.deactivateAll()
             testGram.activate(rule)
@@ -249,20 +258,20 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
         rule = 'one'
         testGram.activate(rule)
-        testForException(GrammarError, "testGram.activate('%s')"% rule, locals())
+        testForException(GrammarError, "testGram.activate('%s')" % rule, locals())
         testGram.deactivateAll()
         testActiveRules(testGram, [])
 
         for SET in (['one', 'three', 'four'], ['three'], ['one', 'three', 'four'], ['one', 'three']):
             testGram.activateSet(SET)
             testActiveRules(testGram, SET)
-            ##with original version of natlinkutils.py you get:
-            ##AssertionError: Active rules not as expected:
-            ##expected: ['three'], got: ['one', 'three']
-            ##fix around line 420 (copy.copy) in natlinkutils.py, QH
-    
-        ## test exceptlist feature:
-        ## ['one', 'three', 'four'] are the exported rules
+            # with original version of natlinkutils.py you get:
+            # AssertionError: Active rules not as expected:
+            # expected: ['three'], got: ['one', 'three']
+            # fix around line 420 (copy.copy) in natlinkutils.py, QH
+
+        # test exceptlist feature:
+        # ['one', 'three', 'four'] are the exported rules
         testGram.activateAll(exceptlist=['one'])
         testActiveRules(testGram, ['three', 'four'])
         testGram.activateAll(exceptlist=None)
@@ -276,30 +285,26 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
         testActiveRules(testGram, ['one'])
         testGram.activateAll(exceptlist=['one', 'three'])
         testActiveRules(testGram, ['four'])
-        
-        
 
         # try a few illegal grammars to make sure they are reported properly (we
         # already tested the grammar parser so this does not have to be
         # exhaustive)
         testGram.unload()
-        testForException(SyntaxError,"testGram.load('badrule;')",locals())
-        testForException(GrammarError,"testGram.load('<rule> = hello;')",locals())
+        testForException(SyntaxError, "testGram.load('badrule;')", locals())
+        testForException(GrammarError, "testGram.load('<rule> = hello;')", locals())
 
         # most calls are not legal before load is called (successfully)
-        testForException(natlink.NatError,"testGram.gramObj.activate('start',0)",locals())
-        testForException(natlink.NatError,"testGram.gramObj.deactivate('start')",locals())
-        testForException(natlink.NatError,"testGram.gramObj.setExclusive(1)",locals())
-        testForException(natlink.NatError,"testGram.gramObj.emptyList('list')",locals())
-        testForException(natlink.NatError,"testGram.gramObj.appendList('list','word')",locals())
+        testForException(natlink.NatError, "testGram.gramObj.activate('start',0)", locals())
+        testForException(natlink.NatError, "testGram.gramObj.deactivate('start')", locals())
+        testForException(natlink.NatError, "testGram.gramObj.setExclusive(1)", locals())
+        testForException(natlink.NatError, "testGram.gramObj.emptyList('list')", locals())
+        testForException(natlink.NatError, "testGram.gramObj.appendList('list','word')", locals())
         # clean up
         testGram.unload()
-        
-        
 
-    #def testGrammarNumberFunctionsWithoutNumbersIni(self):
+    # def testGrammarNumberFunctionsWithoutNumbersIni(self):
     #    """test the functions that convert numbers lists
-    #    
+    #
     #    when the spokenforms.ini has been removed (temporarily)
     #    """
     #    class TestGrammar(natbj.DocstringGrammar):
@@ -309,12 +314,12 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
     #        def rule_one(self, words):
     #            'rule one'
     #            pass
-    #   
+    #
     #    testGram = TestGrammar()
-    #    
+    #
     #    expGramSpec =  '''<one> exported = rule one;'''
     #    self.assert_equal(expGramSpec, testGram.gramSpec,"gramspec not as expected")
-    #    
+    #
     #    # test the numbers convert function
     #    numIni = testGram.getNumbersInifile()
     #    language = 'enx'
@@ -331,36 +336,44 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
 
     def testGrammarNumberFunctions(self):
         """test the functions that convert numbers lists
-        
+
         """
         class TestGrammar(natbj.DocstringGrammar):
             name = "testgrammarnumbers"
+
             def __init__(self):
                 natbj.DocstringGrammar.__init__(self)
+
             def initialize(self):
                 self.numresult = None
                 self.switchOn()
+
             def rule_one(self, words):
                 'rule one <n1-10>'
                 pass
+
             def rule_two(self, words):
                 'rule two  <numbers2to18>'
                 pass
+
             def rule_three(self, words):
                 'rule three  <n2to20>'
                 pass
+
             def rule_four(self, words):
                 'rule four  <numbers1-100>'
                 self.numresult = self.getNumberFromSpoken(words[0])
+
             def rule_five(self, words):
                 'rule five <n0-5>'
                 self.numresult = self.getNumberFromSpoken(words[0])
+
             def checkExperiment(self, expected, testInfo):
                 self.test.assert_equal(expected, self.numresult, testInfo)
+
             def gotBegin(self, modInfo):
-                self.numresult = None # reset
-                
-                
+                self.numresult = None  # reset
+
         testGram = TestGrammar()
         testGram.test = self
 
@@ -368,17 +381,16 @@ class UnittestDocstringGrammar(TestCaseWithHelpers.TestCaseWithHelpers):
             natlink.recognitionMimic(words)
             testGram.checkExperiment(expected, info)
         expGramSpec =  \
-'''<one> exported = rule one <n1-10>;
+            '''<one> exported = rule one <n1-10>;
 <two> exported = rule two  <numbers2to18>;
 <three> exported = rule three  <n2to20>;
 <four> exported = rule four  <numbers1-100>;
 <five> exported = rule five <n0-5>;'''
-        self.assert_equal(expGramSpec, testGram.gramSpec,"gramspec not as expected")
+        self.assert_equal(expGramSpec, testGram.gramSpec, "gramspec not as expected")
         language = 'enx'
-        self.assert_equal(language, testGram.language, "Testing should take place with 'enx' speech profile, not: %s"% testGram.language)
+        self.assert_equal(language, testGram.language,
+                          "Testing should take place with 'enx' speech profile, not: %s" % testGram.language)
         doTestNumbersRecognition(["rule", "one", "two"], 2, "testing grammar rule one with number 2")
-        
-        
 
 
 def log(t):
@@ -391,13 +403,15 @@ def log(t):
     print(t)
     if logFile:
         logFile.write(t + '\n')
-    
-#---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 # run
 #
 # This is the main entry point.  It will connect to NatSpeak and perform
 # a series of tests.  In the case of an error, it will cleanly disconnect
 # from NatSpeak and print the exception information,
+
+
 def dumpResult(testResult, logFile):
     """dump into 
     """
@@ -407,35 +421,35 @@ def dumpResult(testResult, logFile):
         return
     logFile.write('\n--------------- errors -----------------\n')
     for case, tb in testResult.errors:
-        logFile.write('\n---------- %s --------\n'% case)
-        logFile.write(tb)
-        
-    logFile.write('\n--------------- failures -----------------\n')
-    for case, tb in testResult.failures:
-        logFile.write('\n---------- %s --------\n'% case)
+        logFile.write('\n---------- %s --------\n' % case)
         logFile.write(tb)
 
-    
+    logFile.write('\n--------------- failures -----------------\n')
+    for case, tb in testResult.failures:
+        logFile.write('\n---------- %s --------\n' % case)
+        logFile.write(tb)
 
 
 logFile = None
 
+
 def run():
     global logFile, natconnectOption
     logFile = open(logFileName, "w")
-    log("log messages to file: %s"% logFileName)
+    log("log messages to file: %s" % logFileName)
     log('starting unittestNatlink')
     # trick: if you only want one or two tests to perform, change
     # the test names to her example def test....
     # and change the word 'test' into 'tttest'...
     # do not forget to change back and do all the tests when you are done.
     suite = unittest.makeSuite(UnittestDocstringGrammar, 'test')
-##    natconnectOption = 0 # no threading has most chances to pass...
-    log('\nstarting tests with threading: %s\n'% natconnectOption)
+# natconnectOption = 0 # no threading has most chances to pass...
+    log('\nstarting tests with threading: %s\n' % natconnectOption)
     result = unittest.TextTestRunner().run(suite)
     dumpResult(result, logFile=logFile)
-    
+
     logFile.close()
+
 
 if __name__ == "__main__":
     run()

@@ -75,7 +75,7 @@ from unimacro import natlinkutilsbj as natbj
 
 # from unimacro.unimacro_wxpythondialogs import InputBox
 # import natlinkcore.natlinkutils as natut
-from unimacro import logger  #default for when we don't have an instance.
+from unimacro import logger  # default for when we don't have an instance.
 
 # manipulating file names with env variables etc...
 envvars = extenvvars.ExtEnvVars()
@@ -105,32 +105,10 @@ Classes = ('ExploreWClass', 'CabinetWClass')
 ancestor = natbj.IniGrammar
 
 
-# note this is basically copy & pasted into ThisGrammar
-# some global scope functions need the same logger.
-
-
-def logger_name():
-    return "natlink.unimacro.folders"
-
-
-logger = getLogger(logger_name())
-
-# logger should be used instead of print
-# replace print to avoid unintended use.
-builtin_print = print
-
-
-def our_print(*args, **kwargs):
-    f = StringIO()
-    builtin_print(args, kwargs, file=f)
-    value = f.getvalue()
-    logger.debug("print called instead of logging functions: %s", value)
-    logger.error(value)
-
 class ThisGrammar(ancestor):
     """grammar for quickly going to folders, files and websites
     """
-    #pylint:disable=R0902, R0904, C0116, W0201
+    # pylint:disable=R0902, R0904, C0116, W0201
     language = uniutils.getLanguage()
     name = "folders"
     iniIgnoreGrammarLists = ['subfolders', 'subfiles']
@@ -170,7 +148,8 @@ class ThisGrammar(ancestor):
 
     def initialize(self):
         # self.envDict = natlinkcorefunctions.getAllFolderEnvironmentVariables()   # for (generalised) environment variables
-        self.subfiles = self.subfiles = self.activeFolder = self.activeTimerFolder = None  # for catching on the fly in explorer windows (CabinetClassW)
+        # for catching on the fly in explorer windows (CabinetClassW):
+        self.subfiles = self.subfiles = self.activeFolder = self.activeTimerFolder = None
         self.className = None
         self.dialogWindowTitle = ""  # for recent folders dialog, grammar in natspeak.py
         self.dialogNumberRange = []  # ditto
@@ -186,15 +165,6 @@ class ThisGrammar(ancestor):
             return
         self.load(self.gramSpec)
         self.switchOnOrOff()    # initialises lists from inifile, and switches on
-
-    def loggerName(self) -> str:
-        """Returns the name of a logger. Replace this and loggerShortName to create a logger for an inherited grammar. """
-        return "natlink.unimacro.folders"
-
-    def loggerShortName(self) -> str:
-        """A key for use as a  spoken form or user interface item.
-        """
-        return "folders"
 
     def gotBegin(self, moduleInfo):
         if self.checkForChanges:
@@ -332,7 +302,8 @@ class ThisGrammar(ancestor):
             if os.path.isfile(self.useOtherExplorer):
                 self.info('_folders, use as default explorer: "%s"', self.useOtherExplorer)
             else:
-                self.info('_folders, variable "use other explorer" set to: "%s" (use data from "actions.ini")', self.useOtherExplorer)
+                info = '_folders, var "use other explorer" set to: "%s" (use data from "actions.ini")' % self.useOtherExplorer
+                self.info(info)
 
         # these are for automatic tracking the current folder at an utterance:
         optionsdict['track files at utterance'] = 'automatic track files'
@@ -365,14 +336,18 @@ class ThisGrammar(ancestor):
             intervalSeconds = int(self.trackFoldersTimerInterval / 1000)
             if self.trackFoldersTimerInterval or self.trackRecentFoldersAtUtterance:
                 if not self.trackFoldersTimerInterval:
-                    track_message = f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance'
+                    info = "recent folders (Explorer or File Dialog) at every utterance"
+                    track_message = f'maintain a list of (max) {self.maxRecentFolders} {info}'
                 elif not self.trackRecentFoldersAtUtterance:
-                    track_message = f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) every {intervalSeconds} seconds'
+                    info = f"recent folders (Explorer or File Dialog) every {intervalSeconds} seconds"
+                    track_message = f'maintain a list of (max) {self.maxRecentFolders}  {info}'
                 else:
-                    track_message = f'maintain a list of (max) {self.maxRecentFolders} recent folders (Explorer or File Dialog) at every utterance and every {intervalSeconds} seconds'
+                    msg = f"recent folders (Explorer or File Dialog) at every utterance and every {intervalSeconds} seconds"
+                    track_message = f'maintain a list of (max) {self.maxRecentFolders} {msg}'
                 self.info(track_message)
             if self.trackFoldersTimerInterval:
-                natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)  # every 5 seconds default...
+                # every 5 seconds default:
+                natlinktimer.setTimerCallback(self.catchTimerRecentFolders, self.trackFoldersTimerInterval)
         else:
             self.doTrackRecentFolders = False
 
@@ -492,7 +467,8 @@ class ThisGrammar(ancestor):
                         break
         unusedoptions = validoptions - actualoptions
         for unused in unusedoptions:
-            self.warning(f'-- option "{unused}" is not set, grammar "_folders",\n\tplease set (possibly without value) in section [general]')
+            message = "please set (possibly without value) in section [general]"
+            self.warning(f'-- option "{unused}" is not set, grammar "_folders",\n\t{message}')
 
     def fillGrammarLists(self, listOfLists=None):
         """fills the lists of the grammar with data from inifile
@@ -804,7 +780,8 @@ class ThisGrammar(ancestor):
         information += f'self.maxRecentFolders: {self.maxRecentFolders}, '
         information += f'len(recentfoldersDict): {len(self.recentfoldersDict)}'
         self.info(information)
-        # self.info(f'manageRecentFolders buffer: {buffer}, self.maxRecentFolders: {self.maxRecentFolders}, len(recentfoldersDict): {len(self.recentfoldersDict)}')
+        # self.info(f'manageRecentFolders buffer: {buffer}, self.maxRecentFolders:
+        # {self.maxRecentFolders}, len(recentfoldersDict): {len(self.recentfoldersDict)}')
         if self.recentfoldersDict:
             if len(self.recentfoldersDict) > self.maxRecentFolders + buffer:
                 self.info("shrink recentfoldersDict with %s items to %s", buffer, self.maxRecentFolders)
@@ -827,7 +804,8 @@ class ThisGrammar(ancestor):
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
             elif Folder not in self.foldersSet:
-                # print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s'% (Spoken, Folder, Spoken, spokenFolder))
+                # print('-- "recent [folder] %s": %s\nNote: "folder %s", points to: %s' %
+                #       (Spoken, Folder, Spoken, spokenFolder))
                 del self.recentfoldersDict[Spoken]
                 self.recentfoldersDict[Spoken] = Folder
                 self.dumpRecentFoldersDict()
@@ -1252,8 +1230,9 @@ class ThisGrammar(ancestor):
         self.info(f'UnimacroDirectory: {UnimacroDirectory}')
         UnimacroGrammarsDirectory = envvars.expandEnvVariableAtStart('%UnimacroGrammars%')
         self.info(f'UnimacroGrammarsDirectory: {UnimacroGrammarsDirectory}')
-        makeFromTemplateAndExecute(UnimacroDirectory, "unimacrofoldersremembertemplate.py", UnimacroGrammarsDirectory, "rememberdialog.py",
-                                   prompt, text, default, inifile, section, value, pausetime=pausetime)
+        makeFromTemplateAndExecute(UnimacroDirectory, "unimacrofoldersremembertemplate.py", UnimacroGrammarsDirectory,
+                                   "rememberdialog.py", prompt, text, default, inifile, section, value,
+                                   pausetime=pausetime)
 
     def get_active_explorer(self, hndle=None):
         """give only handle when debugging with unittestFolder
@@ -1330,7 +1309,7 @@ class ThisGrammar(ancestor):
         keystroke("{ctrl+c}")
         uniutils.Wait()
         paths1 = natlinkclipboard.Clipboard.get_system_folderinfo()
-        uniutils.restoreClipboard() 
+        uniutils.restoreClipboard()
 
         if paths1:
             paths1 = [p for p in paths1 if os.path.isfile(p)]
@@ -1465,7 +1444,7 @@ class ThisGrammar(ancestor):
             uniutils.visibleWait()
 
         # now got attention, go ahead:
-        self.wantedFolder = None        
+        self.wantedFolder = None
         uniutils.saveClipboard()
         uniutils.Wait()
         keystroke("{ctrl+c}")
@@ -1909,7 +1888,7 @@ class ThisGrammar(ancestor):
         try:
             classname = win32gui.GetClassName(hndle)
         except Exception:
-            logger.debug('Invalid hndle for GetClassName: {hndle}')
+            self.warning(f'Invalid hndle for GetClassName: {hndle}')
             classname = ''
         IamChild32770 = (not istop) and classname == '#32770'
 
@@ -2141,7 +2120,8 @@ class ThisGrammar(ancestor):
         if self.useOtherExplorer == "xplorer2":
             keystroke("{shift+tab}%s{enter}{down}{up}" % f)
         else:
-            self.info('_folders, please specify in function "gotoInOtherExplorer" for "use other explorer": "%s"', self.useOtherExplorer)
+            info = '_folders, please set "gotoInOtherExplorer" for "use other explorer": "%s"' % self.useOtherExplorer
+            self.info(info)
 
     def goUpInPath(self, PATH, nsteps=None):
         """return a new path, n steps up in hierarchy, default 1
@@ -2167,23 +2147,33 @@ class ThisGrammar(ancestor):
         try:
             uniutils.waitForNewWindow(50, 0.05)  # 2,5 seconds max
         except uniutils.NatlinkCommandTimeOut:
-            self.info('Error with action "start windows explorer" (%s) from command in grammar + "_folders".' , \
-                  startExplorer)
-            self.info('Correct in ini file by using the command: ' + {'enx': "Edit Folders",
-                                                                      'nld': "Bewerk folders"}[self.language])
+            self.info('Error with action "start windows explorer" (%s) from command in grammar + "_folders".' % startExplorer)
+            information = {'enx': "Edit Folders", 'nld': "Bewerk folders"}[self.language]
+            self.info('Correct in ini file by using the command: ' + information)
             return None
         return 1
 
+    def fillDefaultInifile(self, ini=None):
+        """initialize as a starting example the ini file (obsolete)
+        """
+        # TODO To be implemented?
+        pass
 
-#replace print to avoid unintended use.
-builtin_print=print
-def our_print(*args,**kwargs):
-    f=StringIO()
-    builtin_print(args,kwargs,file=f)
-    value=f.getvalue()
+
+# replace print to avoid unintended use.
+builtin_print = print
+
+
+def our_print(*args, **kwargs):
+    f = StringIO()
+    builtin_print(args, kwargs, file=f)
+    value = f.getvalue()
     builtin_print("unimacro print: %s", value)
     ThisGrammar.error(value)
-print=our_print
+
+
+print = our_print
+
 
 def getLongestCommon(tupleList, f):
     """first part of tupleList must match most of f"""

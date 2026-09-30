@@ -10,8 +10,12 @@
 #   being the chain of grammars leading up to GrammarBase
 #
 # run from a (preferably clean) US user profile, easiest from IDLE.
-# do not run from pythonwin. 
+# do not run from pythonwin.
 #
+from dtactions.uniactions.uactions import doAction as action
+import unimacro.natlinkutilsbj as natbj
+from dtactions import uniutils
+from natlinkcore import natlinkutils
 import sys
 import unittest
 import types
@@ -27,16 +31,13 @@ from natlinkcore.gramparser import GrammarError, GrammarSyntaxError
 
 status = natlinkstatus.NatlinkStatus()
 
-from natlinkcore import natlinkutils
-from dtactions import uniutils
-from dtactions import uniutils
-import unimacro.natlinkutilsbj as natbj
-from dtactions.uniactions.uactions import doAction as action
-from dtactions.uniactions.uactions import doAction as action
 
 class TestError(Exception):
     pass
+
+
 ExitQuietly = 'ExitQuietly'
+
 
 def getBaseFolder(globalsDict=None):
     """get the folder of the calling module.
@@ -46,28 +47,31 @@ def getBaseFolder(globalsDict=None):
     """
     globalsDictHere = globalsDict or globals()
     baseFolder = ""
-    if globalsDictHere['__name__']  == "__main__":
+    if globalsDictHere['__name__'] == "__main__":
         baseFolder = os.path.split(sys.argv[0])[0]
-        print('baseFolder from argv: %s'% baseFolder)
+        print('baseFolder from argv: %s' % baseFolder)
     elif globalsDictHere['__file__']:
         baseFolder = os.path.split(globalsDictHere['__file__'])[0]
-        print('baseFolder from __file__: %s'% baseFolder)
+        print('baseFolder from __file__: %s' % baseFolder)
     if not baseFolder or baseFolder == '.':
         baseFolder = os.getcwd()
-        print('baseFolder was empty, take wd: %s'% baseFolder)
+        print('baseFolder was empty, take wd: %s' % baseFolder)
     return baseFolder
+
 
 thisDir = getBaseFolder(globals())
 
-natconnectOption = 0 # or 1 for threading, 0 for not. Seems to make difference
-                     # with spurious error (if set to 1), missing gotBegin and all that...
+natconnectOption = 0  # or 1 for threading, 0 for not. Seems to make difference
+# with spurious error (if set to 1), missing gotBegin and all that...
 logFileName = os.path.join(thisDir, "testresult.txt")
 
-#---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # These tests should be run after we call natConnect
 # no reopen user at each test anymore..
 # no default open window (open window will be the calling program)
 # default .ini files pop up when you first run this test. just ignore them.
+
+
 class UnittestProfileKaiserDictation(TestCaseWithHelpers.TestCaseWithHelpers):
     def setUp(self):
         if not natlink.isNatSpeakRunning():
@@ -85,14 +89,13 @@ class UnittestProfileKaiserDictation(TestCaseWithHelpers.TestCaseWithHelpers):
         finally:
             self.disconnect()
 
-        
     def connect(self):
         # start with 1 for thread safety when run from pythonwin:
         natlink.natConnect(natconnectOption)
 
     def disconnect(self):
         natlink.natDisconnect()
-        
+
     def log(self, t):
         # only log to file:
         log(t)
@@ -103,29 +106,28 @@ class UnittestProfileKaiserDictation(TestCaseWithHelpers.TestCaseWithHelpers):
         """
         return
         # try to remove __main__.ini, but gives unexpected windows popping up
-        #userdir = status.getUnimacroUserDirectory()
-        #language = status.getLanguage()
-        #print 'userdir: %s, language: %s'% (userdir, language)
-        #userinidir = os.path.join(userdir, '%s_inifiles'%language)
-        #if os.path.isdir(userinidir):
+        # userdir = status.getUnimacroUserDirectory()
+        # language = status.getLanguage()
+        # print 'userdir: %s, language: %s'% (userdir, language)
+        # userinidir = os.path.join(userdir, '%s_inifiles'%language)
+        # if os.path.isdir(userinidir):
         #    mainfile = os.path.join(userinidir, '__main__.ini')
         #    if os.path.isfile(mainfile):
         #        os.remove(mainfile)
-        #else:
+        # else:
         #    raise OSError("clearTestFiles, should be a valid directory: %s"% userinidir)
 
     def wait(self, t=1):
         time.sleep(t)
 
-
-    #---------------------------------------------------------------------------
+    # ---------------------------------------------------------------------------
     # This utility subroutine executes a Python command and makes sure that
     # an exception (of the expected type) is raised.  Otherwise a TestError
     # exception is raised
 
-    def doTestForException(self, exceptionType,command,localVars={}):
+    def doTestForException(self, exceptionType, command, localVars={}):
         try:
-            exec(command,globals(),localVars)
+            exec(command, globals(), localVars)
         except exceptionType:
             return
         raise TestError('Expecting an exception to be raised calling '+command)
@@ -137,10 +139,10 @@ class UnittestProfileKaiserDictation(TestCaseWithHelpers.TestCaseWithHelpers):
         got = gram.activeRules
         got.sort()
         self.assertEqual(expected, got,
-                         'Active rules not as expected:\nexpected: %s, got: %s'%
+                         'Active rules not as expected:\nexpected: %s, got: %s' %
                          (expected, got))
 
-    def doTestFuncReturn(self, expected,command,localVars=None):
+    def doTestFuncReturn(self, expected, command, localVars=None):
         # account for different values in case of [None, 0] (wordFuncs)
         if localVars == None:
             actual = eval(command)
@@ -149,12 +151,11 @@ class UnittestProfileKaiserDictation(TestCaseWithHelpers.TestCaseWithHelpers):
 
         if actual != expected:
             time.sleep(1)
-        self.assertEqual(expected, actual, 'Function call "%s" returned unexpected result\nExpected: %s, got: %s'%
-                          (command, expected, actual))
-    
+        self.assertEqual(expected, actual, 'Function call "%s" returned unexpected result\nExpected: %s, got: %s' %
+                         (command, expected, actual))
+
     def testSimple(self):
         natlink.recognitionMimic("Kaiser", "dictation", "test", "one")
-        
 
 
 def log(t):
@@ -167,13 +168,15 @@ def log(t):
     print(t)
     if logFile:
         logFile.write(t + '\n')
-    
-#---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 # run
 #
 # This is the main entry point.  It will connect to NatSpeak and perform
 # a series of tests.  In the case of an error, it will cleanly disconnect
 # from NatSpeak and print the exception information,
+
+
 def dumpResult(testResult, logFile):
     """dump into 
     """
@@ -183,33 +186,35 @@ def dumpResult(testResult, logFile):
         return
     logFile.write('\n--------------- errors -----------------\n')
     for case, tb in testResult.errors:
-        logFile.write('\n---------- %s --------\n'% case)
-        logFile.write(tb)
-        
-    logFile.write('\n--------------- failures -----------------\n')
-    for case, tb in testResult.failures:
-        logFile.write('\n---------- %s --------\n'% case)
+        logFile.write('\n---------- %s --------\n' % case)
         logFile.write(tb)
 
-    
+    logFile.write('\n--------------- failures -----------------\n')
+    for case, tb in testResult.failures:
+        logFile.write('\n---------- %s --------\n' % case)
+        logFile.write(tb)
 
 
 logFile = None
 doHotshot = 1
+
+
 def run():
     global logFile, natconnectOption
     logFile = open(logFileName, "w")
-    log("log messages to file: %s"% logFileName)
+    log("log messages to file: %s" % logFileName)
     log('starting unittestNatlink')
     # trick: if you only want one or two tests to perform, change
     # the test names to her example def test....
     # and change the word 'test' into 'tttest'...
     # do not forget to change back and do all the tests when you are done.
     suite = unittest.makeSuite(UnittestProfileKaiserDictation, 'test')
-##    natconnectOption = 0 # no threading has most chances to pass...
-    log('\nstarting tests with threading: %s\n'% natconnectOption)
+# natconnectOption = 0 # no threading has most chances to pass...
+    log('\nstarting tests with threading: %s\n' % natconnectOption)
     if doHotshot:
-        import hotshot, hotshot.stats, messagefunctions
+        import hotshot
+        import hotshot.stats
+        import messagefunctions
         prof = hotshot.Profile("ProfileKaiserDictation.prof")
         prof.runcall(unittest.TextTestRunner().run, suite)
         prof.close()
@@ -220,8 +225,9 @@ def run():
     else:
         result = unittest.TextTestRunner().run(suite)
         dumpResult(result, logFile=logFile)
-        
+
         logFile.close()
+
 
 if __name__ == "__main__":
     run()

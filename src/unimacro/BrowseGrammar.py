@@ -24,7 +24,7 @@ NatLink grammars
 
 The browser is based upon a tree dialog, adapted from the hiertest demo
 """
-#pylint: disable = R0904, W0702, R0912, R0913, R0914
+# pylint: disable = R0904, W0702, R0912, R0913, R0914
 import copy
 from natlinkcore import gramparser  # for splitApartLines
 
@@ -34,272 +34,267 @@ AltCode = 2     # alternative
 RepCode = 3     # repeat
 OptCode = 4     # optional
 RuleCode = 5    # Rule
-StartForCode='{ (([<'
-EndForCode=  '} ))];'
-MaxUnfoldLen=40
-
+StartForCode = '{ (([<'
+EndForCode = '} ))];'
+MaxUnfoldLen = 40
 
 
 def IsText(value):
     return isinstance(value, str)
 
+
 def GrammarElementKey(item):
     if isinstance(item, str):
         return item.lower()
     return item.GetName().lower()
-    
+
 
 class GrammarElement:
 
-    def Init(self,GramType,Name):
-        self.GramType=GramType
-        self.Included=[]
-        self.Name=Name
-        self.ObjIncluded=0
-        self.IsLA=0
-        self.AlternativesDict={}
+    def Init(self, GramType, Name):
+        self.GramType = GramType
+        self.Included = []
+        self.Name = Name
+        self.ObjIncluded = 0
+        self.IsLA = 0
+        self.AlternativesDict = {}
 
-    def SetAlternativesDict(self,AlternativesDict):
+    def SetAlternativesDict(self, AlternativesDict):
         if self.AreAlternatives():
-            self.AlternativesDict=AlternativesDict
+            self.AlternativesDict = AlternativesDict
 
-    def Append(self,NewElement):
+    def Append(self, NewElement):
         self.Included.append(NewElement)
-        self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
+        self.ObjIncluded = self.ObjIncluded or not IsText(NewElement)
 
-    def Insert(self,NewElement):
-        self.Included.insert(0,NewElement)
-        self.ObjIncluded=self.ObjIncluded or not IsText(NewElement)
+    def Insert(self, NewElement):
+        self.Included.insert(0, NewElement)
+        self.ObjIncluded = self.ObjIncluded or not IsText(NewElement)
 
     def Sort(self):
         self.Included.sort(key=GrammarElementKey)
-    
-    def SetToAllText(self,Text):
+
+    def SetToAllText(self, Text):
         AllText = [str(t) for t in Text]
-        self.Included=AllText
-        self.ObjIncluded=0
+        self.Included = AllText
+        self.ObjIncluded = 0
 
     def SetIsAllText(self):
         if self.ObjIncluded:
             for x in self.Included:
                 if not IsText(x):
                     return
-        self.ObjIncluded=0
+        self.ObjIncluded = 0
 
     def GetName(self):
-        if self.Name!='':
-            if self.GramType==RuleCode:
+        if self.Name != '':
+            if self.GramType == RuleCode:
                 if self.IsRuleContainer():
                     return self.Name
                 return '<'+self.Name+'>'
-            if self.GramType==ListCode:
-                return '{'+self.Name+'}'                
+            if self.GramType == ListCode:
+                return '{'+self.Name+'}'
             return self.Name
         return ''
 
-
-    def AreAllWordsOrLists(self,contents=''):
-        if contents=='':
-            contents=self.GetAllIncluded(1,Unfold=0)
+    def AreAllWordsOrLists(self, contents=''):
+        if contents == '':
+            contents = self.GetAllIncluded(1, Unfold=0)
         return not '<' in contents
 
-    def AreAllWords(self,contents=''): #might be combination of seq and alt
+    def AreAllWords(self, contents=''):  # might be combination of seq and alt
         if not self.ObjIncluded:
             return 1
-        if contents=='':
-            contents=self.GetAllIncluded(1,Unfold=0)
+        if contents == '':
+            contents = self.GetAllIncluded(1, Unfold=0)
         return (not '<' in contents) and (not '{' in contents)
 
     def IsAllText(self):
         if self.ObjIncluded:
             return False
-        if len(self.Included)>0:
+        if len(self.Included) > 0:
             # print 'IsAllText: %s'% self.Included
             return True
         return False
 
     def IsInnerRule(self):
-        return self.GramType==ListCode or self.GramType==RuleCode or self.IsLongAlternative()
+        return self.GramType == ListCode or self.GramType == RuleCode or self.IsLongAlternative()
 
     def IsRuleContainer(self):
         for x in self.Included:
-            if (IsText(x)) or x.GramType!=RuleCode:
+            if (IsText(x)) or x.GramType != RuleCode:
                 return 0
         return 1
 
     def IsAltOrList(self):
-        return (self.GramType==ListCode) or self.IsLongAlternative()
-
+        return (self.GramType == ListCode) or self.IsLongAlternative()
 
     def AreAlternatives(self):
         return self.GramType in (AltCode, ListCode)
 
     def SetIsLongAlternative(self):
-        if self.GramType==AltCode:
-            self.IsLA=self.IsAllText() and (len(' | '.join(self.Included)) > MaxUnfoldLen)
-            if not self.IsLA and (self.AlternativesDict!={}):
-                count=0
+        if self.GramType == AltCode:
+            self.IsLA = self.IsAllText() and (len(' | '.join(self.Included)) > MaxUnfoldLen)
+            if not self.IsLA and (self.AlternativesDict != {}):
+                count = 0
                 for x in self.Included:
                     if x in self.AlternativesDict:
                         count += 1
-                self.IsLA=self.IsLA or ((1.0*count/len(self.Included))>0.45)
+                self.IsLA = self.IsLA or ((1.0*count/len(self.Included)) > 0.45)
         else:
-            self.IsLA=0
+            self.IsLA = 0
 
     def IsLongAlternative(self):
         return self.IsLA
 
-    def FoldLongAlternatives(self,a):
-        #Called once, after parsing and creating the Grammar Elements
+    def FoldLongAlternatives(self, a):
+        # Called once, after parsing and creating the Grammar Elements
         self.SetIsLongAlternative()
         if self.IsLongAlternative():
-            a=a+1
-            if a==1:
-                self.Name='<alternatives>'
+            a = a+1
+            if a == 1:
+                self.Name = '<alternatives>'
             else:
-                self.Name='<alternatives'+str(a)+'>'
+                self.Name = '<alternatives'+str(a)+'>'
         else:
             for x in self.Included:
                 if not IsText(x):
                     x.FoldLongAlternatives(a)
 
-    def FillInRules(self,DefRules,UsedRules):
-        #Called once, after parsing and creating the Grammar Elements
-        #Replaces rule references by full Rule objects
+    def FillInRules(self, DefRules, UsedRules):
+        # Called once, after parsing and creating the Grammar Elements
+        # Replaces rule references by full Rule objects
         for x in self.Included:
             if not IsText(x):
-                if x.GramType==RuleCode:
-                    i=self.Included.index(x)
+                if x.GramType == RuleCode:
+                    i = self.Included.index(x)
                     if x.Name in DefRules:
-                        self.Included[i]=DefRules[x.Name]
+                        self.Included[i] = DefRules[x.Name]
                         if not x.Name in UsedRules:
                             UsedRules.append(x.Name)
                 else:
-                    x.FillInRules(DefRules,UsedRules)
+                    x.FillInRules(DefRules, UsedRules)
 
-
-
-    def GetAllInnerRules(self,maxLevel,InnerRules):
+    def GetAllInnerRules(self, maxLevel, InnerRules):
         for x in self.Included:
             if not IsText(x):
-                if x.GramType==RuleCode:
+                if x.GramType == RuleCode:
                     InnerRules.append(x)
-                    if maxLevel>0:
-                        x.GetAllInnerRules(maxLevel-1,InnerRules)
+                    if maxLevel > 0:
+                        x.GetAllInnerRules(maxLevel-1, InnerRules)
                 elif x.IsAltOrList():
                     InnerRules.append(x)
                 else:
-                    x.GetAllInnerRules(maxLevel,InnerRules)
+                    x.GetAllInnerRules(maxLevel, InnerRules)
 
-    def RemoveDuplicates(self,AllRules):
-#        AllNames = map(lambda x: x.Name,AllRules) # my first map and lambda; alas! no longer needed :-)
-        Rules=[]
-        RuleNames=[]
+    def RemoveDuplicates(self, AllRules):
+        # AllNames = map(lambda x: x.Name,AllRules) # my first map and lambda; alas! no longer needed :-)
+        Rules = []
+        RuleNames = []
         for x in AllRules:
             if not (x in Rules or x.GetName() in RuleNames):
                 Rules.append(x)
                 RuleNames.append(x.GetName())
         return Rules
 
-    def GetInnerRules(self,maxLevel):
-        InnerRules=[]
-        self.GetAllInnerRules(maxLevel,InnerRules)
-        InnerRules=self.RemoveDuplicates(InnerRules)
+    def GetInnerRules(self, maxLevel):
+        InnerRules = []
+        self.GetAllInnerRules(maxLevel, InnerRules)
+        InnerRules = self.RemoveDuplicates(InnerRules)
         return InnerRules
 
-
-    def GetIncluded(self,i,maxLevel,Unfold):
+    def GetIncluded(self, i, maxLevel, Unfold):
         try:
-            x=self.Included[i]
+            x = self.Included[i]
             if IsText(x):
                 return x
-            return x.GetContents(maxLevel-(x.GramType==RuleCode),Unfold)
-        except:
+            return x.GetContents(maxLevel-(x.GramType == RuleCode), Unfold)
+        except Exception:
             return ''
 
-    def ReduceLongAlternatives(self,contents):
-        if len(contents)>MaxUnfoldLen:
-            p=contents[MaxUnfoldLen:].find('|')
-            contents=contents[:MaxUnfoldLen+p]+',...'
+    def ReduceLongAlternatives(self, contents):
+        if len(contents) > MaxUnfoldLen:
+            p = contents[MaxUnfoldLen:].find('|')
+            contents = contents[:MaxUnfoldLen+p]+',...'
         return contents
 
-    def GetAllIncluded(self,maxLevel,Unfold):
-        if len(self.Included)==0:
-            if self.GramType==ListCode:
-                contents='???'
+    def GetAllIncluded(self, maxLevel, Unfold):
+        if len(self.Included) == 0:
+            if self.GramType == ListCode:
+                contents = '???'
             else:
-                contents=''
-        # this if clause gives a significant speedup for long lists                
+                contents = ''
+        # this if clause gives a significant speedup for long lists
         elif not self.ObjIncluded:
             if (not Unfold) and self.IsLongAlternative():
-                contents=self.Name
+                contents = self.Name
             else:
                 if self.GramType in (AltCode, ListCode):
-                    contents=' | '.join(self.Included)
+                    contents = ' | '.join(self.Included)
                 else:
-                    contents=' '.join(self.Included)
-                contents=self.ReduceLongAlternatives(contents)
+                    contents = ' '.join(self.Included)
+                contents = self.ReduceLongAlternatives(contents)
         else:
-            contents=self.GetIncluded(0,maxLevel,Unfold)
-            for i in range(1,len(self.Included)):
+            contents = self.GetIncluded(0, maxLevel, Unfold)
+            for i in range(1, len(self.Included)):
                 if self.AreAlternatives():
-                    contents=contents+' | '+self.GetIncluded(i,maxLevel,Unfold)
+                    contents = contents+' | '+self.GetIncluded(i, maxLevel, Unfold)
                 else:
-                    contents=contents+' '+self.GetIncluded(i,maxLevel,Unfold)
+                    contents = contents+' '+self.GetIncluded(i, maxLevel, Unfold)
             if self.IsLongAlternative():
-                contents=self.ReduceLongAlternatives(contents)
+                contents = self.ReduceLongAlternatives(contents)
         return contents
 
-    def GetContents(self,maxLevel,Unfold=0):
-        #Unfold controls forced unfolding of alternatives
-        #max Level controls the deepness of rule unfolding, 0=rulename;1=innerule names
-        #beyond the max Level, Unfold tries to unfold short rules more levels
-        includedContents=self.GetAllIncluded(maxLevel,Unfold)        
-        if self.GramType!=RuleCode:
-            contents=StartForCode[self.GramType]
-            if (self.GramType==ListCode) and not Unfold:
-                contents= contents+self.Name
+    def GetContents(self, maxLevel, Unfold=0):
+        # Unfold controls forced unfolding of alternatives
+        # max Level controls the deepness of rule unfolding, 0=rulename;1=innerule names
+        # beyond the max Level, Unfold tries to unfold short rules more levels
+        includedContents = self.GetAllIncluded(maxLevel, Unfold)
+        if self.GramType != RuleCode:
+            contents = StartForCode[self.GramType]
+            if (self.GramType == ListCode) and not Unfold:
+                contents = contents+self.Name
             else:
-                contents=contents+includedContents
-            c=contents=contents+EndForCode[self.GramType]
-            if self.GramType==RepCode:
-                if len(c)>3: # try to remove redundant parens
-                    Remove=c[1]=='{' and (c[-2]=='}') and (not '{' in c[2:-2])
-                    Remove=Remove or (c[1]=='[' and (c[-2]==']') and (not ']' in c[2:-2]))
+                contents = contents+includedContents
+            c = contents = contents+EndForCode[self.GramType]
+            if self.GramType == RepCode:
+                if len(c) > 3:  # try to remove redundant parens
+                    Remove = c[1] == '{' and (c[-2] == '}') and (not '{' in c[2:-2])
+                    Remove = Remove or (c[1] == '[' and (c[-2] == ']') and (not ']' in c[2:-2]))
                     if Remove:
-                        contents=contents[1:-1]
-                contents=contents+'+'
+                        contents = contents[1:-1]
+                contents = contents+'+'
         else:
-            contents= '<'+self.Name
-            if maxLevel<=0:
-                if Unfold: #Try to go deeper one level at a time, until too long
-                    l=maxLevel
-                    NiC=self.GetAllIncluded(l,0)
-                    includedContents=''
-                    while (len(NiC)< MaxUnfoldLen) and (includedContents!=NiC):
-                        l=l+1
-                        includedContents=NiC
-                        NiC=self.GetAllIncluded(l,0)
-                    if l==maxLevel:
-                        contents=contents+'>'
+            contents = '<'+self.Name
+            if maxLevel <= 0:
+                if Unfold:  # Try to go deeper one level at a time, until too long
+                    l = maxLevel
+                    NiC = self.GetAllIncluded(l, 0)
+                    includedContents = ''
+                    while (len(NiC) < MaxUnfoldLen) and (includedContents != NiC):
+                        l = l+1
+                        includedContents = NiC
+                        NiC = self.GetAllIncluded(l, 0)
+                    if l == maxLevel:
+                        contents = contents+'>'
                     else:
-                        contents=includedContents
+                        contents = includedContents
                 else:
-                    contents=contents+'>'
+                    contents = contents+'>'
             else:
-                contents=includedContents+';'
+                contents = includedContents+';'
         return contents
 
     def GetTextChunks(self):
-        #Gets all Text included that is not included in Inner Rules
-        #(+lists+alternatives)
-        Chunks=[]
+        # Gets all Text included that is not included in Inner Rules
+        # (+lists+alternatives)
+        Chunks = []
         for x in self.Included:
             if IsText(x):
-                i=self.Included.index(x)
-                PreviousWasText=(i>0) and IsText(self.Included[i-1])
-                if (self.GramType==SeqCode) and PreviousWasText:
-                    Chunks[-1]=Chunks[-1]+' '+x
+                i = self.Included.index(x)
+                PreviousWasText = (i > 0) and IsText(self.Included[i-1])
+                if (self.GramType == SeqCode) and PreviousWasText:
+                    Chunks[-1] = Chunks[-1]+' '+x
                 else:
                     Chunks.append(x)
             elif x.IsAllText():
@@ -309,100 +304,101 @@ class GrammarElement:
                     Chunks.extend(x.GetTextChunks())
         return Chunks
 
-
-    def FindLargestRulePath(self,Rules):
-        largestPath=[]
-        objPath=[]
+    def FindLargestRulePath(self, Rules):
+        largestPath = []
+        objPath = []
         for r in self.Included:
             if not IsText(r):
-                newobjPath=[r]
+                newobjPath = [r]
                 if r.Name in Rules:
-                    newPath=[r.Name]
-                    newRules=copy.copy(Rules)
+                    newPath = [r.Name]
+                    newRules = copy.copy(Rules)
                     del newRules[Rules.index(r.Name)]
-                    if len(newRules)==0:
-                        return newPath,newobjPath
-                    n,o=r.FindLargestRulePath(newRules)
+                    if len(newRules) == 0:
+                        return newPath, newobjPath
+                    n, o = r.FindLargestRulePath(newRules)
                     newPath.extend(n)
                     newobjPath.extend(o)
-                    if len(newPath)>len(largestPath):
-                        largestPath=newPath
-                        objPath=newobjPath
+                    if len(newPath) > len(largestPath):
+                        largestPath = newPath
+                        objPath = newobjPath
                 else:
-                    newPath,o=r.FindLargestRulePath(Rules)
+                    newPath, o = r.FindLargestRulePath(Rules)
                     newobjPath.extend(o)
-                    if len(newPath)>len(largestPath):
-                        largestPath=newPath
-                        objPath=newobjPath
-        return largestPath,objPath
-    
+                    if len(newPath) > len(largestPath):
+                        largestPath = newPath
+                        objPath = newobjPath
+        return largestPath, objPath
 
-    def FindRulePath(self,Start):
+    def FindRulePath(self, Start):
         if self.IsRuleContainer():
             for x in self.Included:
-                if x.Name==Start[0]:
-                    #We should actually search for the largest Tree,
-                    #but this is sufficient for most cases
-                    Path,objPath=x.FindLargestRulePath(Start[1])
-                    objPath.insert(0,x)
-                    return x,Path,objPath
-        return None,[],[]
+                if x.Name == Start[0]:
+                    # We should actually search for the largest Tree,
+                    # but this is sufficient for most cases
+                    Path, objPath = x.FindLargestRulePath(Start[1])
+                    objPath.insert(0, x)
+                    return x, Path, objPath
+        return None, [], []
 
 # def caseIndependentSort(something, other):
 #     something, other= repr(something).lower(),repr(other).lower()
 #     return cmp(something, other)
 
+
 def RemoveDuplicatesOfSortedList(List):
-    for i in range(len(List)-1,-1,-1):
-        if i>0:
-            if List[i]==List[i-1]:
-                del List[i]    
+    for i in range(len(List)-1, -1, -1):
+        if i > 0:
+            if List[i] == List[i-1]:
+                del List[i]
+
 
 def InverseDict(SomeDict):
     ID = {}
     for key in SomeDict.keys():
-        ID[SomeDict[key]]=key
+        ID[SomeDict[key]] = key
     return ID
 
-def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
-    KnownWords,KnownRules,KnownLists,ImportRules=ParserInfo
-    CurElement=GrammarElement()
-    CurElement.Init(RuleCode,name)
-    stack.insert(0,CurElement)
+
+def ParseRuleDefinitions(name, stack, Parser, ParserInfo, Lists, Dicts):
+    KnownWords, KnownRules, KnownLists, ImportRules = ParserInfo
+    CurElement = GrammarElement()
+    CurElement.Init(RuleCode, name)
+    stack.insert(0, CurElement)
     for element in Parser.ruleDefines[name]:
-        if element[0]=='start':
-            NewElement=GrammarElement()
-            NewElement.Init(element[1],'')
-            if (element[1]==AltCode) and name in Dicts:
+        if element[0] == 'start':
+            NewElement = GrammarElement()
+            NewElement.Init(element[1], '')
+            if (element[1] == AltCode) and name in Dicts:
                 NewElement.SetAlternativesDict(Dicts[name])
             CurElement.Append(NewElement)
-            CurElement=NewElement
-            stack.insert(0,CurElement)
-        elif element[0]=='rule':
-            NewElement=GrammarElement()
-            RuleName=KnownRules[element[1]]
-            NewElement.Init(RuleCode,RuleName)
+            CurElement = NewElement
+            stack.insert(0, CurElement)
+        elif element[0] == 'rule':
+            NewElement = GrammarElement()
+            RuleName = KnownRules[element[1]]
+            NewElement.Init(RuleCode, RuleName)
             if RuleName in ImportRules:
                 NewElement.Append('<imported>')
             CurElement.Append(NewElement)
-        elif element[0]=='list':
-            NewElement=GrammarElement()
-            ListName=KnownLists[element[1]]
-            NewElement.Init(ListCode,ListName)
+        elif element[0] == 'list':
+            NewElement = GrammarElement()
+            ListName = KnownLists[element[1]]
+            NewElement.Init(ListCode, ListName)
             if ListName in Dicts:
                 NewElement.SetAlternativesDict(Dicts[ListName])
             if ListName in Lists:
                 NewElement.SetToAllText(Lists[ListName])
             CurElement.Append(NewElement)
-        elif element[0]=='end':
-            #Pack simple text sequences into parent list as multi word item in Included
-            if CurElement.IsAllText() and (CurElement.GramType==SeqCode):
+        elif element[0] == 'end':
+            # Pack simple text sequences into parent list as multi word item in Included
+            if CurElement.IsAllText() and (CurElement.GramType == SeqCode):
                 stack[1].Included[-1] = ' '.join(CurElement.Included)
-            else: #make shure object is not turned into AllText
+            else:  # make sure object is not turned into AllText
                 CurElement.SetIsAllText()
             del stack[0]
-            CurElement=stack[0]
-        elif element[0]=='word':
+            CurElement = stack[0]
+        elif element[0] == 'word':
             CurElement.Append(KnownWords[element[1]])
 
 # def checkForBinary(line):
@@ -414,50 +410,51 @@ def ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts):
 #         return utilsqh.convertToBinary(line)
 #     else:
 #         raise ValueError("BrowseGrammar, checkForBinary should have binary or unicode as input, not: %s (%s)"% (line, type(line)))
-# 
+#
 
-def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exclusive=0,
+
+def ParseGrammarDefinitions(gramSpec, gramName, Lists, Dicts, activeRules, All=1, Exclusive=0,
                             exclusiveState=0):
     if not isinstance(gramSpec, list):
-        gramSpec=[gramSpec]    
+        gramSpec = [gramSpec]
     gramparser.splitApartLines(gramSpec)
-##    Parser = natlinkutils.GramParser(gramSpec)
-##    Parser.doParse()
+    # Parser = natlinkutils.GramParser(gramSpec)
+    # Parser.doParse()
     # with gramparserlexyacc:
     Parser = gramparser.GramParser(gramSpec)
     # print '%s, type gramSpec: %s, '% (gramName, type(gramSpec))
     # if type(gramSpec) == list:
     #     gramSpec = [checkForBinary(g) for g in gramSpec]
     Parser.doParse()
-    ParserInfo=(InverseDict(Parser.knownWords),InverseDict(Parser.knownRules),
-        InverseDict(Parser.knownLists),Parser.importRules)
-    stack=[]        
+    ParserInfo = (InverseDict(Parser.knownWords), InverseDict(Parser.knownRules),
+                  InverseDict(Parser.knownLists), Parser.importRules)
+    stack = []
     for name in Parser.ruleDefines:
-        ParseRuleDefinitions(name,stack,Parser,ParserInfo,Lists,Dicts)
-    DefRules={}                
+        ParseRuleDefinitions(name, stack, Parser, ParserInfo, Lists, Dicts)
+    DefRules = {}
     for x in stack:
-        DefRules[x.Name]=x
-    UsedRules=[]
+        DefRules[x.Name] = x
+    UsedRules = []
     for x in stack:
-        x.FillInRules(DefRules,UsedRules)
+        x.FillInRules(DefRules, UsedRules)
         x.FoldLongAlternatives(0)
-    Grammar=GrammarElement()
-    Grammar.Init(RuleCode,gramName)
+    Grammar = GrammarElement()
+    Grammar.Init(RuleCode, gramName)
     if Exclusive:
         if not exclusiveState:
             return None
         # if asking for exclusive, only show the activerules
         All = 0
-            
+
     if All:
-        Obsolete=GrammarElement()
-        Obsolete.Init(RuleCode,'Obsolete')
+        Obsolete = GrammarElement()
+        Obsolete.Init(RuleCode, 'Obsolete')
         for rule in stack:
             if rule.Name in Parser.exportRules:
                 Grammar.Insert(rule)
             elif not rule.Name in UsedRules:
                 Obsolete.Insert(rule)
-        if len(Obsolete.Included)!=0:
+        if len(Obsolete.Included) != 0:
             Grammar.Append(Obsolete)
     elif activeRules:
         for rule in stack:
@@ -466,5 +463,3 @@ def ParseGrammarDefinitions(gramSpec,gramName,Lists,Dicts,activeRules,All=1, Exc
     else:
         return None  # nothing if no active rules QH
     return Grammar
-
-

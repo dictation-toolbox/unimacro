@@ -22,7 +22,7 @@ jobs:
         python -m pip install --upgrade pip
         #we can't install this becuase it depends on natlink, which currently cannot be installed via pip.
         #python -m pip install -e .[test]
-        #for now, just install dependencies required for linting sepcifically
+        #for now, just install dependencies required for linting specifically
         python -m pip install flake8
     - name: Linting with flake8
       run: |

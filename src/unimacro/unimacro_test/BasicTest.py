@@ -21,17 +21,16 @@ import TestCaseWithHelpers
 action = actions.doAction
 
 
-##class UnimacroBasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
+# class UnimacroBasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
 class BasicTest(TestCaseWithHelpers.TestCaseWithHelpers):
-      
+
     def setUp(self):
         pass
-##        natlink.natConnect()
-        
+# natlink.natConnect()
 
     def test_Something_in_unimacro(self):
         print('testing something')
         lang = uniutils.getLanguage()
-        self.assert_equal("enx", lang, "testing should be done from an English speech profile, not: %s"% lang)
+        self.assert_equal("enx", lang, "testing should be done from an English speech profile, not: %s" % lang)
 
 # no main statement, run from command in _unimacrotest.py.

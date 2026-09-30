@@ -35,7 +35,7 @@ from unimacro import natlinkutilsbj as natbj
 
 from dtactions import uniutils
 from dtactions.uniactions.uactions import doAction as action
-from dtactions.uniactions.uactions import doKeystroke  as keystroke
+from dtactions.uniactions.uactions import doKeystroke as keystroke
 import unimacro
 
 from io import StringIO
