@@ -21,6 +21,7 @@ dependencies = [
         "debugpy >= 1.2.0",
 		"pywin32 >= 304",
 		"natlinkcore <6",    
+		"natlink",
         "FreeSimpleGUI>=5.1.0",
 		"icecream >= 2.1.3"]
 		  		
