@@ -20,10 +20,10 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-# _number.py 
+# _number.py
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 #  August 2003/November 2022 (python3)
-# 
+#
 """smart and reliable number dictation
 
 the number part of the grammar was initially provided by Joel Gould in
@@ -45,7 +45,7 @@ as "30", "3".
 QH050104: standardised things, and put functions in natlinkutilsbj, so that
 other grammars can invoke the number grammar more easily.
 """
-#pylint:disable=C0209, R0904, R0912, R0915
+# pylint:disable=C0209, R0904, R0912, R0915
 import natlink
 from dtactions.uniactions.uactions import doAction as action
 from dtactions.uniactions.uactions import doKeystroke as keystroke
@@ -58,24 +58,27 @@ from unimacro import iban  # special module for banknumber (European mainly I th
 
 # Note: lists number1to99 and number1to9 and n1-9 and n20-90 etc. are taken from function getNumberList in natlinkutilsbj
 
+
 class NumberException(Exception):
     pass
 
 
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
 
     language = uniutils.getLanguage()
-    #Step 1, choose one of next three grammar rules:
+    # Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
     try:
         number_rules = natbj.numberGrammarTill999[language]
     except KeyError:
         print('take number grammar from "enx"')
         number_rules = natbj.numberGrammarTill999['enx']
-    
-    #number_rules = natbj.numberGrammarTill999999[language] # including thousands
-    #number_rules = natbj.numberGrammar[language] #  including millions
+
+    # number_rules = natbj.numberGrammarTill999999[language] # including thousands
+    # number_rules = natbj.numberGrammar[language] #  including millions
     name = "number extended"
     # do not use "To" instead of "Through", because "To" sounds the same as "2"
     gramSpec = ["""
@@ -100,7 +103,7 @@ class ThisGrammar(ancestor):
 #     ## these are special rules for making numbers of specific length.
 #     ## when they appear to be useful, I will try to make them available in other languages
 #     ## and other cases too:
-#         
+#
 #     amsterdamZuidRule = """<numberaztotal> exported =  <numberazone> | <numberaztwo> | <numberazone><numberaztwo>;
 #     <numberazone>  = zesentachtig <numberthreedigits><numberthreedigits>;
 #     <numberaztwo> = point (<__thousandslimited>  | <numbertwodigits><numbertwodigits>);
@@ -109,7 +112,7 @@ class ThisGrammar(ancestor):
 # <__hundredslimited> = hundred | <__2to9before> hundred | hundred <__1to99after> ;
 # <__thousandslimited> = thousand | <__2to9before> thousand | thousand <__1to99after> |
 #                         <__2to9before> thousand <__1to9after>;
-# 
+#
 # <numberfourdigits> = <__thousandslimited>  | <numbertwodigits> <numbertwodigits> ;
 # <numbersixdigits> = {n0-9}+ | {n0-9} <numbertwodigits>  {n0-9} <numbertwodigits> ;
 # <__thousands> = duizend | (<__1to99>|<__hundreds>) duizend | duizend (<__1to99>|<__hundreds>) |
@@ -117,41 +120,41 @@ class ThisGrammar(ancestor):
 # <__2to9before> = {n2-9};
 # <__1to99after> = {n1-99};
 # <__1to9after> = {n1-9};
-# 
+#
 # """
 
-##8600 8650 86 2008
-    def gotResults___hundredslimited(self,words,fullResults):
+# 8600 8650 86 2008
+    def gotResults___hundredslimited(self, words, fullResults):
         """will return only three digits as _sofar
         goes together with <__2to9before> and <__1to99after>
-        
+
         """
         didBeforeRules = ['__2to9before']
         doInAfterRules = ['__1to99after', '__1to9after']
-    
-        print('__hundredslimited, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words))
+
+        print('__hundredslimited, prevRule: %s, nextRule: %s, words: %s' % (self.prevRule, self.nextRule, words))
         lenw = len(words)
         for i in range(lenw):
             if i == 0 and self.prevRule in didBeforeRules:
                 pass
             else:
                 self._hundreds = 100
-            if self.nextRule in doInAfterRules and  i == lenw - 1:
+            if self.nextRule in doInAfterRules and i == lenw - 1:
                 # leave the "adding" action to nextRule
                 pass
             else:
                 self._sofar += str(self._hundreds)
                 self._hundreds = 0
 
-    def gotResults___thousandslimited(self,words,fullResults):
+    def gotResults___thousandslimited(self, words, fullResults):
         """will return only four digits as _sofar
-        
+
         goes together with <__2to9before> and <__1to99after> and possibly <__1to9after>
-        
+
         """
         didBeforeRules = ['__2to9before']
         doInAfterRules = ['__1to99after', '__1to9after']
-    
+
         # print '__hundredslimited, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words)
         lenw = len(words)
         for i in range(lenw):
@@ -159,7 +162,7 @@ class ThisGrammar(ancestor):
                 pass
             else:
                 self._thousands = 1000
-            if self.nextRule in doInAfterRules and  i == lenw - 1:
+            if self.nextRule in doInAfterRules and i == lenw - 1:
                 # leave the "adding" action to nextRule
                 pass
             else:
@@ -168,14 +171,14 @@ class ThisGrammar(ancestor):
 
     def gotResults___1to99after(self, words, fullResults):
         """should be after __hundredslimited or __thousandslimited
-        
+
         must be defined in doInAfterRules ofter the corresponding rule
         """
         didBeforeRules = ['__hundredslimited', '__thousandslimited']
 
-        print('__1to99after, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words))
+        print('__1to99after, prevRule: %s, nextRule: %s, words: %s' % (self.prevRule, self.nextRule, words))
         if len(words) > 1:
-            raise ValueError("rule __1to99after, expect only one word, got %s: %s"% (len(words), words))
+            raise ValueError("rule __1to99after, expect only one word, got %s: %s" % (len(words), words))
         numWords = self.getNumbersFromSpoken(words)
         num = numWords[0]
         if self.prevRule == '__hundredslimited':
@@ -187,22 +190,22 @@ class ThisGrammar(ancestor):
             self._sofar += str(self._thousands)
             self._thousands = 0
         else:
-            print('__1to99after, no valid rule, got: %s, expected one of: %s'% (self.prevRule, didBeforeRules))
+            print('__1to99after, no valid rule, got: %s, expected one of: %s' % (self.prevRule, didBeforeRules))
             self._sofar += str(num)
-            print('_sofar: %s'% self._sofar)
+            print('_sofar: %s' % self._sofar)
 
     def gotResults___1to9after(self, words, fullResults):
         """should be after __hundredslimited or __thousandslimited
-        
+
         must be defined in doInAfterRules ofter the corresponding rule
-        
+
         Identical with gotResults___1to99after
         """
         didBeforeRules = ['__hundredslimited', '__thousandslimited']
 
-        print('__1to99after, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words))
+        print('__1to99after, prevRule: %s, nextRule: %s, words: %s' % (self.prevRule, self.nextRule, words))
         if len(words) > 1:
-            raise ValueError("rule __1to99after, expect only one word, got %s: %s"% (len(words), words))
+            raise ValueError("rule __1to99after, expect only one word, got %s: %s" % (len(words), words))
         numWords = self.getNumbersFromSpoken(words)
         num = numWords[0]
         if self.prevRule == '__hundredslimited':
@@ -214,21 +217,20 @@ class ThisGrammar(ancestor):
             self._sofar += str(self._thousands)
             self._thousands = 0
         else:
-            print('__1to99after, no valid rule, got: %s, expected one of: %s'% (self.prevRule, didBeforeRules))
+            print('__1to99after, no valid rule, got: %s, expected one of: %s' % (self.prevRule, didBeforeRules))
             self._sofar += str(num)
-            print('_sofar: %s'% self._sofar)
-
+            print('_sofar: %s' % self._sofar)
 
     def gotResults___2to9before(self, words, fullResults):
         """together with __hundredslimited or __thousandslimited
-        
+
         expect one word only, and treat with respect to the next rule
         should be defined in didBeforeRules of the corresponding rule
         """
         # print '__2to9before, prevRule: %s, nextRule: %s, words: %s'% (self.prevRule, self.nextRule, words)
-        
+
         if len(words) > 1:
-            raise ValueError("rule __2to9before, expect only one word, got %s: %s"% (len(words), words))
+            raise ValueError("rule __2to9before, expect only one word, got %s: %s" % (len(words), words))
         numWords = self.getNumbersFromSpoken(words, asStr=1)
         numStr = numWords[0]
         num = int(numStr)
@@ -239,25 +241,25 @@ class ThisGrammar(ancestor):
         else:
             print('__2to9before, nextRule is NOT __hundredslimited of __thousandslimited')
             self._sofar += numStr
-            print('_sofar: %s'% self._sofar)
-    
+            print('_sofar: %s' % self._sofar)
 
-##8640  8600
+# 8640  8600
 
-#failed to get this working:
-#<listtupleargument> exported = (Tuple|List|Argument) (Number <number> | (Variable|String) <dgndictation> | None)+;
-    def gotBegin(self,moduleInfo):
+# failed to get this working:
+# <listtupleargument> exported = (Tuple|List|Argument) (Number <number> | (Variable|String) <dgndictation> | None)+;
+
+    def gotBegin(self, moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
         self.progInfo = uniutils.getProgInfo(moduleInfo)
-  
+
     def initialize(self):
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
         # if switching on fillInstanceVariables also fill numbers lists like {n1-9} or {number1to99}
-        self.switchOnOrOff() 
+        self.switchOnOrOff()
 
     def gotResultsInit(self, words, fullResults):
         # Step 2:
@@ -265,31 +267,30 @@ class ThisGrammar(ancestor):
         # defining them here makes testing in gotResults easier
         self.number = ''  # for most rules
         self.page = ''    # for page rule
-        self.through = '' # only for testnumber2 and pagenumber
+        self.through = ''  # only for testnumber2 and pagenumber
         self.pair = ''    # only for the pair rule...
         self.minus = False
-        self.ibanHeader = None # for banknumber
-        self.ibanCheck =  None # for banknumber
-        self.totalNumber = '' # for multiple parts (Amsterdam Zuid, spacingnumber)
+        self.ibanHeader = None  # for banknumber
+        self.ibanCheck = None  # for banknumber
+        self.totalNumber = ''  # for multiple parts (Amsterdam Zuid, spacingnumber)
 
-        #self.listtupleargument = ''
-        #self.Items = [] # for listtupleargumenthallo
+        # self.listtupleargument = ''
+        # self.Items = [] # for listtupleargumenthallo
         # this line can be used to get the correct fullResults to be used in testIniGrammar.py for
         # for debugging the rules!
         # print 'fullResults of number extended: %s'% fullResults
-        
-        
+
     def fillInstanceVariables(self):
         """fills the necessary instance variables
 
-        in this grammar a special rule for Loes Wijers, Amsterdam Zuid.        
+        in this grammar a special rule for Loes Wijers, Amsterdam Zuid.
         """
         # search commands (for Arnoud):
-        self.specialAmsterdamZuid = self.ini.getBool('general', 'special amsterdam zuid') 
+        self.specialAmsterdamZuid = self.ini.getBool('general', 'special amsterdam zuid')
         self.filenamePagenumbersPrefix = self.ini.get('general', 'filename page numbers prefix')
         self.filenamePagenumbersPostfix = self.ini.get('general', 'filename page numbers postfix')
         self.lastPage, self.lastThroug = None, None   # filename page numbers
-       
+
     def gotResults_testnumber1(self, words, fullResults):
         # step 3: setting the number to wait for
         # because more numbers can be collected, the previous ones be collected first
@@ -298,11 +299,11 @@ class ThisGrammar(ancestor):
         if self.hasCommon(words, 'number'):
             if self.number:
                 # flush previous number
-                self.number =self.doMinus('number', 'minus') # convert to int
+                self.number = self.doMinus('number', 'minus')  # convert to int
                 self.outputNumber(self.number)
             self.waitForNumber('number')
         else:
-            raise ValueError('invalid user input in grammar %s: %s'%(__name__, words))
+            raise ValueError('invalid user input in grammar %s: %s' % (__name__, words))
 
     def gotResults_testnumber2(self, words, fullResults):
         # step 4 also: if more numbers are expected,
@@ -315,7 +316,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, 'through'):
             self.waitForNumber('through')
         else:
-            raise NumberException('invalid user input in grammar %s: %s'%(__name__, words))
+            raise NumberException('invalid user input in grammar %s: %s' % (__name__, words))
 
     def gotResults_spacingnumber(self, words, fullResults):
         self.collectNumber()
@@ -329,7 +330,7 @@ class ThisGrammar(ancestor):
         for w in words:
             spacingchar = self.getFromInifile(w, 'spacing')
             self.totalNumber += spacingchar
-        
+
     def gotResults_pagenumber(self, words, fullResults):
         # step 4 also: if more numbers are expected,
         # you have to collect the previous number before asking for the new
@@ -341,7 +342,7 @@ class ThisGrammar(ancestor):
         elif self.hasCommon(words, 'through'):
             self.waitForNumber('through')
         else:
-            raise NumberException('invalid words in pagenumber rule in grammar %s: %s'%(__name__, words))
+            raise NumberException('invalid words in pagenumber rule in grammar %s: %s' % (__name__, words))
 
     def gotResults_filenamelastpage(self, words, fullResults):
         # additional command, compose filename with the last called page number(s).
@@ -351,7 +352,7 @@ class ThisGrammar(ancestor):
             if self.lastThroug:
                 lp, lt = int(self.lastPage), int(self.lastThroug)
                 if lt > lp:
-                    pagePart = '%s-%s'% (lp, lt)
+                    pagePart = '%s-%s' % (lp, lt)
                 else:
                     pagePart = self.lastPage
             else:
@@ -360,12 +361,14 @@ class ThisGrammar(ancestor):
             print('numbers extended: no page numbers command issued yet, skip command')
             return
         if not self.filenamePagenumbersPrefix:
-            print('%s: command "%s", please specify "filename page numbers prefix" in section [general] of inifile'% (' '.join(words), self.name))
+            print('%s: command "%s", please specify "filename page numbers prefix" in section [general] of inifile' % (
+                ' '.join(words), self.name))
         if not self.filenamePagenumbersPostfix:
-            print('%s: command "%s", please specify "filename page numbers postfix" in section [general] of inifile'% (' '.join(words), self.name))
+            print('%s: command "%s", please specify "filename page numbers postfix" in section [general] of inifile' % (
+                ' '.join(words), self.name))
         if self.filenamePagenumbersPrefix and self.filenamePagenumbersPostfix:
             fName = self.filenamePagenumbersPrefix + pagePart + self.filenamePagenumbersPostfix
-            action("SCLIP %s"% fName)
+            action("SCLIP %s" % fName)
 
     def gotResults_pair(self, words, fullResults):
         # here a bit different logic for the place to collect the previous number.
@@ -378,11 +381,11 @@ class ThisGrammar(ancestor):
         else:
             self.waitForNumber('number')
 
-    def gotResults_banknumber(self,words,fullResults):
+    def gotResults_banknumber(self, words, fullResults):
         """get first 8 characters from bank name (list), rest from numbers grammar
         """
         self.ibanHeader = self.getFromInifile(words[-1], 'bankheader')
-        self.ibanCheck =  "%.2d"% self.getNumberFromSpoken(words[-2])
+        self.ibanCheck = "%.2d" % self.getNumberFromSpoken(words[-2])
         self.waitForNumber('number')
 
     def gotResults_number(self, words, fullResults):
@@ -415,7 +418,7 @@ class ThisGrammar(ancestor):
         numWords = self.getNumbersFromSpoken(words, asStr=1)
         numberString = ''.join(numWords)
         self._sofar += numberString
-        
+
     def gotResults_numberthreedigits(self, words, fullResults):
         numWords = self.getNumbersFromSpoken(words, asStr=1)
         numberString = ''.join(numWords)
@@ -434,7 +437,7 @@ class ThisGrammar(ancestor):
     def gotResults(self, words, fullResults):
         # step 5, in got results collect the number:
         self.collectNumber()
-        
+
         if self.totalNumber:
             # multiple numbers, AmsterdamZuid
             self.totalNumber += self.number
@@ -448,24 +451,24 @@ class ThisGrammar(ancestor):
                 keystroke("{tab}")
             elif len(self.totalNumber) == 5 and self.totalNumber[0] == '.':
                 keystroke("{tab}")
-            
+
             return
-        
+
         if self.page:
-            ## page numbers rule (for child windows, adobe [acrord32] of pdf24.)
+            # page numbers rule (for child windows, adobe [acrord32] of pdf24.)
             self.lastPage, self.lastThroug = self.page, self.through
-            print('setting lastPage and lastThroug: %s, %s'% (self.lastPage, self.lastThroug))
+            print('setting lastPage and lastThroug: %s, %s' % (self.lastPage, self.lastThroug))
             isTop = (self.progInfo[2] == 'top')
             ma = getMetaAction('pagestart', progInfo=self.progInfo)
             if not ma:
-                print('no metaactions defined for pagestart, stop command %s'% self.progInfo.prog)
+                print('no metaactions defined for pagestart, stop command %s' % self.progInfo.prog)
                 if isTop:
                     if self.through:
-                        keystroke(" page %s-%s"% (self.page, self.through))
+                        keystroke(" page %s-%s" % (self.page, self.through))
                     else:
-                        keystroke(" page %s"% self.page)
+                        keystroke(" page %s" % self.page)
                 else:
-                    print("cannot finish page command for child window: %s"% repr(self.progInfo))
+                    print("cannot finish page command for child window: %s" % repr(self.progInfo))
                 return
 
             action("<<pagestart>>")
@@ -474,22 +477,21 @@ class ThisGrammar(ancestor):
                 self.through = self.page
 
             if self.through:
-                ## only child window here:
+                # only child window here:
                 action("<<pagethrough>>")
                 keystroke(self.through)
             action("<<pagefinish>>")
             return  # page command
-            
+
         if self.pair:
             self.pair = self.doMinus('pair', 'minus')
-            print("(%s, %s) "% (self.number, self.pair))
-            
-          
-        #elif self.listtupleargument:
+            print("(%s, %s) " % (self.number, self.pair))
+
+        # elif self.listtupleargument:
         #    print 'self.listtupleargument in gotResults: %s'% self.listtupleargument
         #    if self.number:
         #        self.number = self.doMinus('number', 'minus')
-        #        self.Items.append(self.number)                    
+        #        self.Items.append(self.number)
         #
         #    if self.dictated:
         #        self.Items.append(''.join(self.dictated))
@@ -512,19 +514,18 @@ class ThisGrammar(ancestor):
                 # print 'ibanheader: %s, number: %s'% (self.ibanHeader, self.number)
                 result = iban.create_iban(self.ibanHeader[:2], self.ibanHeader[2:], self.number)
             except iban.IBANError as err:
-                print('invalid iban %s, %s (%s)'% (self.ibanHeader, self.number, err))
+                print('invalid iban %s, %s (%s)' % (self.ibanHeader, self.number, err))
                 return
             if result[2:4] == str(self.ibanCheck):
                 keystroke(result)
             else:
-                print('invalid check: %s (%s) '% (self.ibanCheck, result))
+                print('invalid check: %s (%s) ' % (self.ibanCheck, result))
 
         elif self.number:
             # last part if all others failed:
             self.number = self.doMinus('number', 'minus')
             self.outputNumber(self.number)
 
-                      
     def outputNumber(self, number):
         if type(number) in [int, float]:
             number = str(number)
@@ -538,13 +539,11 @@ class ThisGrammar(ancestor):
         elif prog in ['excel', 'winword', 'soffice']:
             keystroke('{tab}')
 
-
-
     def doMinus(self, number, minus):
         """return  the minus version of number, is self.minus is set
 
         pass in the names of the number variable and the name of the minus variable.
-        return the wanted number.        
+        return the wanted number.
         """
         Nstring = getattr(self, number)
         Nstring = Nstring.strip()
@@ -562,15 +561,18 @@ class ThisGrammar(ancestor):
         return Nstring
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
-    thisGrammar = None 
+    thisGrammar = None
+
 
 if __name__ == "__main__":
-    ## interactive use, for debugging:
+    # interactive use, for debugging:
     natlink.natConnect()
     try:
         thisGrammar = ThisGrammar(inifile_stem="_number extended")
@@ -582,4 +584,3 @@ elif __name__.find('.') == -1:
     # standard startup when Dragon starts:
     thisGrammar = ThisGrammar()
     thisGrammar.initialize()
-

@@ -21,10 +21,10 @@
 #   (c) Copyright 1999 by Joel Gould
 #   Portions (c) Copyright 1999 by Dragon Systems, Inc.
 #
-# _calculator.py 
+# _calculator.py
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 #  April 2016
-# 
+#
 """smart and reliable number dictation, used for calculator
 
 Inside the calc program the commands can be made exclusive.
@@ -35,24 +35,26 @@ Also see the page "number grammar" on the Unimacro site and
 the grammars _number simple and _number extended.
 """
 import copy
-from dtactions.uniactions.uactions import doAction as action
+# from dtactions.uniactions.uactions import doAction as action
+from dtactions.sendkeys import sendkeys as keystroke
 
-from natlinkcore import natlinkutils as natut
-from dtactions import uniutils
+# from natlinkcore import natlinkutils as natut
 from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
 
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
 
     language = uniutils.getLanguage()
     normalRules = ['calcnormal', 'cancel']
-    calcRules = ['calccalc', 'cancel'] # exclusive
-    continueRules = ['calccontinue', 'cancel'] # exclusive
+    calcRules = ['calccalc', 'cancel']  # exclusive
+    continueRules = ['calccontinue', 'cancel']  # exclusive
 
-    #see grammar _numbers.py (or _numbers_simple.py or _numbers_extended.py)
-    #for instructions on the (quite complicated) number rules
-    number_rules = natbj.numberGrammarTill999[language] # hundreds, including a long string of digits
+    # see grammar _numbers.py (or _numbers_simple.py or _numbers_extended.py)
+    # for instructions on the (quite complicated) number rules
+    number_rules = natbj.numberGrammarTill999[language]  # hundreds, including a long string of digits
 
     name = "calculator"
 
@@ -65,7 +67,7 @@ class ThisGrammar(ancestor):
 <cancel> exported = Cancel [Calculator] | Calculator Cancel;
 """+number_rules+"""
     """
-  
+
     def initialize(self):
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
@@ -82,7 +84,7 @@ class ThisGrammar(ancestor):
         self.exclusive = 0
         self.lastResult = None
         self.startwithLastResult = False
-        
+
     def gotBegin(self, moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
@@ -127,7 +129,7 @@ class ThisGrammar(ancestor):
             pass
             # print 'continue calculation %s'% words
         else:
-            ## reset, to be sure:
+            # reset, to be sure:
             self.calculation = []
             self.hadNumber = self.hadOperator = False
 
@@ -140,12 +142,12 @@ class ThisGrammar(ancestor):
     def fillInstanceVariables(self):
         """fills the necessary instance variables
         records the unary or possibly unary operators
-        
+
         """
         self.unaryLeftOperators = self.ini.getList('general', 'unary left operators')
         self.unaryRightOperators = self.ini.getList('general', 'unary right operators')
-        self.dualOperators = self.ini.getList('general', 'dual operators')  ## may be incomplete, but for double functions, like minus
-
+        # may be incomplete, but for double functions, like minus
+        self.dualOperators = self.ini.getList('general', 'dual operators')
 
     def reset(self):
         pass
@@ -171,8 +173,7 @@ class ThisGrammar(ancestor):
             return
 
     gotResults_calccalc = gotResults_calcnormal
-  
-  
+
     def gotResults_calccontinue(self, words, fullResults):
         # step 3: specify the number you are waiting for
         # check if the word Minus is present, and then wait for the number named "number"
@@ -180,16 +181,16 @@ class ThisGrammar(ancestor):
         # self.minus will only be set if the rule number is visited.
         if not self.inCalculation:
             raise Exception("_calculator, shoud be in a calculation right now")
-        
+
         if self.hasCommon(words, 'equals'):
             self.collectNumberAddToCalculation()
             self.calculation.append("=")
             self.doCalculation()
             self.inCalculation = False
-       
+
     def gotResults_number(self, words, fullResults):
         # this rule only catches with the word "minus"
-        print('calculator: rule number, %s'% words)
+        print('calculator: rule number, %s' % words)
         # self.waitForNumber('number')
         self.minus = not self.minus
 
@@ -198,24 +199,24 @@ class ThisGrammar(ancestor):
         # check if the word Minus is present, and then wait for the number named "number"
         # note in this example self.number is non existent until collectNumber has been visited.
         # self.minus will only be set if the rule number is visited.
-        
+
         for w in words:
             self.collectNumberAddToCalculation()
-            print('rule operator, hadOperator: %s, hadNumber %s'% (self.hadOperator, self.hadNumber))
+            print('rule operator, hadOperator: %s, hadNumber %s' % (self.hadOperator, self.hadNumber))
             operator = self.getFromInifile(w, 'operator')
-            operatorStripped = operator.strip()
-    
+            # operatorStripped = operator.strip()
+
             unaryLeft = w in self.unaryLeftOperators
             unaryRight = w in self.unaryRightOperators
             possiblyDual = w in self.dualOperators
-            
+
             if self.hadNumber:
                 if unaryRight:
                     pass
                 elif possiblyDual or not unaryLeft:
                     self.hadNumber = False  # just set now
                 else:
-                    print('no unaryLeft operator expected: %s'% w)
+                    print('no unaryLeft operator expected: %s' % w)
                     continue
             else:
                 if unaryLeft and not possiblyDual:
@@ -233,24 +234,20 @@ class ThisGrammar(ancestor):
     def gotResults_cancel(self, words, fullResults):
         self.cancelMode()
 
-
-    def gotResults(self,words,fullResults):
+    def gotResults(self, words, fullResults):
         # step 4, in gotResults collect the number (as a string):
-        self.collectNumberAddToCalculation() # setting self.number, see self.waitForNumber above
+        self.collectNumberAddToCalculation()  # setting self.number, see self.waitForNumber above
         if self.calculation:
             if self.prog == 'calc':
-                print('calculation sofar (calc): %s'% ''.join(self.calculation))
+                print('calculation sofar (calc): %s' % ''.join(self.calculation))
                 self.doCalculation()
             else:
                 print('continue calculation or finish with "equals" (or "cancel")')
-                print('calculation sofar: %s'% ''.join(self.calculation))
-                
- 
-
+                print('calculation sofar: %s' % ''.join(self.calculation))
 
     def collectNumberAddToCalculation(self):
         """collect the number, and add to self.calculation
-        
+
         also wait again for new number...
         """
         self.collectNumber()
@@ -265,7 +262,7 @@ class ThisGrammar(ancestor):
             self.calculation.append(self.number)
             self.number = ''
             self.waitForNumber('number')
-                      
+
     def doCalculation(self):
         if not self.calculation:
             print('doCalculation, no calculation ready')
@@ -276,7 +273,7 @@ class ThisGrammar(ancestor):
 
         if self.startwithLastResult:
             self.calculation.insert(0, str(self.lastResult))
-        
+
         calculationpython = ''.join([c for c in self.calculation if c != "="])
         # place for python specific tricks:
         if calculationpython.find(',') >= 0:
@@ -287,28 +284,28 @@ class ThisGrammar(ancestor):
         if self.prog in ['calc']:
             if self.startwithLastResult:
                 del self.calculation[0]  # take memory from calculator, not from this list...
-                print('in calc, continuation of calculation, expect lastResult: %s'% self.lastResult)
+                print('in calc, continuation of calculation, expect lastResult: %s' % self.lastResult)
             for c in self.calculation:
                 keystroke(c.strip())
 
         elif self.prog in ['natspeak']:  # DragonPad
-            print('%s = %s'% (calculationpython, result))
+            print('%s = %s' % (calculationpython, result))
         elif self.prog in ['excel']:
             calculationExcel = [c.strip() for c in self.calculation if c != "="]
             calculationExcel = '=' + ''.join(calculationExcel) + "{tab}"
             keystroke(calculationExcel)
         else:
-            print("calc: %s = %s"% (calculationpython, result))
-            keystroke('%s'% result )
-            
+            print("calc: %s = %s" % (calculationpython, result))
+            keystroke('%s' % result)
+
         self.inCalculation = False
         self.calculation = []
 
     def cancelMode(self):
-        #print "end of oops exclusive mode", also called when microphone is toggled.
-##        print 'resetting oops grammar'
+        # print "end of oops exclusive mode", also called when microphone is toggled.
+        # print('resetting oops grammar')
         if self.inCalculation:
-            print('%s, cancel exclusive mode'% self.name)
+            print('%s, cancel exclusive mode' % self.name)
             self.activeSet = None
             self.deactivateAll()
             self.inCalculation = False
@@ -323,17 +320,18 @@ if thisGrammar.gramSpec:
 else:
     thisGrammar = None
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
-    
-def changeCallback(type,args):
+
+
+def changeCallback(type, args):
     # not active without special version of natlinkmain:
-    if ((type == 'mic') and (args=='on')):
+    if ((type == 'mic') and (args == 'on')):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
-    
-    

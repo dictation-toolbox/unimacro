@@ -1,9 +1,9 @@
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
+#    or the file COPYRIGHT.txt in the natlink\natlink directory
 #
-# _keystrokes.py 
+# _keystrokes.py
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 #  August 2002, revised September 2003, revised June 2011
 """grammar in which you can continuously dictate keystrokes
@@ -16,7 +16,7 @@ keystrokes can be defined, that can be used in combination with all the
 others continuously.
 
 """
-#pylint:disable=R0904, R0913, R0912, C0209
+# pylint:disable=R0904, R0913, R0912, C0209
 
 import sys
 import copy
@@ -25,13 +25,15 @@ from dtactions.uniactions.uactions import doKeystroke as keystroke
 from dtactions.uniactions.uactions import doAction as action
 from dtactions import uniutils
 from unimacro import natlinkutilsbj as natbj
-from natlinkcore import nsformat 
+from natlinkcore import nsformat
 from natlinkcore import loader
 import natlink
 natlinkmain = loader.NatlinkMain()
-language = uniutils.getLanguage()        
+language = uniutils.getLanguage()
 
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
 
     iniIgnoreGrammarLists = ['count', 'effcount', 'character', 'punctuation']
@@ -40,7 +42,7 @@ class ThisGrammar(ancestor):
                      <modifiers><repkey> | <modifiers><repkey><count> | <modifiers><norepkey>;"""
     allkeysrule = """<allkeys> = <lastkey> |
         ((<click>|<stdkeys>)+ | (<click>|<stdkeys>)+<lastkey>);"""
-    
+
     lastkeyrule = "<lastkey> = dictate <dgndictation>;"  # only with allkeys!
     importedrule = "<dgndictation> imported;"
     beforerule = "<before> = here|keystroke;"    # to be translated, only for keystrokes extended...
@@ -53,7 +55,7 @@ class ThisGrammar(ancestor):
 <contextmenu> = ('context menu');
 <modifiers>  = (Cap|'All-Caps'|Shift|Control|Alt)+ ;
 <switchkeys> exported = "keystrokes (simple|extended)";
-""" 
+"""
 
     gramSpec = "# placeholder of gramSpec"
 
@@ -70,12 +72,12 @@ class ThisGrammar(ancestor):
         """return the gramSpec, from gramSpecStart, with several options and tranlation steps
         """
         # first make stdkeysrule with times compulsory or voluntary:
-        #if self.requireTimes:
+        # if self.requireTimes:
         #    timespart = "(times)"
-        #else:
+        # else:
         #    timespart = "[times]"
-        #stdkeysrule = self.stdkeysrule % timespart
-        
+        # stdkeysrule = self.stdkeysrule % timespart
+
         if self.doKeystrokesExtended:
             startrule = "<startrule> exported = <before>+ <allkeys> | <allkeys>;"
             startSpec = ["# keystrokes extended",
@@ -87,7 +89,7 @@ class ThisGrammar(ancestor):
             startrule = "<startrule> exported = <stdkeys>+;"
             startSpec = ["# keystrokes simple",
                          startrule, self.stdkeysrule]
-        #print 'startSpec: %s\n\n'% startSpec
+        # print('startSpec: %s\n\n' % startSpec)
         startSpec.append(self.lastpartofgramspec)
         self.gramSpec = copy.copy(startSpec)
         # if not inInit:
@@ -96,14 +98,14 @@ class ThisGrammar(ancestor):
         #     self.load(self.gramSpec)
 
     def initialize(self):
-        #print 'self.gramspec: %s'% self.gramSpec
+        # print 'self.gramspec: %s'% self.gramSpec
         self.constructGramSpec()
         self.load(self.gramSpec)
         # call for extra spoken form with difficult numbers
         # needs self.stripSpokenForm in gotResults... function!!!
-        #self.addSpokenFormNumbers(self.taskCounts)
+        # self.addSpokenFormNumbers(self.taskCounts)
         self.countList = list(range(1, self.maxCount+1))
-        self.effCountList = list(range(1, self.maxEffCount+1))  
+        self.effCountList = list(range(1, self.maxEffCount+1))
         self.setNumbersList('count', self.countList)
         self.setNumbersList('effcount', self.effCountList)
 
@@ -113,10 +115,10 @@ class ThisGrammar(ancestor):
         self.resetVars()
         self.isIgnored = 0
         self.title = 'Unimacro grammar {self.name} (__name__) language: {language}'
-        #self.activateAll()
+        # self.activateAll()
         self.fillGrammarLists()
-        self.dictateOutputState = -1 # start state for dictate <dgndictation> rule (nsformat)
-            
+        self.dictateOutputState = -1  # start state for dictate <dgndictation> rule (nsformat)
+
     def gotBegin(self, moduleInfo):
         if self.checkForChanges:
             if self.checkInifile():
@@ -124,7 +126,7 @@ class ThisGrammar(ancestor):
         if self.prevModule == moduleInfo:
             return
 
-        progInfo = uniutils.getProgInfo(moduleInfo)       
+        progInfo = uniutils.getProgInfo(moduleInfo)
 
         self.isIgnored = 0
 
@@ -132,17 +134,16 @@ class ThisGrammar(ancestor):
             self.isIgnored = 1
             return
 
-
         mode = self.windowPolicy(progInfo=progInfo)
         if mode == self.prevMode:
-            return 
-##        print 'keystrokes, new mode: ', mode
+            return
+        # print 'keystrokes, new mode: ', mode
         if self.prevMode == 'inactive':
             self.activateAll()
-            
+
         self.prevMode = mode
         ini = self.ini
-        #print 'do keystrokes for mode: %s'% repr(mode)
+        # print 'do keystrokes for mode: %s'% repr(mode)
         if mode == 'inactive':
             print(f'{self.GetName()}: deactivate: {mode}')
             self.deactivateAll()
@@ -153,8 +154,8 @@ class ThisGrammar(ancestor):
             repkeySections = ['repkey']
             norepkeySections = ['norepkey']
             # print 'activate "default mode" keystrokes'
-##            print '%s, mode: %s, repkeySections: %s, norepkeySections: %s'% \
-##                  (self.GetName(), mode, self.repkeySections, self.norepkeySections)
+            # print '%s, mode: %s, repkeySections: %s, norepkeySections: %s'% \
+            # (self.GetName(), mode, self.repkeySections, self.norepkeySections)
         else:
             # print 'activate keystrokes with mode: %s'% repr(mode)
             # self.modeSet is set of modestrings being active:
@@ -169,7 +170,7 @@ class ThisGrammar(ancestor):
             repkeySections.append('repkey')
             norepkeySections = self.ini.getSectionsWithPrefix('norepkey', mode)
             norepkeySections.append('norepkey')
-            #print '%s, mode: %s, repkeySections: %s, norepkeySections: %s'% \
+            # print '%s, mode: %s, repkeySections: %s, norepkeySections: %s'% \
             #      (self.GetName(), mode, repkeySections, norepkeySections)
 
         if repkeySections != self.repkeySections:
@@ -182,32 +183,32 @@ class ThisGrammar(ancestor):
             self.setList('norepkey', L)
             self.norepkeySections = norepkeySections[:]
             self.norepkeyList = L[:]
- 
-    def gotResultsInit(self, words,fullResults):
+
+    def gotResultsInit(self, words, fullResults):
         self.resetVars()
         self.buf = []
         self.codes = 0
         self.hadClick = 0
         self.fullResults = fullResults
-        #print "keystrokes: %s"% words
+        # print "keystrokes: %s"% words
         if fullResults and fullResults[0][1] != 'lastkey':
             self.dictateOutputState = -1  # reset, otherwise resume previous result.
 
     def gotResults_before(self, words, fullResults):
         """optional for here or keystroke multiple words even allowed"""
         if not self.hasCommon(words, 'here'):
-            print('got words in "before" rule, but not "here": %s'% words)
+            print('got words in "before" rule, but not "here": %s' % words)
             return
         # do a click, or (if next rule == contextmenu) a right click.
         button, nClick = 'left', 1
         if self.nextRule == 'contextmenu':
             button = 'right'
-        #print '_keystrokes, do a "%s" mouse click'% button
+        # print '_keystrokes, do a "%s" mouse click'% button
         if not self.doWaitForMouseToStop():
             raise Exception("_keystrokes, mouse did not stop")
         uniutils.buttonClick(button, nClick)
         uniutils.visibleWait()
-        self.hadClick = button             
+        self.hadClick = button
 
     def subrule_contextmenu(self, words):
         """'context menu'"""
@@ -217,8 +218,8 @@ class ThisGrammar(ancestor):
         self.flush()
         self.key = '{shift+f10}'
         self.flush()
-        
-    #def importedrule_dgnletters(self, words):
+
+    # def importedrule_dgnletters(self, words):
     #    print 'dgnletters: %s'% words
     #    for w in words:
     #        self.flush()
@@ -231,22 +232,21 @@ class ThisGrammar(ancestor):
     #            self.key = '\\'
     #        elif self.hasCommon(w[1:],'cap'):
     #            self.cap = 1dit is een test
-    #        else: # 
-    #            
+    #        else: #
+    #
     def gotResults_dgndictation(self, words, fullResults):
         print(f'words of dgndictation: {words}')
         formattedOutput, self.dictateOutputState = nsformat.formatWords(words, state=self.dictateOutputState)
         self.key = formattedOutput
         self.flush()
         #
-        #try:
+        # try:
         #    natlink.recognitionMimic(words)
-        #except natlink.MimicFailed: level Hello space Has
+        # except natlink.MimicFailed: level Hello space Has
         #    print "_keystrokes, dictate rule: cannot mimic words: %s"% words
-            
-                     
+
     def gotResults_count(self, words, fullResults):
-        #print 'found count: %s'% words
+        # print 'found count: %s'% words
         self.count = self.getNumberFromSpoken(words[0])
 
     # repkey gevraagd:
@@ -273,8 +273,8 @@ class ThisGrammar(ancestor):
     def gotResults_effkey(self, words, fullResults):
         "( Eff|Function ) {effcount}"
         self.flush()
-        count = self.getNumberFromSpoken(words[-1]) 
-        self.key = '{f%s}'% count
+        count = self.getNumberFromSpoken(words[-1])
+        self.key = '{f%s}' % count
         self.flush()
 
     def gotResults_norepkey(self, words, fullResults):
@@ -284,14 +284,14 @@ class ThisGrammar(ancestor):
             # no waiting for counts, can be done directly:
             self.flushAll()
         for w in words:
-            #print 'norepkey: %s'% w
+            # print 'norepkey: %s'% w
             #  Special case for context menu if the word "Here" had been said
-            if self.hasCommon(w,["context menu"]) and self.hadClick:
+            if self.hasCommon(w, ["context menu"]) and self.hadClick:
                 continue
             char = self.getCharacterFromSpoken(w)
             if char:
                 self.key = char
-                #print 'icalphabet: %s'% self.key
+                # print 'icalphabet: %s'% self.key
             else:
                 char = self.getPunctuationFromSpoken(w)
                 if char:
@@ -306,16 +306,17 @@ class ThisGrammar(ancestor):
                     if not res:
                         raise ValueError(f'_keystrokes, norepkey: no code found for {w} ({self.fullResults})')
                     self.key = res
-                #print 'norepkey: %s'% self.key
+                # print 'norepkey: %s'% self.key
             self.flush()
-    # 
+    #
     # kijk hier welke modifier keys (ctrl, shift, alt) gevraagd worden:
+
     def gotResults_modifiers(self, words, fullResults):
         """(Cap | "All-Caps" | Shift | Control | Alt)+ """
         self.flush()
         self.mod = ''
         # doorloop shift, control en alt:
-        #print 'mod:', `words`
+        # print 'mod:', `words`
         if self.hasCommon(words, 'all-caps'):
             self.cap = max(self.cap, 2)
         elif self.hasCommon(words, 'cap'):
@@ -324,14 +325,14 @@ class ThisGrammar(ancestor):
             self.mod = 'shift+'
         # control:
         if self.hasCommon(words, ['control']):
-            self.mod  = self.mod + 'ctrl+'
+            self.mod = self.mod + 'ctrl+'
         # alt:
         if self.hasCommon(words, ['alt']):
             self.mod = self.mod + 'alt+'
 
     def gotResults_click(self, words, fullResults):
         """do click, with mouse, rule
-        
+
         modifiers can be set
         """
         # print 'click rule: %s (modifiers: %s), prevrule: %s'% (words, self.mod, self.prevRule)
@@ -349,35 +350,33 @@ class ThisGrammar(ancestor):
         possibleButtons = uniutils.joelsButtons
         possibleClicks = ['1', '2', '3']
         clickrules = self.getFromInifile(words[0], 'click')
-        #print 'clickrules: %s'% clickrules
+        # print 'clickrules: %s'% clickrules
         if not clickrules:
             print('_keystrokes: no valid clickrule')
             return
         parts = [s.strip() for s in clickrules.split(',')]
         button = parts[0]
-        if not button in possibleButtons:
-            print('button should be one of %s'% possibleButtons)
+        if button not in possibleButtons:
+            print('button should be one of %s' % possibleButtons)
             return
         if len(parts) > 1:
-            
+
             if parts[1] not in possibleClicks:
                 print(f'number of clicks ({parts[1]}) should be one of {possibleClicks}')
                 return
             nClick = int(parts[1])
         else:
             nClick = 1
-    
+
         if len(parts) > 2:
             print(f'currently only (button, clicks) allowed in clickrule, not: {clickrules}')
             return
-    
+
         if self.nextRule == 'contextmenu' and nClick == 1:
             button = 'right'
         uniutils.buttonClick(button, nClick, modifiers=self.mod)
         uniutils.visibleWait()
         self.hadClick = button
-
-
 
     def doMouseMoveStopClick(self):
         """wait for mouse starting to move, stopping and then click
@@ -394,35 +393,34 @@ class ThisGrammar(ancestor):
 
     def gotResults_switchkeys(self, words):
         """[do] keystrokes (simple|extended)"""
-        #line from fillInstanceVariables:
-        #self.doKeystrokesExtended = self.ini.getBool('general', 'extended keystrokes', False)
+        # line from fillInstanceVariables:
+        # self.doKeystrokesExtended = self.ini.getBool('general', 'extended keystrokes', False)
         if self.hasCommon(words, 'simple'):
             self.doKeystrokesExtended = False
         else:
             self.doKeystrokesExtended = True
         self.ini.set('general', 'extended keystrokes', self.doKeystrokesExtended)
         self.ini.writeIfChanged()
-        self.constructGramSpec() # should also reload the grammar
-        #print 'after switchkeys, requireTimes: %s, simpleOrExtended: %s'% (self.requireTimes, self.doKeystrokesExtended)
+        self.constructGramSpec()  # should also reload the grammar
+        # print 'after switchkeys, requireTimes: %s, simpleOrExtended: %s'% (self.requireTimes, self.doKeystrokesExtended)
 
-    def gotResults_codesof(self, words,fullResults):
+    def gotResults_codesof(self, words, fullResults):
         self.codes = 1
-        
-    def gotResults_startrule(self, words,fullResults):
-        pass # no special rule here!
-    
-    def gotResults_lastkey(self, words,fullResults):
+
+    def gotResults_startrule(self, words, fullResults):
+        pass  # no special rule here!
+
+    def gotResults_lastkey(self, words, fullResults):
         self.flush()
-        self.flushAll()  
+        self.flushAll()
         uniutils.visibleWait()
 
-    def gotResults(self, words,fullResults):
+    def gotResults(self, words, fullResults):
         self.flush()
         self.flushAll()
         if self.cap < 3:
             self.cap = 0
-            
-           
+
     def flush(self):
         if not self.key:
             return
@@ -435,7 +433,7 @@ class ThisGrammar(ancestor):
             self.key = uniutils.doModifier(self.key, self.mod)
         if self.count != 1:
             self.key = uniutils.doCount(self.key, self.count)
-       
+
         if isinstance(self.key, list):
             print(f'_keystrokes, flush: warning, self.key is list: {self.key}')
             self.buf.extend(self.key)
@@ -450,8 +448,8 @@ class ThisGrammar(ancestor):
             except TypeError:
                 print(f'---TypeError in flushAll of _keystrokes: {self.buf}')
                 raise
-            
-            #print 'flushAll: %s'% buf  
+
+            # print 'flushAll: %s'% buf
             if self.codes:
                 action(f'SCLIP {buf}')
             elif buf.find("<<") >= 0:
@@ -465,31 +463,30 @@ class ThisGrammar(ancestor):
         self.count = 1
         self.key = ''
         if self.cap == 1:
-            self.cap =0
+            self.cap = 0
 
-    
     def resetAllVars(self):
         self.repkeySections = None
         self.norepkeySections = None
         self.repkeyList = self.norepkeyList = []
         self.prevModule = None
         self.prevMode = 'inactive'
-        
+
         self.cap = 0
         self.buf = []
         self.resetVars()
-       
-    def gotResults_command(self, words,fullResults):
+
+    def gotResults_command(self, words, fullResults):
         self.cap = 0
-        
+
         if self.hasCommon(words, ['Caps']):
             self.cap = 3
-            
-    def windowPolicy(self, modInfo=None, progInfo=None): 
+
+    def windowPolicy(self, modInfo=None, progInfo=None):
         progInfo = progInfo or uniutils.getProgInfo(modInfo)
-        #print 'window policy------progInfo: %s'% repr(progInfo)
-        #print 'deactivaterules: %s'% self.deactivateRules
-        #print 'activaterules: %s'% self.activateRules
+        # print 'window policy------progInfo: %s'% repr(progInfo)
+        # print 'deactivaterules: %s'% self.deactivateRules
+        # print 'activaterules: %s'% self.activateRules
         modeSet = []
         for mode in self.modes:
             if uniutils.matchWindow(self.modes[mode], progInfo=progInfo):
@@ -504,7 +501,6 @@ class ThisGrammar(ancestor):
             return 'active'
         return 'inactive'
 
-       
     def showInifile(self, body=None, grammarLists=None, ini=None,
                     showGramspec=1, prefix=None, commandExplanation=None,
                     postfix=None, lineLen=60, sort=1):
@@ -537,7 +533,7 @@ class ThisGrammar(ancestor):
             body.append('do keystrokes extended (with Here and mouse clicking)')
         else:
             body.append('do keystrokes simple (no mouse clicking)')
-        #if self.requireTimes:
+        # if self.requireTimes:
         #    body.append('require "times" when doing repeat keys')
         ancestor.showInifile(self, body=body)
 
@@ -545,7 +541,7 @@ class ThisGrammar(ancestor):
         """initialize as a starting example the ini file obsolete
 
         """
-        
+
     def fillInstanceVariables(self):
         """fills instance variables with data from inifile
 
@@ -557,11 +553,11 @@ class ThisGrammar(ancestor):
             self.maxCount = ini.getInt('general', 'max count') or 20
             self.maxEffCount = ini.getInt('general', 'max eff count') or 12
             self.doKeystrokesExtended = ini.getBool('general', 'extended keystrokes', False)
-            #self.requireTimes = ini.getBool('general', 'require times', False)
-            #if self.requireTimes:
+            # self.requireTimes = ini.getBool('general', 'require times', False)
+            # if self.requireTimes:
             #    print 'require "times" (or translation/synonym) in keystrokes grammar when using repeatable keystrokes'
 
-    ##        print 'fillInstantVariables for %s'% self
+            # print 'fillInstantVariables for %s'% self
             self.activateRules = ini.getDict('general', 'active', {'all': None})
             self.cleanAsterixes(self.activateRules)
 
@@ -570,30 +566,29 @@ class ThisGrammar(ancestor):
 
             modes = ini.get('modes')
             implicitModes = ini.getSectionPostfixesWithPrefix('repkey') + \
-                        ini.getSectionPostfixesWithPrefix('norepkey')
+                ini.getSectionPostfixesWithPrefix('norepkey')
             for m in implicitModes:
                 if m and m not in modes:
-                    #print 'implicit mode added: %s'% m
+                    # print 'implicit mode added: %s'% m
                     modes.append(m)
             if not modes:
-                #print 'no modes defined for grammar: %s'% self.GetName()
+                # print 'no modes defined for grammar: %s'% self.GetName()
                 self.modes = None
             else:
                 self.modes = {}
                 for m in modes:
                     self.modes[m] = ini.getDict('modes', m, {m: None})
-                    
+
             self.exclusiveModes = set(self.ini.getList('general', 'exclusive modes', []))
             for m in self.exclusiveModes:
                 if m not in self.modes:
                     print(f'warning, exclusive mode "{m}" not in defined modes: {self.modes.keys()}')
-            
-                    
+
         except inivars.IniError:
             print('IniError while initialising ini variables in _keystrokes')
-            print('message: %s'% sys.exc_info()[1])
+            print('message: %s' % sys.exc_info()[1])
             return
-        
+
     def cleanAsterixes(self, Dict):
         """change * to None in keys and values, inplace!
         """
@@ -602,26 +597,27 @@ class ThisGrammar(ancestor):
             Dict['all'] = None
         for prog in Dict:
             if Dict[prog] == '*':
-                Dict[prog]  = None
-##        print 'self.activateRules: %s'% self.activateRules
- 
+                Dict[prog] = None
+        # print 'self.activateRules: %s'% self.activateRules
+
     def cancelMode(self):
         # ending exclusive mode if in it, also ending the mode it is in
         self.setExclusive(0)
         self.resetAllVars()
- 
+
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 
+
 def unload():
-    #pylint:disable=W0603, E0601
+    # pylint:disable=W0603, E0601
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
- 
+
 
 if __name__ == "__main__":
-    ## interactive use, for debugging:
+    # interactive use, for debugging:
     natlink.natConnect()
     try:
         thisGrammar = ThisGrammar(inifile_stem="_keystrokes")

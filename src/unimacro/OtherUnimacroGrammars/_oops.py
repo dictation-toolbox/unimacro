@@ -46,12 +46,9 @@ turned on.
  Note: the Oops grammar uses exclusive mode. If my modified
  "natlinkmain.py" is used, this exclusive mode is turned off
  whenever the microphone state with changes.
-
- 
-
 """
-#pylint:disable=R0912, R0914, R0915
-#pylint:disable=E1101
+# pylint:disable=R0912, R0914, R0915
+# pylint:disable=E1101
 
 
 import time
@@ -77,22 +74,24 @@ UDDirectory = status.getUnimacroDataDirectory()
 # print 'version: %s (%s)'% (version, type(version))
 # print 'getUnimacroUserDirectory: %s (%s)'% (UUDirectory, type(UUDirectory))
 logFolder = Path(UDDirectory)/f'{status.language}_log'/status.user
- 
+
+
 def getLogFileName():
     """get name with date and time, record hour in logHour"""
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global logHour, logFile
     if not logFolder.exists():
         print(f'Want to create log folder: {logFolder}')
     if not logFolder.exists():
         logFolder.mkdir(parents=True)
     lTime = time.localtime()
-    logFile = time.strftime("%Y-%m-%d %H%M", lTime)  + '.txt'
+    logFile = time.strftime("%Y-%m-%d %H%M", lTime) + '.txt'
     logHour = lTime[3]
     logFile = os.path.join(logFolder, logFile)
-    #print 'logHour: ', logHour, ' log to file: ', logFile
+    # print 'logHour: ', logHour, ' log to file: ', logFile
 
-ChooseList = ['1','2','3','4','5','6','7','8','9','10']
+
+ChooseList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
 # get language for different language versions:
 language = uniutils.getLanguage()
@@ -109,25 +108,25 @@ choiceStrong = 15
 #  FORMATS and FormatComments MUST MATCH!
 FORMATS = {
     # for letters in advance of a variable:
-    1: ( uniutils.wf_TurnCapitalizationModeOn |
-           uniutils.wf_TurnOffSpacingBetweenWords |
-           uniutils.wf_DoNotApplyFormattingToThisWord
-          ),
+    1: (uniutils.wf_TurnCapitalizationModeOn |
+        uniutils.wf_TurnOffSpacingBetweenWords |
+        uniutils.wf_DoNotApplyFormattingToThisWord
+        ),
     # for continuing after a variable:
-    2: ( uniutils.wf_RestoreNormalCapitalization |
-            uniutils.wf_RestoreNormalSpacing
-          ),
+    2: (uniutils.wf_RestoreNormalCapitalization |
+        uniutils.wf_RestoreNormalSpacing
+        ),
     # for continuing after a variable + extra space:
-    3:  ( uniutils.wf_RestoreNormalCapitalization |
-            uniutils.wf_RestoreNormalSpacing |
-            uniutils.wf_AddAnExtraSpaceFollowingThisWord
-          ), 
+    3:  (uniutils.wf_RestoreNormalCapitalization |
+         uniutils.wf_RestoreNormalSpacing |
+         uniutils.wf_AddAnExtraSpaceFollowingThisWord
+         ),
     # for continuing after a variable, no space before:
-    4: ( uniutils.wf_RestoreNormalCapitalization |
-            uniutils.wf_RestoreNormalSpacing |
-            uniutils.wf_NoSpacePreceedingThisWord
-          )
-    }
+    4: (uniutils.wf_RestoreNormalCapitalization |
+        uniutils.wf_RestoreNormalSpacing |
+        uniutils.wf_NoSpacePreceedingThisWord
+        )
+}
 
 if language == 'nld':
     FormatComments = {
@@ -158,8 +157,10 @@ else:
 
 thisGrammar = None
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
-    iniIgnoreGrammarLists = ['chooselist'] # are set in this module    
+    iniIgnoreGrammarLists = ['chooselist']  # are set in this module
     name = "oops"
     gramSpec = """
 <oops> exported = Oops;
@@ -194,11 +195,11 @@ class ThisGrammar(ancestor):
     def fillInstanceVariables(self):
         """fills the necessary instance variables
 
-        
+
         """
         self.logging = self.ini.getBool('general', 'log all utterances')
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         """log changed modinfo"""
         if self.checkForChanges:
             self.checkInifile()
@@ -208,7 +209,7 @@ class ThisGrammar(ancestor):
             # print('time: %s'% time)
             lTime = time.localtime()
             if logHour != lTime[3]:
-                #print 'get new logfilename'
+                # print 'get new logfilename'
                 getLogFileName()
             self.progInfo = uniutils.getProgInfo(modInfo=moduleInfo)
             prog = self.progInfo.prog
@@ -218,20 +219,20 @@ class ThisGrammar(ancestor):
 
             logToFile(f'\n{minutes}---{prog}---{title}({hndle})')
             self.prevModinfo = moduleInfo
-        #else:
+        # else:
         #    print 'no logging or same moduleInfo: %s, %s, %s'% (self.logging, repr(self.prevModinfo), repr(moduleInfo))
-  
-##        if self.oopsFlag:
-##            self.oopsFlag = self.oopsFlag - 1
-##            if self.oopsFlag == 0:
-##                print 'Canceling oops mode'
-##                self.cancelMode()
+
+        # if self.oopsFlag:
+        #     self.oopsFlag = self.oopsFlag - 1
+        #     if self.oopsFlag == 0:
+        #         print('Canceling oops mode')
+        #         self.cancelMode()
+
     def gotResultsInit(self, words, fullResults):
         self.hadChoice = None
-        self.nChoice = choiceMiddle  
+        self.nChoice = choiceMiddle
 
-
-    def gotResultsObject(self,recogType,resObj):
+    def gotResultsObject(self, recogType, resObj):
         #  If in oops mode, no actions are taken in this function.  If
         #    however the grammar was rejected, which is exclusive whenever the
         #    oops mode is on, the warning message is printed.hello
@@ -248,13 +249,13 @@ class ThisGrammar(ancestor):
                 for i in range(10):
                     try:
                         res = resObj.getResults(i)
-                        ##TODO DOUG
+                        # TODO DOUG
                         # try:
                         #     lenWave = len(resObj.getWave())
                         # except natlink.DataMissing:
                         #     lenWave = 0
                         lenWave = 0
-                        k,rest = int(lenWave/1000), lenWave%1000
+                        k, rest = int(lenWave/1000), lenWave % 1000
                         resCode = res[0][1]
                         resCode = resCode & 0x7fffffff
                         if i == 0:
@@ -278,26 +279,23 @@ class ThisGrammar(ancestor):
                     logToFile(line+f'({k}k+{rest})')
                 else:
                     logToFile(line+'({k+1}k-{1000-rest})')
-                    
-            
+
         if recogType == 'other':
             # remember result for repeat grammar:
             if natlink.getCallbackDepth() < 3:
                 self.lastResObj = resObj
-##            else:
-##                print 'callbackdepth" %s, words: %s'%(natlink.getCallbackDepth(), resObj.getWords(0))
-                
+        # else:
+        #     print('callbackdepth" %s, words: %s'%(natlink.getCallbackDepth(), resObj.getWords(0)))
 
-    def gotResults_oops(self,words,fullResults):
-##        t0 = time.time()
-##        try:fellow,hellohellohellohello hellohello,fellow hello hello hello
-##        try:
-##            uniutils.SetForegroundWindow(self.messageHndle)
-##        except:
+    def gotResults_oops(self, words, fullResults):
+        # t0 = time.time()
+        # try:
+        #     uniutils.SetForegroundWindow(self.messageHndle)
+        # except:
         uniutils.switchToWindowWithTitle("Messages from Python Macros")
-##            self.messageHndle = natlink.getCurrentModule()[2]
-##            print 'new handle for message window: %s'% self.messageHndle
-##        print 'time to switch:', time.time() - t0
+        #     self.messageHndle = natlink.getCurrentModule()[2]
+        #     print 'new handle for message window: %s'% self.messageHndle
+        #     print 'time to switch:', time.time() - t0
         if not self.lastResObj:
             print('no object to Oops')
             uniutils.Wait(0.1)
@@ -306,18 +304,18 @@ class ThisGrammar(ancestor):
         #  Go through the alternatives in the results object
         SingleWord = 0  # so formatting can be done
         self.FirstIsDictate = 0
-        #waveText = self.lastResObj.getWave()
-        #print 'gesproken: %s' % len(waveText)
+        # waveText = self.lastResObj.getWave()
+        # print 'gesproken: %s' % len(waveText)
         for i in range(10):
             try:
                 res = self.lastResObj.getResults(i)
                 words = self.lastResObj.getWords(i)
                 resCode = res[0][1]
                 resCode = resCode & 0x7fffffff
-                wordInfo = self.lastResObj.getWordInfo(i)
-##                pron = []
-##                if wordInfo:
-##                    pron = map(lambda x: x[6].join(wordInfo))
+                # wordInfo = self.lastResObj.getWordInfo(i)
+                # pron = []
+                # if wordInfo:
+                #     pron = map(lambda x: x[6].join(wordInfo))
                 if resCode:
                     print(f'{i+1}:\t[{words}]  ({WordCommand} {resCode})')
                 else:
@@ -327,7 +325,6 @@ class ThisGrammar(ancestor):
                     if len(words) == 1:
                         SingleWord = 1
 
-                    
             except (natlink.OutOfRange, IndexError):
                 break
         else:
@@ -342,17 +339,17 @@ class ThisGrammar(ancestor):
                 print(f'or Format #, Delete # or Properties # (# = 1, ..., {i})')
 
         self.oopsFlag = 3
-        self.activateSet(['inoops'],exclusive=1)
+        self.activateSet(['inoops'], exclusive=1)
         self.setList('chooselist', ChooseList[:i])
         uniutils.switchToWindowWithTitle("Messages from Python Macros")
 
-    def gotResults_inoops(self,words,fullResults):
+    def gotResults_inoops(self, words, fullResults):
         # nCorr = choiceWeak
         # choice = 0
         if not self.lastResObj:
             self.cancelMode()
             uniutils.returnFromMessagesWindow()
-            
+
         if self.hasCommon(words, 'Cancel'):
             texts = dict(nld='oeps geannuleerd')
             t = texts.get(self.language, 'oops canceled')
@@ -362,12 +359,12 @@ class ThisGrammar(ancestor):
             self.cancelMode()
             uniutils.returnFromMessagesWindow()
             return
-        choice = 0
+        # choice = 0
         if self.hasCommon(words, 'OK'):
             print('OK')
             self.hadChoice = 1
-            #ww = []
-            
+            # ww = []
+
     def gotResults_choose(self, words, fullResults):
         self.nChoice = None
         if self.hasCommon(words[-1], 'Medium'):
@@ -380,7 +377,6 @@ class ThisGrammar(ancestor):
             del words[-1]
         else:
             self.nChoice = choiceMiddle
-
 
         if words[-1] in ChooseList:
             choice = int(words[-1])
@@ -404,7 +400,7 @@ class ThisGrammar(ancestor):
             if not DoFormatting:
                 print('formatting options invalid!')
                 return
-            
+
             if resCode:
                 print('no formatting can be done on a command!')
                 time.sleep(1.5)
@@ -433,11 +429,11 @@ class ThisGrammar(ancestor):
                     return
                 for n in range(numChoices):
                     print(f'{n+1}:\t{FormatComments[n+1]}')
-                    
+
                 #  Entered the new exclusive grammar rules, for the right
                 #    format to be chosen
                 self.oopsFlag = 3
-                self.activateSet(['inoops2'],exclusive=1)
+                self.activateSet(['inoops2'], exclusive=1)
                 return
         # deleting:===========================================
         elif self.hasCommon(words, ['Delete',  'Verwijder']):
@@ -450,7 +446,7 @@ class ThisGrammar(ancestor):
             else:
                 natlink.deleteWord(newWords[0])
                 print(f'deleted: {newWords[0]}')
-        elif self.hasCommon(words, ['Properties','Eigenschappen']):
+        elif self.hasCommon(words, ['Properties', 'Eigenschappen']):
             if resCode:
                 print('no properties on a command!')
                 time.sleep(1.0)
@@ -489,7 +485,7 @@ class ThisGrammar(ancestor):
             natlink.recognitionMimic(ScratchThatCommand)
             natlink.recognitionMimic(newWords)
 
-    def gotResults_inoops2(self,words,fullResults):
+    def gotResults_inoops2(self, words, fullResults):
         if self.lastResObj:
             fstring = ''
             if self.hasCommon(words, 'Cancel'):
@@ -501,7 +497,7 @@ class ThisGrammar(ancestor):
                 fNum = int(words[-1])
             except ValueError:
                 fNum = ''
-            
+
             fstring = FORMATS.get(fNum, '')
 
             if fstring and self.newWord:
@@ -509,8 +505,9 @@ class ThisGrammar(ancestor):
                 if fstring == oldFormat:
                     print(f'format of {self.newWord} is already: {fstring}')
                 else:
-                    ##TODO QH
-                    print(f'formatting word: {self.newWord} from hex {oldFormat:x} to hex: {fstring} (cannot format string to hex)'%(self.newWord, oldFormat, fstring))
+                    # TODO QH
+                    print(f"formatting: {self.newWord} from hex {oldFormat:x} to hex: {fstring} (can't format str to hex)" % (
+                        self.newWord, oldFormat, fstring))
                     natlink.setWordInfo(self.newWord, fstring)
             self.newWord = ""
         time.sleep(1.0)
@@ -518,13 +515,14 @@ class ThisGrammar(ancestor):
         uniutils.returnFromMessagesWindow()
 
     def cancelMode(self):
-        #print "end of oops exclusive mode", also called when microphone is toggled.
-##        print 'resetting oops grammar'
+        # print "end of oops exclusive mode", also called when microphone is toggled.
+        # print 'resetting oops grammar'
         # isActive = self.isActive()
         if self.isExclusive():
             print('oops, cancel exclusive mode')
-            self.activateSet(['oops'], exclusive = 0)
+            self.activateSet(['oops'], exclusive=0)
         self.newWord = ''
+
 
 def logToFile(line):
     """logging !
@@ -540,15 +538,18 @@ def logToFile(line):
         fp.write(line)
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
 
+
 if __name__ == "__main__":
-    ## interactive use, for debugging:
+    # interactive use, for debugging:
     natlink.natConnect()
     try:
         thisGrammar = ThisGrammar()
