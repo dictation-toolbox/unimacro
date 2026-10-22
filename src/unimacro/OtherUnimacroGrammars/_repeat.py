@@ -35,7 +35,7 @@ grammar.
 -added continuous search
 
 """
-#pylint:disable=R0904, E1101, R0912, R0915, C0321
+# pylint:disable=R0904, E1101, R0912, R0915, C0321
 #
 import time
 import os
@@ -68,21 +68,21 @@ defaultSpeed = {
     'mousing':  (2, 200),
     'dragging':  (2, 100),
     'searching':  (200, 4000),
-    }
+}
 SPEED = {}
-     
+
 for state in states:
     if state in defaultSpeed:
         ds = defaultSpeed[state]
         if len(ds) == 2:
             rate = (ds[1]/ds[0])**0.25
-            
+
             SPEED[state] = (ds[0], int(ds[0]*rate), int(ds[0]*rate*rate),
                             int(ds[0]*rate*rate*rate), ds[1])
         elif len(ds) == 5:
             SPEED[state] = defaultSpeed[state][:]
         else:
-            print(f'no valid speeds for: {state}') 
+            print(f'no valid speeds for: {state}')
 
 defaultMousePixels = 1
 waitingSpeed = 500
@@ -92,18 +92,18 @@ minSpeed = 50
 # faster.  For example, 1.5 is a 50% speed increase.
 
 moveRateChange = 2.0
-fastSlowChange = 3.0 
+fastSlowChange = 3.0
 veryChange = 3.0
 
-Counts = ['1','2','3','4','5','6','7','8','9','10','11','12','13',
-          '14','15','16','17','18','19','20','25','30','35','40']
- 
+Counts = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13',
+          '14', '15', '16', '17', '18', '19', '20', '25', '30', '35', '40']
+
 # flag for displaying all results through the DisplayMessage function
 # gives an error in the English version when saying "wait", change therefore
 # in "hold on"
 showAll = 1
 
-language = uniutils.getLanguage()        
+language = uniutils.getLanguage()
 normalSet = ['startMoving', 'startMousing', 'startRepeating', 'startSearching']
 ############################################################################
 #
@@ -114,13 +114,15 @@ normalSet = ['startMoving', 'startMousing', 'startRepeating', 'startSearching']
 #
 
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
     # when we unload the grammar, we must make sure we clear the timer
     # callback so we keep a variable which is set when we currently own
     # the timer callback
 
     def __init__(self):
-        
+
         self.inTimer = 0
         self.iconState = 0
         self.state = ''
@@ -139,7 +141,7 @@ class ThisGrammar(ancestor):
     # rules 'moving' and 'mousing' are used when we are in caret or
     # mouse movement mode.
     name = 'repeat'
-    iniIgnoreGrammarLists = ['mouseCount', 'moveCount'] # are set in this module
+    iniIgnoreGrammarLists = ['mouseCount', 'moveCount']  # are set in this module
 
     if language == 'nld':
         name = 'herhaal'
@@ -157,7 +159,7 @@ class ThisGrammar(ancestor):
 <repeating> exported = <changeRepeating>;
 
 
-# here are the rules controlling speeds etc. (inside the timer)        
+# here are the rules controlling speeds etc. (inside the timer)
 <changeMoving> = beweeg|selecteer|blok|'ga verder'|'ga door'|'verder'|
                     (begin|einde)[van](regel|document);
 <changeMousing> = muis|sleep|'ga verder'|'ga door'|'verder' ;
@@ -201,7 +203,7 @@ class ThisGrammar(ancestor):
                       <endSearching>;
 <repeating> exported = <changeRepeating>;
 
-# here are the rules controlling speeds etc. (inside the timer)        
+# here are the rules controlling speeds etc. (inside the timer)
 <changeMoving> = move|select|'go on'|(begin|end)[of](line|document);
 <changeMousing> =  move|drag|'go on'|continue;
 <changeSearching> =  move|select|search|'go on'|continue;
@@ -232,9 +234,9 @@ class ThisGrammar(ancestor):
 
     def initialize(self):
         debugPrint(f'init language: {language}')
-        self.load(self.gramSpec, allResults = 1)
+        self.load(self.gramSpec, allResults=1)
         self.activateSet(normalSet, exclusive=0)
-        #self.setList('count', Counts)
+        # self.setList('count', Counts)
         self.setList('moveCount', Counts)
         self.setList('mouseCount', Counts)
         self.nPhrase = 1
@@ -252,23 +254,23 @@ class ThisGrammar(ancestor):
         self.prevHandle = 0
         self.startScroll = 0
         debugPrint('end of initialise')
-            
+
     # This subroutine cancels any active movement mode
 
     def cancelMode(self):
         debugPrint('cancelMode')
         natlink.setTrayIcon()
 
-        if self.inTimer: 
-            natlinktimer.setTimerCallback(self.onTimer,0)
+        if self.inTimer:
+            natlinktimer.setTimerCallback(self.onTimer, 0)
             self.inTimer = 0
             if self.drag:
                 debugPrint('switch of dragging')
-                xPos,yPos = natlink.getCursorPos()
+                xPos, yPos = natlink.getCursorPos()
                 if self.drag == 2:
-                    natlink.playEvents([(natlinkutils.wm_rbuttonup,xPos,yPos)])
+                    natlink.playEvents([(natlinkutils.wm_rbuttonup, xPos, yPos)])
                 else:
-                    natlink.playEvents([(natlinkutils.wm_lbuttonup,xPos,yPos)])
+                    natlink.playEvents([(natlinkutils.wm_lbuttonup, xPos, yPos)])
                 self.drag = 0
             elif self.state == 'searching':
                 self.stopSearch()
@@ -288,31 +290,31 @@ class ThisGrammar(ancestor):
         self.lastResults = []
         print('_repeat, return to normal state, non exclusive')
         self.activateSet(normalSet, exclusive=0)
-        
-##    def waitMode(self):
-##        if self.waiting:
-##            debugPrint('in timer, already waiting')
-##            return
-##        self.waiting = 1
-##        natlink.setTimerCallback(self.onTimer, waitingSpeed)
-##        
-##    def resumeMode(self):
-##        if not self.waiting:
-##            debugPrint('resume, was not waiting!')
-##            return
-##        self.waiting = 0
-##        self.startNow()g
-##
+
+    # def waitMode(self):
+    #     if self.waiting:
+    #         debugPrint('in timer, already waiting')
+    #         return
+    #     self.waiting = 1
+    #     natlink.setTimerCallback(self.onTimer, waitingSpeed)
+
+    # def resumeMode(self):
+    #     if not self.waiting:
+    #         debugPrint('resume, was not waiting!')
+    #         return
+    #     self.waiting = 0
+    #     self.startNow()
+
     def onTimer(self):
-##        if self.lastClock:
-##            diff = int((time.clock() - self.lastClock) * 1000 )
+        # if self.lastClock:
+        #     diff = int((time.clock() - self.lastClock) * 1000 )
         moduleInfo = natlink.getCurrentModule()
         if natlink.getMicState() == 'on' and moduleInfo[2] == self.moduleInfo[2]:
             if self.inside or self.insideCommand:
                 self.setTrayIcon(1)
                 return
             if self.waiting:
-                self.setTrayIcon(1) 
+                self.setTrayIcon(1)
                 return
             if self.doAction():
                 return   # this is the only good exit from onTimer!!!!
@@ -346,13 +348,13 @@ class ThisGrammar(ancestor):
         else:
             debugPrint(f'timer starting with unknown speed for state/minorstate: {k}')
             natlinktimer.setTimerCallback(self.onTimer, defaultSpeed, callAtMicOff=self.cancelMode)
-            
+
         self.inTimer = 1
-        
+
     def doAction(self):
-##         debugPrint('start doAction state: %s, dir: %s, count: %s'% \
-##                   (self.state, self.curDir, self.Count))
-        if self.state in ['moving', 'selecting','searching']:
+        # debugPrint('start doAction state: %s, dir: %s, count: %s'% \
+        # (self.state, self.curDir, self.Count))
+        if self.state in ['moving', 'selecting', 'searching']:
             if not self.curDir:
                 debugPrint('do action, no direction specified')
                 return None
@@ -364,21 +366,25 @@ class ThisGrammar(ancestor):
                     key = 'extpgup'
                 else:
                     debugPrint('invalid direction for minorState page: {self.curDir}')
-            elif self.minorState in ['word', 'paragraph'] :
+            elif self.minorState in ['word', 'paragraph']:
                 key = 'ctrl+' + key
 
             if self.waiting and self.Count:
                 nowCount = " " + repr(self.Count)
             else:
                 nowCount = ""
-                
+
         if self.state == 'moving':
             if self.startScroll:
-                keyBefore = ''                
-                if self.curDir == 'up': keyBefore = 'extpgup'
-                elif self.curDir == 'down': keyBefore = 'extpgdn'
-                elif self.curDir == 'left': keyBefore = 'ctrl+extpgdn'
-                elif self.curDir == 'right': keyBefore = 'ctrl+extpgup'
+                keyBefore = ''
+                if self.curDir == 'up':
+                    keyBefore = 'extpgup'
+                elif self.curDir == 'down':
+                    keyBefore = 'extpgdn'
+                elif self.curDir == 'left':
+                    keyBefore = 'ctrl+extpgdn'
+                elif self.curDir == 'right':
+                    keyBefore = 'ctrl+extpgup'
                 else:
                     debugPrint(f'invalid direction in scrollcommand: {self.curDir}')
                 if keyBefore:
@@ -386,7 +392,7 @@ class ThisGrammar(ancestor):
                 self.startScroll = 0
             self.setTrayIcon(1)
             sendkeys("{"+key+nowCount+"}")
-        
+
         elif self.state == 'selecting':
             self.setTrayIcon(1)
             sendkeys("{shift+"+key+nowCount+"}")
@@ -424,13 +430,13 @@ class ThisGrammar(ancestor):
             return None
 
         self.lastClock = time.time()
-        return 1 # good exit
+        return 1  # good exit
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         if self.inTimer:
             self.inside = 1
- 
-    def gotResultsObject(self,recogType,resObj):
+
+    def gotResultsObject(self, recogType, resObj):
         if recogType == 'reject':
             return
         handle = natlink.getCurrentModule()[2]
@@ -441,7 +447,7 @@ class ThisGrammar(ancestor):
             self.repeatFlag = 0
         words = resObj.getWords(0)[:]
         if recogType == 'other':
-            #print 'resultObject, %s,  repeatFlag: %s' % (words, self.repeatFlag)
+            # print 'resultObject, %s,  repeatFlag: %s' % (words, self.repeatFlag)
             if self.repeatFlag:
                 if words != self.repeatStuff:
                     self.cancelMode()
@@ -454,16 +460,16 @@ class ThisGrammar(ancestor):
                     self.lastResults.append(words)
                     if len(self.lastResults) > 6:
                         self.lastResults = self.lastResults[1:]
-                #debugPrint('lastResults: %s' % `self.lastResults`)
+                # debugPrint('lastResults: %s' % `self.lastResults`)
             else:
                 debugPrint(f'callbackdepth {natlink.getCallbackDepth()}, words: {words}')
             self.inside = 0
             return
-##        skipped this, because it interferes with _message:
-##        elif recogType == 'reject':
-##            if self.inTimer and self.missed:
-##                self.doAction()
-##                self.startNow()
+        # # skipped this, because it interferes with _message:
+        # elif recogType == 'reject':
+        #     if self.inTimer and self.missed:
+        #         self.doAction()
+        #         self.startNow()
         if recogType == 'self':
             self.nDir = ''
             self.Count = 0
@@ -476,28 +482,34 @@ class ThisGrammar(ancestor):
         else:
             print(f'recogtype: {recogType}')
         self.inside = 0
-            
-    def gotResults_reverse(self,words,fullResults):
+
+    def gotResults_reverse(self, words, fullResults):
         debugPrint(f'reverse: {words}')
         if self.nDir:
             self.flush()
         d = self.curDir
-        if d == 'up': d = 'down'
-        elif d == 'down': d = 'up'
-        elif d == 'right': d = 'left'
-        elif d == 'left': d = 'right'
+        if d == 'up':
+            d = 'down'
+        elif d == 'down':
+            d = 'up'
+        elif d == 'right':
+            d = 'left'
+        elif d == 'left':
+            d = 'right'
         if d:
             self.nDir = d
             self.dirState = self.minorState
 
-    def gotResults_moveCount(self,words,fullResults):
+    def gotResults_moveCount(self, words, fullResults):
         for w in words:
-            if self.Count: self.flush()
+            if self.Count:
+                self.flush()
             debugPrint(f'moveCount: {w}')
             self.Count = int(w)
 
-    def gotResults_mouseCount(self,words,fullResults):
-        if self.Count: self.flush()
+    def gotResults_mouseCount(self, words, fullResults):
+        if self.Count:
+            self.flush()
         for w in words:
             debugPrint(f'mouseCount: {w}')
             if w in Counts:
@@ -512,41 +524,53 @@ class ThisGrammar(ancestor):
                 self.mouseJumps = 100
                 self.flush()
 
-        
-    def gotResults_moveDir(self,words,fullResults):
+    def gotResults_moveDir(self, words, fullResults):
         for w in words:
             print(f'direction: {w}')
             if self.nDir:
                 self.flush()
             d = ''
-            if w in ['pagina', 'page']: self.dirState = 'page'
-            elif w in ['alinea', 'paragraph']: self.dirState = 'paragraph'
-            elif w in ['word', 'woord']: self.dirState = 'word'
-            elif w in ['up', 'omhoog']: d = 'up'
-            elif w in ['down', 'omlaag']: d = 'down'
-            elif w in ['right', 'rechts']: d = 'right'
-            elif w in ['left', 'links']: d = 'left'
+            if w in ['pagina', 'page']:
+                self.dirState = 'page'
+            elif w in ['alinea', 'paragraph']:
+                self.dirState = 'paragraph'
+            elif w in ['word', 'woord']:
+                self.dirState = 'word'
+            elif w in ['up', 'omhoog']:
+                d = 'up'
+            elif w in ['down', 'omlaag']:
+                d = 'down'
+            elif w in ['right', 'rechts']:
+                d = 'right'
+            elif w in ['left', 'links']:
+                d = 'left'
             if d:
                 self.nDir = d
 
-    def gotResults_searchDir(self,words,fullResults):
+    def gotResults_searchDir(self, words, fullResults):
         for w in words:
             debugPrint('direction: {w}')
             if self.nDir:
                 self.flush()
             d = ''
-            if w in ['omhoog', 'terug', 'back', 'up']: d = 'up'
-            elif w in ['forward', 'omlaag', 'verder', 'down']: d = 'down'
+            if w in ['omhoog', 'terug', 'back', 'up']:
+                d = 'up'
+            elif w in ['forward', 'omlaag', 'verder', 'down']:
+                d = 'down'
             if d:
                 self.nDir = d
 
-    def gotResults_mouseDir(self,words,fullResults):
+    def gotResults_mouseDir(self, words, fullResults):
         for w in words:
             debugPrint('mouseDir: {w}')
-            if   w in ['up', 'omhoog']: d = 'up'
-            elif w in ['down', 'omlaag']: d = 'down'
-            elif w in ['right', 'rechts']: d = 'right'
-            elif w in ['left', 'links']: d = 'left'
+            if w in ['up', 'omhoog']:
+                d = 'up'
+            elif w in ['down', 'omlaag']:
+                d = 'down'
+            elif w in ['right', 'rechts']:
+                d = 'right'
+            elif w in ['left', 'links']:
+                d = 'left'
             else:
                 print('invalid direction:', w)
                 return
@@ -558,24 +582,24 @@ class ThisGrammar(ancestor):
             if newState != self.minorState:
                 self.minorState = newState
 
-    def gotResults_endMoving(self,words,fullResults):
+    def gotResults_endMoving(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         debugPrint('end moving: {words}')
         for w in words:
-            if w in ['hold','hold on', 'hold it', 'wacht']:
-                self.waiting =  1
+            if w in ['hold', 'hold on', 'hold it', 'wacht']:
+                self.waiting = 1
                 debugPrint('waiting mode')
                 return
             self.cancelMode()
 
-    def gotResults_endMousing(self,words,fullResults):
+    def gotResults_endMousing(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         debugPrint('end mousing: {words}')
         for w in words:
-            if w in ['hold','hold on', 'hold it', 'wacht']:
-                self.waiting =  1
+            if w in ['hold', 'hold on', 'hold it', 'wacht']:
+                self.waiting = 1
                 debugPrint('waiting mode')
                 return
             self.cancelMode()
@@ -584,33 +608,31 @@ class ThisGrammar(ancestor):
             elif self.hasCommon(words, ['double click', 'dubbel klik']):
                 natlinkutils.buttonClick('left', 2)
 
-    def gotResults_endSearching(self,words,fullResults):
+    def gotResults_endSearching(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         debugPrint('end searching: {words}')
         for w in words:
-            if w in ['hold','hold on', 'hold it', 'wacht']:
-                self.waiting =  1
+            if w in ['hold', 'hold on', 'hold it', 'wacht']:
+                self.waiting = 1
                 debugPrint('waiting mode')
                 return
             self.cancelMode()
             if self.hasCommon(words, ['cancel', 'annuleren']):
                 self.searchGoBack()
-                    
 
-    def gotResults_endRepeating(self,words,fullResults):
+    def gotResults_endRepeating(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         debugPrint('end repeating: {words}')
         for w in words:
-            if w in ['hold','hold on', 'hold it', 'wacht']:
-                self.waiting =  1
+            if w in ['hold', 'hold on', 'hold it', 'wacht']:
+                self.waiting = 1
                 debugPrint('waiting mode')
                 return
             self.cancelMode()
 
-
-    def gotResults_changeMoving(self,words,fullResults):
+    def gotResults_changeMoving(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         b = r = ''
@@ -625,12 +647,12 @@ class ThisGrammar(ancestor):
                 if self.state != 'selecting':
                     self.state = 'moving'
                 self.waiting = 0
-            elif w in ['select','selecteer']:
+            elif w in ['select', 'selecteer']:
                 self.state = 'selecting'
                 self.waiting = 0
             elif w in ['begin']:
                 b = 'Home'
-            elif w in ['einde','end']:
+            elif w in ['einde', 'end']:
                 b = 'End'
             elif w in ['line', 'regel']:
                 r = 'ext'
@@ -639,8 +661,8 @@ class ThisGrammar(ancestor):
         if b and r:
             sendkeys("{"+r+b+"}")
             b = r = ''
-            
-    def gotResults_changeSearching(self,words,fullResults):
+
+    def gotResults_changeSearching(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         for w in words:
@@ -650,32 +672,31 @@ class ThisGrammar(ancestor):
             elif w in ['zoek', 'search']:
                 continue
             elif w in ['move', 'beweeg']:
-                debugPrint('change to state moving')  
-                self.activateSet(['moving'], exclusive = 1)
+                debugPrint('change to state moving')
+                self.activateSet(['moving'], exclusive=1)
                 self.state = 'moving'
 
-    def gotResults_changeMousing(self,words,fullResults):
+    def gotResults_changeMousing(self, words, fullResults):
         if self.nDir or self.Count or self.nSpeed is not None:
             self.flush()
         for w in words:
             if w in ['go on', 'ga door', 'ga verder', 'verder', 'continue']:
                 debugPrint('going on')
                 self.waiting = 0
-            
 
-    def gotResults_speed(self,words,fullResults):
+    def gotResults_speed(self, words, fullResults):
         if self.Count:
             self.flush()
-            
+
         factor = 1
 
         for w in words:
             if w in ['heel', 'erg', 'very']:
                 factor = factor * 2
             elif w in ['slow', 'langzaam']:
-                self.nSpeed = factor 
+                self.nSpeed = factor
             elif w in ['fast', 'snel']:
-                self.nSpeed = -factor 
+                self.nSpeed = -factor
             elif w in ['normal', 'normaal', 'steady', 'gestaag']:
                 self.nSpeed = 0
             else:
@@ -683,94 +704,90 @@ class ThisGrammar(ancestor):
         self.nSpeed = max(min(self.nSpeed, 2), -2)
         debugPrint(f'speed words: {repr(words)}, speed: {self.nSpeed}')
 
-
-    def gotResults_acceleration(self,words,fullResults):
+    def gotResults_acceleration(self, words, fullResults):
         if self.Count:
             self.flush()
         factor = 1
-        self.nSpeed = self.curSpeed        
+        self.nSpeed = self.curSpeed
         for w in words:
             if w in ['much', 'veel', 'very', 'heel']:
                 factor = factor * 2
             elif w in ['slower', 'langzamer']:
-                diff =  factor
+                diff = factor
             elif w in ['faster', 'sneller']:
                 diff = -factor
             else:
                 print('acceleration, invalid keyword:', w)
-                debugPrint ('acceleration, invalid keyword: {w}')
+                debugPrint('acceleration, invalid keyword: {w}')
         self.nSpeed = self.nSpeed + diff
         self.nSpeed = max(min(self.nSpeed, 2), -2)
         debugPrint(f'acceleration words: {repr(words)}, new speed: {self.nSpeed}')
 
-    def gotResults_startMoving(self,words,fullResults):
-        self.activateSet(['moving'], exclusive = 1)
+    def gotResults_startMoving(self, words, fullResults):
+        self.activateSet(['moving'], exclusive=1)
         if self.hasCommon(words, ['BEWEEG', 'Moving']):
             self.state = 'moving'
         elif self.hasCommon(words, ['BLOK', 'Selecting']):
             self.state = 'selecting'
         elif self.hasCommon(words, ['Scrolling', "SCROLL"]):
-            self.startScroll = 1 
+            self.startScroll = 1
             self.state = 'moving'
 
-    def gotResults_startSearching(self,words,fullResults):
-        self.activateSet(['searching'], exclusive = 1)
+    def gotResults_startSearching(self, words, fullResults):
+        self.activateSet(['searching'], exclusive=1)
         self.curDir = self.getLastSearchDirection()
         self.state = 'searching'
-        
 
-    def gotResults_startMousing(self,words,fullResults):
-        self.activateSet(['mousing'], exclusive = 1)
+    def gotResults_startMousing(self, words, fullResults):
+        self.activateSet(['mousing'], exclusive=1)
         debugPrint(f'start mousing {words}')
-        if self.hasCommon(words, ["MUIS",'MOUSE']):
+        if self.hasCommon(words, ["MUIS", 'MOUSE']):
             self.state = 'mousing'
-        if self.hasCommon(words, ["SLEEP",'DRAG']):
+        if self.hasCommon(words, ["SLEEP", 'DRAG']):
             self.state = 'dragging'
-            xPos,yPos = natlink.getCursorPos()
-            if self.hasCommon(words, ["SNELMENU",'RIGHT']):
+            xPos, yPos = natlink.getCursorPos()
+            if self.hasCommon(words, ["SNELMENU", 'RIGHT']):
                 self.drag = 2
-                natlink.playEvents([(natlinkutils.wm_rbuttondown,xPos,yPos)])
+                natlink.playEvents([(natlinkutils.wm_rbuttondown, xPos, yPos)])
             else:
                 self.drag = 1
-                natlink.playEvents([(natlinkutils.wm_lbuttondown,xPos,yPos)])
+                natlink.playEvents([(natlinkutils.wm_lbuttondown, xPos, yPos)])
 
-    def gotResults_startRepeating(self,words,fullResults):
+    def gotResults_startRepeating(self, words, fullResults):
         self.state = 'repeating'
 
-
-    def gotResults_test(self,words,fullResults):
+    def gotResults_test(self, words, fullResults):
         self.cancelMode()
         print('words in test', words)
         natlink.recognitionMimic(words)
 
-        
-    def gotResults_nfrase(self,words,fullResults):
+    def gotResults_nfrase(self, words, fullResults):
         self.nPhrase = int(words[0])
-            
-    def gotResults_repeat(self,words,fullResults):
+
+    def gotResults_repeat(self, words, fullResults):
         if words[0] in ['Herhaal', 'Repeat']:
             self.nPhrase = 1
             self.nTimes = 1
         self.hadRepeat = 1
 
-##    def gotResults_again(self,words,fullResults):
-##        global hadRepeatGrammar 
-##        nAgain = len(words)/2in 3
-##        self.hadResult = 1
-##        repeatFlag = 1
-##        for i in range(nAgain):
-##            RepeatNow(nPhrase, nTimes)
-##            hadRepeatGrammar = 1
-##            if not repeatFlag:
-##                return None
-            
-    def gotResults_count(self,words,fullResults):
+    # def gotResults_again(self, words, fullResults):
+    #     global hadRepeatGrammar
+    #     nAgain = len(words)/2in 3
+    #     self.hadResult = 1
+    #     repeatFlag = 1
+    #     for i in range(nAgain):
+    #         RepeatNow(nPhrase, nTimes)
+    #         hadRepeatGrammar = 1
+    #         if not repeatFlag:
+    #             return None
+
+    def gotResults_count(self, words, fullResults):
         self.nTimes = int(words[0])
 
     def startAgain(self):
-        self.activateSet(['start','again'])
+        self.activateSet(['start', 'again'])
 
-    def gotResults(self,words,fullResults):
+    def gotResults(self, words, fullResults):
         if self.repeatFlag:
             return
         if self.hadRepeat:
@@ -782,8 +799,8 @@ class ThisGrammar(ancestor):
             self.flush()
         if self.state in states:
             self.startNow()
-        debugPrint ('end of phrase (gotResults): {words}')
-        self.inside = 0 
+        debugPrint('end of phrase (gotResults): {words}')
+        self.inside = 0
 
     def flush(self):
         debugPrint(f'flush, nDir: {self.nDir}, Count: {self.Count}, nSpeed: {self.nSpeed}')
@@ -803,28 +820,32 @@ class ThisGrammar(ancestor):
             self.nSpeed = None
         self.waiting = 0
         self.doAction()
-        
 
-    def moveMouse(self,direction,count):
-        xPos,yPos = natlink.getCursorPos()
-        if direction == 'up': yPos = yPos - count
-        elif direction == 'down': yPos = yPos + count
-        elif direction == 'left': xPos = xPos - count
-        elif direction == 'right': xPos = xPos + count
-        xSize,ySize = natlink.getScreenSize()
+    def moveMouse(self, direction, count):
+        xPos, yPos = natlink.getCursorPos()
+        if direction == 'up':
+            yPos = yPos - count
+        elif direction == 'down':
+            yPos = yPos + count
+        elif direction == 'left':
+            xPos = xPos - count
+        elif direction == 'right':
+            xPos = xPos + count
+        xSize, ySize = natlink.getScreenSize()
         xPos = max(xPos, 0)
-        if xPos >= xSize: xPos = xSize - 1
+        if xPos >= xSize:
+            xPos = xSize - 1
         yPos = max(yPos, 0)
-        if yPos >= ySize: yPos = ySize - 1
-        natlink.playEvents([(natlinkutils.wm_mousemove,xPos,yPos)])
-
+        if yPos >= ySize:
+            yPos = ySize - 1
+        natlink.playEvents([(natlinkutils.wm_mousemove, xPos, yPos)])
 
     # This turns on the tray icon depending on the movement direction.
-    # self.iconS tate is used to toggle the image to animate the icon.            
-    def setTrayIcon(self,toggleIcon):
-        if self.state in ['moving', 'selecting', 'mousing','dragging', 'searching']:
+    # self.iconS tate is used to toggle the image to animate the icon.
+    def setTrayIcon(self, toggleIcon):
+        if self.state in ['moving', 'selecting', 'mousing', 'dragging', 'searching']:
             iconName = self.curDir
-            toolTip = self.state + ' ' +self.curDir
+            toolTip = self.state + ' ' + self.curDir
         elif self.state == 'repeating':
             toolTip = 'repeating commands'
             iconName = os.path.join(iconDirectory, 'repeat')
@@ -835,7 +856,7 @@ class ThisGrammar(ancestor):
 
         if self.waiting:
             toolTip = 'WAITING'
-        
+
         if not toggleIcon or self.iconState:
             self.iconState = 0
         else:
@@ -845,8 +866,8 @@ class ThisGrammar(ancestor):
             else:
                 iconName = iconName + '2'
 
-##        print 'iconName: %s'% iconName
-        try:            
+        # print 'iconName: %s'% iconName
+        try:
             if iconName[1] == ':':
                 # absolute path, attach extension:
                 iconName = iconName + '.ico'
@@ -854,18 +875,18 @@ class ThisGrammar(ancestor):
             print('cannot set tray icon, no iconName (_repeat), try to clear')
             natlink.setTrayIcon()
         try:
-            natlink.setTrayIcon(iconName,toolTip,self.onTrayIcon)
+            natlink.setTrayIcon(iconName, toolTip, self.onTrayIcon)
         except natlink.NatError:
             print('cannot set tray icon (_repeat), try to clear')
             natlink.setTrayIcon()
-                    
 
     # This is called if the user clicks on the tray icon.  We simply cancel
     # movement in all cases.
-## taken from GrammarX:
-##    def onTrayIcon(self,message):
-##        natlink.setTrayIcon()
-##        self.cancelMode()
+
+    # taken from GrammarX:
+    # def onTrayIcon(self, message):
+    #     natlink.setTrayIcon()
+    #     self.cancelMode()
 
     def repeatNow(self):
         debugPrint(f'repeatNow: {self.nTimes} times, {self.nPhrase} phrases')
@@ -874,32 +895,36 @@ class ThisGrammar(ancestor):
         itemrange = list(range(len(self.lastResults)))
         if not itemrange:
             self.repeatFlag = 0
-            return 
+            return
         itemrange = itemrange[-self.nPhrase:]
-        #print 'na itemrange:', itemrange
+        # print 'na itemrange:', itemrange
         for _ in range(self.nTimes):
             for i in itemrange:
                 if not self.repeatFlag:
-                    return # if something else happened
-                self.repeatStuff= self.lastResults[i]
-                natlink.recognitionMimic(self.repeatStuff)                
+                    return  # if something else happened
+                self.repeatStuff = self.lastResults[i]
+                natlink.recognitionMimic(self.repeatStuff)
             # reset repeat mode:
         self.repeatFlag = 0
         self.repeatStuff = None
-# This is a simple utility subroutine.  It takes two lists of words and 
+# This is a simple utility subroutine.  It takes two lists of words and
 # returns the first word it finds which is in both lists.  We use this to
 # extract special words (like the direction) from recognition results.
 
-def findKeyWord(list1,list2):
+
+def findKeyWord(list1, list2):
     for word in list1:
-        if word in list2: 
+        if word in list2:
             return word
     return None
 
+
 startTime = time.time()
 
+
 def debugPrint(t):
-    if not DEBUG: return
+    if not DEBUG:
+        return
     print(t)
     # debugFile.write(t)
     # debugFile.write('\n')
@@ -917,10 +942,12 @@ if thisGrammar.gramSpec:
 else:
     thisGrammar = None
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
-    if thisGrammar: thisGrammar.unload()
+    if thisGrammar:
+        thisGrammar.unload()
     thisGrammar = None
 
 # def changeCallback(type,args):
@@ -930,4 +957,3 @@ def unload():
 #         return   # check WAS in natlinkmain...
 #     if thisGrammar:
 #         thisGrammar.cancelMode()
-
