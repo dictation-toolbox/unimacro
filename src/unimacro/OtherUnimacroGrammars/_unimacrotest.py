@@ -26,10 +26,11 @@ from dtactions.uniactions import uactions as actions
 
 status = natlinkstatus.NatlinkStatus()
 
+
 class UnittestGrammar(natbj.IniGrammar):
-    language = uniutils.getLanguage()        
+    language = uniutils.getLanguage()
     name = 'unimacro test'
-    iniIgnoreGrammarLists = ['tests'] # are set in this module
+    iniIgnoreGrammarLists = ['tests']  # are set in this module
     gramSpec = """
 <onetest> exported = unimacro test {tests};
 <alltests> exported = unimacro test (all);
@@ -39,10 +40,10 @@ class UnittestGrammar(natbj.IniGrammar):
         self.load(self.gramSpec)
         self.activateAll()
         self.switchOnOrOff()
-        self.setList('tests', self.getTestNames()) # also fill self.testNames, self.allTests
+        self.setList('tests', self.getTestNames())  # also fill self.testNames, self.allTests
         self.filesToSkipInResult = ["unittest.py", "TestCaseWithHelpers.py"]
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         if self.checkForChanges:
             self.checkInifile()
             self.setList('tests', self.getTestNames())
@@ -51,7 +52,7 @@ class UnittestGrammar(natbj.IniGrammar):
         """do one of the unittests"""
         test = words[-1]
         self.doAll = 0
-        print("---------------------------------do unimacro unittest for: %s"% test)
+        print("---------------------------------do unimacro unittest for: %s" % test)
         self.doUnitTests([test])
 
     def gotResults_alltests(self, words, fullResults):
@@ -70,9 +71,9 @@ class UnittestGrammar(natbj.IniGrammar):
         """
         self.testFolder = os.path.join(status.getUnimacroDirectory(), "unimacro_test")
         testFiles = glob.glob(os.path.join(self.testFolder, "*test.py"))
-##        print 'testFiles: %s'% testFiles
+        # print 'testFiles: %s'% testFiles
         testNames = list(map(self.extractTestName, testFiles))
-        print('testNames: %s'% testNames)
+        print('testNames: %s' % testNames)
         self.allTests = dict(list(zip(testNames, testFiles)))
         return testNames
 
@@ -84,7 +85,7 @@ class UnittestGrammar(natbj.IniGrammar):
         return name
 
     def showInifile(self):
-        commandExplanation = "Names of tests: \n%s\n---------------"% '\n'.join(self.testNames)
+        commandExplanation = "Names of tests: \n%s\n---------------" % '\n'.join(self.testNames)
         super(UnittestGrammar, self).showInifile(commandExplanation=commandExplanation)
 
     def doUnitTests(self, tests):
@@ -93,7 +94,7 @@ class UnittestGrammar(natbj.IniGrammar):
         self.activeTests = []
 
         for test in tests:
-            print('do test %s (%s)'% (test, self.allTests[test]))
+            print('do test %s (%s)' % (test, self.allTests[test]))
             suite = self.addUnitTest(test, self.allTests[test])
             if suite:
                 self.activeTests.append(test)
@@ -105,7 +106,7 @@ class UnittestGrammar(natbj.IniGrammar):
             natlink.setMicState('off')
             result = unittest.TextTestRunner().run(suiteAll)
             print('after testing------------------------------------')
-            self.dumpResult(result, filesToSkip=self.filesToSkipInResult)            
+            self.dumpResult(result, filesToSkip=self.filesToSkipInResult)
             natlink.setMicState('on')
 
         else:
@@ -113,22 +114,22 @@ class UnittestGrammar(natbj.IniGrammar):
 
     def addUnitTest(self, test, fileName):
         """do one of the unittests"""
-##        actions.Message("starting test %s"% fileName)
+        # actions.Message("starting test %s"% fileName)
 
         test_path = os.path.join(sys.prefix, 'Lib', 'site-packages', 'unimacro', 'unimacro_test')
         if not os.path.isdir(test_path):
             raise OSError(f'cannot add unittest for Unimacro, test_path invalid: "{test_path}"')
-        if not test_path in sys.path:
+        if test_path not in sys.path:
             sys.path.append(test_path)
         modName = os.path.basename(fileName)
         modName = utilsqh.removeFromEnd(modName, ".py", ignoreCase=1)
-    
+
         testMod = __import__(modName)
         testClassName = modName
         try:
             testClass = getattr(testMod, testClassName)
         except AttributeError:
-            print('****cannot find test class in test module, skipping test: %s'% testClassName)
+            print('****cannot find test class in test module, skipping test: %s' % testClassName)
             return None
         suite = unittest.makeSuite(testClass, 'test')
         return suite
@@ -137,7 +138,7 @@ class UnittestGrammar(natbj.IniGrammar):
         """add to sys.path if not present yet"""
         if folder in sys.path:
             return
-        print('adding to path: %s'% folder)
+        print('adding to path: %s' % folder)
         sys.path.append(folder)
 
     def dumpResult(self, testResult, filesToSkip=None):
@@ -150,36 +151,33 @@ class UnittestGrammar(natbj.IniGrammar):
         f = open(testResultFile, 'w')
         if testResult.wasSuccessful():
             if alert:
-                mes = "all succesful: %s"% self.activeTests
+                mes = "all succesful: %s" % self.activeTests
                 actions.Message(mes, "Unimacro Tests succesful")
             else:
-                mes = "test passed: %s"% self.activeTests[0]
+                mes = "test passed: %s" % self.activeTests[0]
                 self.DisplayMessage(mes)
             f.write(mes+'\n'*2)
             f.close()
             return
-        f.write("results of tests: %s\n"% self.activeTests)
+        f.write("results of tests: %s\n" % self.activeTests)
         f.write('\n--------------- errors -----------------\n')
         for case, tb in testResult.errors:
-            f.write('\n---------- %s --------\n'% case)
+            f.write('\n---------- %s --------\n' % case)
             cleanTb = utilsqh.cleanTraceback(tb, filesToSkip)
             f.write(cleanTb)
         f.write('\n--------------- failures -----------------\n')
         for case, tb in testResult.failures:
-            f.write('\n---------- %s --------\n'% case)
+            f.write('\n---------- %s --------\n' % case)
             cleanTb = utilsqh.cleanTraceback(tb, filesToSkip)
             f.write(cleanTb)
 
         f.close()
-        mes = "there were errors with testing unimacro: %s\n\nPlease consult the outputfile: %s"% \
+        mes = "there were errors with testing unimacro: %s\n\nPlease consult the outputfile: %s" % \
               (self.activeTests, testResultFile)
         actions.Message(mes, "Unimacro Tests failure", alert=alert)
         self.openFileDefault(testResultFile, mode="edit", name='test result')
 
-    
-        
 
-    
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 thisGrammar = UnittestGrammar()
 if thisGrammar.gramSpec:
@@ -187,11 +185,10 @@ if thisGrammar.gramSpec:
 else:
     thisGrammar = None
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
-
-

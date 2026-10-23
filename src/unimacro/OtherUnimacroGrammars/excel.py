@@ -2,28 +2,24 @@ __version__ = "$Rev: 429 $ on $Date: 2011-05-31 16:21:03 +0200 (di, 31 mei 2011)
 # This file is part of a SourceForge project called "unimacro" see
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
+#    or the file COPYRIGHT.txt in the natlink\natlink directory
 #
 # Excel navigate in a sheet
 """
 """
 
 
-import natlink
-from dtactions import uniutils
-from natlinkcore import natlinkutils
 from dtactions import uniutils
 import unimacro.natlinkutilsbj as natbj
-import pprint
-import types
 from dtactions.uniactions.uactions import doAction as action
-from dtactions.uniactions.uactions import doAction as action
+from dtactions.sendkeys import sendkeys as keystroke
 from dtactions.uniactions import uactions as actions
-import win32com
 
-# 
+#
 language = uniutils.getLanguage()
 ancestor = natbj.DocstringGrammar
+
+
 class ThisGrammar(ancestor):
 
     try:
@@ -31,7 +27,7 @@ class ThisGrammar(ancestor):
     except KeyError:
         print('take number grammar from "enx"')
         numberGram = natbj.numberGrammarTill999['enx']
-        
+
     name = 'excel'
     iniIgnoreGrammarLists = ['sheets', 'books']
     gramSpec = """
@@ -44,9 +40,9 @@ class ThisGrammar(ancestor):
 <negative> exported = make number <negativeaction>;
 <negativeaction> = negative | positive;
 <before> = here;
-#and the numbers grammar (0,...,999):                             
+#and the numbers grammar (0,...,999):
 """+numberGram
-        
+
     def initialize(self):
         self.prevHandle = -1
         self.load(self.gramSpec)
@@ -55,8 +51,8 @@ class ThisGrammar(ancestor):
         self.excel = None
         self.sheetsList = []
         self.booksList = []
-        
-    def gotBegin(self,moduleInfo):
+
+    def gotBegin(self, moduleInfo):
         winHandle = moduleInfo[2]
         if self.prevHandle == winHandle:
             if not self.isActive():
@@ -64,13 +60,13 @@ class ThisGrammar(ancestor):
         else:
             self.prevHandle = winHandle
             if uniutils.matchModule('excel', modInfo=moduleInfo):
-                #print 'activate firefox %s mode'% mode
+                # print 'activate firefox %s mode'% mode
                 if self.checkForChanges:
-                    print('excel (%s), checking the inifile'% self.name)
+                    print('excel (%s), checking the inifile' % self.name)
                     self.checkInifile()
                 self.switchOnOrOff()
             elif self.isActive():
-                #print 'deactivate Excel %s mode'% mode
+                # print 'deactivate Excel %s mode'% mode
                 self.deactivateAll()
                 if self.excel:
                     self.excel.disconnect()
@@ -82,22 +78,22 @@ class ThisGrammar(ancestor):
             if self.excel is None:
                 self.excel = actions.get_instance_from_progInfo(progInfo)
                 if self.excel.app:
-                    print('excel.app: %s'% self.excel.app)
-                    print('Workbooks: %s'% self.excel.app.Workbooks.Count)
+                    print('excel.app: %s' % self.excel.app)
+                    print('Workbooks: %s' % self.excel.app.Workbooks.Count)
                 else:
                     print('no instance for this Excel object available')
                     self.deactivateAll()
                     return
-                    
+
             res = self.excel.checkForChanges(progInfo)
-            #print 'res from changes: %s'% res
-            if res:   
+            # print 'res from changes: %s'% res
+            if res:
                 self.refreshExcelSettings(res)
                 self.printPositions('from gotBegin')
 
     #  Bij het initialiseren wordt de horizontale spatiejering uitgerekend.
     #    Er wordt van uitgegaan dat het venster niet te smal staat.
-    def gotResultsInit(self,words,fullResults):
+    def gotResultsInit(self, words, fullResults):
         """at start of actions"""
         # just in case a button was kept down (with show card commands)
         self.hadChoose = None
@@ -123,14 +119,14 @@ class ThisGrammar(ancestor):
             self.sheetsDict = self.spokenforms.getDictOfMixedSpokenForms(sheets)
             self.sheetsList = list(self.sheetsDict.keys())
             self.setList('sheets', self.sheetsList)
-            print('sheets: %s'% self.sheetsList)
+            print('sheets: %s' % self.sheetsList)
         books = self.excel.getBooksList()
         if books != self.booksList:
             self.booksList = books
             self.booksDict = self.spokenforms.getDictOfMixedSpokenForms(books)
             self.booksList = list(self.booksDict.keys())
             self.setList('books', self.booksList)
-            print('books: %s'% self.booksList)
+            print('books: %s' % self.booksList)
 
     # several commands in Docstring format:
     def rule_backgroundcolor(self, words):
@@ -144,13 +140,13 @@ class ThisGrammar(ancestor):
             app.ActiveCell.Interior.ColorIndex = colorCode
         else:
             app.ActiveCell.Interior.ColorIndex = None
-    #                    
     #
-    #        
-    #def gotResults_row(self,words,fullResults):
+    #
+    #
+    # def gotResults_row(self,words,fullResults):
     #    if self.hasCommon(words, 'back'):
     #        prevRow = self.popFromListIfDifferent(self.prevRows, self.currentRow)
-    #        if prevRow:                
+    #        if prevRow:
     #            self.gotoRow(prevRow)
     #        else:
     #            print 'no row to go back to'
@@ -158,30 +154,30 @@ class ThisGrammar(ancestor):
     #    self.hadRow = 1
     #    self.waitForNumber('number')
 
-
-    def gotResults_books(self,words,fullResults):
-        print('books: %s'% words)
+    def gotResults_books(self, words, fullResults):
+        print('books: %s' % words)
         print(self.booksList)
 
-    def gotResults_sheets(self,words,fullResults):
-        print('sheets: %s'% words)
+    def gotResults_sheets(self, words, fullResults):
+        print('sheets: %s' % words)
         print(self.sheetsList)
-        self.excel.selectSheet(self.sheetsDict[words[1]])        
+        self.excel.selectSheet(self.sheetsDict[words[1]])
 
-    def gotResults_negativeaction(self,words,fullResults):
-        #print 'excel, make active cell negative'
+    def gotResults_negativeaction(self, words, fullResults):
+        # print 'excel, make active cell negative'
         n = self.excel.app.ActiveCell.Value
+        # TODO Flake8 flags E721 for below, should be `is` / `is not` or isinstance()`?
         if type(n) == float:
             n = -n
             self.excel.app.ActiveCell.Value = n
         else:
-            print('excel, not a float: %s (%s)'% (n, type(n)))
+            print('excel, not a float: %s (%s)' % (n, type(n)))
 
-    def gotResults_col(self,words,fullResults):
+    def gotResults_col(self, words, fullResults):
         self.hadCol = 1
         if self.hasCommon(words[1], 'back'):
             prevCol = self.excel.getPreviousColumn()
-            if prevCol:                
+            if prevCol:
                 self.gotoCol(prevCol)
             else:
                 print('no column to go back to')
@@ -194,22 +190,22 @@ class ThisGrammar(ancestor):
         if col:
             self.gotoCol(col)
         else:
-            raise ValueError('excel, column: no valid column found: "%s" (all words: %s)'% (words[1], words))
+            raise ValueError('excel, column: no valid column found: "%s" (all words: %s)' % (words[1], words))
 
-    def gotResults_before(self,words,fullResults):
+    def gotResults_before(self, words, fullResults):
         if self.hasCommon(words, 'here'):
             if not self.doWaitForMouseToStop():
                 print('excel, mouse does not stop, cancel command')
                 return
             uniutils.buttonClick()
 
-    def gotResults_date(self,words,fullResults):
+    def gotResults_date(self, words, fullResults):
         day = self.getNumberFromSpoken(words[1])
         if len(words) > 2:
             month = self.getFromInifile(words[2], 'month')
         else:
             month = 12
-        keystroke('%s-%s{tab}'% (day, month))
+        keystroke('%s-%s{tab}' % (day, month))
 
     def gotoCol(self, col):
         """col should be a single letter
@@ -217,24 +213,24 @@ class ThisGrammar(ancestor):
         sheet = self.excel.sheet
         col = col.strip()
         if col == self.excel.currentColumn:
-            print('column %s already selected'% col)
+            print('column %s already selected' % col)
             return
-        #print 'col: %s, curRow: %s'% (col, self.excel.currentRow)
+        # print 'col: %s, curRow: %s'% (col, self.excel.currentRow)
         range = col + self.excel.currentRow
         sheet.Range(range).Select()
-        cr = self.excel.savePosition()
-        #print 'all current positions:'
-        #pprint.pprint(self.excel.positions)
+        # cr = self.excel.savePosition()
+        # print 'all current positions:'
+        # pprint.pprint(self.excel.positions)
 
     def printPositions(self, comment=None):
         """print position info, for debugging purposes
         """
         if comment:
-            print('----%s'% comment)
-        print('colum info: %s'% self.excel.columns)
-        print('row info: %s'% self.excel.rows)
+            print('----%s' % comment)
+        print('colum info: %s' % self.excel.columns)
+        print('row info: %s' % self.excel.rows)
         print('---------')
-        
+
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 thisGrammar = ThisGrammar()
@@ -242,10 +238,11 @@ if thisGrammar.gramSpec:
     thisGrammar.initialize()
 else:
     thisGrammar = None
-    
-def unload():
-    #pylint:disable=W0603
-    global thisGrammar
-    if thisGrammar: thisGrammar.unload()
-    thisGrammar = None
 
+
+def unload():
+    # pylint:disable=W0603
+    global thisGrammar
+    if thisGrammar:
+        thisGrammar.unload()
+    thisGrammar = None
