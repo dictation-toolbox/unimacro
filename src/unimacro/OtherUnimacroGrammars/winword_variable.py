@@ -7,11 +7,13 @@
 # for a variable number of words grammar
 # Quintijn, June 28, 2009
 
-import natlink
 from natlinkcore import natlinkutils
+from dtactions.sendkeys import sendkeys
 
 
 ancestor = natlinkutils.GrammarBase
+
+
 class ThisGrammar(ancestor):
 
     gramSpec = """
@@ -28,13 +30,13 @@ class ThisGrammar(ancestor):
                         'respiratory']
         self.setList('phwords', self.phwords)
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         if self.prevInfo == moduleInfo:
             return
 
         self.prevInfo = moduleInfo
 
-        winHandle = natlinkutils.matchWindow(moduleInfo,'winword','Microsoft Word')
+        winHandle = natlinkutils.matchWindow(moduleInfo, 'winword', 'Microsoft Word')
         if winHandle:
             if not self.isActive():
                 self.activateAll()
@@ -45,19 +47,20 @@ class ThisGrammar(ancestor):
         """possibility to "manually" update the styles list"""
         L = ['']
         for w in words:
-##            print 'got phword: %s'% w   # including the trigger words!
+            # print 'got phword: %s'% w   # including the trigger words!
             L.append(w)
         sendkeys(' '.join(L))
-            
+
+
 # standard stuff:
 thisGrammar = ThisGrammar()
 thisGrammar.initialize()
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
-        
-    thisGrammar = None
 
+    thisGrammar = None

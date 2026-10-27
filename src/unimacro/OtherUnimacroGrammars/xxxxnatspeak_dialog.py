@@ -8,39 +8,41 @@
 # grammar activated if a recent folders dialog is brought to the foreground,
 # interaction with grammar _folders.
 #
-#pylint:disable=
+# pylint:disable=
 from dtactions import uniutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 
 
-
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
     """grammar recent folder dialog
-    
+
     only to be switched on if dialog is there, if dialog is gone, the grammar rules set is deactivated
-    """    
+    """
     language = uniutils.getLanguage()
     name = "natspeak dialog"
-    
+
     setRecentFolderDialog = ["chooserfd", "okcancelrfd"]
-    
+
     gramSpec = """
 <chooserfd> exported = choose {number};
 <okcancelrfd> exported = OK | Cancel;
     """
+
     def initialize(self):
         if not self.language:
             print("no valid language in grammar "+__name__+" grammar not initialized")
             return
         self.load(self.gramSpec)
-        print(f'loaded: {self.gramSpec}') 
+        print(f'loaded: {self.gramSpec}')
         self.prevHndle = None
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         """switch rfd (recent folders dialog) on
-        
+
         if title matches what is provided in _folders grammar.
         """
         hndle = moduleInfo[2]
@@ -48,9 +50,9 @@ class ThisGrammar(ancestor):
             return
         self.prevHndle = hndle
         if uniutils.matchModule('natspeak'):
-            # try to reach data from _folders grammar: 
+            # try to reach data from _folders grammar:
             self.foldersGram = self.GetGrammarObject('folders')
-            #print 'self.foldersGram: %s'% self.foldersGram
+            # print 'self.foldersGram: %s'% self.foldersGram
             if self.foldersGram is None:
                 return
             dTitle = self.foldersGram.dialogWindowTitle
@@ -61,20 +63,20 @@ class ThisGrammar(ancestor):
                 return
         # other situations:
         self.deactivateAll()
-        
+
     def gotResults_chooserfd(self, words, fullResults):
         """result from the recent folders dialog
-        
+
         extract the number, then close the dialog and
         then call the relevant function from the folders grammar
         """
-        wNumList = self.getNumbersFromSpoken(words) # returns a string or None
+        wNumList = self.getNumbersFromSpoken(words)  # returns a string or None
         if len(wNumList) != 1:
             print(f'natspeak dialog: error in command, no number found: {wNumList}')
             return
         chooseNum = wNumList[0]
         self.exitDialog()
-        self.foldersGram.gotoRecentFolder(chooseNum-1)  # remember choose is 1 based, the list is 0 based 
+        self.foldersGram.gotoRecentFolder(chooseNum-1)  # remember choose is 1 based, the list is 0 based
 
     def gotResults_okcancelrfd(self, words, fullResults):
         print(f'dialog ok cancel: {words}, just close the dialog')
@@ -85,16 +87,17 @@ class ThisGrammar(ancestor):
         dTitle = self.foldersGram.dialogWindowTitle
         if dTitle and uniutils.matchModule('natspeak', wantedTitle=dTitle, titleExact=1, caseExact=1):
             uniutils.rememberWindow()
-            keystroke("{enter}") # exit dialog.
+            keystroke("{enter}")  # exit dialog.
         uniutils.waitForNewWindow()
-        
-        
+
+
 # standard stuff:
 thisGrammar = ThisGrammar()
 thisGrammar.initialize()
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()

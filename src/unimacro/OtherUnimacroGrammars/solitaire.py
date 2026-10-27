@@ -25,8 +25,8 @@
 # Written by: Quintijn Hoogenboom (QH softwaretraining &
 # advies),2002, revised October 2003
 # march 2011: change sol to solitaire
-#pylint:disable=C0209
-#pylint:disable=E0602
+# pylint:disable=C0209
+# pylint:disable=E0602
 
 """Grammar for playing solitaire (patience) hands-free
 
@@ -34,18 +34,20 @@ Extensive use is made of mouse (dragging) routines.
 """
 
 import win32gui
+import natlink
 from natlinkcore import natlinktimer
 from dtactions import uniutils
+from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
 
-#aantal carden en aantal stapelplaatsen:
-cnum = list(range(1,8))
-snum = list(range(1,5))
-#card sizes and spacing:
-#kwidth, kheight = 72, 96
+# aantal carden en aantal stapelplaatsen:
+cnum = list(range(1, 8))
+snum = list(range(1, 5))
+# card sizes and spacing:
+# kwidth, kheight = 72, 96
 kwidth, kheight = 93, 121
-hspace, vspace = 10,6
-cardhspace, cardvspace = 5, 6 # space in stack (horizontal) and on stacks (vertical)
+hspace, vspace = 10, 6
+cardhspace, cardvspace = 5, 6  # space in stack (horizontal) and on stacks (vertical)
 # for mouse lower or higher:
 deltaY = 14
 
@@ -54,29 +56,31 @@ pauzesDelta = 0.1
 minPause = 0.5
 
 ancestor = natbj.DocstringGrammar
+
+
 class ThisGrammar(ancestor):
     name = 'solitaire'
-    iniIgnoreGrammarLists = ['snum', 'cnum'] # are set in this module
+    iniIgnoreGrammarLists = ['snum', 'cnum']  # are set in this module
 
-    #gramSpec = """ # in the rules docstrings!
+    # gramSpec = """ # in the rules docstrings!
     #    """
 
     def initialize(self):
         if self.load(self.gramSpec):
             self.setNumbersList("cnum", cnum)
             self.setNumbersList("snum", snum)
-            print('grammar solitaire (%s) active'% self.name)
+            print('grammar solitaire (%s) active' % self.name)
             self.prevHandle = -1
             self.stackAuto = 0
             self.pause = 1
             self.inTimer = 0
             self.pauseTime = 4
-                        
+
     def cancelMode(self):
-        #self.setExclusive(0)
+        # self.setExclusive(0)
         if self.inTimer:
             print('cancel timer')
-            natlinktimer.setTimerCallback(self.onTimer,0)
+            natlinktimer.setTimerCallback(self.onTimer, 0)
             self.inTimer = 0
 
     def onTimer(self):
@@ -91,9 +95,8 @@ class ThisGrammar(ancestor):
             return
         # print('in onTimer: %.1f'% time.clock())
         self.rule_newcard([])
-        
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         print('gotbegin, cancelmode')
         self.cancelMode()
         winHandle = moduleInfo[2]
@@ -102,9 +105,9 @@ class ThisGrammar(ancestor):
         self.prevHandle = winHandle
         if moduleInfo[0].lower().find('solitaire.exe') > 0 and uniutils.isTopWindow(moduleInfo[2]):
             if self.checkForChanges:
-                print('grammar solitaire (%s) checking the inifile'% self.name)
+                print('grammar solitaire (%s) checking the inifile' % self.name)
                 self.checkInifile()
-            print('self.mayBeSwitchedOn: %s'% self.mayBeSwitchedOn)
+            print('self.mayBeSwitchedOn: %s' % self.mayBeSwitchedOn)
             exclusive = self.mayBeSwitchedOn == 'exclusive'
             self.activateAll(exclusive=exclusive)
         else:
@@ -112,7 +115,7 @@ class ThisGrammar(ancestor):
 
     #  Bij het initialiseren wordt de horizontale spatiejering uitgerekend.
     #    Er wordt van uitgegaan dat het venster niet te smal staat.
-    def gotResultsInit(self,words,fullResults):
+    def gotResultsInit(self, words, fullResults):
         """initialize screen sizes (guesses)
         """
         global hspace, vspace, cardhspace, cardvspace
@@ -121,7 +124,7 @@ class ThisGrammar(ancestor):
         hspace = (xMax - 7*kwidth)/8
         cardhspace = int(hspace/2)
         cardvspace = vspace
-        ## print 'hSpace: %s, xMax: %s, yMax: %s'% (hspace, xMax, yMax)
+        # print 'hSpace: %s, xMax: %s, yMax: %s'% (hspace, xMax, yMax)
 
     def rule_auto(self, words):
         "stack automatically"
@@ -129,8 +132,8 @@ class ThisGrammar(ancestor):
 
     def rule_exclusive(self, words):
         "solitaire [non] exclusive"
-        #switches on auto stacking, {ctrl+a} after each move
-        self.prevHandle = None # to reactivate in gotBegin
+        # switches on auto stacking, {ctrl+a} after each move
+        self.prevHandle = None  # to reactivate in gotBegin
         self.cancelMode()
         if self.hasCommon(words, 'non'):
             self.mayBeSwitchedOn = 1
@@ -159,13 +162,13 @@ class ThisGrammar(ancestor):
         self.moveTo(firstrowpos(2))
         if self.hasCommon(words, 'continue'):
             timeEachMilliseconds = max(1, self.pauseTime)*500
-            print('set the timer to %s'% timeEachMilliseconds)
+            print('set the timer to %s' % timeEachMilliseconds)
             natlinktimer.setTimerCallback(self.onTimer, timeEachMilliseconds)
             self.inTimer = 1
-            
+
     # Sometimes the mouse is a bit too high (if the stack grows longer)
     # with this command you position the mouse a bit higher or lower
-    def rule_lower(self,words):
+    def rule_lower(self, words):
         "mouse (lower|higher) [{cnum}]"
         n = self.getNumberFromSpoken(words[-1]) or 1
         d = n*deltaY
@@ -173,7 +176,7 @@ class ThisGrammar(ancestor):
             pass
         elif self.hasCommon(words, 'higher'):
             d = -d
-        uniutils.doMouse(0,2,0,d,0)
+        uniutils.doMouse(0, 2, 0, d, 0)
 
     #  Deze grammatica regel stelt de waittijd na elk (deel) van een
     #    commando in. Zie "pauzes" bovenin dit standpunt
@@ -186,7 +189,7 @@ class ThisGrammar(ancestor):
     #                                        to one of the 4 stacks
     def rule_to(self, words):
         "to ((stack {snum})|{cnum})"
-        
+
         to = self.getNumberFromSpoken(words[-1])
         uniutils.rememberMouse()
 
@@ -200,14 +203,14 @@ class ThisGrammar(ancestor):
 
     def rule_testposition(self, words):
         "test position ((stack {snum})|{cnum})"
-        #test the stack and piles positions
-        #lefttop = (0,0)
-        #uniutils.doMouse(0, 5, 0,0, 'move')
-        #x, y = uniutils.getMousePosition(1)
-        #print 'screen x,y: %s, %s'% (x,y)
-        #x, y = uniutils.getMousePosition(5)
-        #print 'client: x,y: %s, %s'% (x,y)
-        #time.sleep(2)
+        # test the stack and piles positions
+        # lefttop = (0,0)
+        # uniutils.doMouse(0, 5, 0,0, 'move')
+        # x, y = uniutils.getMousePosition(1)
+        # print 'screen x,y: %s, %s'% (x,y)
+        # x, y = uniutils.getMousePosition(5)
+        # print 'client: x,y: %s, %s'% (x,y)
+        # time.sleep(2)
         to = self.getNumberFromSpoken(words[-1])
         uniutils.rememberMouse()
 
@@ -215,16 +218,16 @@ class ThisGrammar(ancestor):
             to = firstrowpos(to+3)
         else:
             to = cardpos(to)
-        print('position: %s'% repr(to))
+        print('position: %s' % repr(to))
         self.moveTo(to)
-        
+
     def rule_cardnumto(self, words):
         "[card] {cnum} to ((stack {snum})|{cnum})"
-        #card with number to a stack or another card column
+        # card with number to a stack or another card column
         #
-        #the first word is optional,and is recognised with the function
-        #self.hasCommon, which can handle translations or synonyms
-        print('cardnumto: %s'% words)
+        # the first word is optional,and is recognised with the function
+        # self.hasCommon, which can handle translations or synonyms
+        print('cardnumto: %s' % words)
         uniutils.rememberMouse()
         # if self.hasCommon(words[0],['card']):
         #     ww = words[1:]
@@ -233,12 +236,12 @@ class ThisGrammar(ancestor):
 
         # go to numbered card with mouse:
         From = self.getNumberFromSpoken(words[0])
-        self.moveTo(cardpos(From))        
+        self.moveTo(cardpos(From))
 
         uniutils.rememberMouse()
         to = self.getNumberFromSpoken(words[-1])
 
-        # check if you go to a stack or another card column:        
+        # check if you go to a stack or another card column:
         if self.hasCommon(words, 'stack'):
             to = firstrowpos(to+3)
         else:
@@ -246,16 +249,16 @@ class ThisGrammar(ancestor):
         self.dragTo(to)
         uniutils.cancelMouse()
         uniutils.buttonClick()
-    
+
     def rule_cardto(self, words):
         "card to ((stack {snum})|{cnum})"
-        #drag the last drawn card to a stack or to a pile
-        print('cardto: %s'% words)
+        # drag the last drawn card to a stack or to a pile
+        print('cardto: %s' % words)
 
         uniutils.rememberMouse()
-        self.moveTo(firstrowpos(2))        
+        self.moveTo(firstrowpos(2))
         to = self.getNumberFromSpoken(words[-1])
-        
+
         if self.hasCommon(words, 'stack'):
             to = firstrowpos(to+3)
         else:
@@ -263,16 +266,16 @@ class ThisGrammar(ancestor):
         self.dragTo(to)
         uniutils.cancelMouse()
         uniutils.buttonClick()
-    
-    def gotResults(self,words,fullResults):
+
+    def gotResults(self, words, fullResults):
         """if stack auto, do after each move a {ctrl+a}"""
         if self.stackAuto:
             keystroke('{ctrl+a}')
-        
-    #  paused a given number of milliseconds 
-    #   if this variable = 0 no pausing is done.        
+
+    #  paused a given number of milliseconds
+    #   if this variable = 0 no pausing is done.
     #    The length of the pauses can be given with
-    #    command "pauzes (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7)". 
+    #    command "pauzes (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7)".
     #   At the top of this file the increment of the pausing is given.
     def Wait(self, t=None):
         if not t:
@@ -282,52 +285,54 @@ class ThisGrammar(ancestor):
 
     # move to the given position and have a short wait:
     def moveTo(self, pos):
-        uniutils.doMouse(0,5, pos[0], pos[1], 'move')
+        uniutils.doMouse(0, 5, pos[0], pos[1], 'move')
         self.Wait()
 
     # drag from current position to the new position
     # Pause a few times, dependent on the pause state.
     def dragTo(self, pos):
-        xold,yold = uniutils.getMousePosition(5)
-        print('hold down: %s, %s'% (xold, yold))
-        uniutils.doMouse(0,5,xold, yold, 'down')
+        xold, yold = uniutils.getMousePosition(5)
+        print('hold down: %s, %s' % (xold, yold))
+        uniutils.doMouse(0, 5, xold, yold, 'down')
         xyincr = 50
         nstepsx = int(abs(pos[0]-xold)/xyincr)
         nstepsy = int(abs(pos[1]-yold)/xyincr)
         nsteps = max(nstepsx, nstepsy)
-        print('nstepsx: %s, nstepsy: %s, nsteps: %s'% (nstepsx, nstepsy, nsteps))
+        print('nstepsx: %s, nstepsy: %s, nsteps: %s' % (nstepsx, nstepsy, nsteps))
         ysteps = int((pos[1]-yold)/nsteps)
         xsteps = int((pos[0]-xold)/nsteps)
         x, y = xold, yold
         for _ in range(nsteps):
             x += xsteps
             y += ysteps
-            uniutils.doMouse(0,5, x, y, 'move')
+            uniutils.doMouse(0, 5, x, y, 'move')
             self.Wait(0.01)
         if x != pos[0] or y != pos[1]:
-            print('final move: %s, %s, %s, %s'% (x, pos[0], y, pos[1]))
-            uniutils.doMouse(0,5, pos[0], pos[1], 'move')
-            self.Wait(0.01)            
-        uniutils.doMouse(0,5, pos[0], pos[1], 'move')
+            print('final move: %s, %s, %s, %s' % (x, pos[0], y, pos[1]))
+            uniutils.doMouse(0, 5, pos[0], pos[1], 'move')
+            self.Wait(0.01)
+        uniutils.doMouse(0, 5, pos[0], pos[1], 'move')
         self.Wait(0.01)
         uniutils.releaseMouse()
         self.Wait()
 
-            
+
 #  Het berekenen van de coordinaten van cardnummer,i kan liggen
-#    tussen 1 en 
+#    tussen 1 en
 def cardpos(i):
     x = i*(hspace+kwidth)-0.5*kwidth
     y = int(2*vspace) + int(2.1*kheight)
-    return x,y
+    return x, y
 
 # Het berekenen van een positie van een card op de eerste rij.
 # Positie 1 is de stapel waaruit gedeeld wordt,
 # positie 2 is het stapeltje gedeelde carden,
 # en positie i + 3 is de positie van een stapel (i tussen 1 en 4)
+
+
 def firstrowpos(i):
     """calculate the positions of the first row
-    
+
     1 is pile of closed cards (to click on for new card)
     2 is last cards drawn
     i+3 is stack (stapel) 1,2,3,4
@@ -336,7 +341,8 @@ def firstrowpos(i):
     if i == 2:
         x += cardhspace
     y = vspace + cardvspace + int(0.5*kheight)
-    return x,y
+    return x, y
+
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
 thisGrammar = ThisGrammar()
@@ -345,8 +351,9 @@ if thisGrammar.gramSpec:
 else:
     thisGrammar = None
 
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
