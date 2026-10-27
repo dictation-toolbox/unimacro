@@ -1,6 +1,6 @@
 # http://unimacro.SourceForge.net and http://qh.antenna.nl/unimacro
 # (c) copyright 2003 see http://qh.antenna.nl/unimacro/aboutunimacro.html
-#    or the file COPYRIGHT.txt in the natlink\natlink directory 
+#    or the file COPYRIGHT.txt in the natlink\natlink directory
 #
 #  _tasks.py
 #
@@ -9,10 +9,10 @@
 # july 2006
 # reworked for python3 release: September 2022
 #
-#pylint:disable = C0302, R0904, C0209, R0914,, R0911, R0912, R0913
-#pylint:disable=E1101
+# pylint:disable = C0302, R0904, C0209, R0914,, R0911, R0912, R0913
+# pylint:disable=E1101
 
-"""Do task switching (taskbar), 
+"""Do task switching (taskbar),
 
 And switch to Documents inside an application.
 
@@ -31,7 +31,7 @@ import natlink
 from natlinkcore import nsformat
 from natlinkcore import natlinkstatus
 from unimacro import natlinkutilsbj as natbj
-from dtactions import uniutils 
+from dtactions import uniutils
 from dtactions import monitorfunctions
 from dtactions.uniactions.uactions import doAction as action
 from dtactions.uniactions.uactions import doKeystroke as keystroke
@@ -42,17 +42,19 @@ import win32con
 import win32api
 
 status = natlinkstatus.NatlinkStatus()
-language = status.language        
+language = status.language
 ICAlphabet = natbj.getICAlphabet(language=language)
 
 # center mouse after taskswitch (not good with XP and choice boxes in taskbar)
 
-ancestor=natbj.DocstringGrammar
+ancestor = natbj.DocstringGrammar
+
+
 class ThisGrammar(ancestor):
     iniIgnoreGrammarLists = ['taskcount', 'documentcount',
-                             #'switchapp', 'degrees', 'pixelcount',
+                             # 'switchapp', 'degrees', 'pixelcount',
                              'switchapp',
-                             #'sizecount','percentcount', 'directionplus', 'direction',
+                             # 'sizecount','percentcount', 'directionplus', 'direction',
                              'namedtask']
     name = "tasks"
     # task commands in docstring form in the rule functions below
@@ -61,7 +63,7 @@ class ThisGrammar(ancestor):
 # miscelaneous:
 <fileswitch> exported  = ("switch file to") {switchapp};
     """]
-    
+
     # include only if searchinothertask is True (via .ini file) (enable search commands = T)
     searchRule = "<searchinothertask> exported = search ({taskcount}|{application}) | <before> search ({taskcount}|{application});"
 
@@ -70,57 +72,56 @@ class ThisGrammar(ancestor):
         """
         ancestor.__init__(self)
         self.startInifile()
-        #print 'enableSearchCommands: %s'% self.enableSearchCommands
+        # print 'enableSearchCommands: %s'% self.enableSearchCommands
         if self.enableSearchCommands:
             self.gramSpec += '\n' + self.searchRule
-        _name = self.getName()
-
+        # _name = self.getName()
 
     def initialize(self):
         self.load(self.gramSpec)
-        self.switchOnOrOff() # initialises lists from inifile, and switches on
-                         # if all goes well (and variable onOrOff == 1)
+        self.switchOnOrOff()  # initialises lists from inifile, and switches on
+        # if all goes well (and variable onOrOff == 1)
         self.taskCounts = list(range(1, self.maxTaskNumber+1))
         self.documentCounts = list(range(1, self.maxDocumentNumber+1))
         # call for extra spoken form with difficult numbers
         # needs self.stripSpokenForm in gotResults... function!!!
-        #self.addSpokenFormNumbers(self.taskCounts)
+        # self.addSpokenFormNumbers(self.taskCounts)
         self.setNumbersList('taskcount', self.taskCounts)
         self.setNumbersList('documentcount', self.documentCounts)
         self.setList('switchapp', self.switchApps)
         self.emptyList('namedtask')  # to be filled with task name command
-        #for moving the window:
-        #self.pixelCounts = range(1, 21) + range(20, 201, 10)
-        #self.setNumbersList('pixelcount', self.pixelCounts)
-        #self.degreeCounts = range(0, 361,10)
-        #self.setNumbersList('degrees', self.degreeCounts)
-        #self.sizeCounts = range(1,21)
-        #self.setNumbersList('sizecount', self.sizeCounts)
-        #self.percentCounts = range(10,101,10)
-        #self.setNumbersList('percentcount', self.percentCounts)
-        self.namedtaskDict = {} # name -> hndle dict
+        # for moving the window:
+        # self.pixelCounts = range(1, 21) + range(20, 201, 10)
+        # self.setNumbersList('pixelcount', self.pixelCounts)
+        # self.degreeCounts = range(0, 361,10)
+        # self.setNumbersList('degrees', self.degreeCounts)
+        # self.sizeCounts = range(1,21)
+        # self.setNumbersList('sizecount', self.sizeCounts)
+        # self.percentCounts = range(10,101,10)
+        # self.setNumbersList('percentcount', self.percentCounts)
+        self.namedtaskDict = {}  # name -> hndle dict
         # the spoken forms are the values of the inifile
         # the keys of the inifile (fixed) are the resulting directions to be
         # worked with
         # for the task position etc commands:
-        #left|up|right|down|lefttop|righttop|rightbottom|leftbottom;  
+        # left|up|right|down|lefttop|righttop|rightbottom|leftbottom;
         # self.directionsplus = self.iniGetInvertedDict('directionplusreverse')
         # QH TODO, repair the direction things:
         # self.setList('directionplus', list(self.directionsplus.keys()))
         self.winkeyDown = 0  # for keeping down in stacked taskbar items
-        self.switchOnOrOff() # initialises lists from inifile, and switches on# if all goes well (and variable onOrOff == 1)
+        self.switchOnOrOff()  # initialises lists from inifile, and switches on# if all goes well (and variable onOrOff == 1)
         print('IniGrammar tasks, all lists initialized...')
 
     def iniGetInvertedDict(self, section):
         """get all the values as keys, and the keys as values
             values are separated by ; to are read in as a list
         """
-        #pylint:disable=W0212
-        
+        # pylint:disable=W0212
+
         D = {}
         keys = self.ini.get(section)
         if not keys:
-            raise ValueError('Grammar %s: no keys in inifile section [%s] (inifile: %s)'%
+            raise ValueError('Grammar %s: no keys in inifile section [%s] (inifile: %s)' %
                              (self.name, section, self.ini._name))
         for k in keys:
             values = self.ini.getList(section, k)
@@ -132,9 +133,9 @@ class ThisGrammar(ancestor):
                 D[k] = k
         return D
 
-    def gotBegin(self,moduleInfo):
+    def gotBegin(self, moduleInfo):
         if self.checkForChanges:
-            self.checkInifile() # refills grammar lists and instance variables
+            self.checkInifile()  # refills grammar lists and instance variables
         if self.winkeyDown:
             className = uniutils.getClassName()
             if className != 'TaskListThumbnailWnd':
@@ -146,9 +147,9 @@ class ThisGrammar(ancestor):
                 self.addTaskNameToDict(moduleInfo)
 
     def gotResultsInit(self, words, fullResults):
-        self.fullResults = fullResults 
+        self.fullResults = fullResults
         # for the move commands:
-        self.directionplus = None # for position, stretch, shrink
+        self.directionplus = None  # for position, stretch, shrink
         self.units = None
         self.amount = None
         self.taskmoveresize = None  # also "position" (see gotResults)
@@ -156,9 +157,9 @@ class ThisGrammar(ancestor):
         self.letters = None
         self.app = None
         self.namedictated = ""  # for naming a window
-        self.giveName = None # for the hndle when naming a window
-    ### here come the docstring like rules:
-    ###
+        self.giveName = None  # for the hndle when naming a window
+        # here come the docstring like rules:
+        ###
 
     def rule_startmenu(self, words):
         """start menu [{startmenucommands}]
@@ -168,43 +169,42 @@ class ThisGrammar(ancestor):
             self.hadStartMenu = 1
         Act = self.getFromInifile(words[-1], 'startmenucommands')
         if Act:
-            self.hadStartMenu = 0 # no action in gotResults, doing it here
+            self.hadStartMenu = 0  # no action in gotResults, doing it here
             self.doStartMenu()
             action(Act)
-    
+
     def doStartMenu(self):
         """give the start menu
         """
         action("SSK {ctrl+esc}")
-        
+
     def rule_taskswitch(self, words):
-        """#commands for switching tasks:    
+        """#commands for switching tasks:a
         task ({taskcount}|{taskcount}<subtask>|{application}|{application}<subtask>|back|{namedtask})
         """
-        #print 'got taskswitch: %s'% words
-        #switch to a task by number, application or Back
-        #leave the mouse at 0.3 0.3 relative to the top
+        # print 'got taskswitch: %s'% words
+        # switch to a task by number, application or Back
+        # leave the mouse at 0.3 0.3 relative to the top
         countOrApp = words[1]
-        #print 'goto task, countOrApp: %s'% countOrApp
+        # print 'goto task, countOrApp: %s'% countOrApp
         result = self.gotoTask(countOrApp)
-        
+
         if result:
             prog_info = uniutils.getProgInfo()
             if prog_info.prog == 'explorer' and not prog_info.title:
-                return # no centermouse!
+                return  # no centermouse!
             if self.centerMouse and not self.nextRule:
                 uniutils.Wait()
-                uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+                uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking
         else:
-            print('_tasks, could not switch to task: %s'% countOrApp)
-
+            print('_tasks, could not switch to task: %s' % countOrApp)
 
     def rule_subtask(self, words):
         """# commands for going to a subtask in a stacked taskbar
         window {n1-10} | {firstlast} window
         """
         className = uniutils.getClassName()
-        wNumList = self.getNumbersFromSpoken(words) # returns a string or None
+        wNumList = self.getNumbersFromSpoken(words)  # returns a string or None
         if wNumList:
             wNum = wNumList[0]
         else:
@@ -212,10 +212,10 @@ class ThisGrammar(ancestor):
         if not wNum:
             print('tasks, rule subtaks, no window number found')
             return
-        
-        #print 'tasks, subtask: %s'% wNum
+
+        # print 'tasks, subtask: %s'% wNum
         if className == "TaskListThumbnailWnd":
-            #print 'got subtask, alternative window: %s'% wNum
+            # print 'got subtask, alternative window: %s'% wNum
             self.doAlternativeClick(className, wNum)
 
         if self.centerMouse and not self.nextRule:  # so last rule of the recognition
@@ -225,24 +225,24 @@ class ThisGrammar(ancestor):
         """# go to a numbered document
         document ({documentcount} [{documentaction}] | {documentaction})
         """
-        count = self.getNumberFromSpoken(words[1]) # returns a string or None
+        count = self.getNumberFromSpoken(words[1])  # returns a string or None
         if count:
-            #print 'goto task, countOrApp: %s'% countOrApp
+            # print 'goto task, countOrApp: %s'% countOrApp
             result = self.gotoDocument(count)
-            
+
             if result:
                 if self.centerMouse:
                     uniutils.Wait()
-                    uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+                    uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking
             else:
                 prog_info = uniutils.getProgInfo()
-                print('_tasks, could not switch to document: %s (program: %s)'% (count, prog_info.prog))
-            
+                print('_tasks, could not switch to document: %s (program: %s)' % (count, prog_info.prog))
+
             if words[1] == words[-1]:
                 return
 
         Act = self.getFromInifile(words[-1], 'documentaction')
-        print('words[-1]: %s, Action: %s'% (words[-1], Act))
+        print('words[-1]: %s, Action: %s' % (words[-1], Act))
         if Act:
             action(Act)
 
@@ -258,13 +258,13 @@ class ThisGrammar(ancestor):
         else:
             for _ in range(count):
                 action("<<documentprevious>>")
-            
+
         if words[1] == words[-1]:
             # no document action
             return
 
         Act = self.getFromInifile(words[-1], 'documentaction')
-        print('words[-1]: %s, Action: %s'% (words[-1], Act))
+        print('words[-1]: %s, Action: %s' % (words[-1], Act))
         if Act:
             action(Act)
 
@@ -281,84 +281,82 @@ class ThisGrammar(ancestor):
             hadPrevious = self.hasCommon(words[0], 'previous')
             if hadPrevious:
                 nextPrevAction = "<<documentprevious>>"
-            
-        count = self.getNumberFromSpoken(words[0:2]) # returns a string or None
+
+        count = self.getNumberFromSpoken(words[0:2])  # returns a string or None
         if not count:
-            print('_tasks, relativedocuments, count expected, got %s'% words[1])
+            print('_tasks, relativedocuments, count expected, got %s' % words[1])
 
         if hadNext:
             print('next, go one doc forward')
             action(nextPrevAction)
         else:
-            print('previous, go %s docs back'% count)
-            ## cycle n times:
+            print('previous, go %s docs back' % count)
+            # cycle n times:
             for _ in range(count):
                 action(nextPrevAction)
 
         Act = self.getFromInifile(words[-1], 'documentaction')
         if not Act:
-            print('_tasks, relativedocuments, action expected, got %s'% words)
+            print('_tasks, relativedocuments, action expected, got %s' % words)
             return
         for _ in range(count):
-            print('do action  %s (%s times)'% (Act, count))
+            print('do action  %s (%s times)' % (Act, count))
             action(Act)
 
     def gotResults_searchinothertask(self, words, fullResults):
-        ## rule for searching in another task, activated only if ...
-        
+        # rule for searching in another task, activated only if ...
+
         t = time.time()
         searchWord = self.getSelectedText()
-        print('searchWord from getSelectedText: %s'% searchWord)
+        print('searchWord from getSelectedText: %s' % searchWord)
         if not searchWord:
             searchWord = action("SELECTWORD")
             if not searchWord:
                 print('_tasks, searchinothertask: could not select text')
                 return
-        t1 = time.time() 
-        print('searchword: %s (%.2f)'% (searchWord, t1-t))
+        t1 = time.time()
+        print('searchword: %s (%.2f)' % (searchWord, t1-t))
         countOrApp = words[1]
-        #print 'switch to task: %s'% countOrApp
+        # print 'switch to task: %s'% countOrApp
         result = self.gotoTask(countOrApp)
         if result is None:
-            print('_tasks, could not switch to task: %s'% countOrApp)
+            print('_tasks, could not switch to task: %s' % countOrApp)
             return
-        print('result after taskswitch: %s'% repr(result))
-        # t2 = time.time() 
+        print('result after taskswitch: %s' % repr(result))
+        # t2 = time.time()
 
         prog_info = result
-        #print 'switched to "%s" (%.2f)'%  (prog, t2-t1)
-
+        # print 'switched to "%s" (%.2f)'%  (prog, t2-t1)
 
         if prog_info.prog == 'explorer' and not prog_info.title:
-            return # no centermouse!
+            return  # no centermouse!
         if self.centerMouse:
             uniutils.Wait()
-            uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking           
+            uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)  # relative in client area, no clicking
 
         uniutils.Wait()
         # now do the postprocessing
         prog = prog_info.prog
-        print('postprocessing for search: %s in app: %s'% (searchWord, prog))
-        if prog in ['chrome', 'firefox','iexplore']:
-            phrase = '"%s" site:nl'% searchWord
+        print('postprocessing for search: %s in app: %s' % (searchWord, prog))
+        if prog in ['chrome', 'firefox', 'iexplore']:
+            phrase = '"%s" site:nl' % searchWord
             keystroke("{ctrl+k}")
             keystroke(phrase + "{enter}")
         elif prog_info.prog == 'dictionaryworkbench':
             # hardcoded for Arnoud
             keystroke('{ctrl+f}')
-            action("SCLIP %s"% searchWord)
+            action("SCLIP %s" % searchWord)
             keystroke('{enter}')
         else:
-            #t3 = time.time()
+            # t3 = time.time()
             action("<<startsearch>>", progInfo=prog_info)
-            #t4 = time.time()
+            # t4 = time.time()
             keystroke(searchWord, progInfo=prog_info)
-            #t5 = time.time()
+            # t5 = time.time()
             action("<<searchgo>>", progInfo=prog_info)
-            #t6 = time.time()
-            #print 'after searchaction: %s (%.2f, %.2f, %.2f, %.2f)'% (searchWord, t3-t2,
+            # t6 = time.time()
+            # print 'after searchaction: %s (%.2f, %.2f, %.2f, %.2f)'% (searchWord, t3-t2,
             #                                                    t4-t3, t5-t4, t6-t5)
-            
 
     def subrule_before(self, words):
         """#optional word here in front of command:
@@ -366,23 +364,22 @@ class ThisGrammar(ancestor):
         """
         action("CLICK")
         uniutils.visibleWait()
-        #action("CLICKIFSTEADY")
+        # action("CLICKIFSTEADY")
 
     def importedrule_dgndictation(self, words):
         # for giving a window a name
         self.namedictated = nsformat.formatWords(words, state=-1)[0]
-        
 
     def rule_taskaction(self, words):
         '(<taskswitch> | <subtask> | task)({taskaction}| "give name" <dgndictation>|<closemultiple>)'
-        
+
         # do a taskaction to the current task, or one of the
         # numbered/named tasks or task back
-        #print 'got taskaction: %s'% words
+        # print 'got taskaction: %s'% words
         Actions = self.ini.get('taskaction')
         act = self.hasCommon(words, Actions)
         giveName = self.hasCommon(words, "give name")
-        #if self.app == "messages":
+        # if self.app == "messages":
         #    print 'action for messages: %s'% act
         #    if act == 'refresh':
         #        self.doTaskAction('close')
@@ -398,11 +395,11 @@ class ThisGrammar(ancestor):
 
         prog_info = uniutils.getProgInfo()
         if prog_info.prog == 'explorer' and not prog_info.title:
-            return # no centermouse!
-        
+            return  # no centermouse!
+
         if self.centerMouse:
             uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
-        
+
     def subrule_closemultiple(self, words):
         """close (all|other) | (all|other) close
         """
@@ -416,7 +413,7 @@ class ThisGrammar(ancestor):
         if _all:
             action("MP 2, 0, 0, right; VW; {up}{enter}; VW")
             self.gotoTask("back")
-            
+
         elif multiple:
             # close as long as special stacked window is found
             mousePos = uniutils.getMousePosition()
@@ -424,30 +421,29 @@ class ThisGrammar(ancestor):
                 raise ValueError("could not get mouse position")
             _x, _y = mousePos
             className = uniutils.getClassName()
-            wNum = -1 # last window of stacked windows...
-            #print 'tasks, subtask: %s'% wNum
+            wNum = -1  # last window of stacked windows...
+            # print 'tasks, subtask: %s'% wNum
             while className == "TaskListThumbnailWnd":
-                #print 'got subtask, alternative window: %s'% words
+                # print 'got subtask, alternative window: %s'% words
                 self.doAlternativeClick(className, wNum)
                 action("<<windowclose>>")
-                action("VW; MP 0, %s, %s"% mousePos)
+                action("VW; MP 0, %s, %s" % mousePos)
                 className = uniutils.getClassName()
             self.gotoTask(self.lastTaskCount)
         if self.centerMouse:
             uniutils.doMouse(1, 5, 0.3, 0.3, 0, 0)
-            
-        
+
     def gotoTask(self, countOrApp):
         """go to the specified task, by number or application name, return proginfo, or None if task was not found
-        
+
         """
         self.lastTaskCount = None
         if isinstance(countOrApp, str):
-            countBack = self.getNumberFromSpoken(countOrApp, self.taskCounts) # returns a string or None
+            countBack = self.getNumberFromSpoken(countOrApp, self.taskCounts)  # returns a string or None
         elif isinstance(countOrApp, int):
             countBack = countOrApp
         appList = self.ini.get('application')
-##        print 'appList: %s'% appList
+        # print 'appList: %s'% appList
         if isinstance(countOrApp, str) and self.hasCommon(countOrApp, 'back'):
             action('SSK {Alt+Tab}')
             return 1
@@ -455,7 +451,7 @@ class ThisGrammar(ancestor):
             hndle = self.namedtaskDict[countOrApp]
             result = uniutils.SetForegroundWindow(hndle)
             if not result:
-                print('switch to %s failed, delete name: %s'% (hndle, countOrApp))
+                print('switch to %s failed, delete name: %s' % (hndle, countOrApp))
                 del self.namedtaskDict[countOrApp]
                 self.setList('namedtask', list(self.namedtaskDict.keys()))
                 return None
@@ -465,27 +461,27 @@ class ThisGrammar(ancestor):
             if self.doTasksWithWindowsKey:
                 self.goto_task_winkey(countBack)
             else:
-                action('TASK %s'% countBack)
+                action('TASK %s' % countBack)
             result = uniutils.getProgInfo()
-            #print 'after action task %s, time: %.2f'% (countBack, (time.time()-t))
+            # print 'after action task %s, time: %.2f'% (countBack, (time.time()-t))
             return result
         if countOrApp in appList:
             value = self.ini.getList('application', countOrApp)
             if len(value) == 1:
                 app = value[0]
                 self.app = app
-                result = action("BRINGUP %s"% app)
+                result = action("BRINGUP %s" % app)
                 return result
-##            print 'after bringup: %s'% app
+            # print 'after bringup: %s'% app
             if len(value) == 2:
-                #application is known, but click by number!!
+                # application is known, but click by number!!
                 appName = value[0]
                 countBack = value[1]
                 self.lastTaskCount = countBack
                 if self.doTasksWithWindowsKey:
                     self.goto_task_winkey(countBack)
                 else:
-                    action('TASK %s'% countBack)
+                    action('TASK %s' % countBack)
                 for _ in range(30):
                     # 40 x 0.1: 4 seconds...
                     prog_info = uniutils.getProgInfo()
@@ -496,25 +492,25 @@ class ThisGrammar(ancestor):
                         return 1  # more items already available
                     uniutils.Wait()
                 else:
-                    print('application not detected in foreground: %s'% appName)
+                    print('application not detected in foreground: %s' % appName)
                     return None
         else:
-            print('_tasks, no valid entry for gotoTask: %s'% countOrApp)
+            print('_tasks, no valid entry for gotoTask: %s' % countOrApp)
             return None
         result = uniutils.getProgInfo()
         return None
 
     def gotoDocument(self, count):
         """go to the specified document, by number or application name, return proginfo, or None if task was not found
-        
+
         """
-        result = action('DOCUMENT %s'% count)
-        print('result of gotoDocument %s: %s'% (count, result))
+        result = action('DOCUMENT %s' % count)
+        print('result of gotoDocument %s: %s' % (count, result))
         return result
-    
+
     def goto_task_winkey(self, number):
         """switch to task with number, via the windows key"""
-    ##    print 'action: goto task: %s'% number
+        # print 'action: goto task: %s'% number
         prog_info = uniutils.getProgInfo()
         prog, title = prog_info.prog, prog_info.title
         if prog == 'explorer' and not title:
@@ -523,44 +519,44 @@ class ThisGrammar(ancestor):
         try:
             count = int(number)
         except ValueError:
-            print('goto_task_winkey, invalid number: %s'% number)
+            print('goto_task_winkey, invalid number: %s' % number)
             return None
         if not count:
-            print('goto_task_winkey, invalid number: %s'% number)
+            print('goto_task_winkey, invalid number: %s' % number)
             return None
         if count == 10:
-            count=0
+            count = 0
         elif count > 10:
-            print('goto_task_winkey, pass on to "TASK %s", number > 9'% count)
-            return action('TASK %s'% count)
-        
+            print('goto_task_winkey, pass on to "TASK %s", number > 9' % count)
+            return action('TASK %s' % count)
+
         self.doWinKey('b')
         actions.do_VW()
         self.doWinKey(str(number))
-        print('self.winkeyDown: %s'% self.winkeyDown)
+        print('self.winkeyDown: %s' % self.winkeyDown)
         return None
-        
+
     # def rule_taskposition(self, words):
     #     """
-    #     #commands for positioning (moving) and resizing tasks: 
-    #     (<taskswitch>|task) position <directionplus> 
+    #     #commands for positioning (moving) and resizing tasks:
+    #     (<taskswitch>|task) position <directionplus>
     #     """
     #     # position task in one of the directions, width/height
     #     # did also optional percent with <directionplus> <percent> switched off for the moment
     #     # optional percentage of work area
     #     self.taskmoveresize = 'position'
     #     print('----task position')
-        
+
     # def rule_taskmove(self, words):
     #     """(<taskswitch> | task) move <directionplus>;
     #     """
-    #     
+    #
     #     # removed all the angle, pixels, centimeters, inches, percent out, too complicated for daily use I think...
     #     # optional a specification
     #     self.taskmoveresize = 'move'
     #     print('----task move')
-    
-    #def rule_taskresize(self, words):
+
+    # def rule_taskresize(self, words):
     #    """(<taskswitch> | (task)) (stretch|shrink)
     #            (<directionplus>|<angle>)
     #               [<pixels>|<centimeters>|<millimeters>|<inches>|<percent>]
@@ -573,19 +569,18 @@ class ThisGrammar(ancestor):
     #        self.taskmoveresize = 'shrink'
     #    print '----task resize: %s'% self.taskmoveresize
     #    # action in gotResult
-        
+
     def rule_taskresizeinfo(self, words):
         """give resize info
         """
         winHndle = win32gui.GetForegroundWindow()
         canBeResized = monitorfunctions.window_can_be_resized(winHndle)
-        print('resize info %s'% canBeResized)
-            
-    
+        print('resize info %s' % canBeResized)
+
     # rules inside position, move, stretch, shrink:
     # too precise, can be switched on again later...
-    #def subrule_angle(self, words):
-    #    """ 
+    # def subrule_angle(self, words):
+    #    """
     #    #directional specifications:
     #    {degrees} degrees
     #    """
@@ -593,7 +588,7 @@ class ThisGrammar(ancestor):
     #    deg = self.getNumberFromSpoken(words[0])
     #    self.directionplus = deg%360
     #    print 'angle/direction: %s'% self.directionplus
-        
+
     # def subrule_directionplus(self, words):
     #     '{directionplus}'
     #     #get the direction
@@ -627,7 +622,7 @@ class ThisGrammar(ancestor):
         # uniutils.doMouse(0, 0, mx, my, mouse='noclick')
         # actions.doAction("RMP(3, 0.3, 0.3, mouse='noclick')")
 
-    #def subrule_pixels(self, words):
+    # def subrule_pixels(self, words):
     #    """
     #    # size specifications:
     #    {pixelcount} | {pixelcount} pixels
@@ -641,7 +636,7 @@ class ThisGrammar(ancestor):
     #    self.units = 'pixels'
     #    print 'pixels: %s'% self.amount
     #
-    #def subrule_centimeters(self, words):
+    # def subrule_centimeters(self, words):
     #    '{sizecount} centimeters'
     #    """get the amount in centimeters"""
     #    nCm = self.getNumberFromSpoken(words[0])
@@ -649,22 +644,22 @@ class ThisGrammar(ancestor):
     #    self.amount = nCm * self.dotsperinch * 1.0 / 2.54 + 0.5
     #    print 'pixels(%s cm): %s'% (nCm, self.amount)
     #
-    #def subrule_millimeters(self, words):
+    # def subrule_millimeters(self, words):
     #    '{sizecount} millimeters'
     #    #get the amount in millimeters
     #    nMm = self.getNumberFromSpoken(words[0])
     #    self.units = 'pixels'
     #    self.amount = nMm * self.dotsperinch * 1.0 / 25.4 + 0.5
     #    print 'pixels(%s mm): %s'% (nMm, self.amount)
-    #    
-    #def subruleprog_infonches(self, words):
+    #
+    # def subruleprog_infonches(self, words):
     #    '{sizecount} inches'
     #    #get the amount in inches
     #    nInches = self.getNumberFromSpoken(words[0])
     #    self.units = 'pixels'
     #    self.amount = nInches * self.dotsperinch
     #    print 'pixels(%s mm): %s'% (nInches, self.amount)
-        
+
     def rule_gettaskposition(self, words):
         """
         #commands for recording taskbar positions:
@@ -677,9 +672,9 @@ class ThisGrammar(ancestor):
         count = self.getNumberFromSpoken(words[-1])
         x, y = natlink.getCursorPos()
         if count in self.taskCounts:
-            print('%s, setting task position: %s'% (self.name, count))
+            print('%s, setting task position: %s' % (self.name, count))
         else:
-            print('%s, not a valid "count" for setting task position: %s'% (self.name, count))
+            print('%s, not a valid "count" for setting task position: %s' % (self.name, count))
             return
         if count == 1:
             print('setting mouseX1: ', x)
@@ -689,14 +684,14 @@ class ThisGrammar(ancestor):
         else:
             mousex1 = getPosition('mousex1')
             mousey1 = getPosition('mousey1')
-            
-            mouseXdiff = int((x - mousex1 )/(count-1))
-            mouseYdiff = int((y - mousey1 )/(count-1))
+
+            mouseXdiff = int((x - mousex1)/(count-1))
+            mouseYdiff = int((y - mousey1)/(count-1))
             print('setting mouseXdiff: ', mouseXdiff)
             print('setting mouseYdiff: ', mouseYdiff)
             setPosition('mousexdiff', mouseXdiff)
             setPosition('mouseydiff', mouseYdiff)
-        
+
     def rule_getdocumentposition(self, words):
         """
         #commands for recording a document position, application specific
@@ -708,14 +703,14 @@ class ThisGrammar(ancestor):
         prog_info = uniutils.getProgInfo()
         prog, title = prog_info.prog, prog_info.title
         if not prog:
-            print('%s, no valid program for setting document position: %s (title:%s)'% (self.name, prog, title))
+            print('%s, no valid program for setting document position: %s (title:%s)' % (self.name, prog, title))
             return
         count = self.getNumberFromSpoken(words[-1])
         x, y = natlink.getCursorPos()
         if count in self.documentCounts:
-            print('%s, setting document position %s for program: %s'% (self.name, count, prog))
+            print('%s, setting document position %s for program: %s' % (self.name, count, prog))
         else:
-            print('%s, cannot set document position "%s" for program: %s (invalid count)'% (self.name, count, prog))
+            print('%s, cannot set document position "%s" for program: %s (invalid count)' % (self.name, count, prog))
             return
         if count == 1:
             print('setting mouseX1: ', x)
@@ -725,16 +720,16 @@ class ThisGrammar(ancestor):
         else:
             mousex1 = getPosition('mousex1', prog=prog)
             mousey1 = getPosition('mousey1', prog=prog)
-            
-            mouseXdiff = int((x - mousex1 )/(count-1))
-            mouseYdiff = int((y - mousey1 )/(count-1))
+
+            mouseXdiff = int((x - mousex1)/(count-1))
+            mouseYdiff = int((y - mousey1)/(count-1))
             print('setting mouseXdiff: ', mouseXdiff)
             print('setting mouseYdiff: ', mouseYdiff)
             setPosition('mousexdiff', mouseXdiff, prog=prog)
             setPosition('mouseydiff', mouseYdiff, prog=prog)
 
-
     #
+
     def gotResults_fileswitch(self, words, fullResults):
         """switch file to the named application
         mark cursor
@@ -742,29 +737,29 @@ class ThisGrammar(ancestor):
         open in new app
         goto top
         goto cursor
-        
+
         if filename cannot be got the process is stopped
 
         """
         fileName = actions.getPathOfOpenFile()
         if fileName:
-            print('fileName: %s'% fileName)
+            print('fileName: %s' % fileName)
         else:
             self.DisplayMessage('cannot switch, filename cannot be established')
             return
-            
+
         while fileName.endswith("*"):
             fileName = fileName[:-1]
         actions.putCursor()
         action("<<filesave>>")
         action("W")
-        print("saved, now close: %s"% fileName)
+        print("saved, now close: %s" % fileName)
         action("<<documentclose>>")
         newApp = words[-1]
         newApp = self.ini.get('application', newApp, newApp)
-           
-        if not action("BRINGUP %s"% newApp):
-            self.DisplayMessage('cannot switch, application %s cannot be brought to front'% newApp)
+
+        if not action("BRINGUP %s" % newApp):
+            self.DisplayMessage('cannot switch, application %s cannot be brought to front' % newApp)
             return
 
         # fileopen in emacs relies on maximised state of emacs, cannot be sure here:
@@ -782,33 +777,33 @@ class ThisGrammar(ancestor):
 
     def gotResults(self, words, fullResults):
         """actions for task move, resize, position done here
-        
+
         relevant data collected in other gotResult_... functions
-        
+
         """
         if self.giveName:
             if self.namedictated:
                 self.namedtaskDict[self.namedictated] = self.giveName
                 self.setList('namedtask', list(self.namedtaskDict.keys()))
-                print('name "%s" can now be used for switching to a task'% self.namedictated)
+                print('name "%s" can now be used for switching to a task' % self.namedictated)
             else:
                 print('giveName, no self.namedictated given...')
-                
+
         if self.hadStartMenu:
             self.doStartMenu()
             if self.letters:
                 keystroke(self.letters)
 
         if self.taskmoveresize:
-            print('taskmoveresize: %s'% self.taskmoveresize)
+            print('taskmoveresize: %s' % self.taskmoveresize)
             winHndle = win32gui.GetForegroundWindow()
-            #print 'amount: %s'% self.amount
-            #print 'units: %s'% self.units
+            # print 'amount: %s'% self.amount
+            # print 'units: %s'% self.units
             if self.directionplus in self.directions:
                 direction = self.directions[self.directionplus]
             else:
                 direction = self.directionplus
-            print('direction spoken: %s, direction taken: %s'% (self.directionplus, direction))
+            print('direction spoken: %s, direction taken: %s' % (self.directionplus, direction))
             canBeResized = monitorfunctions.window_can_be_resized(winHndle)
             if self.taskmoveresize == 'position':
                 self.doTaskPositionCommand(winHndle, canBeResized, direction, self.amount, self.units)
@@ -827,33 +822,33 @@ class ThisGrammar(ancestor):
                     amount = 0.5
                     units = 'relative'
                 else:
-                    print('_tasks, gotResults, invalid taskmoveresize: %s'% self.taskmoveresize)
+                    print('_tasks, gotResults, invalid taskmoveresize: %s' % self.taskmoveresize)
                     return
 
-                print('amount (adjusted): %s'% amount)
-                print('units: (adjusted) %s'% units)
-    
+                print('amount (adjusted): %s' % amount)
+                print('units: (adjusted) %s' % units)
+
                 try:
                     func = getattr(monitorfunctions, f'{self.taskmoveresize}_window', None)
                     if func:
                         print('doing func: {func}')
                         func(winHndle, direction=self.directionplus, amount=amount, units=units)
                     else:
-                        print('invalid value for taskmoveresize: %s (could not find function)'% self.taskmoveresize)                
+                        print('invalid value for taskmoveresize: %s (could not find function)' % self.taskmoveresize)
                 except ValueError:
-                    print('error in monitorfunctions.%s_window'% self.taskmoveresize)
+                    print('error in monitorfunctions.%s_window' % self.taskmoveresize)
                     print(sys.exc_info()[1])
-#keepinside=None, keepinsideall=1, monitor=None):
+# keepinside=None, keepinsideall=1, monitor=None):
 
     def addTaskNameToDict(self, moduleInfo):
         """add name of task to the namedTasDict is requirements are met
-        
+
         no return, change is made in namedTaskDict and the setList is done as well
-        
+
         1. must be pythonw (already tested in gotBegin)
         2. title must hold " --- " (applications of QH)
         3. check for abbrevs list in spokenforms, to make the command pronouncable
-        
+
         """
         _prog, title, hndle = moduleInfo
         if title.find(" --- ") == -1:
@@ -864,7 +859,7 @@ class ThisGrammar(ancestor):
         if not name:
             return
         gotChanges = None
-        
+
         name = self.spokenforms.abbrev2spoken.get(name, name)
         if name and isinstance(name, list):
             for n in name:
@@ -872,15 +867,13 @@ class ThisGrammar(ancestor):
         else:
             gotChanges = self.checkNamedTaskDict(name, hndle)
         if gotChanges:
-            print('set namedtask list: %s'% list(self.namedtaskDict.keys()))
+            print('set namedtask list: %s' % list(self.namedtaskDict.keys()))
             self.setList('namedtask', list(self.namedtaskDict.keys()))
-            
-    
+
     def checkNamedTaskDict(self, name, hndle):
         """insert name, hndle in self.namedTaskDict if not yet there
-        
-        return 1 if change has been made.    
-    
+
+        return 1 if change has been made.
         """
         if self.namedtaskDict.get(name, None) == hndle:
             return None  # name already in dict and same hndle
@@ -900,28 +893,27 @@ class ThisGrammar(ancestor):
             classInfo = uniutils.getClassName()
         finally:
             if classInfo == 'TaskListThumbnailWnd':
-                #print 'keep logo key down'
+                # print 'keep logo key down'
                 self.winkeyDown = 1
             else:
                 win32api.keybd_event(winkey, 0, keyup, 0)  # key up
-        
-        
-    
+
     # taken from _shownumbersplus, go to a subtask in stacked taskbar
     # number from 0, (in _shownumbersplus first window is click 0)
+
     def doAlternativeClick(self, className, num):
         """instead of click perform another (keystrokes) action
-        
+
         if self.doTasksWithWindowsKey, do this with repeated winkey clicks
         """
         taskNum = self.lastTaskCount
         if type(num) in (bytes, str):
             num = int(num)
         if className == "TaskListThumbnailWnd":
-            #print 'tasks, doAlternative click: %s'% num
+            # print 'tasks, doAlternative click: %s'% num
             if self.doTasksWithWindowsKey:
                 if not (taskNum and self.winkeyDown):
-                    print('cannot complete windows command: taskNum: %s, winkeyDown: %s'% (taskNum, self.winkeyDown))
+                    print('cannot complete windows command: taskNum: %s, winkeyDown: %s' % (taskNum, self.winkeyDown))
                     self.cancelMode()
                     return
                 if num > 1:
@@ -930,23 +922,23 @@ class ThisGrammar(ancestor):
                         actions.do_SSK(keystr)
                 elif num < 0:
                     num2 = -num
-                    keystr = '{shift+%s}'% taskNum
+                    keystr = '{shift+%s}' % taskNum
                     for _i in range(num2):
                         actions.do_SSK(keystr)
                 self.cancelMode()
                 return
 
             # mode with mouse on taskbar position:
-            taskbarPosition = monitorfunctions.get_taskbar_position() # notices changes on the fly!
+            taskbarPosition = monitorfunctions.get_taskbar_position()  # notices changes on the fly!
             # which way to scroll through a stack of taskbar buttons:
             initialKeys = dict(left='{down}', top='{right}',
                                right='{left}{down}', bottom='{right}')
             scrollKeys = dict(left='down', top='right',
-                               right='down', bottom='right')
+                              right='down', bottom='right')
             initialKeysReverse = dict(right='{left}', bottom='{left}',
-                               left='{right}', top='{left}')
+                                      left='{right}', top='{left}')
             scrollKeysReverse = dict(right='up', bottom='left',
-                               left='up', top='left')
+                                     left='up', top='left')
             try:
                 if num > 0:
                     initial = initialKeys[taskbarPosition]
@@ -958,19 +950,18 @@ class ThisGrammar(ancestor):
                 else:
                     raise ValueError("_tasks, doAlternativeClick, number may NOT be 0")
             except KeyError:
-                print('key not found "taskbarPosition": %s'% taskbarPosition)
+                print('key not found "taskbarPosition": %s' % taskbarPosition)
                 return
             # go to first of popup windows (depending on taskbar location)
-            #print 'taskbarPosition: %s'% taskbarPosition
-            #print 'initial: %s, scroll: %s'% (initial[1:], scrollKey)
+            # print 'taskbarPosition: %s'% taskbarPosition
+            # print 'initial: %s, scroll: %s'% (initial[1:], scrollKey)
             action(initial)
             if num > 1:
                 num -= 1
-                action('{%s %s}'% (scrollKey, num))
+                action('{%s %s}' % (scrollKey, num))
             action('{enter}')
         else:
-            print('should not call doAlternativeClick for className: %s'% className)
-
+            print('should not call doAlternativeClick for className: %s' % className)
 
     def doTaskPositionCommand(self, winHndle, canBeResized, direction, amount, units):
         """do the task position command with enclosed parameters
@@ -978,7 +969,7 @@ class ThisGrammar(ancestor):
         if amount and units == 'percent':
             amount = amount / 100.0
         elif amount:
-            print('amount: %s'% amount)
+            print('amount: %s' % amount)
         else:
             amountx = self.splitLeftRight
             amounty = self.splitTopDown
@@ -1014,17 +1005,17 @@ class ThisGrammar(ancestor):
                 ywidth = amounty
             else:
                 ywidth = 1.0 - amounty
-    
+
         if not canBeResized:
             xwidth = ywidth = None
-        print('restore_window:pos: %s, %s, width: %s, %s'% \
-                (xpos, ypos, xwidth, ywidth))
+        print('restore_window:pos: %s, %s, width: %s, %s' %
+              (xpos, ypos, xwidth, ywidth))
         func = monitorfunctions.restore_window
         func(winHndle, xpos=xpos, ypos=ypos,
-                xwidth=xwidth, ywidth=ywidth)
+             xwidth=xwidth, ywidth=ywidth)
     #
     #
-    #def convertString(self, t, toCode):
+    # def convertString(self, t, toCode):
     #      """convert to unix style (\n) or dos/windows style \n\r sucks..."""
     #      CR = chr(10)
     #      LF = chr(13)
@@ -1036,65 +1027,63 @@ class ThisGrammar(ancestor):
     #          t = t.replace(LF, CRLF)
     #          t = t.replace(CRCRLF, CRLF)
     #          t = t.replace(CRLF+CRLF, CRLF)
-    #          return t 
-        
+    #          return t
+
     def gotResults_removecursor(self, words, fullResults):
         """goto marked cursor, in case is was left in file switch actions"""
         actions.findCursor()
 
     def doTaskAction(self, actionWord, mouseOnPosition=0):
-        """do action on 
+        """do action on
 
-     if mouseOnPosition, instead of {alt+space} a right click is done
+        if mouseOnPosition, instead of {alt+space} a right click is done
         """
         if actionWord:
             act = self.ini.get('taskaction', actionWord)
             if act:
-                #uniutils.visibleWait()
+                # uniutils.visibleWait()
                 action(act)
             else:
-                print('no action for taskaction: %s'% actionWord)
-        
+                print('no action for taskaction: %s' % actionWord)
 
     def fillInstanceVariables(self):
         """fills the necessary instance variables
 
         positions should be in actions.ini, and can be got by the "task position" commands
-        
         """
         self.maxTaskNumber = self.ini.getInt('general', 'max task number') or 20
         self.maxWindowNumber = self.ini.getInt('general', 'max window number') or 9
         self.maxDocumentNumber = self.ini.getInt('general', 'max document number') or 20
         self.centerMouse = self.ini.getBool('general', 'center mouse')
-        #self.dotsperinch = self.ini.getInt('general', 'screen dots per inch') or 90
-        
+        # self.dotsperinch = self.ini.getInt('general', 'screen dots per inch') or 90
+
         self.doTasksWithWindowsKey = self.ini.getBool('general', 'do taskswitch with windows key')
         if self.doTasksWithWindowsKey:
             print('do taskswitch with windows key enabled')
         # positioning not in middle (for Arnoud):
         self.splitLeftRight = self.ini.getFloat('general', 'split left right') or 0.5
         self.splitTopDown = self.ini.getFloat('general', 'split top down') or 0.5
-        
+
         # search commands (for Arnoud):
-        self.enableSearchCommands = self.ini.getBool('general', 'enable search commands') 
+        self.enableSearchCommands = self.ini.getBool('general', 'enable search commands')
         if self.enableSearchCommands:
             print('_task, enable search commands')
 
         # special windows from pythonw (QH)
-        self.makeTaskNamesPythonw = self.ini.getBool('general', 'make task names pythonw') 
+        self.makeTaskNamesPythonw = self.ini.getBool('general', 'make task names pythonw')
         if self.makeTaskNamesPythonw:
             print('_task, make task names pythonw (option for QH)')
-        
+
         allApps = self.ini.get('application')
 
-        # contstruct 
+        # contstruct
         switchApps = self.ini.getList('general', 'switchapps')
         self.switchApps = []
         if switchApps:
             # construct items for switchApps list, must be either
             # the keyword or the value of one of the items of
             # allApps (the list of applications in the inifile
-            
+
             allAppsDict = {k: self.ini.get('application', k) for k in allApps}
 
             for sApp in switchApps:
@@ -1102,12 +1091,13 @@ class ThisGrammar(ancestor):
                     self.switchApps.append(sApp)
                 else:
                     foundSpoken = 0
-                    for k,v in list(allAppsDict.items()):
+                    for k, v in list(allAppsDict.items()):
                         if v == sApp:
                             foundSpoken = 1
                             self.switchApps.append(k)
                     if not foundSpoken:
-                        print('application not valid for switchapps: "%s", no written or spoken form in section [applications])'% sApp)
+                        msg = 'application not valid for switchapps: "%s", no written or spoken form in [applications])' % sApp
+                        print(msg)
 
     def getSelectedText(self):
         """gets a copy of the selection, otherwise ""
@@ -1128,21 +1118,22 @@ class ThisGrammar(ancestor):
             win32api.keybd_event(winkey, 0, keyup, 0)  # key up
             self.winkeyDown = 0
 
-            
 
 def unload():
-    #pylint:disable = W0603, E0601
+    # pylint:disable = W0603, E0601
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
     thisGrammar = None
 
-def changeCallback(Type,Args):
+
+def changeCallback(Type, Args):
     # not active without special version of natlinkmain:
-    if ((Type == 'mic') and (Args=='on')):
+    if ((Type == 'mic') and (Args == 'on')):
         return   # check WAS in natlinkmain...
     if thisGrammar:
         thisGrammar.cancelMode()
+
 
 # standard stuff Joel
 if __name__.find('.') == -1:

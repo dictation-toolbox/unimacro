@@ -1,6 +1,6 @@
 #
 # (unimacro - natlink macro wrapper/extensions)
-# _number.py 
+# _number.py
 #  written by: Quintijn Hoogenboom (QH softwaretraining & advies)
 #  August 2003//April 2022 (python3)
 #
@@ -22,7 +22,7 @@ QH september 2013: rewriting of the functions, ruling out optional command words
 
 further comments in _number extended.py. Also see the page "number grammar" on the Unimacro we
 """
-#pylint:disable=C0115, C0116, W0613
+# pylint:disable=C0115, C0116, W0613
 from dtactions import uniutils
 from dtactions.sendkeys import sendkeys as keystroke
 import unimacro.natlinkutilsbj as natbj
@@ -30,15 +30,17 @@ import natlink
 
 thisGrammar = None
 ancestor = natbj.IniGrammar
+
+
 class ThisGrammar(ancestor):
 
     language = uniutils.getLanguage()
 
-    #Step 1, choose one of next three grammar rules:
+    # Step 1, choose one of next three grammar rules:
     # the <integer> rule comes from these grammar rules
-    number_rules = natbj.numberGrammarTill999[language] # hundreds, including a long string of digits
-    #number_rules = natbj.numberGrammarTill999999[language] # including thousands
-    #number_rules = natbj.numberGrammar[language] #  including millions
+    number_rules = natbj.numberGrammarTill999[language]  # hundreds, including a long string of digits
+    # number_rules = natbj.numberGrammarTill999999[language] # including thousands
+    # number_rules = natbj.numberGrammar[language] #  including millions
     # the rules <integer> and <float> are already defined.
     name = "number simple"
 
@@ -47,45 +49,45 @@ class ThisGrammar(ancestor):
 <number> = <integer> | Minus <integer> | <float> | Minus <float>;
 """+number_rules+"""
     """
+
     def __init__(self):
         self.minus = False
         self.number = False
         super().__init__()
-  
+
     def initialize(self):
-        self.switchOnOrOff() 
+        self.switchOnOrOff()
 
     def gotResultsInit(self, words, fullResults):
         # Step 2:
         # you can initialise variables here, eg self.minus = None, self.number = ''. Not necessary, but
         # in some grammars more appropriate than in the next function.
         pass
-        
+
     def gotResults_testnumber(self, words, fullResults):
         # step 3: specify the number you are waiting for
         # check if the word Minus is present, and then wait for the number named "number"
         # note in this example self.number is non existent until collectNumber has been visited.
         # self.minus will only be set if the rule number is visited.
         self.waitForNumber('number')
-        self.minus = False 
+        self.minus = False
 
     def gotResults_number(self, words, fullResults):
         # step 3a: when in this rule, the word Minus (or synonym or translation) has been spoken..
         self.minus = True
- 
-    def gotResults(self,words,fullResults):
+
+    def gotResults(self, words, fullResults):
         # step 4, in gotResults collect the number (as a string):
-        self.collectNumber() # setting self.number, see self.waitForNumber above
+        self.collectNumber()  # setting self.number, see self.waitForNumber above
         print(f'number from the _number simple grammar: {self.number}')
         if self.minus:
             self.number = '-' + self.number
         # disable when testing through unittestIniGrammar.py (in unimacro_test directory):
         self.outputNumber(self.number)
-            
-                      
+
     def outputNumber(self, number):
         keystroke(number)
-        #Step 5:
+        # Step 5:
         # Here some extra postprocessing for different programs:
         prog = uniutils.getProgName()
         if prog in ['iexplore', 'firefox', 'chrome', 'safari']:
@@ -96,15 +98,18 @@ class ThisGrammar(ancestor):
             keystroke('{tab}')
 
 # standard stuff Joel (adapted for possible empty gramSpec, QH, unimacro)
+
+
 def unload():
-    #pylint:disable=W0603
+    # pylint:disable=W0603
     global thisGrammar
     if thisGrammar:
         thisGrammar.unload()
-    thisGrammar = None 
+    thisGrammar = None
+
 
 if __name__ == "__main__":
-    ## interactive use, for debugging:
+    # interactive use, for debugging:
     natlink.natConnect()
     try:
         thisGrammar = ThisGrammar()

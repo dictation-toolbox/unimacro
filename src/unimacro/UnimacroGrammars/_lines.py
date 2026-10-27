@@ -81,7 +81,7 @@ class ThisGrammar(ancestor):
 <before> = Here;
 <linesthat> exported = (THAT | <lines> | <paras>) <action>;
 <linesnum> exported = <linenum> | <linenum> <action>;
-<lines> = line | this line | <before> line | 
+<lines> = line | this line | <before> line |
            {count} lines| <before> {count} lines |
            these {count} lines|
            (previous|next) (line | {count} lines);
@@ -425,7 +425,6 @@ class ThisGrammar(ancestor):
             else:
                 # absolute:
                 self.line = int(self.line)
-
         if self.through:
             intThrough = int(self.through)
             if intThrough > self.line:
@@ -499,13 +498,11 @@ class ThisGrammar(ancestor):
                 # only when you call for a single line without action, NO
                 # selection is done
                 T.append('<<selectline>>')
-
         # t1 = time.time ()
         action(''.join(T), comment=comment)
         # t2 = time.time ()
         # print 'line select action: %s'% (t2-t1)
         T = []
-
         # doing the action part:
         if self.column:
             keystroke("{right %s}" % self.column)
@@ -564,7 +561,7 @@ class ThisGrammar(ancestor):
                         if self.movecopyto > currentLine + self.numlines:
                             self.movecopyto -= self.numlines
                     else:
-                        self.info('_lines: movecopyaction: current line not known, move can be wrong if target is below current line')
+                        self.info('_lines: movecopyaction: current line unknown, move poss wrong if target below current line')
 
                 T.append('<<gotoline %s>>' % self.movecopyto)
             else:
